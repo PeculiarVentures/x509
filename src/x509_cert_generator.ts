@@ -41,8 +41,8 @@ export interface X509CertificateCreateParamsBase {
  * Parameters for X509 Certificate generation
  */
 export interface X509CertificateCreateParams extends X509CertificateCreateParamsBase {
-  subject: X509CertificateCreateParamsName;
-  issuer: X509CertificateCreateParamsName;
+  subject?: X509CertificateCreateParamsName;
+  issuer?: X509CertificateCreateParamsName;
   publicKey: CryptoKey;
   signingKey: CryptoKey;
 }
@@ -51,7 +51,7 @@ export interface X509CertificateCreateParams extends X509CertificateCreateParams
  * Parameters for self-signed X509 Certificate generation
  */
 export interface X509CertificateCreateSelfSignedParams extends X509CertificateCreateParamsBase {
-  name: X509CertificateCreateParamsName;
+  name?: X509CertificateCreateParamsName;
   keys: CryptoKeyPair;
 }
 
@@ -94,12 +94,16 @@ export class X509CertificateGenerator {
           notBefore: params.notBefore,
           notAfter: params.notAfter,
         }),
-        subject: AsnConvert.parse(new Name(params.subject).toArrayBuffer(), asn1X509.Name),
-        issuer: AsnConvert.parse(new Name(params.issuer).toArrayBuffer(), asn1X509.Name),
         extensions: new asn1X509.Extensions(params.extensions?.map(o => AsnConvert.parse(o.rawData, asn1X509.Extension)) || []),
         subjectPublicKeyInfo: AsnConvert.parse(spki, asn1X509.SubjectPublicKeyInfo),
       }),
     });
+    if (params.subject) {
+      asnX509.tbsCertificate.subject = AsnConvert.parse(new Name(params.subject).toArrayBuffer(), asn1X509.Name);
+    }
+    if (params.issuer) {
+      asnX509.tbsCertificate.issuer = AsnConvert.parse(new Name(params.issuer).toArrayBuffer(), asn1X509.Name);
+    }
 
     // Set signing algorithm
     const signingAlgorithm = { ...params.signingAlgorithm, ...params.signingKey.algorithm } as HashedAlgorithm;
