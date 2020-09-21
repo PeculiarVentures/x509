@@ -1,0 +1,94 @@
+{
+  "name": "x509",
+  "version": "1.0.0",
+  "description": "",
+  "main": "build/cjs/index.js",
+  "module": "build/es2015/index.js",
+  "types": "build/types/index.d.ts",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "mocha",
+    "clear": "rimraf build/*",
+    "build": "npm run build:module && npm run build:types",
+    "build:module": "npm run build:cjs && npm run build:es2015",
+    "build:cjs": "tsc -p tsconfig.compile.json --removeComments --module commonjs --outDir build/cjs",
+    "build:es2015": "tsc -p tsconfig.compile.json --removeComments --module ES2015 --outDir build/es2015",
+    "prebuild:types": "rimraf build/types",
+    "build:types": "tsc -p tsconfig.compile.json --outDir build/types --declaration --emitDeclarationOnly",
+    "rebuild": "npm run clear && npm run build",
+    "coverage": "nyc npm test",
+    "coveralls": "nyc report --reporter=text-lcov | coveralls"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PeculiarVentures/x509.git"
+  },
+  "keywords": [],
+  "author": "Peculiar Ventures LLC",
+  "contributors": [
+    "Miroshin Stepan<microshine@mail.ru>"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/PeculiarVentures/x509/issues"
+  },
+  "homepage": "https://github.com/PeculiarVentures/x509#readme",
+  "files": [
+    "build",
+    "README.md",
+    "LICENSE"
+  ],
+  "nyc": {
+    "extension": [
+      ".ts",
+      ".tsx"
+    ],
+    "include": [
+      "src/**/*.ts"
+    ],
+    "exclude": [
+      "**/*.d.ts"
+    ],
+    "reporter": [
+      "text-summary",
+      "html"
+    ]
+  },
+  "mocha": {
+    "require": [
+      "ts-node/register"
+    ],
+    "extension": [
+      "ts"
+    ],
+    "timeout": 5000,
+    "spec": [
+      "test/**"
+    ]
+  },
+  "devDependencies": {
+    "@peculiar/webcrypto": "^1.1.3",
+    "@types/mocha": "^8.0.3",
+    "@types/node": "^14.11.1",
+    "coveralls": "^3.1.0",
+    "mocha": "^8.1.3",
+    "nyc": "^15.1.0",
+    "rimraf": "^3.0.2",
+    "ts-node": "^9.0.0",
+    "typescript": "^4.0.3"
+  },
+  "dependencies": {
+    "@peculiar/asn1-csr": "^2.0.22",
+    "@peculiar/asn1-ecc": "^2.0.17",
+    "@peculiar/asn1-pkcs9": "^2.0.22",
+    "@peculiar/asn1-rsa": "^2.0.22",
+    "@peculiar/asn1-schema": "^2.0.17",
+    "@peculiar/asn1-x509": "^2.0.22",
+    "pvtsutils": "^1.0.12",
+    "reflect-metadata": "^0.1.13",
+    "tslib": "^2.0.1",
+    "tsyringe": "^4.3.0"
+  }
+}
