@@ -21,9 +21,9 @@
     "coveralls": "nyc report --reporter=text-lcov | coveralls",
     "docs": "typedoc",
     "pub": "npm run pub:patch",
-    "pub:patch": "npm version patch && nom run git:push",
-    "pub:minor": "npm version minor && nom run git:push",
-    "pub:major": "npm version major && nom run git:push",
+    "pub:patch": "npm version patch && npm run git:push",
+    "pub:minor": "npm version minor && npm run git:push",
+    "pub:major": "npm version major && npm run git:push",
     "git:push": "git push --follow-tags"
   },
   "repository": {
