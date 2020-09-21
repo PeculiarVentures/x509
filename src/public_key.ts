@@ -85,6 +85,7 @@ export class PublicKey extends AsnData<SubjectPublicKeyInfo>{
     } else {
       crypto = args[0] || cryptoProvider.get();
     }
+
     return await crypto.subtle.digest(algorithm, this.rawData);
   }
 

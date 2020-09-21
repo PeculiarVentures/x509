@@ -135,6 +135,7 @@ export class X509Certificate extends AsnData<Certificate> {
         return ext as T;
       }
     }
+
     return null;
   }
 
@@ -161,6 +162,7 @@ export class X509Certificate extends AsnData<Certificate> {
       return ok;
     } else {
       const time = date.getTime();
+
       return ok && this.notBefore.getTime() < time && time < this.notAfter.getTime();
     }
   }
@@ -186,6 +188,7 @@ export class X509Certificate extends AsnData<Certificate> {
     } else {
       crypto = args[0] || crypto;
     }
+
     return await crypto.subtle.digest(algorithm, this.rawData);
   }
 

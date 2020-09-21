@@ -18,7 +18,8 @@ export class SubjectKeyIdentifierExtension extends Extension {
   public static async create(publicKey: CryptoKey, critical = false, crypto = cryptoProvider.get()) {
     const spki = await crypto.subtle.exportKey("spki", publicKey);
     const ski = await crypto.subtle.digest("SHA-1", spki);
-    return new SubjectKeyIdentifierExtension(Convert.ToHex(ski), critical);
+    
+return new SubjectKeyIdentifierExtension(Convert.ToHex(ski), critical);
   }
 
   /**

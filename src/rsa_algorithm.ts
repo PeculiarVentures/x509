@@ -28,6 +28,7 @@ export class RsaAlgorithm implements IAlgorithm {
           return new AlgorithmIdentifier({ algorithm: asn1Rsa.id_rsaEncryption, parameters: null });
         }
     }
+
     return null;
   }
 
@@ -44,6 +45,7 @@ export class RsaAlgorithm implements IAlgorithm {
       case asn1Rsa.id_sha512WithRSAEncryption:
         return { name: "RSASSA-PKCS1-v1_5", hash: { name: "SHA-512" } };
     }
+
     return null;
   }
 

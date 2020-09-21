@@ -113,6 +113,7 @@ export class Name {
           // representation, the value is converted first to a UTF-8 string
           // according to its syntax specification
           : escape(o.value.toString());
+
         return `${type}=${value}`;
       })
         .join("+"))
@@ -134,6 +135,7 @@ export class Name {
       }
       json.push(jsonItem);
     }
+
     return json;
   }
 

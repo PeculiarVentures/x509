@@ -47,7 +47,8 @@ export class AuthorityKeyIdentifierExtension extends Extension {
       const publicKey = param instanceof X509Certificate ? await param.publicKey.export(crypto) : param;
       const spki = await crypto.subtle.exportKey("spki", publicKey);
       const ski = await crypto.subtle.digest("SHA-1", spki);
-      return new AuthorityKeyIdentifierExtension(Convert.ToHex(ski), critical);
+      
+return new AuthorityKeyIdentifierExtension(Convert.ToHex(ski), critical);
     } else {
       return new AuthorityKeyIdentifierExtension(param, critical);
     }

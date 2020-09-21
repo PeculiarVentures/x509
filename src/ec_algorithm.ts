@@ -46,6 +46,7 @@ export class EcAlgorithm implements IAlgorithm {
           }
         }
     }
+
     return null;
   }
 
@@ -60,7 +61,10 @@ export class EcAlgorithm implements IAlgorithm {
       case asn1Ecc.id_ecdsaWithSHA512:
         return { name: "ECDSA", hash: { name: "SHA-512" } };
       case asn1Ecc.id_ecPublicKey: {
-        const parameters = AsnConvert.parse(alg.parameters!, asn1Ecc.ECParameters);
+        if (!alg.parameters) {
+          throw new TypeError("Cannot get required parameters from EC algorithm");
+        }
+        const parameters = AsnConvert.parse(alg.parameters, asn1Ecc.ECParameters);
         switch (parameters.namedCurve) {
           case asn1Ecc.id_secp256r1:
             return { name: "ECDSA", namedCurve: "P-256" };
@@ -71,6 +75,7 @@ export class EcAlgorithm implements IAlgorithm {
         }
       }
     }
+
     return null;
   }
 

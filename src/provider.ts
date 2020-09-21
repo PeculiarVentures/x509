@@ -45,6 +45,7 @@ export class CryptoProvider extends Map<string, Crypto> {
     if (!crypto) {
       throw new Error(`Cannot get Crypto by name '${key}'`);
     }
+
     return crypto;
   }
 
@@ -68,6 +69,7 @@ export class CryptoProvider extends Map<string, Crypto> {
     } else {
       super.set(CryptoProvider.DEFAULT, key);
     }
+
     return this;
   }
 

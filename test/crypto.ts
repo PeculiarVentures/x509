@@ -3,6 +3,7 @@ import { Convert } from "pvtsutils";
 import { Crypto } from "@peculiar/webcrypto";
 import * as asn1X509 from "@peculiar/asn1-x509";
 import * as x509 from "../src";
+import { Pkcs10CertificateRequestGenerator } from '../src';
 
 context("crypto", () => {
 
@@ -134,6 +135,19 @@ context("crypto", () => {
 
   });
 
+  context("Pkcs10CertificateRequestGenerator", () => {
+    it("simple", async () => {
+      const keys = await crypto.subtle.generateKey({ name: "ECDSA", namedCurve: "P-256" }, false, ["sign", "verify"]) as CryptoKeyPair;
+      const csr = Pkcs10CertificateRequestGenerator.create({
+        name: "CN=test",
+        keys,
+        signingAlgorithm: { name: "ECDSA", hash: "SHA-256" },
+      });
+
+      console.log(csr);
+    });
+  });
+
   context("x509", () => {
 
     const pem = "MIIDljCCAn6gAwIBAgIOSETcxtRwD/qzf0FjVvEwDQYJKoZIhvcNAQELBQAwZjELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExGjAYBgNVBAsTEUZvciBEZW1vIFVzZSBPbmx5MSAwHgYDVQQDExdHbG9iYWxTaWduIERlbW8gUm9vdCBDQTAeFw0xNjA3MjAwMDAwMDBaFw0zNjA3MjAwMDAwMDBaMGYxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMRowGAYDVQQLExFGb3IgRGVtbyBVc2UgT25seTEgMB4GA1UEAxMXR2xvYmFsU2lnbiBEZW1vIFJvb3QgQ0EwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQC1i9RNgrJ4YAATN0J4KVGZjFGQVGFdcbKvfxrt0Bfusq2g81iVrZZjqTJnPSx4g6TdVcsEXU9GWlkFXKEtZzYM4ycbwLAeJQxQDEqkV03GV8ks2Jq/6jIm2DbByPiS5fvRQFQJLYuQHqXpjpOpmPiostUsg9ydMEqcacYV22a6A6Nrb1c1B6OL+X0u9bo30K+YYSw2Ngp3Tuuj9PDk6JS/0CPLcLo8JIFFc8t78lPDquNAOqTDwY/HTw4751iqLVem9q3EDKEeUS+x4gqsCD2pENA7PlQBza55BGOi/A+UAsmfee1oq2Glo9buXBgX+oJ3HnyelzJU9Ej4+yfH7rcvAgMBAAGjQjBAMA4GA1UdDwEB/wQEAwIBBjAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBTqD8ID9OxgG83HZJVtOQMmftrrLzANBgkqhkiG9w0BAQsFAAOCAQEAAECKKpL0A2I+hsY881tIz7WqkLDuLh/ISzRVdsALYAxLhVDUHPckh5XyVRkpbTmirn+b5MpuwAI2R8A7Ld6aWWiibc7zGEZNvEKsUEYoJoYR0fuQs2cF7egiYjhFwFMX75w+kuI0Yelm3/3+BiJVtAXqmnQ4yRpGXqNJ4mQC8yWgQbZCLUpH/nqeQANeoaDr5Yg8IOuHRQzG6YNt/Cl9CetDd8WPrAkGm3T2iG0dXQ48VgkkXcNDtY+55nYjIO+N7i+WTh1fe3ArGxHBR3E44+WoA8ntfI1g65+GR0s6G8M7oS+kAFXIwugUGYEnTWp0m5bAn5NlD314IEOg4mnS8Q==";
@@ -144,7 +158,6 @@ context("crypto", () => {
       assert.strictEqual(cert.subject, "C=BE, O=GlobalSign nv-sa, OU=For Demo Use Only, CN=GlobalSign Demo Root CA");
       assert.strictEqual(cert.issuer, "C=BE, O=GlobalSign nv-sa, OU=For Demo Use Only, CN=GlobalSign Demo Root CA");
       assert.strictEqual(cert.extensions.length, 3);
-      console.log(cert);
     });
 
     it("verify", async () => {
@@ -288,7 +301,7 @@ context("crypto", () => {
         notAfter: new Date("2020/01/02"),
         signingAlgorithm: alg,
         publicKey: keys.publicKey,
-        signingKey: cert ? cert.privateKey! : keys.privateKey,
+        signingKey: cert && cert.privateKey ? cert.privateKey : keys.privateKey,
         extensions,
       });
       res.privateKey = keys.privateKey;

@@ -100,6 +100,7 @@ export class Pkcs10CertificateRequest extends AsnData<CertificationRequest> {
         return attr;
       }
     }
+
     return null;
   }
 
@@ -122,6 +123,7 @@ export class Pkcs10CertificateRequest extends AsnData<CertificationRequest> {
         return ext;
       }
     }
+
     return null;
   }
 
@@ -141,6 +143,7 @@ export class Pkcs10CertificateRequest extends AsnData<CertificationRequest> {
     const algorithm = { ...this.publicKey.algorithm, ...this.signatureAlgorithm };
     const publicKey = await this.publicKey.export(algorithm, ["verify"], crypto);
     const ok = await crypto.subtle.verify(this.signatureAlgorithm, publicKey, this.signature, this.tbs);
+
     return ok;
   }
 

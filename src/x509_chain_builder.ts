@@ -64,9 +64,11 @@ export class X509ChainBuilder {
         })) {
           continue;
         }
+
         return item;
       }
     }
+
     return null;
   }
 
