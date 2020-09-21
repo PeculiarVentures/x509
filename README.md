@@ -1,11 +1,15 @@
 # @peculiar/x509
 
+[![License](https://img.shields.io/badge/license-MIT-green.svg?style=flat)](https://raw.githubusercontent.com/PeculiarVentures/webcrypto/master/LICENSE.md)
 ![Node.js CI](https://github.com/PeculiarVentures/x509/workflows/Node.js%20CI/badge.svg)
+[![Coverage Status](https://coveralls.io/repos/github/PeculiarVentures/x509/badge.svg?branch=master)](https://coveralls.io/github/PeculiarVentures/x509?branch=master)
+[![npm version](https://badge.fury.io/js/%40peculiar%2Fx509.svg)](https://badge.fury.io/js/%40peculiar%2Fx509)
 
 - [About](#about)
 - [Installation](#installation)
 - [Documentation](#documentation)
 - [Usage](#usage)
+  - [Set crypto provider for Node.js](#set-crypto-provider-for-nodejs)
   - [Create a self-signed certificate](#create-a-self-signed-certificate)
   - [Parse a X509 certificate](#parse-a-x509-certificate)
   - [Create a PKCS#10 certificate request](#create-a-pkcs10-certificate-request)
@@ -28,6 +32,20 @@ npm install @peculiar/x509
 [https://peculiarventures.github.io/x509/](https://peculiarventures.github.io/x509/)
 
 ## Usage
+
+### Set crypto provider for Node.js
+
+In some cases you may want to use a different cryptographic implementation, for example when you want to work with an object that supports a cryptographic algorithm not supported by the platform you are on.
+
+In these cases you can set a custom provider, these providers need to be compatible with the WebCrypto API, for example on NodeJS you can use `@peculiar/webcrypto` to allow `@peculiar/x509` to work the same as it does in browser!
+
+```js
+import * as x509 from "@peculiar/x509";
+import { Crypto } from "@peculiar/webcrypto";
+
+const crypto = new Crypto();
+x509.cryptoProvider.set(crypto);
+```
 
 ### Create a self-signed certificate
 ```js
