@@ -1,5 +1,5 @@
 {
-  "name": "x509",
+  "name": "@peculiar/x509",
   "version": "1.0.0",
   "description": "@peculiar/x509 is an easy to use TypeScript/Javascript library based on @peculiar/asn1-schema that makes generating X.509 Certificates and Certificate Requests as well as validating certificate chains easy",
   "main": "build/cjs/index.js",
@@ -7,7 +7,7 @@
   "types": "build/types/index.d.ts",
   "scripts": {
     "test": "mocha",
-    "clear": "rimraf build/*",
+    "clear": "rimraf build/* docs",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint --fix . --ext .ts",
     "build": "npm run build:module && npm run build:types",
@@ -18,7 +18,8 @@
     "build:types": "tsc -p tsconfig.compile.json --outDir build/types --declaration --emitDeclarationOnly",
     "rebuild": "npm run clear && npm run build",
     "coverage": "nyc npm test",
-    "coveralls": "nyc report --reporter=text-lcov | coveralls"
+    "coveralls": "nyc report --reporter=text-lcov | coveralls",
+    "docs": "typedoc"
   },
   "repository": {
     "type": "git",
@@ -88,6 +89,7 @@
     "nyc": "^15.1.0",
     "rimraf": "^3.0.2",
     "ts-node": "^9.0.0",
+    "typedoc": "^0.19.2",
     "typescript": "^4.0.3"
   },
   "dependencies": {

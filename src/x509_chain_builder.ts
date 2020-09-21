@@ -5,6 +5,23 @@ import { AuthorityKeyIdentifierExtension, SubjectKeyIdentifierExtension } from "
 import { X509Certificate } from "./x509_cert";
 import { X509Certificates } from "./x509_certs";
 
+/**
+ * Represents a chain-building engine for X509Certificate certificates
+ * @example
+ * ```js
+ * const chain = new x509.X509ChainBuilder({
+ *   certificates: [
+ *     new x509.X509Certificate(raw1),
+ *     new x509.X509Certificate(raw2),
+ *     // ...
+ *     new x509.X509Certificate(rawN),
+ *   ],
+ * });
+ *
+ * const cert = x509.X509Certificate(raw);
+ * const items = await chain.build(cert);
+ * ```
+ */
 export class X509ChainBuilder {
 
   public certificates: X509Certificate[] = [];

@@ -8,7 +8,7 @@
   - [Create a self-signed certificate](#create-a-self-signed-certificate)
   - [Parse a X509 certificate](#parse-a-x509-certificate)
   - [Create a PKCS#10 certificate request](#create-a-pkcs10-certificate-request)
-  - [Inspected a X509 certificate object](#inspected-a-x509-certificate-object)
+  - [Decoded X509 certificate](#decoded-x509-certificate)
   - [Build a certificate chain](#build-a-certificate-chain)
   - [Export a list of X509 certificates to PKCS#7 format](#export-a-list-of-x509-certificates-to-pkcs7-format)
 
@@ -85,7 +85,7 @@ const csr = await x509.Pkcs10CertificateRequestGenerator.create({
 });
 ```
 
-### Inspected a X509 certificate object
+### Decoded X509 certificate
 ```js
 X509Certificate {
   rawData: ArrayBuffer {
