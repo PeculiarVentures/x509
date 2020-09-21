@@ -4,6 +4,7 @@
 
 - [About](#about)
 - [Installation](#installation)
+- [Documentation](#documentation)
 - [Usage](#usage)
   - [Create a self-signed certificate](#create-a-self-signed-certificate)
   - [Parse a X509 certificate](#parse-a-x509-certificate)
@@ -21,6 +22,10 @@
 ```
 npm install @peculiar/x509
 ```
+
+## Documentation
+
+[https://peculiarventures.github.io/x509/](https://peculiarventures.github.io/x509/)
 
 ## Usage
 

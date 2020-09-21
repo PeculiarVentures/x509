@@ -12,10 +12,10 @@
     "lint:fix": "eslint --fix . --ext .ts",
     "build": "npm run build:module && npm run build:types",
     "build:module": "npm run build:cjs && npm run build:es2015",
-    "build:cjs": "tsc -p tsconfig.compile.json --removeComments --module commonjs --outDir build/cjs",
-    "build:es2015": "tsc -p tsconfig.compile.json --removeComments --module ES2015 --outDir build/es2015",
+    "build:cjs": "tsc -p tsconfig.json --removeComments --module commonjs --outDir build/cjs",
+    "build:es2015": "tsc -p tsconfig.json --removeComments --module ES2015 --outDir build/es2015",
     "prebuild:types": "rimraf build/types",
-    "build:types": "tsc -p tsconfig.compile.json --outDir build/types --declaration --emitDeclarationOnly",
+    "build:types": "tsc -p tsconfig.json --outDir build/types --declaration --emitDeclarationOnly",
     "rebuild": "npm run clear && npm run build",
     "coverage": "nyc npm test",
     "coveralls": "nyc report --reporter=text-lcov | coveralls",
@@ -45,7 +45,7 @@
   },
   "homepage": "https://github.com/PeculiarVentures/x509#readme",
   "files": [
-    "build",
+    "build/**/*.{ts,js}",
     "README.md",
     "LICENSE"
   ],
