@@ -189,7 +189,7 @@ export class Name {
           // read till comma or plus character
           while (i++ < data.length) {
             char = data[i];
-            if (data === "," || char === '+') {
+            if (data === "," || char === "+") {
               break;
             }
             if (data === " ") {
@@ -198,7 +198,7 @@ export class Name {
             throw new Error("Cannot parse name from string. Incorrect character after quoted attribute value");
           }
           break;
-        } else if ((valueType === ValueType.simple || valueType === ValueType.hexadecimal) && (char === "," || char === '+')) {
+        } else if ((valueType === ValueType.simple || valueType === ValueType.hexadecimal) && (char === "," || char === "+")) {
           break;
         }
 

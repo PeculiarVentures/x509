@@ -3,7 +3,6 @@ import { Convert } from "pvtsutils";
 import { Crypto } from "@peculiar/webcrypto";
 import * as asn1X509 from "@peculiar/asn1-x509";
 import * as x509 from "../src";
-import { Pkcs10CertificateRequestGenerator } from '../src';
 
 context("crypto", () => {
 
@@ -136,20 +135,42 @@ context("crypto", () => {
   });
 
   context("Pkcs10CertificateRequestGenerator", () => {
+
     it("simple", async () => {
       const keys = await crypto.subtle.generateKey({ name: "ECDSA", namedCurve: "P-256" }, false, ["sign", "verify"]) as CryptoKeyPair;
-      const csr = await Pkcs10CertificateRequestGenerator.create({
-        name: "CN=test",
+      const csr = await x509.Pkcs10CertificateRequestGenerator.create({
         keys,
         signingAlgorithm: { name: "ECDSA", hash: "SHA-256" },
       });
 
       assert(csr);
-      assert.strictEqual(csr.subject, "CN=test");
-      assert.deepStrictEqual(csr.attributes.length, 0)
+      assert.strictEqual(csr.subject, "");
+      assert.deepStrictEqual(csr.attributes.length, 0);
       assert.deepStrictEqual(csr.extensions.length, 0);
       assert.deepStrictEqual(csr.signatureAlgorithm, { name: "ECDSA", hash: { name: "SHA-256" } });
       assert.deepStrictEqual(csr.publicKey.algorithm, { name: "ECDSA", namedCurve: "P-256" });
+    });
+
+    it("with attributes and extensions", async () => {
+      const keys = await crypto.subtle.generateKey({ name: "ECDSA", namedCurve: "P-384" }, false, ["sign", "verify"]) as CryptoKeyPair;
+      const csr = await x509.Pkcs10CertificateRequestGenerator.create({
+        name: "CN=Test",
+        keys,
+        signingAlgorithm: { name: "ECDSA", hash: "SHA-384" },
+        extensions: [
+          new x509.KeyUsagesExtension(x509.KeyUsageFlags.digitalSignature | x509.KeyUsageFlags.keyEncipherment),
+        ],
+        attributes: [
+          new x509.ChallengePasswordAttribute("password"),
+        ]
+      });
+
+      assert(csr);
+      assert.strictEqual(csr.subject, "CN=Test");
+      assert.deepStrictEqual(csr.attributes.length, 2);
+      assert.deepStrictEqual(csr.extensions.length, 1);
+      assert.deepStrictEqual(csr.signatureAlgorithm, { name: "ECDSA", hash: { name: "SHA-384" } });
+      assert.deepStrictEqual(csr.publicKey.algorithm, { name: "ECDSA", namedCurve: "P-384" });
     });
   });
 

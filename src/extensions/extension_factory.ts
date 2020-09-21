@@ -36,7 +36,7 @@ export class ExtensionFactory {
     if (Type) {
       return new Type(data);
     }
-    
-return extension;
+
+    return extension;
   }
 }

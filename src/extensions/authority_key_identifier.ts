@@ -110,7 +110,7 @@ return new AuthorityKeyIdentifierExtension(Convert.ToHex(ski), critical);
       this.certId = {
          name: aki.authorityCertIssuer,
          serialNumber: Convert.ToHex(aki.authorityCertSerialNumber),
-      }
+      };
     }
   }
 

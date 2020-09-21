@@ -52,7 +52,7 @@ export class AlgorithmProvider {
         return res;
       }
     }
-    throw new Error(`Cannot convert WebCrypto algorithm to ASN.1 algorithm`);
+    throw new Error("Cannot convert WebCrypto algorithm to ASN.1 algorithm");
   }
 
   /**
@@ -68,7 +68,7 @@ export class AlgorithmProvider {
         return res;
       }
     }
-    throw new Error(`Cannot convert ASN.1 algorithm to WebCrypto algorithm`);
+    throw new Error("Cannot convert ASN.1 algorithm to WebCrypto algorithm");
   }
 
 }

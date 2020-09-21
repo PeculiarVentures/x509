@@ -1,7 +1,6 @@
 import { CertificationRequest } from "@peculiar/asn1-csr";
 import { AsnConvert } from "@peculiar/asn1-schema";
 import { id_pkcs9_at_extensionRequest } from "@peculiar/asn1-pkcs9";
-import { Extensions } from "@peculiar/asn1-x509";
 import { Name } from "./name";
 import { cryptoProvider } from "./provider";
 import { HashedAlgorithm } from "./types";
@@ -12,6 +11,7 @@ import { Extension } from "./extension";
 import { PublicKey } from "./public_key";
 import { container } from "tsyringe";
 import { AlgorithmProvider, diAlgorithmProvider } from "./algorithm";
+import { AttributeFactory, ExtensionsAttribute } from "./attributes";
 
 /**
  * Representation of PKCS10 Certificate Request
@@ -79,12 +79,11 @@ export class Pkcs10CertificateRequest extends AsnData<CertificationRequest> {
     this.signature = asn.signature;
 
     this.attributes = asn.certificationRequestInfo.attributes
-      .map(o => new Attribute(AsnConvert.serialize(o)));
-    const extensions = this.getAttribute(id_pkcs9_at_extensionRequest)?.values[0];
+      .map(o => AttributeFactory.create(AsnConvert.serialize(o)));
+    const extensions = this.getAttribute(id_pkcs9_at_extensionRequest);
     this.extensions = [];
-    if (extensions) {
-      this.extensions = AsnConvert.parse(extensions, Extensions)
-        .map(o => new Extension(AsnConvert.serialize(o)));
+    if (extensions instanceof ExtensionsAttribute) {
+        this.extensions = extensions.items;
     }
     this.subject = new Name(asn.certificationRequestInfo.subject).toString();
   }

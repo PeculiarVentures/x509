@@ -1,7 +1,7 @@
 import { CertificationRequest, CertificationRequestInfo } from "@peculiar/asn1-csr";
 import { id_pkcs9_at_extensionRequest } from "@peculiar/asn1-pkcs9";
 import { AsnConvert } from "@peculiar/asn1-schema";
-import { Name as AsnName, Extension as AsnExtension, SubjectPublicKeyInfo, Extensions, Attribute  as AsnAttribute } from "@peculiar/asn1-x509";
+import { Name as AsnName, Extension as AsnExtension, SubjectPublicKeyInfo, Extensions, Attribute as AsnAttribute } from "@peculiar/asn1-x509";
 import { container } from "tsyringe";
 import { cryptoProvider } from "./provider";
 import { AlgorithmProvider, diAlgorithmProvider } from "./algorithm";
@@ -20,7 +20,7 @@ export interface Pkcs10CertificateRequestCreateParams {
   /**
    * Subject name
    */
-  name: Pkcs10CertificateRequestCreateParamsName;
+  name?: Pkcs10CertificateRequestCreateParamsName;
   /**
    * Extensions
    */
@@ -53,10 +53,12 @@ export class Pkcs10CertificateRequestGenerator {
     const spki = await crypto.subtle.exportKey("spki", params.keys.publicKey);
     const asnReq = new CertificationRequest({
       certificationRequestInfo: new CertificationRequestInfo({
-        subject: AsnConvert.parse(new Name(params.name).toArrayBuffer(), AsnName),
         subjectPKInfo: AsnConvert.parse(spki, SubjectPublicKeyInfo),
       }),
     });
+    if (params.name) {
+      asnReq.certificationRequestInfo.subject = AsnConvert.parse(new Name(params.name).toArrayBuffer(), AsnName);
+    }
 
     if (params.attributes) {
       // Add attributes
@@ -67,7 +69,7 @@ export class Pkcs10CertificateRequestGenerator {
 
     if (params.extensions && params.extensions.length) {
       // Add extensions
-      const attr = new AsnAttribute({ type: id_pkcs9_at_extensionRequest})
+      const attr = new AsnAttribute({ type: id_pkcs9_at_extensionRequest });
       const extensions = new Extensions();
       for (const o of params.extensions) {
         extensions.push(AsnConvert.parse(o.rawData, AsnExtension));
