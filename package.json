@@ -1,13 +1,10 @@
 {
   "name": "x509",
   "version": "1.0.0",
-  "description": "",
+  "description": "@peculiar/x509 is an easy to use TypeScript/Javascript library based on @peculiar/asn1-schema that makes generating X.509 Certificates and Certificate Requests as well as validating certificate chains easy",
   "main": "build/cjs/index.js",
   "module": "build/es2015/index.js",
   "types": "build/types/index.d.ts",
-  "directories": {
-    "test": "test"
-  },
   "scripts": {
     "test": "mocha",
     "clear": "rimraf build/*",
@@ -27,7 +24,16 @@
     "type": "git",
     "url": "git+https://github.com/PeculiarVentures/x509.git"
   },
-  "keywords": [],
+  "keywords": [
+    "x509",
+    "certificate",
+    "csr",
+    "pkcs10",
+    "pkcs7",
+    "cms",
+    "rsa",
+    "ec"
+  ],
   "author": "Peculiar Ventures LLC",
   "contributors": [
     "Miroshin Stepan<microshine@mail.ru>"
@@ -85,6 +91,7 @@
     "typescript": "^4.0.3"
   },
   "dependencies": {
+    "@peculiar/asn1-cms": "^2.0.22",
     "@peculiar/asn1-csr": "^2.0.22",
     "@peculiar/asn1-ecc": "^2.0.17",
     "@peculiar/asn1-pkcs9": "^2.0.22",
@@ -97,21 +104,24 @@
     "tsyringe": "^4.3.0"
   },
   "eslintConfig": {
-      "root": true,
-      "parser": "@typescript-eslint/parser",
-      "plugins": [
-        "@typescript-eslint"
-      ],
-      "extends": [
-        "eslint:recommended",
-        "plugin:@typescript-eslint/recommended"
-      ],
-      "rules": {
-        "@typescript-eslint/explicit-module-boundary-types": 0,
-        "@typescript-eslint/no-explicit-any": 0,
-        "newline-before-return": 1,
-        "@typescript-eslint/semi": 1,
-        "@typescript-eslint/quotes": ["warn", "double"]
-      }
+    "root": true,
+    "parser": "@typescript-eslint/parser",
+    "plugins": [
+      "@typescript-eslint"
+    ],
+    "extends": [
+      "eslint:recommended",
+      "plugin:@typescript-eslint/recommended"
+    ],
+    "rules": {
+      "@typescript-eslint/explicit-module-boundary-types": 0,
+      "@typescript-eslint/no-explicit-any": 0,
+      "newline-before-return": 1,
+      "@typescript-eslint/semi": 1,
+      "@typescript-eslint/quotes": [
+        "warn",
+        "double"
+      ]
+    }
   }
 }
