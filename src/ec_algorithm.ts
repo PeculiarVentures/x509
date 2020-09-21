@@ -15,7 +15,8 @@ export class EcAlgorithm implements IAlgorithm {
     switch (alg.name.toLowerCase()) {
       case "ecdsa":
         if ("hash" in alg) {
-          switch (alg.hash.name.toLowerCase()) {
+          const hash = typeof alg.hash === "string" ? alg.hash : alg.hash.name;
+          switch (hash.toLowerCase()) {
             case "sha-1":
               return new AlgorithmIdentifier({ algorithm: asn1Ecc.id_ecdsaWithSHA1, parameters: null });
             case "sha-256":

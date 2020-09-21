@@ -138,13 +138,18 @@ context("crypto", () => {
   context("Pkcs10CertificateRequestGenerator", () => {
     it("simple", async () => {
       const keys = await crypto.subtle.generateKey({ name: "ECDSA", namedCurve: "P-256" }, false, ["sign", "verify"]) as CryptoKeyPair;
-      const csr = Pkcs10CertificateRequestGenerator.create({
+      const csr = await Pkcs10CertificateRequestGenerator.create({
         name: "CN=test",
         keys,
         signingAlgorithm: { name: "ECDSA", hash: "SHA-256" },
       });
 
-      console.log(csr);
+      assert(csr);
+      assert.strictEqual(csr.subject, "CN=test");
+      assert.deepStrictEqual(csr.attributes.length, 0)
+      assert.deepStrictEqual(csr.extensions.length, 0);
+      assert.deepStrictEqual(csr.signatureAlgorithm, { name: "ECDSA", hash: { name: "SHA-256" } });
+      assert.deepStrictEqual(csr.publicKey.algorithm, { name: "ECDSA", namedCurve: "P-256" });
     });
   });
 
