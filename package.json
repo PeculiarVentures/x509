@@ -66,6 +66,7 @@
       "**/*.d.ts"
     ],
     "reporter": [
+      "lcov",
       "text-summary",
       "html"
     ]
