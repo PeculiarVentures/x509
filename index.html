@@ -67,12 +67,16 @@
 				<a href="#peculiarx509" id="peculiarx509" style="color: inherit; text-decoration: none;">
 					<h1>@peculiar/x509</h1>
 				</a>
-				<p><img src="https://github.com/PeculiarVentures/x509/workflows/Node.js%20CI/badge.svg" alt="Node.js CI"></p>
+				<p><a href="https://raw.githubusercontent.com/PeculiarVentures/webcrypto/master/LICENSE.md"><img src="https://img.shields.io/badge/license-MIT-green.svg?style=flat" alt="License"></a>
+					<img src="https://github.com/PeculiarVentures/x509/workflows/Node.js%20CI/badge.svg" alt="Node.js CI">
+					<a href="https://coveralls.io/github/PeculiarVentures/x509?branch=master"><img src="https://coveralls.io/repos/github/PeculiarVentures/x509/badge.svg?branch=master" alt="Coverage Status"></a>
+				<a href="https://badge.fury.io/js/%40peculiar%2Fx509"><img src="https://badge.fury.io/js/%40peculiar%2Fx509.svg" alt="npm version"></a></p>
 				<ul>
 					<li><a href="#about">About</a></li>
 					<li><a href="#installation">Installation</a></li>
 					<li><a href="#documentation">Documentation</a></li>
 					<li><a href="#usage">Usage</a><ul>
+							<li><a href="#set-crypto-provider-for-nodejs">Set crypto provider for Node.js</a></li>
 							<li><a href="#create-a-self-signed-certificate">Create a self-signed certificate</a></li>
 							<li><a href="#parse-a-x509-certificate">Parse a X509 certificate</a></li>
 							<li><a href="#create-a-pkcs10-certificate-request">Create a PKCS#10 certificate request</a></li>
@@ -97,6 +101,16 @@
 				<a href="#usage" id="usage" style="color: inherit; text-decoration: none;">
 					<h2>Usage</h2>
 				</a>
+				<a href="#set-crypto-provider-for-nodejs" id="set-crypto-provider-for-nodejs" style="color: inherit; text-decoration: none;">
+					<h3>Set crypto provider for Node.js</h3>
+				</a>
+				<p>In some cases you may want to use a different cryptographic implementation, for example when you want to work with an object that supports a cryptographic algorithm not supported by the platform you are on.</p>
+				<p>In these cases you can set a custom provider, these providers need to be compatible with the WebCrypto API, for example on NodeJS you can use <code>@peculiar/webcrypto</code> to allow <code>@peculiar/x509</code> to work the same as it does in browser!</p>
+				<pre><code class="language-js"><span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> x509 <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@peculiar/x509&quot;</span>;
+<span class="hljs-keyword">import</span> { Crypto } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@peculiar/webcrypto&quot;</span>;
+
+<span class="hljs-keyword">const</span> crypto = <span class="hljs-keyword">new</span> Crypto();
+x509.cryptoProvider.set(crypto);</code></pre>
 				<a href="#create-a-self-signed-certificate" id="create-a-self-signed-certificate" style="color: inherit; text-decoration: none;">
 					<h3>Create a self-signed certificate</h3>
 				</a>
