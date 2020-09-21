@@ -19,7 +19,12 @@
     "rebuild": "npm run clear && npm run build",
     "coverage": "nyc npm test",
     "coveralls": "nyc report --reporter=text-lcov | coveralls",
-    "docs": "typedoc"
+    "docs": "typedoc",
+    "pub": "npm run pub:patch",
+    "pub:patch": "npm version patch && nom run git:push",
+    "pub:minor": "npm version minor && nom run git:push",
+    "pub:major": "npm version major && nom run git:push",
+    "git:push": "git push --follow-tags"
   },
   "repository": {
     "type": "git",
