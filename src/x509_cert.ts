@@ -6,7 +6,7 @@ import { cryptoProvider } from "./provider";
 import { Name } from "./name";
 import { Extension } from "./extension";
 import { AsnData } from "./asn_data";
-import { ExtensionFactory } from "./extensions";
+import { ExtensionFactory } from "./extensions/extension_factory";
 import { PublicKey } from "./public_key";
 import { container } from "tsyringe";
 import { AlgorithmProvider, diAlgorithmProvider } from "./algorithm";
