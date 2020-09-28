@@ -85,14 +85,15 @@ const cert = await x509.X509CertificateGenerator.createSelfSigned({
     await x509.SubjectKeyIdentifierExtension.create(keys.publicKey),
   ]
 });
+
+console.log(cert.toString("pem")); // Certificate in PEM format
 ```
 
 ### Parse a x509 certificate
 ```js
 const base64 = "MIIDljCCAn6gAwIBAgIOSETcxtRwD...S+kAFXIwugUGYEnTWp0m5bAn5NlD314IEOg4mnS8Q==";
-const raw = Buffer.from(base64, "base64");
 
-const cert = new x509.X509Certificate(raw);
+const cert = new x509.X509Certificate(base64);
 console.log(cert.subject); // CN=Test, O=PeculiarVentures LLC
 ```
 
@@ -115,6 +116,8 @@ const csr = await x509.Pkcs10CertificateRequestGenerator.create({
     new x509.ChallengePasswordAttribute("password"),
   ]
 });
+
+console.log(cert.toString("base64")); // Certificate request in Base64 format
 ```
 
 ### Decoded X509 certificate
@@ -202,10 +205,9 @@ console.log(items); // [ X509Certificate, X509Certificate, X509Certificate ]
 ### Export a list of X509 certificates to PKCS#7 format
 ```js
 const certs = new x509.X509Certificates([
-  new x509.X509Certificate(Buffer.from("MIIDljCCAn6gAwIBAgIOSETcxtRwD...S+kAFXIwugUGYEnTWp0m5bAn5NlD314IEOg4mnS8Q==", "base64")),
-  new x509.X509Certificate(Buffer.from("MIIDljCCAn6gAwIBAgIOSETcxtRwD...w8Y/o+hk3QzNBVa3ZUvzDhVAmamQflvw3lXMm/JG4U=", "base64")),
+  new x509.X509Certificate("MIIDljCCAn6gAwIBAgIOSETcxtRwD...S+kAFXIwugUGYEnTWp0m5bAn5NlD314IEOg4mnS8Q=="),
+  new x509.X509Certificate("MIIDljCCAn6gAwIBAgIOSETcxtRwD...w8Y/o+hk3QzNBVa3ZUvzDhVAmamQflvw3lXMm/JG4U="),
 ]);
 
-const base64 = Buffer.from(await cert.export()).toString("base64");
-console.log(base64); // "MIICTAYJKoZIhvcNAQcCoIICPTCCAjkCAQAxADACBgCgggIq...F7EZPNo3pjbfznpIilRMRrmwf5dkgCdSKDdE94xAA==");
+console.log(certs.export("base64")); // "MIICTAYJKoZIhvcNAQcCoIICPTCCAjkCAQAxADACBgCgggIq...F7EZPNo3pjbfznpIilRMRrmwf5dkgCdSKDdE94xAA==");
 ```
