@@ -76,6 +76,7 @@
 					<li><a href="#installation">Installation</a></li>
 					<li><a href="#documentation">Documentation</a></li>
 					<li><a href="#usage">Usage</a><ul>
+							<li><a href="#browser">Browser</a></li>
 							<li><a href="#set-crypto-provider-for-nodejs">Set crypto provider for Node.js</a></li>
 							<li><a href="#create-a-self-signed-certificate">Create a self-signed certificate</a></li>
 							<li><a href="#parse-a-x509-certificate">Parse a X509 certificate</a></li>
@@ -101,6 +102,19 @@
 				<a href="#usage" id="usage" style="color: inherit; text-decoration: none;">
 					<h2>Usage</h2>
 				</a>
+				<a href="#browser" id="browser" style="color: inherit; text-decoration: none;">
+					<h3>Browser</h3>
+				</a>
+				<p>Every release of <code>@peculiar/x509</code> will have new build of <code>./build/x509.js</code> for use in the browser. To get access to module classes use <code>x509</code> global variable.</p>
+				<blockquote>
+					<p>WARN: We recommend hosting and controlling your own copy for security reasons</p>
+				</blockquote>
+				<pre><code class="language-html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">&quot;https://unpkg.com/@peculiar/x509&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
+				<p>A simple web application examples</p>
+				<ul>
+					<li><a href="https://codesandbox.io/s/generate-cert-fjwfh">Generate X509 certificate</a></li>
+					<li><a href="https://codesandbox.io/s/generate-csr-0qhed">Generate PKCS#10 certificate request</a></li>
+				</ul>
 				<a href="#set-crypto-provider-for-nodejs" id="set-crypto-provider-for-nodejs" style="color: inherit; text-decoration: none;">
 					<h3>Set crypto provider for Node.js</h3>
 				</a>
@@ -114,9 +128,7 @@ x509.cryptoProvider.set(crypto);</code></pre>
 				<a href="#create-a-self-signed-certificate" id="create-a-self-signed-certificate" style="color: inherit; text-decoration: none;">
 					<h3>Create a self-signed certificate</h3>
 				</a>
-				<pre><code class="language-js"><span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> x509 <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@peculiar/x509&quot;</span>;
-
-<span class="hljs-keyword">const</span> alg = {
+				<pre><code class="language-js"><span class="hljs-keyword">const</span> alg = {
   <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;RSASSA-PKCS1-v1_5&quot;</span>,
   <span class="hljs-attr">hash</span>: <span class="hljs-string">&quot;SHA-256&quot;</span>,
   <span class="hljs-attr">publicExponent</span>: <span class="hljs-keyword">new</span> <span class="hljs-built_in">Uint8Array</span>([<span class="hljs-number">1</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>]),
@@ -140,9 +152,7 @@ x509.cryptoProvider.set(crypto);</code></pre>
 				<a href="#parse-a-x509-certificate" id="parse-a-x509-certificate" style="color: inherit; text-decoration: none;">
 					<h3>Parse a x509 certificate</h3>
 				</a>
-				<pre><code class="language-js"><span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> x509 <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@peculiar/x509&quot;</span>;
-
-<span class="hljs-keyword">const</span> base64 = <span class="hljs-string">&quot;MIIDljCCAn6gAwIBAgIOSETcxtRwD...S+kAFXIwugUGYEnTWp0m5bAn5NlD314IEOg4mnS8Q==&quot;</span>;
+				<pre><code class="language-js"><span class="hljs-keyword">const</span> base64 = <span class="hljs-string">&quot;MIIDljCCAn6gAwIBAgIOSETcxtRwD...S+kAFXIwugUGYEnTWp0m5bAn5NlD314IEOg4mnS8Q==&quot;</span>;
 <span class="hljs-keyword">const</span> raw = Buffer.from(base64, <span class="hljs-string">&quot;base64&quot;</span>);
 
 <span class="hljs-keyword">const</span> cert = <span class="hljs-keyword">new</span> x509.X509Certificate(raw);
@@ -150,9 +160,7 @@ x509.cryptoProvider.set(crypto);</code></pre>
 				<a href="#create-a-pkcs10-certificate-request" id="create-a-pkcs10-certificate-request" style="color: inherit; text-decoration: none;">
 					<h3>Create a PKCS#10 certificate request</h3>
 				</a>
-				<pre><code class="language-js"><span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> x509 <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@peculiar/x509&quot;</span>;
-
-<span class="hljs-keyword">const</span> alg = {
+				<pre><code class="language-js"><span class="hljs-keyword">const</span> alg = {
   <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;ECDSA&quot;</span>,
   <span class="hljs-attr">namedCurve</span>: <span class="hljs-string">&quot;P-384&quot;</span>,
   <span class="hljs-attr">hash</span>: <span class="hljs-string">&quot;SHA-384&quot;</span>,
@@ -237,9 +245,7 @@ x509.cryptoProvider.set(crypto);</code></pre>
 				<a href="#build-a-certificate-chain" id="build-a-certificate-chain" style="color: inherit; text-decoration: none;">
 					<h3>Build a certificate chain</h3>
 				</a>
-				<pre><code class="language-js"><span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> x509 <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@peculiar/x509&quot;</span>;
-
-<span class="hljs-keyword">const</span> chain = <span class="hljs-keyword">new</span> x509.X509ChainBuilder({
+				<pre><code class="language-js"><span class="hljs-keyword">const</span> chain = <span class="hljs-keyword">new</span> x509.X509ChainBuilder({
   <span class="hljs-attr">certificates</span>: [
     <span class="hljs-keyword">new</span> x509.X509Certificate(raw1),
     <span class="hljs-keyword">new</span> x509.X509Certificate(raw2),
@@ -254,9 +260,7 @@ x509.cryptoProvider.set(crypto);</code></pre>
 				<a href="#export-a-list-of-x509-certificates-to-pkcs7-format" id="export-a-list-of-x509-certificates-to-pkcs7-format" style="color: inherit; text-decoration: none;">
 					<h3>Export a list of X509 certificates to PKCS#7 format</h3>
 				</a>
-				<pre><code class="language-js"><span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> x509 <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@peculiar/x509&quot;</span>;
-
-<span class="hljs-keyword">const</span> certs = <span class="hljs-keyword">new</span> x509.X509Certificates([
+				<pre><code class="language-js"><span class="hljs-keyword">const</span> certs = <span class="hljs-keyword">new</span> x509.X509Certificates([
   <span class="hljs-keyword">new</span> x509.X509Certificate(Buffer.from(<span class="hljs-string">&quot;MIIDljCCAn6gAwIBAgIOSETcxtRwD...S+kAFXIwugUGYEnTWp0m5bAn5NlD314IEOg4mnS8Q==&quot;</span>, <span class="hljs-string">&quot;base64&quot;</span>)),
   <span class="hljs-keyword">new</span> x509.X509Certificate(Buffer.from(<span class="hljs-string">&quot;MIIDljCCAn6gAwIBAgIOSETcxtRwD...w8Y/o+hk3QzNBVa3ZUvzDhVAmamQflvw3lXMm/JG4U=&quot;</span>, <span class="hljs-string">&quot;base64&quot;</span>)),
 ]);
