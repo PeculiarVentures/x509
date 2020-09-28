@@ -9,6 +9,7 @@
 - [Installation](#installation)
 - [Documentation](#documentation)
 - [Usage](#usage)
+  - [Browser](#browser)
   - [Set crypto provider for Node.js](#set-crypto-provider-for-nodejs)
   - [Create a self-signed certificate](#create-a-self-signed-certificate)
   - [Parse a X509 certificate](#parse-a-x509-certificate)
@@ -33,6 +34,20 @@ npm install @peculiar/x509
 
 ## Usage
 
+### Browser
+
+Every release of `@peculiar/x509` will have new build of `./build/x509.js` for use in the browser. To get access to module classes use `x509` global variable.
+
+> WARN: We recommend hosting and controlling your own copy for security reasons
+
+```html
+<script src="https://unpkg.com/@peculiar/x509"></script>
+```
+
+A simple web application examples
+  - [Generate X509 certificate](https://codesandbox.io/s/generate-cert-fjwfh)
+  - [Generate PKCS#10 certificate request](https://codesandbox.io/s/generate-csr-0qhed)
+
 ### Set crypto provider for Node.js
 
 In some cases you may want to use a different cryptographic implementation, for example when you want to work with an object that supports a cryptographic algorithm not supported by the platform you are on.
@@ -49,8 +64,6 @@ x509.cryptoProvider.set(crypto);
 
 ### Create a self-signed certificate
 ```js
-import * as x509 from "@peculiar/x509";
-
 const alg = {
   name: "RSASSA-PKCS1-v1_5",
   hash: "SHA-256",
@@ -76,8 +89,6 @@ const cert = await x509.X509CertificateGenerator.createSelfSigned({
 
 ### Parse a x509 certificate
 ```js
-import * as x509 from "@peculiar/x509";
-
 const base64 = "MIIDljCCAn6gAwIBAgIOSETcxtRwD...S+kAFXIwugUGYEnTWp0m5bAn5NlD314IEOg4mnS8Q==";
 const raw = Buffer.from(base64, "base64");
 
@@ -87,8 +98,6 @@ console.log(cert.subject); // CN=Test, O=PeculiarVentures LLC
 
 ### Create a PKCS#10 certificate request
 ```js
-import * as x509 from "@peculiar/x509";
-
 const alg = {
   name: "ECDSA",
   namedCurve: "P-384",
@@ -176,8 +185,6 @@ X509Certificate {
 
 ### Build a certificate chain
 ```js
-import * as x509 from "@peculiar/x509";
-
 const chain = new x509.X509ChainBuilder({
   certificates: [
     new x509.X509Certificate(raw1),
@@ -194,8 +201,6 @@ console.log(items); // [ X509Certificate, X509Certificate, X509Certificate ]
 
 ### Export a list of X509 certificates to PKCS#7 format
 ```js
-import * as x509 from "@peculiar/x509";
-
 const certs = new x509.X509Certificates([
   new x509.X509Certificate(Buffer.from("MIIDljCCAn6gAwIBAgIOSETcxtRwD...S+kAFXIwugUGYEnTWp0m5bAn5NlD314IEOg4mnS8Q==", "base64")),
   new x509.X509Certificate(Buffer.from("MIIDljCCAn6gAwIBAgIOSETcxtRwD...w8Y/o+hk3QzNBVa3ZUvzDhVAmamQflvw3lXMm/JG4U=", "base64")),
