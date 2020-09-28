@@ -1,22 +1,23 @@
 import { CertificationRequest } from "@peculiar/asn1-csr";
 import { AsnConvert } from "@peculiar/asn1-schema";
 import { id_pkcs9_at_extensionRequest } from "@peculiar/asn1-pkcs9";
+import { container } from "tsyringe";
 import { Name } from "./name";
 import { cryptoProvider } from "./provider";
 import { HashedAlgorithm } from "./types";
-import { BufferSourceConverter } from "pvtsutils";
-import { AsnData } from "./asn_data";
 import { Attribute } from "./attribute";
 import { Extension } from "./extension";
 import { PublicKey } from "./public_key";
-import { container } from "tsyringe";
 import { AlgorithmProvider, diAlgorithmProvider } from "./algorithm";
 import { AttributeFactory, ExtensionsAttribute } from "./attributes";
+import { AsnEncodedType, PemData } from "./pem_data";
 
 /**
  * Representation of PKCS10 Certificate Request
  */
-export class Pkcs10CertificateRequest extends AsnData<CertificationRequest> {
+export class Pkcs10CertificateRequest extends PemData<CertificationRequest> {
+
+  protected readonly tag: string;
 
   /**
    * ToBeSigned block of CSR
@@ -57,18 +58,19 @@ export class Pkcs10CertificateRequest extends AsnData<CertificationRequest> {
    * Creates a new instance fromDER encoded buffer
    * @param raw DER encoded buffer
    */
-  public constructor(raw: BufferSource);
+  public constructor(raw: AsnEncodedType);
   /**
    * Creates a new instance from ASN.1 CertificationRequest
    * @param asn ASN.1 CertificationRequest
    */
   public constructor(asn: CertificationRequest);
-  public constructor(param: BufferSource | CertificationRequest) {
-    if (BufferSourceConverter.isBufferSource(param)) {
+  public constructor(param: AsnEncodedType | CertificationRequest) {
+    if (PemData.isAsnEncoded(param)) {
       super(param, CertificationRequest);
     } else {
       super(param);
     }
+    this.tag = "CERTIFICATE REQUEST";
   }
 
   protected onInit(asn: CertificationRequest): void {

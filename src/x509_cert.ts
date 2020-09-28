@@ -1,15 +1,15 @@
 import { AsnConvert } from "@peculiar/asn1-schema";
 import { Certificate } from "@peculiar/asn1-x509";
-import { BufferSourceConverter, Convert } from "pvtsutils";
+import { Convert } from "pvtsutils";
+import { container } from "tsyringe";
 import { HashedAlgorithm } from "./types";
 import { cryptoProvider } from "./provider";
 import { Name } from "./name";
 import { Extension } from "./extension";
-import { AsnData } from "./asn_data";
 import { ExtensionFactory } from "./extensions/extension_factory";
 import { PublicKey } from "./public_key";
-import { container } from "tsyringe";
 import { AlgorithmProvider, diAlgorithmProvider } from "./algorithm";
+import { AsnEncodedType, PemData } from "./pem_data";
 
 /**
  * Verification params of X509 certificate
@@ -23,7 +23,9 @@ export interface X509CertificateVerifyParams {
 /**
  * Representation of X509 certificate
  */
-export class X509Certificate extends AsnData<Certificate> {
+export class X509Certificate extends PemData<Certificate> {
+
+  protected readonly tag;
 
   /**
    * ToBeSigned block of certificate
@@ -86,16 +88,18 @@ export class X509Certificate extends AsnData<Certificate> {
    */
   public constructor(asn: Certificate);
   /**
-   * Creates a new instance from DER encoded buffer
-   * @param raw DER encoded buffer
+   * Creates a new instance
+   * @param raw Encoded buffer (DER, PEM, HEX, Base64, Base64Url)
    */
-  public constructor(raw: BufferSource);
-  public constructor(param: BufferSource | Certificate) {
-    if (BufferSourceConverter.isBufferSource(param)) {
+  public constructor(raw: AsnEncodedType);
+  public constructor(param: AsnEncodedType | Certificate) {
+    if (PemData.isAsnEncoded(param)) {
       super(param, Certificate);
     } else {
       super(param);
     }
+
+    this.tag = "CERTIFICATE";
   }
 
   protected onInit(asn: Certificate) {

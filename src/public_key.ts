@@ -4,18 +4,40 @@ import { SubjectPublicKeyInfo } from "@peculiar/asn1-x509";
 import { BufferSourceConverter } from "pvtsutils";
 import { container } from "tsyringe";
 import { AlgorithmProvider, diAlgorithmProvider } from "./algorithm";
-import { AsnData } from "./asn_data";
+import { AsnEncodedType, PemData } from "./pem_data";
 import { cryptoProvider } from "./provider";
 
 /**
  * Representation of Subject Public Key Info
  */
-export class PublicKey extends AsnData<SubjectPublicKeyInfo>{
+export class PublicKey extends PemData<SubjectPublicKeyInfo>{
+
+  protected readonly tag: string;
 
   /**
    * Gets a key algorithm
    */
   public algorithm!: Algorithm;
+
+  /**
+   * Creates a new instance from ASN.1
+   * @param asn ASN.1 object
+   */
+  public constructor(asn: SubjectPublicKeyInfo);
+  /**
+   * Creates a new instance
+   * @param raw Encoded buffer (DER, PEM, HEX, Base64, Base64Url)
+   */
+  public constructor(raw: AsnEncodedType);
+  public constructor(param: AsnEncodedType | SubjectPublicKeyInfo) {
+    if (PemData.isAsnEncoded(param)) {
+      super(param, SubjectPublicKeyInfo);
+    } else {
+      super(param);
+    }
+
+    this.tag = "PUBLIC KEY";
+  }
 
   /**
    * Returns a public CryptoKey

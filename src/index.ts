@@ -9,6 +9,7 @@ export * from "./asn_data";
 export * from "./attribute";
 export * from "./extension";
 export * from "./name";
+export * from "./pem_converter";
 export * from "./pkcs10_cert_req";
 export * from "./pkcs10_cert_req_generator";
 export * from "./provider";
