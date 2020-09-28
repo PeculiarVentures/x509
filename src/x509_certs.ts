@@ -45,8 +45,12 @@ export class X509Certificates extends Array<X509Certificate> {
   }
 
   /**
+   * Returns encoded object in PEM format
+   */
+  public export(): string;
+  /**
    * Returns encoded object in DER format
-   * @param format raw
+   * @param format `der` format
    */
   public export(format: "raw"): ArrayBuffer;
   /**
@@ -54,7 +58,7 @@ export class X509Certificates extends Array<X509Certificate> {
    * @param format `hex`, `base64`, `base64url`, `pem`. Default is `pem`
    */
   public export(format?: AsnExportType): string;
-  public export(format: AsnExportType | "raw" = "pem") {
+  public export(format?: AsnExportType | "raw") {
     const signedData = new asn1Cms.SignedData();
 
     signedData.certificates = new asn1Cms.CertificateSet(this.map(o => new asn1Cms.CertificateChoices({
@@ -67,20 +71,11 @@ export class X509Certificates extends Array<X509Certificate> {
     });
 
     const raw = AsnConvert.serialize(cms);
-    switch (format) {
-      case "raw":
-        return raw;
-      case "pem":
-        return PemConverter.encode(raw, "CMS");
-      case "hex":
-        return Convert.ToHex(raw);
-      case "base64":
-        return Convert.ToBase64(raw);
-      case "base64url":
-        return Convert.ToBase64Url(raw);
-      default:
-        throw TypeError("Argument 'format' is unsupported value");
+    if (format === "raw") {
+      return raw;
     }
+
+    return this.toString(format);
   }
 
   /**
@@ -110,6 +105,22 @@ export class X509Certificates extends Array<X509Certificate> {
   public clear() {
     while (this.pop()) {
       // nothing;
+    }
+  }
+
+  public toString(format: AsnEncodedType = "pem") {
+    const raw = this.export("raw");
+    switch (format) {
+      case "pem":
+        return PemConverter.encode(raw, "CMS");
+      case "hex":
+        return Convert.ToHex(raw);
+      case "base64":
+        return Convert.ToBase64(raw);
+      case "base64url":
+        return Convert.ToBase64Url(raw);
+      default:
+        throw TypeError("Argument 'format' is unsupported value");
     }
   }
 
