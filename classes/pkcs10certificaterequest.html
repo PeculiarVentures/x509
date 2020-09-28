@@ -77,7 +77,7 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<a href="asndata.html" class="tsd-signature-type">AsnData</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CertificationRequest</span><span class="tsd-signature-symbol">&gt;</span>
+						<a href="pemdata.html" class="tsd-signature-type">PemData</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CertificationRequest</span><span class="tsd-signature-symbol">&gt;</span>
 						<ul class="tsd-hierarchy">
 							<li>
 								<span class="target">Pkcs10CertificateRequest</span>
@@ -106,18 +106,23 @@
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="pkcs10certificaterequest.html#signature" class="tsd-kind-icon">signature</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="pkcs10certificaterequest.html#signaturealgorithm" class="tsd-kind-icon">signature<wbr>Algorithm</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="pkcs10certificaterequest.html#subject" class="tsd-kind-icon">subject</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-protected"><a href="pkcs10certificaterequest.html#tag" class="tsd-kind-icon">tag</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="pkcs10certificaterequest.html#tbs" class="tsd-kind-icon">tbs</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="pkcs10certificaterequest.html#equal" class="tsd-kind-icon">equal</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="pkcs10certificaterequest.html#getattribute" class="tsd-kind-icon">get<wbr>Attribute</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="pkcs10certificaterequest.html#getattributes" class="tsd-kind-icon">get<wbr>Attributes</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="pkcs10certificaterequest.html#getextension" class="tsd-kind-icon">get<wbr>Extension</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="pkcs10certificaterequest.html#getextensions" class="tsd-kind-icon">get<wbr>Extensions</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-protected"><a href="pkcs10certificaterequest.html#oninit" class="tsd-kind-icon">on<wbr>Init</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="pkcs10certificaterequest.html#tostring" class="tsd-kind-icon">to<wbr>String</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="pkcs10certificaterequest.html#verify" class="tsd-kind-icon">verify</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static"><a href="pkcs10certificaterequest.html#isasnencoded" class="tsd-kind-icon">is<wbr>Asn<wbr>Encoded</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static"><a href="pkcs10certificaterequest.html#toarraybuffer" class="tsd-kind-icon">to<wbr>Array<wbr>Buffer</a></li>
 							</ul>
 						</section>
 					</div>
@@ -129,15 +134,15 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Pkcs10<wbr>Certificate<wbr>Request<span class="tsd-signature-symbol">(</span>raw<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">BufferSource</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="pkcs10certificaterequest.html" class="tsd-signature-type">Pkcs10CertificateRequest</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Pkcs10<wbr>Certificate<wbr>Request<span class="tsd-signature-symbol">(</span>raw<span class="tsd-signature-symbol">: </span><a href="../globals.html#asnencodedtype" class="tsd-signature-type">AsnEncodedType</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="pkcs10certificaterequest.html" class="tsd-signature-type">Pkcs10CertificateRequest</a></li>
 						<li class="tsd-signature tsd-kind-icon">new <wbr>Pkcs10<wbr>Certificate<wbr>Request<span class="tsd-signature-symbol">(</span>asn<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">CertificationRequest</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="pkcs10certificaterequest.html" class="tsd-signature-type">Pkcs10CertificateRequest</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Overrides <a href="asndata.html">AsnData</a>.<a href="asndata.html#constructor">constructor</a></p>
+								<p>Overrides <a href="pemdata.html">PemData</a>.<a href="pemdata.html#constructor">constructor</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/5387d49/src/pkcs10_cert_req.ts#L54">src/pkcs10_cert_req.ts:54</a></li>
+									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/92494c1/src/pkcs10_cert_req.ts#L55">src/pkcs10_cert_req.ts:55</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -148,7 +153,7 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>raw: <span class="tsd-signature-type">BufferSource</span></h5>
+									<h5>raw: <a href="../globals.html#asnencodedtype" class="tsd-signature-type">AsnEncodedType</a></h5>
 									<div class="tsd-comment tsd-typography">
 										<div class="lead">
 											<p>DER encoded buffer</p>
@@ -160,9 +165,9 @@
 						</li>
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Overrides <a href="asndata.html">AsnData</a>.<a href="asndata.html#constructor">constructor</a></p>
+								<p>Overrides <a href="pemdata.html">PemData</a>.<a href="pemdata.html#constructor">constructor</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/5387d49/src/pkcs10_cert_req.ts#L60">src/pkcs10_cert_req.ts:60</a></li>
+									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/92494c1/src/pkcs10_cert_req.ts#L61">src/pkcs10_cert_req.ts:61</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -194,7 +199,7 @@
 					<div class="tsd-signature tsd-kind-icon">attributes<span class="tsd-signature-symbol">:</span> <a href="attribute.html" class="tsd-signature-type">Attribute</a><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/5387d49/src/pkcs10_cert_req.ts#L49">src/pkcs10_cert_req.ts:49</a></li>
+							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/92494c1/src/pkcs10_cert_req.ts#L50">src/pkcs10_cert_req.ts:50</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -209,7 +214,7 @@
 					<div class="tsd-signature tsd-kind-icon">extensions<span class="tsd-signature-symbol">:</span> <a href="extension.html" class="tsd-signature-type">Extension</a><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/5387d49/src/pkcs10_cert_req.ts#L54">src/pkcs10_cert_req.ts:54</a></li>
+							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/92494c1/src/pkcs10_cert_req.ts#L55">src/pkcs10_cert_req.ts:55</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -224,7 +229,7 @@
 					<div class="tsd-signature tsd-kind-icon">public<wbr>Key<span class="tsd-signature-symbol">:</span> <a href="publickey.html" class="tsd-signature-type">PublicKey</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/5387d49/src/pkcs10_cert_req.ts#L44">src/pkcs10_cert_req.ts:44</a></li>
+							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/92494c1/src/pkcs10_cert_req.ts#L45">src/pkcs10_cert_req.ts:45</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -240,7 +245,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="asndata.html">AsnData</a>.<a href="asndata.html#rawdata">rawData</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/5387d49/src/asn_data.ts#L13">src/asn_data.ts:13</a></li>
+							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/92494c1/src/asn_data.ts#L13">src/asn_data.ts:13</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -255,7 +260,7 @@
 					<div class="tsd-signature tsd-kind-icon">signature<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">ArrayBuffer</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/5387d49/src/pkcs10_cert_req.ts#L39">src/pkcs10_cert_req.ts:39</a></li>
+							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/92494c1/src/pkcs10_cert_req.ts#L40">src/pkcs10_cert_req.ts:40</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -270,7 +275,7 @@
 					<div class="tsd-signature tsd-kind-icon">signature<wbr>Algorithm<span class="tsd-signature-symbol">:</span> <a href="../interfaces/hashedalgorithm.html" class="tsd-signature-type">HashedAlgorithm</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/5387d49/src/pkcs10_cert_req.ts#L34">src/pkcs10_cert_req.ts:34</a></li>
+							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/92494c1/src/pkcs10_cert_req.ts#L35">src/pkcs10_cert_req.ts:35</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -285,7 +290,7 @@
 					<div class="tsd-signature tsd-kind-icon">subject<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/5387d49/src/pkcs10_cert_req.ts#L29">src/pkcs10_cert_req.ts:29</a></li>
+							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/92494c1/src/pkcs10_cert_req.ts#L30">src/pkcs10_cert_req.ts:30</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -294,13 +299,24 @@
 						</div>
 					</div>
 				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-protected">
+					<a name="tag" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> tag</h3>
+					<div class="tsd-signature tsd-kind-icon">tag<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<aside class="tsd-sources">
+						<p>Overrides <a href="pemdata.html">PemData</a>.<a href="pemdata.html#tag">tag</a></p>
+						<ul>
+							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/92494c1/src/pkcs10_cert_req.ts#L20">src/pkcs10_cert_req.ts:20</a></li>
+						</ul>
+					</aside>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
 					<a name="tbs" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagPrivate">Private</span> tbs</h3>
 					<div class="tsd-signature tsd-kind-icon">tbs<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">ArrayBuffer</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/5387d49/src/pkcs10_cert_req.ts#L24">src/pkcs10_cert_req.ts:24</a></li>
+							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/92494c1/src/pkcs10_cert_req.ts#L25">src/pkcs10_cert_req.ts:25</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -312,6 +328,38 @@
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Methods</h2>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+					<a name="equal" class="tsd-anchor"></a>
+					<h3>equal</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+						<li class="tsd-signature tsd-kind-icon">equal<span class="tsd-signature-symbol">(</span>data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">data</span><span class="tsd-signature-symbol"> is </span><span class="tsd-signature-type">this</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from <a href="asndata.html">AsnData</a>.<a href="asndata.html#equal">equal</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/92494c1/src/asn_data.ts#L50">src/asn_data.ts:50</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns <code>true</code> if ASN.1 data is equal to another ASN.1 data, otherwise <code>false</code></p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>data: <span class="tsd-signature-type">any</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Any data</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">data</span><span class="tsd-signature-symbol"> is </span><span class="tsd-signature-type">this</span></h4>
+						</li>
+					</ul>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 					<a name="getattribute" class="tsd-anchor"></a>
 					<h3>get<wbr>Attribute</h3>
@@ -322,7 +370,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/5387d49/src/pkcs10_cert_req.ts#L96">src/pkcs10_cert_req.ts:96</a></li>
+									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/92494c1/src/pkcs10_cert_req.ts#L98">src/pkcs10_cert_req.ts:98</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -354,7 +402,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/5387d49/src/pkcs10_cert_req.ts#L110">src/pkcs10_cert_req.ts:110</a></li>
+									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/92494c1/src/pkcs10_cert_req.ts#L112">src/pkcs10_cert_req.ts:112</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -385,7 +433,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/5387d49/src/pkcs10_cert_req.ts#L119">src/pkcs10_cert_req.ts:119</a></li>
+									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/92494c1/src/pkcs10_cert_req.ts#L121">src/pkcs10_cert_req.ts:121</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -417,7 +465,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/5387d49/src/pkcs10_cert_req.ts#L133">src/pkcs10_cert_req.ts:133</a></li>
+									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/92494c1/src/pkcs10_cert_req.ts#L135">src/pkcs10_cert_req.ts:135</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -449,7 +497,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="asndata.html">AsnData</a>.<a href="asndata.html#oninit">onInit</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/5387d49/src/pkcs10_cert_req.ts#L74">src/pkcs10_cert_req.ts:74</a></li>
+									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/92494c1/src/pkcs10_cert_req.ts#L76">src/pkcs10_cert_req.ts:76</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -459,6 +507,53 @@
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+					<a name="tostring" class="tsd-anchor"></a>
+					<h3>to<wbr>String</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+						<li class="tsd-signature tsd-kind-icon">to<wbr>String<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+						<li class="tsd-signature tsd-kind-icon">to<wbr>String<span class="tsd-signature-symbol">(</span>format<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"hex"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"base64"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"base64url"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"pem"</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from <a href="pemdata.html">PemData</a>.<a href="pemdata.html#tostring">toString</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/92494c1/src/pem_data.ts#L64">src/pem_data.ts:64</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns encoded object in PEM format</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from <a href="pemdata.html">PemData</a>.<a href="pemdata.html#tostring">toString</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/92494c1/src/pem_data.ts#L69">src/pem_data.ts:69</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns encoded object in selected format</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>format: <span class="tsd-signature-type">"hex"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"base64"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"base64url"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"pem"</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>hex, base64, base64url, pem</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -472,7 +567,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/5387d49/src/pkcs10_cert_req.ts#L141">src/pkcs10_cert_req.ts:141</a></li>
+									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/92494c1/src/pkcs10_cert_req.ts#L143">src/pkcs10_cert_req.ts:143</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -490,6 +585,62 @@
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static">
+					<a name="isasnencoded" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> is<wbr>Asn<wbr>Encoded</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">is<wbr>Asn<wbr>Encoded<span class="tsd-signature-symbol">(</span>data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">data</span><span class="tsd-signature-symbol"> is </span><span class="tsd-signature-type">AsnEncodedType</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from <a href="pemdata.html">PemData</a>.<a href="pemdata.html#isasnencoded">isAsnEncoded</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/92494c1/src/pem_data.ts#L11">src/pem_data.ts:11</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>data: <span class="tsd-signature-type">any</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">data</span><span class="tsd-signature-symbol"> is </span><span class="tsd-signature-type">AsnEncodedType</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static">
+					<a name="toarraybuffer" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> to<wbr>Array<wbr>Buffer</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">to<wbr>Array<wbr>Buffer<span class="tsd-signature-symbol">(</span>raw<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">BufferSource</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">BufferSource</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from <a href="pemdata.html">PemData</a>.<a href="pemdata.html#toarraybuffer">toArrayBuffer</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/92494c1/src/pem_data.ts#L19">src/pem_data.ts:19</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Converts encoded raw to ArrayBuffer. Supported formats are HEX, DER, Base64, Base64Url, PEM</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>raw: <span class="tsd-signature-type">BufferSource</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Encoded data</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">BufferSource</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -534,8 +685,14 @@
 							<li class=" tsd-kind-property tsd-parent-kind-class">
 								<a href="pkcs10certificaterequest.html#subject" class="tsd-kind-icon">subject</a>
 							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-protected">
+								<a href="pkcs10certificaterequest.html#tag" class="tsd-kind-icon">tag</a>
+							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
 								<a href="pkcs10certificaterequest.html#tbs" class="tsd-kind-icon">tbs</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+								<a href="pkcs10certificaterequest.html#equal" class="tsd-kind-icon">equal</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="pkcs10certificaterequest.html#getattribute" class="tsd-kind-icon">get<wbr>Attribute</a>
@@ -552,8 +709,17 @@
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-protected">
 								<a href="pkcs10certificaterequest.html#oninit" class="tsd-kind-icon">on<wbr>Init</a>
 							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+								<a href="pkcs10certificaterequest.html#tostring" class="tsd-kind-icon">to<wbr>String</a>
+							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="pkcs10certificaterequest.html#verify" class="tsd-kind-icon">verify</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static">
+								<a href="pkcs10certificaterequest.html#isasnencoded" class="tsd-kind-icon">is<wbr>Asn<wbr>Encoded</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static">
+								<a href="pkcs10certificaterequest.html#toarraybuffer" class="tsd-kind-icon">to<wbr>Array<wbr>Buffer</a>
 							</li>
 						</ul>
 					</li>
@@ -574,13 +740,16 @@
 				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
 			</ul>
 			<ul class="tsd-legend">
-				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
 				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
 				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
 			</ul>
 			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
 			</ul>
 			<ul class="tsd-legend">
 				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
@@ -589,9 +758,6 @@
 			<ul class="tsd-legend">
 				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
 				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
 			</ul>
 		</div>
 	</div>
