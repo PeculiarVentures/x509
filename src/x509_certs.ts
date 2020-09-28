@@ -1,7 +1,9 @@
-import { CertificateChoices, CertificateSet, ContentInfo, id_signedData, SignedData } from "@peculiar/asn1-cms";
+import * as asn1Cms from "@peculiar/asn1-cms";
 import { AsnConvert } from "@peculiar/asn1-schema";
 import { Certificate } from "@peculiar/asn1-x509";
-import { BufferSourceConverter } from "pvtsutils";
+import { Convert } from "pvtsutils";
+import { PemConverter } from "./pem_converter";
+import { AsnEncodedType, AsnExportType, PemData } from "./pem_data";
 import { X509Certificate } from "./x509_cert";
 
 /**
@@ -14,10 +16,10 @@ export class X509Certificates extends Array<X509Certificate> {
    */
   public constructor();
   /**
-   * Creates a new instance from DER encoded PKCS7 buffer
-   * @param raw DER encoded PKCS7 buffer
+   * Creates a new instance from encoded PKCS7 buffer
+   * @param raw Encoded PKCS7 buffer. Supported formats are DER, PEM, HEX, Base64, or Base64Url
    */
-  public constructor(raw: BufferSource);
+  public constructor(raw: AsnEncodedType);
   /**
    * Creates a new instance form X509 certificate
    * @param cert X509 certificate
@@ -28,10 +30,10 @@ export class X509Certificates extends Array<X509Certificate> {
    * @param certs List of x509 certificates
    */
   public constructor(certs: X509Certificate[]);
-  public constructor(param?: BufferSource | X509Certificate | X509Certificate[]) {
+  public constructor(param?: AsnEncodedType | X509Certificate | X509Certificate[]) {
     super();
 
-    if (BufferSourceConverter.isBufferSource(param)) {
+    if (PemData.isAsnEncoded(param)) {
       this.import(param);
     } else if (param instanceof X509Certificate) {
       this.push(param);
@@ -43,34 +45,51 @@ export class X509Certificates extends Array<X509Certificate> {
   }
 
   /**
-   * Returns a DER encoded PKCS7 buffer
+   * Returns encoded object in PEM format
    */
-  public export() {
-    const signedData = new SignedData();
+  public export(): string;
+  /**
+   * Returns encoded object in DER format
+   * @param format `der` format
+   */
+  public export(format: "raw"): ArrayBuffer;
+  /**
+   * Returns encoded object in selected format
+   * @param format `hex`, `base64`, `base64url`, `pem`. Default is `pem`
+   */
+  public export(format?: AsnExportType): string;
+  public export(format?: AsnExportType | "raw") {
+    const signedData = new asn1Cms.SignedData();
 
-    signedData.certificates = new CertificateSet(this.map(o => new CertificateChoices({
+    signedData.certificates = new asn1Cms.CertificateSet(this.map(o => new asn1Cms.CertificateChoices({
       certificate: AsnConvert.parse(o.rawData, Certificate)
     })));
 
-    const cms = new ContentInfo({
-      contentType: id_signedData,
+    const cms = new asn1Cms.ContentInfo({
+      contentType: asn1Cms.id_signedData,
       content: AsnConvert.serialize(signedData),
     });
 
-    return AsnConvert.serialize(cms);
+    const raw = AsnConvert.serialize(cms);
+    if (format === "raw") {
+      return raw;
+    }
+
+    return this.toString(format);
   }
 
   /**
-   * Import certificates from DER encoded PKCS7 buffer
+   * Import certificates from encoded PKCS7 data. Supported formats are HEX, DER, Base64, Base64Url, PEM
    * @param data
    */
-  public import(data: BufferSource) {
-    const cms = AsnConvert.parse(data, ContentInfo);
-    if (cms.contentType !== id_signedData) {
+  public import(data: AsnEncodedType) {
+    const raw = PemData.toArrayBuffer(data);
+    const cms = AsnConvert.parse(raw, asn1Cms.ContentInfo);
+    if (cms.contentType !== asn1Cms.id_signedData) {
       throw new TypeError("Cannot parse CMS package. Incoming data is not a SignedData object.");
     }
 
-    const signedData = AsnConvert.parse(cms.content, SignedData);
+    const signedData = AsnConvert.parse(cms.content, asn1Cms.SignedData);
     this.clear();
 
     for (const item of signedData.certificates || []) {
@@ -86,6 +105,22 @@ export class X509Certificates extends Array<X509Certificate> {
   public clear() {
     while (this.pop()) {
       // nothing;
+    }
+  }
+
+  public toString(format: AsnEncodedType = "pem") {
+    const raw = this.export("raw");
+    switch (format) {
+      case "pem":
+        return PemConverter.encode(raw, "CMS");
+      case "hex":
+        return Convert.ToHex(raw);
+      case "base64":
+        return Convert.ToBase64(raw);
+      case "base64url":
+        return Convert.ToBase64Url(raw);
+      default:
+        throw TypeError("Argument 'format' is unsupported value");
     }
   }
 

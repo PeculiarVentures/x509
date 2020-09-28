@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/member-delimiter-style */
 
 import { AsnConvert } from "@peculiar/asn1-schema";
-import { BufferSourceConverter } from "pvtsutils";
+import { BufferSourceConverter, isEqual } from "pvtsutils";
 
 /**
  * Represents an ASN.1 data
@@ -42,4 +42,16 @@ export abstract class AsnData<T> {
    * @param asn ASN.1 object
    */
   protected abstract onInit(asn: T): void;
+
+  /**
+   * Returns `true` if ASN.1 data is equal to another ASN.1 data, otherwise `false`
+   * @param data Any data
+   */
+  public equal(data: any): data is this {
+    if (data instanceof AsnData) {
+      return isEqual(data.rawData, this.rawData);
+    }
+
+    return false;
+  }
 }
