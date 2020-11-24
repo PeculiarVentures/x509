@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Extension | @peculiar/x509</title>
+	<title>OtherName | @peculiar/x509</title>
 	<meta name="description" content="Documentation for @peculiar/x509">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,51 +56,24 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="extension.html">Extension</a>
+					<a href="othername.html">OtherName</a>
 				</li>
 			</ul>
-			<h1>Class Extension</h1>
+			<h1>Class OtherName</h1>
 		</div>
 	</div>
 </header>
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
-			<section class="tsd-panel tsd-comment">
-				<div class="tsd-comment tsd-typography">
-					<div class="lead">
-						<p>Represents the certificate extension</p>
-					</div>
-				</div>
-			</section>
 			<section class="tsd-panel tsd-hierarchy">
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<a href="asndata.html" class="tsd-signature-type">AsnData</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">AsnExtension</span><span class="tsd-signature-symbol">&gt;</span>
+						<a href="asndata.html" class="tsd-signature-type">AsnData</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">OtherName</span><span class="tsd-signature-symbol">&gt;</span>
 						<ul class="tsd-hierarchy">
 							<li>
-								<span class="target">Extension</span>
-								<ul class="tsd-hierarchy">
-									<li>
-										<a href="authoritykeyidentifierextension.html" class="tsd-signature-type">AuthorityKeyIdentifierExtension</a>
-									</li>
-									<li>
-										<a href="basicconstraintsextension.html" class="tsd-signature-type">BasicConstraintsExtension</a>
-									</li>
-									<li>
-										<a href="extendedkeyusageextension.html" class="tsd-signature-type">ExtendedKeyUsageExtension</a>
-									</li>
-									<li>
-										<a href="keyusagesextension.html" class="tsd-signature-type">KeyUsagesExtension</a>
-									</li>
-									<li>
-										<a href="subjectkeyidentifierextension.html" class="tsd-signature-type">SubjectKeyIdentifierExtension</a>
-									</li>
-									<li>
-										<a href="subjectalternativenameextension.html" class="tsd-signature-type">SubjectAlternativeNameExtension</a>
-									</li>
-								</ul>
+								<span class="target">OtherName</span>
 							</li>
 						</ul>
 					</li>
@@ -113,23 +86,23 @@
 						<section class="tsd-index-section ">
 							<h3>Constructors</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite"><a href="extension.html#constructor" class="tsd-kind-icon">constructor</a></li>
+								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite"><a href="othername.html#constructor" class="tsd-kind-icon">constructor</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="extension.html#critical" class="tsd-kind-icon">critical</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="extension.html#rawdata" class="tsd-kind-icon">raw<wbr>Data</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="extension.html#type" class="tsd-kind-icon">type</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="extension.html#value" class="tsd-kind-icon">value</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="othername.html#rawdata" class="tsd-kind-icon">raw<wbr>Data</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="othername.html#type" class="tsd-kind-icon">type</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="othername.html#value" class="tsd-kind-icon">value</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="extension.html#equal" class="tsd-kind-icon">equal</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-protected"><a href="extension.html#oninit" class="tsd-kind-icon">on<wbr>Init</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="othername.html#equal" class="tsd-kind-icon">equal</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-protected"><a href="othername.html#oninit" class="tsd-kind-icon">on<wbr>Init</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="othername.html#tojson" class="tsd-kind-icon">toJSON</a></li>
 							</ul>
 						</section>
 					</div>
@@ -141,20 +114,53 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Extension<span class="tsd-signature-symbol">(</span>raw<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">BufferSource</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="extension.html" class="tsd-signature-type">Extension</a></li>
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Extension<span class="tsd-signature-symbol">(</span>type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, critical<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>, value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">BufferSource</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="extension.html" class="tsd-signature-type">Extension</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Other<wbr>Name<span class="tsd-signature-symbol">(</span>type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">BufferSource</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="othername.html" class="tsd-signature-type">OtherName</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Other<wbr>Name<span class="tsd-signature-symbol">(</span>raw<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">BufferSource</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="othername.html" class="tsd-signature-type">OtherName</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Overrides <a href="asndata.html">AsnData</a>.<a href="asndata.html#constructor">constructor</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/3c74a08/src/extension.ts#L23">src/extension.ts:23</a></li>
+									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/3c74a08/src/extensions/subject_alt_name.ts#L29">src/extensions/subject_alt_name.ts:29</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Creates a new instance from DER encoded Buffer</p>
+									<p>Crates a new instance</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>type: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<div class="lead">
+											<p>Other name identifier</p>
+										</div>
+									</div>
+								</li>
+								<li>
+									<h5>value: <span class="tsd-signature-type">BufferSource</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<div class="lead">
+											<p>DER encoded value</p>
+										</div>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="othername.html" class="tsd-signature-type">OtherName</a></h4>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Overrides <a href="asndata.html">AsnData</a>.<a href="asndata.html#constructor">constructor</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/3c74a08/src/extensions/subject_alt_name.ts#L36">src/extensions/subject_alt_name.ts:36</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Crates a new instance from DER encoded buffer</p>
 								</div>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -168,69 +174,13 @@
 									</div>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="extension.html" class="tsd-signature-type">Extension</a></h4>
-						</li>
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<p>Overrides <a href="asndata.html">AsnData</a>.<a href="asndata.html#constructor">constructor</a></p>
-								<ul>
-									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/3c74a08/src/extension.ts#L29">src/extension.ts:29</a></li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Creates a new instance</p>
-								</div>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>type: <span class="tsd-signature-type">string</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<div class="lead">
-											<p>Extension identifier</p>
-										</div>
-									</div>
-								</li>
-								<li>
-									<h5>critical: <span class="tsd-signature-type">boolean</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<div class="lead">
-											<p>Indicates where extension is critical</p>
-										</div>
-									</div>
-								</li>
-								<li>
-									<h5>value: <span class="tsd-signature-type">BufferSource</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<div class="lead">
-											<p>DER encoded value of extension</p>
-										</div>
-									</div>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="extension.html" class="tsd-signature-type">Extension</a></h4>
+							<h4 class="tsd-returns-title">Returns <a href="othername.html" class="tsd-signature-type">OtherName</a></h4>
 						</li>
 					</ul>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="critical" class="tsd-anchor"></a>
-					<h3>critical</h3>
-					<div class="tsd-signature tsd-kind-icon">critical<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/3c74a08/src/extension.ts#L18">src/extension.ts:18</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Indicates where extension is critical</p>
-						</div>
-					</div>
-				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
 					<a name="rawdata" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> raw<wbr>Data</h3>
@@ -253,14 +203,9 @@
 					<div class="tsd-signature tsd-kind-icon">type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/3c74a08/src/extension.ts#L14">src/extension.ts:14</a></li>
+							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/3c74a08/src/extensions/subject_alt_name.ts#L27">src/extensions/subject_alt_name.ts:27</a></li>
 						</ul>
 					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Gets an extension identifier</p>
-						</div>
-					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="value" class="tsd-anchor"></a>
@@ -268,14 +213,9 @@
 					<div class="tsd-signature tsd-kind-icon">value<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">ArrayBuffer</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/3c74a08/src/extension.ts#L23">src/extension.ts:23</a></li>
+							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/3c74a08/src/extensions/subject_alt_name.ts#L29">src/extensions/subject_alt_name.ts:29</a></li>
 						</ul>
 					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Gets a DER encoded value of extension</p>
-						</div>
-					</div>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
@@ -316,23 +256,40 @@
 					<a name="oninit" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagProtected">Protected</span> on<wbr>Init</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-protected">
-						<li class="tsd-signature tsd-kind-icon">on<wbr>Init<span class="tsd-signature-symbol">(</span>asn<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">AsnExtension</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">on<wbr>Init<span class="tsd-signature-symbol">(</span>asn<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">OtherName</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Overrides <a href="asndata.html">AsnData</a>.<a href="asndata.html#oninit">onInit</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/3c74a08/src/extension.ts#L52">src/extension.ts:52</a></li>
+									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/3c74a08/src/extensions/subject_alt_name.ts#L55">src/extensions/subject_alt_name.ts:55</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>asn: <span class="tsd-signature-type">AsnExtension</span></h5>
+									<h5>asn: <span class="tsd-signature-type">OtherName</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="tojson" class="tsd-anchor"></a>
+					<h3>toJSON</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">toJSON<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/jsonothername.html" class="tsd-signature-type">JsonOtherName</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/3c74a08/src/extensions/subject_alt_name.ts#L60">src/extensions/subject_alt_name.ts:60</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <a href="../interfaces/jsonothername.html" class="tsd-signature-type">JsonOtherName</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -351,28 +308,28 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-class">
-						<a href="extension.html" class="tsd-kind-icon">Extension</a>
+						<a href="othername.html" class="tsd-kind-icon">Other<wbr>Name</a>
 						<ul>
 							<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
-								<a href="extension.html#constructor" class="tsd-kind-icon">constructor</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="extension.html#critical" class="tsd-kind-icon">critical</a>
+								<a href="othername.html#constructor" class="tsd-kind-icon">constructor</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
-								<a href="extension.html#rawdata" class="tsd-kind-icon">raw<wbr>Data</a>
+								<a href="othername.html#rawdata" class="tsd-kind-icon">raw<wbr>Data</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="extension.html#type" class="tsd-kind-icon">type</a>
+								<a href="othername.html#type" class="tsd-kind-icon">type</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="extension.html#value" class="tsd-kind-icon">value</a>
+								<a href="othername.html#value" class="tsd-kind-icon">value</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-								<a href="extension.html#equal" class="tsd-kind-icon">equal</a>
+								<a href="othername.html#equal" class="tsd-kind-icon">equal</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-protected">
-								<a href="extension.html#oninit" class="tsd-kind-icon">on<wbr>Init</a>
+								<a href="othername.html#oninit" class="tsd-kind-icon">on<wbr>Init</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="othername.html#tojson" class="tsd-kind-icon">toJSON</a>
 							</li>
 						</ul>
 					</li>

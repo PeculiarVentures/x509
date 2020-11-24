@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>X509CertificateCreateParamsBase | @peculiar/x509</title>
+	<title>JsonOtherName | @peculiar/x509</title>
 	<meta name="description" content="Documentation for @peculiar/x509">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,36 +56,21 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="x509certificatecreateparamsbase.html">X509CertificateCreateParamsBase</a>
+					<a href="jsonothername.html">JsonOtherName</a>
 				</li>
 			</ul>
-			<h1>Interface X509CertificateCreateParamsBase</h1>
+			<h1>Interface JsonOtherName</h1>
 		</div>
 	</div>
 </header>
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
-			<section class="tsd-panel tsd-comment">
-				<div class="tsd-comment tsd-typography">
-					<div class="lead">
-						<p>Base arguments for certificate creation</p>
-					</div>
-				</div>
-			</section>
 			<section class="tsd-panel tsd-hierarchy">
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">X509CertificateCreateParamsBase</span>
-						<ul class="tsd-hierarchy">
-							<li>
-								<a href="x509certificatecreateparams.html" class="tsd-signature-type">X509CertificateCreateParams</a>
-							</li>
-							<li>
-								<a href="x509certificatecreateselfsignedparams.html" class="tsd-signature-type">X509CertificateCreateSelfSignedParams</a>
-							</li>
-						</ul>
+						<span class="target">JsonOtherName</span>
 					</li>
 				</ul>
 			</section>
@@ -96,11 +81,8 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="x509certificatecreateparamsbase.html#extensions" class="tsd-kind-icon">extensions</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="x509certificatecreateparamsbase.html#notafter" class="tsd-kind-icon">not<wbr>After</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="x509certificatecreateparamsbase.html#notbefore" class="tsd-kind-icon">not<wbr>Before</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="x509certificatecreateparamsbase.html#serialnumber" class="tsd-kind-icon">serial<wbr>Number</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="x509certificatecreateparamsbase.html#signingalgorithm" class="tsd-kind-icon">signing<wbr>Algorithm</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="jsonothername.html#type" class="tsd-kind-icon">type</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="jsonothername.html#value" class="tsd-kind-icon">value</a></li>
 							</ul>
 						</section>
 					</div>
@@ -109,77 +91,27 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="extensions" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> extensions</h3>
-					<div class="tsd-signature tsd-kind-icon">extensions<span class="tsd-signature-symbol">:</span> <a href="../classes/extension.html" class="tsd-signature-type">Extension</a><span class="tsd-signature-symbol">[]</span></div>
+					<a name="type" class="tsd-anchor"></a>
+					<h3>type</h3>
+					<div class="tsd-signature tsd-kind-icon">type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/3c74a08/src/x509_cert_generator.ts#L33">src/x509_cert_generator.ts:33</a></li>
+							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/3c74a08/src/extensions/subject_alt_name.ts#L8">src/extensions/subject_alt_name.ts:8</a></li>
 						</ul>
 					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>List of extensions</p>
-						</div>
-					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="notafter" class="tsd-anchor"></a>
-					<h3>not<wbr>After</h3>
-					<div class="tsd-signature tsd-kind-icon">not<wbr>After<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Date</span></div>
+					<a name="value" class="tsd-anchor"></a>
+					<h3>value</h3>
+					<div class="tsd-signature tsd-kind-icon">value<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/3c74a08/src/x509_cert_generator.ts#L29">src/x509_cert_generator.ts:29</a></li>
+							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/3c74a08/src/extensions/subject_alt_name.ts#L12">src/extensions/subject_alt_name.ts:12</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>Date after which certificate can&#39;t be used</p>
-						</div>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="notbefore" class="tsd-anchor"></a>
-					<h3>not<wbr>Before</h3>
-					<div class="tsd-signature tsd-kind-icon">not<wbr>Before<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Date</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/3c74a08/src/x509_cert_generator.ts#L25">src/x509_cert_generator.ts:25</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Date before which certificate can&#39;t be used</p>
-						</div>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="serialnumber" class="tsd-anchor"></a>
-					<h3>serial<wbr>Number</h3>
-					<div class="tsd-signature tsd-kind-icon">serial<wbr>Number<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/3c74a08/src/x509_cert_generator.ts#L21">src/x509_cert_generator.ts:21</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Hexadecimal serial number</p>
-						</div>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="signingalgorithm" class="tsd-anchor"></a>
-					<h3>signing<wbr>Algorithm</h3>
-					<div class="tsd-signature tsd-kind-icon">signing<wbr>Algorithm<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Algorithm</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">EcdsaParams</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/3c74a08/src/x509_cert_generator.ts#L37">src/x509_cert_generator.ts:37</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Signing algorithm</p>
+							<p>Hexadecimal representation of the value</p>
 						</div>
 					</div>
 				</section>
@@ -198,22 +130,13 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-interface">
-						<a href="x509certificatecreateparamsbase.html" class="tsd-kind-icon">X509<wbr>Certificate<wbr>Create<wbr>Params<wbr>Base</a>
+						<a href="jsonothername.html" class="tsd-kind-icon">Json<wbr>Other<wbr>Name</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="x509certificatecreateparamsbase.html#extensions" class="tsd-kind-icon">extensions</a>
+								<a href="jsonothername.html#type" class="tsd-kind-icon">type</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="x509certificatecreateparamsbase.html#notafter" class="tsd-kind-icon">not<wbr>After</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="x509certificatecreateparamsbase.html#notbefore" class="tsd-kind-icon">not<wbr>Before</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="x509certificatecreateparamsbase.html#serialnumber" class="tsd-kind-icon">serial<wbr>Number</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="x509certificatecreateparamsbase.html#signingalgorithm" class="tsd-kind-icon">signing<wbr>Algorithm</a>
+								<a href="jsonothername.html#value" class="tsd-kind-icon">value</a>
 							</li>
 						</ul>
 					</li>
