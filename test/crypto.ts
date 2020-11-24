@@ -199,6 +199,68 @@ context("crypto", () => {
       assert.strictEqual(ok, true);
     });
 
+    context("thumbprint", () => {
+
+      it("default", async () => {
+        const cert = new x509.X509Certificate(Convert.FromBase64(pem));
+        const thumbprint = await cert.getThumbprint();
+        assert.strictEqual(Convert.ToHex(thumbprint), "0cfbca8d79cdc989e4dd64abbc2f979cc9e0ccb4");
+      });
+
+      it("SHA-256", async () => {
+        const cert = new x509.X509Certificate(Convert.FromBase64(pem));
+        const thumbprint = await cert.getThumbprint("SHA-256");
+        assert.strictEqual(Convert.ToHex(thumbprint), "3578985ded3c684a00d138596cadc96a37eb2dd01511b4b7b7135a55362153df");
+      });
+
+      it("SHA-256, custom crypto", async () => {
+        const cert = new x509.X509Certificate(Convert.FromBase64(pem));
+        const thumbprint = await cert.getThumbprint("SHA-256", crypto);
+        assert.strictEqual(Convert.ToHex(thumbprint), "3578985ded3c684a00d138596cadc96a37eb2dd01511b4b7b7135a55362153df");
+      });
+
+      it("default algorithm, custom crypto", async () => {
+        const cert = new x509.X509Certificate(Convert.FromBase64(pem));
+        const thumbprint = await cert.getThumbprint(crypto);
+        assert.strictEqual(Convert.ToHex(thumbprint), "0cfbca8d79cdc989e4dd64abbc2f979cc9e0ccb4");
+      });
+    });
+
+    context("getExtensions", () => {
+
+      it("existing", async () => {
+        const cert = new x509.X509Certificate(Convert.FromBase64(pem));
+        const extensions = cert.getExtensions("2.5.29.15");
+        assert.strictEqual(extensions.length, 1);
+        assert.strictEqual(extensions[0] instanceof x509.KeyUsagesExtension, true);
+      });
+
+      it("class", async () => {
+        const cert = new x509.X509Certificate(Convert.FromBase64(pem));
+        const extensions = cert.getExtensions(x509.KeyUsagesExtension);
+        assert.strictEqual(extensions.length, 1);
+        assert.strictEqual(extensions[0] instanceof x509.KeyUsagesExtension, true);
+      });
+
+      it("null", async () => {
+        const cert = new x509.X509Certificate(Convert.FromBase64(pem));
+        const extensions = cert.getExtensions("2.5.29.16");
+        assert.strictEqual(extensions.length, 0);
+      });
+
+    });
+
+    context("getExtension", () => {
+
+      it("class", async () => {
+        const cert = new x509.X509Certificate(Convert.FromBase64(pem));
+        const extension = cert.getExtension(x509.KeyUsagesExtension);
+        assert(extension);
+        assert.strictEqual(extension instanceof x509.KeyUsagesExtension, true);
+      });
+
+    });
+
     context("toString", () => {
       it("hex", () => {
         const cert = new x509.X509Certificate(Convert.FromBase64(pem));
@@ -250,6 +312,40 @@ D314IEOg4mnS8Q==
         assert.strictEqual(cert2.equal(cert), true);
       });
     });
+  });
+
+  context("PublicKey", () => {
+
+    const spki = Convert.FromHex("30820122300d06092a864886f70d01010105000382010f003082010a0282010100a4737ac5ec77f06df3486264a3a17c783143e9023073af169cc245023b4711526b4a721832943bbb59be53d241f3203c1a5eac9e1d5bb57bc0644d943dd63525090a70e1484db4b5ac03185ee897ae8ebabf255ebfc77cfebec928ac0b1fceb33b60238ac2ba3f016c035a53a3011828c2e9bafdd7e2a797d94dcbd79ec54a5ae3c92abef565b2ea6bb4af89e2f7e4dd1b52978bb828cb44843ace8c9ad7f80bef7ffedc8b73a04b6ec44cd65fc6ba8fc216c6ca4bbc99677695439391a4d17893b8f54d6755b681210660f7865748fc1126e21e4d9cdcee436c3ce5ebd91912d08713cb91613ecde2e8af694daa27110b8d588f34e82e88aa56315d15428db90203010001");
+
+    context("getThumbprint", () => {
+
+      it("default", async () => {
+        const key = new x509.PublicKey(spki);
+        const thumbprint = await key.getThumbprint();
+        assert.strictEqual(Convert.ToHex(thumbprint), "dd0137099d08ab3324e183ec258413d1b79e95b0");
+      });
+
+      it("SHA-256", async () => {
+        const key = new x509.PublicKey(spki);
+        const thumbprint = await key.getThumbprint("SHA-256");
+        assert.strictEqual(Convert.ToHex(thumbprint), "5bdf9c42c2d13d8edfb7733c257f49ec7d8ac20d2dbe36a693e92b84a26c845c");
+      });
+
+      it("SHA-256, custom crypto", async () => {
+        const key = new x509.PublicKey(spki);
+        const thumbprint = await key.getThumbprint("SHA-256", crypto);
+        assert.strictEqual(Convert.ToHex(thumbprint), "5bdf9c42c2d13d8edfb7733c257f49ec7d8ac20d2dbe36a693e92b84a26c845c");
+      });
+
+      it("default algorithm, custom crypto", async () => {
+        const key = new x509.PublicKey(spki);
+        const thumbprint = await key.getThumbprint(crypto);
+        assert.strictEqual(Convert.ToHex(thumbprint), "dd0137099d08ab3324e183ec258413d1b79e95b0");
+      });
+
+    });
+
   });
 
   context("X509 certificate generator", () => {
