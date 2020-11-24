@@ -100,7 +100,7 @@ export class PublicKey extends PemData<SubjectPublicKeyInfo>{
     let crypto: Crypto;
     let algorithm = "SHA-1";
 
-    if (args.length === 1 && !args[0]?.subtle) {
+    if (args.length >= 1 && !args[0]?.subtle) {
       // crypto?
       algorithm = args[0] || algorithm;
       crypto = args[1] || cryptoProvider.get();
