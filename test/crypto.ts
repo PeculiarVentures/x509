@@ -115,6 +115,13 @@ context("crypto", () => {
       assert.strictEqual(Convert.ToHex(name.toArrayBuffer()), "3071310e300c060355040313056e616d65313139300c060355040313056e616d6532300c060355040313056e616d6533301b06092a864886f70d010901160e736f6d6540656d61696c2e636f6d3124300a06042a030405040201023016060a0992268993f22c6401191608736f6d652e636f6d");
     });
 
+    it("parse with odd , marks", () => {
+      const text = "  ,  , ,  CN=Some Name, O=Peculiar Ventures\\, LLC, O=\"Peculiar Ventures, LLC\", CN=name2+O=Test+CN=name3+E=some@email.com, 1.2.3.4.5=#04020102+DC=some.com,, , ";
+      const name = new x509.Name(text);
+
+      assert.strictEqual(name.toString(), "CN=Some Name, O=Peculiar Ventures\\, LLC, O=Peculiar Ventures\\, LLC, CN=name2+O=Test+CN=name3+E=some@email.com, 1.2.3.4.5=#04020102+DC=some.com");
+    });
+
   });
 
   context("Pkcs10CertificateRequest", () => {
@@ -192,6 +199,68 @@ context("crypto", () => {
       assert.strictEqual(ok, true);
     });
 
+    context("thumbprint", () => {
+
+      it("default", async () => {
+        const cert = new x509.X509Certificate(Convert.FromBase64(pem));
+        const thumbprint = await cert.getThumbprint();
+        assert.strictEqual(Convert.ToHex(thumbprint), "0cfbca8d79cdc989e4dd64abbc2f979cc9e0ccb4");
+      });
+
+      it("SHA-256", async () => {
+        const cert = new x509.X509Certificate(Convert.FromBase64(pem));
+        const thumbprint = await cert.getThumbprint("SHA-256");
+        assert.strictEqual(Convert.ToHex(thumbprint), "3578985ded3c684a00d138596cadc96a37eb2dd01511b4b7b7135a55362153df");
+      });
+
+      it("SHA-256, custom crypto", async () => {
+        const cert = new x509.X509Certificate(Convert.FromBase64(pem));
+        const thumbprint = await cert.getThumbprint("SHA-256", crypto);
+        assert.strictEqual(Convert.ToHex(thumbprint), "3578985ded3c684a00d138596cadc96a37eb2dd01511b4b7b7135a55362153df");
+      });
+
+      it("default algorithm, custom crypto", async () => {
+        const cert = new x509.X509Certificate(Convert.FromBase64(pem));
+        const thumbprint = await cert.getThumbprint(crypto);
+        assert.strictEqual(Convert.ToHex(thumbprint), "0cfbca8d79cdc989e4dd64abbc2f979cc9e0ccb4");
+      });
+    });
+
+    context("getExtensions", () => {
+
+      it("existing", async () => {
+        const cert = new x509.X509Certificate(Convert.FromBase64(pem));
+        const extensions = cert.getExtensions("2.5.29.15");
+        assert.strictEqual(extensions.length, 1);
+        assert.strictEqual(extensions[0] instanceof x509.KeyUsagesExtension, true);
+      });
+
+      it("class", async () => {
+        const cert = new x509.X509Certificate(Convert.FromBase64(pem));
+        const extensions = cert.getExtensions(x509.KeyUsagesExtension);
+        assert.strictEqual(extensions.length, 1);
+        assert.strictEqual(extensions[0] instanceof x509.KeyUsagesExtension, true);
+      });
+
+      it("null", async () => {
+        const cert = new x509.X509Certificate(Convert.FromBase64(pem));
+        const extensions = cert.getExtensions("2.5.29.16");
+        assert.strictEqual(extensions.length, 0);
+      });
+
+    });
+
+    context("getExtension", () => {
+
+      it("class", async () => {
+        const cert = new x509.X509Certificate(Convert.FromBase64(pem));
+        const extension = cert.getExtension(x509.KeyUsagesExtension);
+        assert(extension);
+        assert.strictEqual(extension instanceof x509.KeyUsagesExtension, true);
+      });
+
+    });
+
     context("toString", () => {
       it("hex", () => {
         const cert = new x509.X509Certificate(Convert.FromBase64(pem));
@@ -243,6 +312,40 @@ D314IEOg4mnS8Q==
         assert.strictEqual(cert2.equal(cert), true);
       });
     });
+  });
+
+  context("PublicKey", () => {
+
+    const spki = Convert.FromHex("30820122300d06092a864886f70d01010105000382010f003082010a0282010100a4737ac5ec77f06df3486264a3a17c783143e9023073af169cc245023b4711526b4a721832943bbb59be53d241f3203c1a5eac9e1d5bb57bc0644d943dd63525090a70e1484db4b5ac03185ee897ae8ebabf255ebfc77cfebec928ac0b1fceb33b60238ac2ba3f016c035a53a3011828c2e9bafdd7e2a797d94dcbd79ec54a5ae3c92abef565b2ea6bb4af89e2f7e4dd1b52978bb828cb44843ace8c9ad7f80bef7ffedc8b73a04b6ec44cd65fc6ba8fc216c6ca4bbc99677695439391a4d17893b8f54d6755b681210660f7865748fc1126e21e4d9cdcee436c3ce5ebd91912d08713cb91613ecde2e8af694daa27110b8d588f34e82e88aa56315d15428db90203010001");
+
+    context("getThumbprint", () => {
+
+      it("default", async () => {
+        const key = new x509.PublicKey(spki);
+        const thumbprint = await key.getThumbprint();
+        assert.strictEqual(Convert.ToHex(thumbprint), "dd0137099d08ab3324e183ec258413d1b79e95b0");
+      });
+
+      it("SHA-256", async () => {
+        const key = new x509.PublicKey(spki);
+        const thumbprint = await key.getThumbprint("SHA-256");
+        assert.strictEqual(Convert.ToHex(thumbprint), "5bdf9c42c2d13d8edfb7733c257f49ec7d8ac20d2dbe36a693e92b84a26c845c");
+      });
+
+      it("SHA-256, custom crypto", async () => {
+        const key = new x509.PublicKey(spki);
+        const thumbprint = await key.getThumbprint("SHA-256", crypto);
+        assert.strictEqual(Convert.ToHex(thumbprint), "5bdf9c42c2d13d8edfb7733c257f49ec7d8ac20d2dbe36a693e92b84a26c845c");
+      });
+
+      it("default algorithm, custom crypto", async () => {
+        const key = new x509.PublicKey(spki);
+        const thumbprint = await key.getThumbprint(crypto);
+        assert.strictEqual(Convert.ToHex(thumbprint), "dd0137099d08ab3324e183ec258413d1b79e95b0");
+      });
+
+    });
+
   });
 
   context("X509 certificate generator", () => {
@@ -500,6 +603,29 @@ D314IEOg4mnS8Q==
       const items = await chain.build(certs[15]);
       assert.strictEqual(items.length, 3);
       assert.strictEqual(items.map(o => o.subject).join(","), "CN=Client same name,CN=Intermediate CA same name,CN=Root CA #3");
+    });
+
+  });
+
+  context("Extensions", () => {
+
+    it("Subject Alternative Name", () => {
+      const hex = "3081a80603551d110481a030819d820d736f6d652e6e616d652e636f6d820e736f6d65322e6e616d652e636f6d81126d6963726f7368696e65406d61696c2e7275a01f06092b0601040182371901a0120410533ee18e1c2cbb428df739927c0bdbb687040a0109058613687474703a2f2f736f6d652e75726c2e636f6d861666696c653a2f2f2f736f6d652f66696c652f70617468a014060a2b060104018237140203a0060c0475736572";
+      const san = new x509.SubjectAlternativeNameExtension(Convert.FromHex(hex));
+      const json = san.toJSON();
+      assert.deepStrictEqual(json, {
+        dns: ["some.name.com", "some2.name.com"],
+        email: ["microshine@mail.ru"],
+        ip: ["10.1.9.5"],
+        guid: ["{8ee13e53-2c1c-42bb-8df7-39927c0bdbb6}"],
+        upn: ["user"],
+        url: ["http://some.url.com", "file:///some/file/path"]
+      });
+
+      const san2 = new x509.SubjectAlternativeNameExtension(json, san.critical);
+      const hex2 = Convert.ToHex(san2.rawData);
+
+      assert.strictEqual(hex2, hex);
     });
 
   });

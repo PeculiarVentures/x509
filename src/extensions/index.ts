@@ -3,5 +3,6 @@ export * from "./basic_constraints";
 export * from "./extended_key_usage";
 export * from "./key_usages";
 export * from "./subject_key_identifier";
+export * from "./subject_alt_name";
 
 export * from "./extension_factory";

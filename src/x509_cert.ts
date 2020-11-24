@@ -133,10 +133,23 @@ export class X509Certificate extends PemData<Certificate> {
    * @param type Extension identifier
    * @returns Extension or null
    */
-  public getExtension<T extends Extension>(type: string): T | null {
+  public getExtension<T extends Extension>(type: string): T | null;
+  /**
+   * Returns an extension of specified type
+   * @param type Extension type
+   * @returns Extension or null
+   */
+  public getExtension<T extends Extension>(type: { new(raw: BufferSource): T; }): T | null;
+  public getExtension<T extends Extension>(type: { new(raw: BufferSource): T; } | string): T | null {
     for (const ext of this.extensions) {
-      if (ext.type === type) {
-        return ext as T;
+      if (typeof type === "string") {
+        if (ext.type === type) {
+          return ext as T;
+        }
+      } else {
+        if (ext instanceof type) {
+          return ext;
+        }
       }
     }
 
@@ -147,8 +160,24 @@ export class X509Certificate extends PemData<Certificate> {
    * Returns a list of extensions of specified type
    * @param type Extension identifier
    */
-  public getExtensions<T extends Extension>(type: string): T[] {
-    return this.extensions.filter(o => o.type === type) as T[];
+  public getExtensions<T extends Extension>(type: string): T[];
+  /**
+   * Returns a list of extensions of specified type
+   * @param type Extension type
+   */
+  public getExtensions<T extends Extension>(type: { new(raw: BufferSource): T; }): T[];
+  /**
+   * Returns a list of extensions of specified type
+   * @param type Extension identifier
+   */
+  public getExtensions<T extends Extension>(type: string | { new(raw: BufferSource): T; }): T[] {
+    return this.extensions.filter(o => {
+      if (typeof type === "string") {
+        return o.type === type;
+      } else {
+        return o instanceof type;
+      }
+    }) as T[];
   }
 
   /**
@@ -185,7 +214,7 @@ export class X509Certificate extends PemData<Certificate> {
   public async getThumbprint(...args: any[]) {
     let crypto = cryptoProvider.get();
     let algorithm = "SHA-1";
-    if (args.length === 1 && !args[0]?.subtle) {
+    if (args.length >= 1 && !args[0]?.subtle) {
       // crypto?
       algorithm = args[0] || algorithm;
       crypto = args[1] || crypto;

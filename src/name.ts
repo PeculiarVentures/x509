@@ -46,8 +46,6 @@ export interface JsonAttributeAndValue {
  */
 export type JsonName = Array<JsonAttributeAndValue>;
 
-const special = [",", "+", "\"", "\\", "<", ">", ";", "#", " "];
-
 function replaceUnknownCharacter(text: string, char: string) {
   return `\\${Convert.ToHex(Convert.FromUtf8String(char)).toUpperCase()}`;
 }
@@ -146,23 +144,15 @@ export class Name {
   private fromString(data: string) {
     const asn = new AsnName();
 
-    let subAttribute = false;
-    for (let i = 0; i < data.length; i++) {
-      let char = data[i];
+    const regex = /(\d\.[\d.]*\d|[A-Z]+)=(((?:").*?(?<!\\)(?:"))|([^"].*?))((?<!\\)[,+])/g;
+    let matches: RegExpExecArray | null = null;
+    let level = ",";
+    // eslint-disable-next-line no-cond-assign
+    while (matches = regex.exec(`${data},`)) {
+      let [, type, value] = matches;
+      const next = matches[5];
 
-      // Read type
-      let type = "";
-      for (i; i < data.length; i++) {
-        char = data[i];
-        if (char === "=") {
-          i++;
-          break;
-        }
-        if (char === " ") {
-          continue;
-        }
-        type += char;
-      }
+      // type
       if (!/[\d.]+/.test(type)) {
         type = names.get(type) || "";
       }
@@ -170,70 +160,38 @@ export class Name {
         throw new Error(`Cannot get OID for name type '${type}'`);
       }
 
-      // Read value
-      let value = "";
-      let valueType = ValueType.simple;
-      for (i; i < data.length; i++) {
-        char = data[i];
-        if (value === "") {
-          if (char === "#") {
-            valueType = ValueType.hexadecimal;
-            continue;
-          } else if (char === "\"") {
-            valueType = ValueType.quoted;
-            continue;
-          }
-        }
-
-        if (valueType === ValueType.quoted && char === "\"") {
-          // read till comma or plus character
-          while (i++ < data.length) {
-            char = data[i];
-            if (data === "," || char === "+") {
-              break;
-            }
-            if (data === " ") {
-              continue;
-            }
-            throw new Error("Cannot parse name from string. Incorrect character after quoted attribute value");
-          }
-          break;
-        } else if ((valueType === ValueType.simple || valueType === ValueType.hexadecimal) && (char === "," || char === "+")) {
-          break;
-        }
-
-        // escaped character
-        if (char === "\\") {
-          char = data[++i];
-          if (!special.includes(char)) {
-            const hex = `${data[i++]}${data[i]}`;
-            if (!/[0-9a-f]{2}/i.test(hex)) {
-              throw new Error("Cannot parse name from string. Escaped hexadecimal value doesn't match to regular pattern");
-            }
-            char = String.fromCharCode(parseInt(hex, 16));
-          }
-        }
-
-        value += char;
-
-      }
-
+      // value
       const attr = new AttributeTypeAndValue({ type });
-      if (valueType === ValueType.hexadecimal) {
-        attr.value.anyValue = Convert.FromHex(value);
+
+      if (value.charAt(0) === "#") {
+        // hexadecimal
+        attr.value.anyValue = Convert.FromHex(value.slice(1));
       } else {
+        // simple
+        const quotedMatches = /(?:")(.*?)(?<!\\)(?:")/.exec(value);
+        if (quotedMatches) {
+          // quoted
+          value = quotedMatches[1];
+        }
+        value = value
+          .replace(/\\0a/ig, "\n")  // \n
+          .replace(/\\0d/ig, "\r")  // \r
+          .replace(/\\0g/ig, "\t")  // \t
+          .replace(/\\(.)/g, "$1"); // unescape
+
         if (type === names.get("E") || type === names.get("DC")) {
           attr.value.ia5String = value;
         } else {
           attr.value.printableString = value;
         }
       }
-      if (subAttribute) {
+      if (level === "+") {
         asn[asn.length - 1].push(attr);
       } else {
         asn.push(new RelativeDistinguishedName([attr]));
       }
-      subAttribute = char === "+";
+
+      level = next;
     }
 
     return asn;
