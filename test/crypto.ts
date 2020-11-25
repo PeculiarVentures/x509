@@ -122,6 +122,22 @@ context("crypto", () => {
       assert.strictEqual(name.toString(), "CN=Some Name, O=Peculiar Ventures\\, LLC, O=Peculiar Ventures\\, LLC, CN=name2+O=Test+CN=name3+E=some@email.com, 1.2.3.4.5=#04020102+DC=some.com");
     });
 
+    it("extra names", () => {
+      const text = "Email=some@email.com, IP=192.168.0.1, GUID={8ee13e53-2c1c-42bb-8df7-39927c0bdbb6}";
+      const name = new x509.Name(text, {
+        "Email": "1.2.3.4.5.1",
+        "IP": "1.2.3.4.5.2",
+        "GUID": "1.2.3.4.5.3",
+      });
+
+      assert.strictEqual(Convert.ToHex(name.toArrayBuffer()), "30663119301706052a03040501130e736f6d6540656d61696c2e636f6d3116301406052a03040502130b3139322e3136382e302e313131302f06052a0304050313267b38656531336535332d326331632d343262622d386466372d3339393237633062646262367d");
+      assert.deepStrictEqual(name.toJSON(), [
+        { "Email": ["some@email.com"] },
+        { "IP": ["192.168.0.1"] },
+        { "GUID": ["{8ee13e53-2c1c-42bb-8df7-39927c0bdbb6}"] },
+      ]);
+    });
+
   });
 
   context("Pkcs10CertificateRequest", () => {

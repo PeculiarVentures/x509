@@ -3,10 +3,10 @@ import { AsnConvert } from "@peculiar/asn1-schema";
 import { BufferSourceConverter, Convert } from "pvtsutils";
 
 
-interface IdOrName {
+export interface IdOrName {
   [idOrName: string]: string;
 }
-class NameIdentifier {
+export class NameIdentifier {
 
   private items: IdOrName = {};
 
@@ -59,18 +59,14 @@ function escape(data: string) {
     ;
 }
 
-enum ValueType {
-  simple,
-  quoted,
-  hexadecimal,
-}
-
 /**
  * UTF-8 String Representation of Distinguished Names
  *
  * https://tools.ietf.org/html/rfc2253
  */
 export class Name {
+
+  private extraNames = new NameIdentifier();
 
   /**
    * ASN.1 Name
@@ -80,8 +76,23 @@ export class Name {
   /**
    * Creates a new instance
    * @param data
+   * @param extraNames Extra identifiers for name customization
+   * @example
+   * const text = "URL=http://some.url.com, IP=192.168.0.1, GUID={8ee13e53-2c1c-42bb-8df7-39927c0bdbb6}";
+   * const name = new x509.Name(text, {
+   *   "Email": "1.2.3.4.5.1",
+   *   "IP": "1.2.3.4.5.2",
+   *   "GUID": "1.2.3.4.5.3",
+   * });
    */
-  public constructor(data: BufferSource | AsnName | string | JsonName) {
+  public constructor(data: BufferSource | AsnName | string | JsonName, extraNames: IdOrName = {}) {
+    for (const key in extraNames) {
+      if (Object.prototype.hasOwnProperty.call(extraNames, key)) {
+        const value = extraNames[key];
+        this.extraNames.register(key, value);
+      }
+    }
+
     if (typeof data === "string") {
       this.asn = this.fromString(data);
     } else if (data instanceof AsnName) {
@@ -93,13 +104,17 @@ export class Name {
     }
   }
 
+  private getName(idOrName: string) {
+    return this.extraNames.get(idOrName) || names.get(idOrName);
+  }
+
   /**
    * Returns string serialized Name
    */
   public toString() {
     return this.asn.map(rdn =>
       rdn.map(o => {
-        const type = names.get(o.type) || o.type;
+        const type = this.getName(o.type) || o.type;
         const value = o.value.anyValue
           // If the AttributeValue is of a type which does not have a string
           // representation defined for it, then it is simply encoded as an
@@ -127,7 +142,7 @@ export class Name {
     for (const rdn of this.asn) {
       const jsonItem: JsonAttributeAndValue = {};
       for (const attr of rdn) {
-        const type = names.get(attr.type) || attr.type;
+        const type = this.getName(attr.type) || attr.type;
         jsonItem[type] ??= [];
         jsonItem[type].push(attr.value.anyValue ? `#${Convert.ToHex(attr.value.anyValue)}` : attr.value.toString());
       }
@@ -144,7 +159,7 @@ export class Name {
   private fromString(data: string) {
     const asn = new AsnName();
 
-    const regex = /(\d\.[\d.]*\d|[A-Z]+)=(((?:").*?(?<!\\)(?:"))|([^"].*?))((?<!\\)[,+])/g;
+    const regex = /(\d\.[\d.]*\d|[A-Za-z]+)=(((?:").*?(?<!\\)(?:"))|([^"].*?))((?<!\\)[,+])/g;
     let matches: RegExpExecArray | null = null;
     let level = ",";
     // eslint-disable-next-line no-cond-assign
@@ -154,7 +169,7 @@ export class Name {
 
       // type
       if (!/[\d.]+/.test(type)) {
-        type = names.get(type) || "";
+        type = this.getName(type) || "";
       }
       if (!type) {
         throw new Error(`Cannot get OID for name type '${type}'`);
@@ -179,7 +194,7 @@ export class Name {
           .replace(/\\0g/ig, "\t")  // \t
           .replace(/\\(.)/g, "$1"); // unescape
 
-        if (type === names.get("E") || type === names.get("DC")) {
+        if (type === this.getName("E") || type === this.getName("DC")) {
           attr.value.ia5String = value;
         } else {
           attr.value.printableString = value;
@@ -209,7 +224,7 @@ export class Name {
       for (const type in item) {
         let typeId = type;
         if (!/[\d.]+/.test(type)) {
-          typeId = names.get(type) || "";
+          typeId = this.getName(type) || "";
         }
         if (!typeId) {
           throw new Error(`Cannot get OID for name type '${type}'`);
@@ -221,7 +236,7 @@ export class Name {
           if (value[0] === "#") {
             asnAttr.value.anyValue = Convert.FromHex(value.slice(1));
           } else {
-            if (typeId === names.get("E") || typeId === names.get("DC")) {
+            if (typeId === this.getName("E") || typeId === this.getName("DC")) {
               asnAttr.value.ia5String = value;
             } else {
               asnAttr.value.printableString = value;
