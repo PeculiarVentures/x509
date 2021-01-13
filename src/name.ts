@@ -159,13 +159,18 @@ export class Name {
   private fromString(data: string) {
     const asn = new AsnName();
 
-    const regex = /(\d\.[\d.]*\d|[A-Za-z]+)=(((?:").*?(?<!\\)(?:"))|([^"].*?))((?<!\\)[,+])/g;
+    const regex = /(\d\.[\d.]*\d|[A-Za-z]+)=((?:"")|(?:".*?[^\\]")|(?:[^,+].*?(?:[^\\][,+]))|(?:))([,+])?/g;
     let matches: RegExpExecArray | null = null;
     let level = ",";
     // eslint-disable-next-line no-cond-assign
     while (matches = regex.exec(`${data},`)) {
       let [, type, value] = matches;
-      const next = matches[5];
+      const lastChar = value[value.length-1];
+      if (lastChar === "," || lastChar === "+") {
+        value = value.slice(0, value.length-1);
+        matches[3] = lastChar;
+      }
+      const next = matches[3];
 
       // type
       if (!/[\d.]+/.test(type)) {
@@ -183,7 +188,7 @@ export class Name {
         attr.value.anyValue = Convert.FromHex(value.slice(1));
       } else {
         // simple
-        const quotedMatches = /(?:")(.*?)(?<!\\)(?:")/.exec(value);
+        const quotedMatches = /"(.*?[^\\])?"/.exec(value);
         if (quotedMatches) {
           // quoted
           value = quotedMatches[1];
