@@ -2,9 +2,12 @@ import "reflect-metadata";
 
 export * from "./extensions";
 export * from "./attributes";
+export * from "./asn_data";
+export * from "./asn_signature_formatter";
 export * from "./algorithm";
 export * from "./rsa_algorithm";
 export * from "./ec_algorithm";
+export * from "./ec_signature_formatter";
 export * from "./asn_data";
 export * from "./attribute";
 export * from "./extension";
@@ -24,6 +27,9 @@ import * as asnX509 from "@peculiar/asn1-x509";
 import * as asnPkcs9 from "@peculiar/asn1-pkcs9";
 import * as attributes from "./attributes";
 import * as extensions from "./extensions";
+import { container } from "tsyringe";
+import { AsnDefaultSignatureFormatter, diAsnSignatureFormatter } from "./asn_signature_formatter";
+import { AsnEcSignatureFormatter } from "./ec_signature_formatter";
 
 // Register x509 extensions
 extensions.ExtensionFactory.register(asnX509.id_ce_basicConstraints, extensions.BasicConstraintsExtension);
@@ -36,3 +42,13 @@ extensions.ExtensionFactory.register(asnX509.id_ce_subjectAltName, extensions.Su
 // Register x509 attributes
 attributes.AttributeFactory.register(asnPkcs9.id_pkcs9_at_challengePassword, attributes.ChallengePasswordAttribute);
 attributes.AttributeFactory.register(asnPkcs9.id_pkcs9_at_extensionRequest, attributes.ExtensionsAttribute);
+
+// Register signature formatters
+container.registerSingleton(diAsnSignatureFormatter, AsnDefaultSignatureFormatter);
+container.registerSingleton(diAsnSignatureFormatter, AsnEcSignatureFormatter);
+
+// Register EC named curves sizes
+AsnEcSignatureFormatter.namedCurveSize.set("P-256", 32);
+AsnEcSignatureFormatter.namedCurveSize.set("K-256", 32);
+AsnEcSignatureFormatter.namedCurveSize.set("P-384", 48);
+AsnEcSignatureFormatter.namedCurveSize.set("P-521", 66);

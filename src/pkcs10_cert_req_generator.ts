@@ -10,6 +10,7 @@ import { Extension } from "./extension";
 import { JsonName, Name } from "./name";
 import { Pkcs10CertificateRequest } from "./pkcs10_cert_req";
 import { HashedAlgorithm } from "./types";
+import { diAsnSignatureFormatter, IAsnSignatureFormatter } from "./asn_signature_formatter";
 
 export type Pkcs10CertificateRequestCreateParamsName = string | JsonName;
 
@@ -86,7 +87,21 @@ export class Pkcs10CertificateRequestGenerator {
     // Sign
     const tbs = AsnConvert.serialize(asnReq.certificationRequestInfo);
     const signature = await crypto.subtle.sign(signingAlgorithm, params.keys.privateKey, tbs);
-    asnReq.signature = signature;
+
+    // Convert WebCrypto signature to ASN.1 format
+    const signatureFormatters = container.resolveAll<IAsnSignatureFormatter>(diAsnSignatureFormatter).reverse();
+    let asnSignature: ArrayBuffer | null = null;
+    for (const signatureFormatter of signatureFormatters) {
+      asnSignature = signatureFormatter.toAsnSignature(signingAlgorithm, signature);
+      if (asnSignature) {
+        break;
+      }
+    }
+    if (!asnSignature) {
+      throw Error("Cannot convert WebCrypto signature value to ASN.1 format");
+    }
+
+    asnReq.signature = asnSignature;
 
     return new Pkcs10CertificateRequest(AsnConvert.serialize(asnReq));
   }

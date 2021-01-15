@@ -11,6 +11,7 @@ import { PublicKey } from "./public_key";
 import { AlgorithmProvider, diAlgorithmProvider } from "./algorithm";
 import { AttributeFactory, ExtensionsAttribute } from "./attributes";
 import { AsnEncodedType, PemData } from "./pem_data";
+import { diAsnSignatureFormatter, IAsnSignatureFormatter } from "./asn_signature_formatter";
 
 /**
  * Representation of PKCS10 Certificate Request
@@ -143,7 +144,21 @@ export class Pkcs10CertificateRequest extends PemData<CertificationRequest> {
   public async verify(crypto = cryptoProvider.get()) {
     const algorithm = { ...this.publicKey.algorithm, ...this.signatureAlgorithm };
     const publicKey = await this.publicKey.export(algorithm, ["verify"], crypto);
-    const ok = await crypto.subtle.verify(this.signatureAlgorithm, publicKey, this.signature, this.tbs);
+
+    // Convert ASN.1 signature to WebCrypto format
+    const signatureFormatters = container.resolveAll<IAsnSignatureFormatter>(diAsnSignatureFormatter).reverse();
+    let signature: ArrayBuffer | null = null;
+    for (const signatureFormatter of signatureFormatters) {
+      signature = signatureFormatter.toWebSignature(algorithm, this.signature);
+      if (signature) {
+        break;
+      }
+    }
+    if (!signature) {
+      throw Error("Cannot convert WebCrypto signature value to ASN.1 format");
+    }
+
+    const ok = await crypto.subtle.verify(this.signatureAlgorithm, publicKey, signature, this.tbs);
 
     return ok;
   }

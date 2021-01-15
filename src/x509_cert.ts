@@ -10,13 +10,14 @@ import { ExtensionFactory } from "./extensions/extension_factory";
 import { PublicKey } from "./public_key";
 import { AlgorithmProvider, diAlgorithmProvider } from "./algorithm";
 import { AsnEncodedType, PemData } from "./pem_data";
+import { diAsnSignatureFormatter, IAsnSignatureFormatter } from "./asn_signature_formatter";
 
 /**
  * Verification params of X509 certificate
  */
 export interface X509CertificateVerifyParams {
   date?: Date;
-  publicKey?: CryptoKey;
+  publicKey?: CryptoKey | PublicKey | X509Certificate;
   signatureOnly?: boolean;
 }
 
@@ -186,14 +187,53 @@ export class X509Certificate extends PemData<Certificate> {
    * @param crypto Crypto provider. Default is from CryptoProvider
    */
   public async verify(params: X509CertificateVerifyParams, crypto = cryptoProvider.get()) {
-    const date = params.date || new Date();
-    const keyAlgorithm = { ...this.publicKey.algorithm, ...this.signatureAlgorithm };
-    const publicKey = params.publicKey || await this.publicKey.export(keyAlgorithm, ["verify"], crypto);
+    let keyAlgorithm: Algorithm;
 
-    const ok = await crypto.subtle.verify(this.signatureAlgorithm, publicKey, this.signature, this.tbs);
+    // Convert public key to CryptoKey
+    let publicKey: CryptoKey;
+    const paramsKey = params.publicKey;
+    try {
+      if (!paramsKey) {
+        // self-signed
+        keyAlgorithm = { ...this.publicKey.algorithm, ...this.signatureAlgorithm };
+        publicKey = await this.publicKey.export(keyAlgorithm, ["verify"], crypto);
+      } else if (paramsKey instanceof X509Certificate) {
+        // X509Certificate
+        keyAlgorithm = { ...paramsKey.publicKey.algorithm, ...this.signatureAlgorithm };
+        publicKey = await paramsKey.publicKey.export(keyAlgorithm, ["verify"]);
+      } else if (paramsKey instanceof PublicKey) {
+        // PublicKey
+        keyAlgorithm = { ...paramsKey.algorithm, ...this.signatureAlgorithm };
+        publicKey = await paramsKey.export(keyAlgorithm, ["verify"]);
+      } else {
+        // CryptoKey
+        keyAlgorithm = { ...paramsKey.algorithm, ...this.signatureAlgorithm };
+        publicKey = paramsKey;
+      }
+    } catch {
+      // Application will throw exception if public key algorithm is not the same type which is needed for
+      // signature validation (eg leaf certificate is signed with RSA mechanism, public key is ECDSA)
+      return false;
+    }
+
+    // Convert ASN.1 signature to WebCrypto format
+    const signatureFormatters = container.resolveAll<IAsnSignatureFormatter>(diAsnSignatureFormatter).reverse();
+    let signature: ArrayBuffer | null = null;
+    for (const signatureFormatter of signatureFormatters) {
+      signature = signatureFormatter.toWebSignature(keyAlgorithm, this.signature);
+      if (signature) {
+        break;
+      }
+    }
+    if (!signature) {
+      throw Error("Cannot convert ASN.1 signature value to WebCrypto format");
+    }
+
+    const ok = await crypto.subtle.verify(this.signatureAlgorithm, publicKey, signature, this.tbs);
     if (params.signatureOnly) {
       return ok;
     } else {
+      const date = params.date || new Date();
       const time = date.getTime();
 
       return ok && this.notBefore.getTime() < time && time < this.notAfter.getTime();

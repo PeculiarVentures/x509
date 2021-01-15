@@ -8,6 +8,7 @@ import { Extension } from "./extension";
 import { JsonName, Name } from "./name";
 import { HashedAlgorithm } from "./types";
 import { X509Certificate } from "./x509_cert";
+import { diAsnSignatureFormatter, IAsnSignatureFormatter } from "./asn_signature_formatter";
 
 export type X509CertificateCreateParamsName = string | JsonName;
 
@@ -113,7 +114,21 @@ export class X509CertificateGenerator {
     // Sign
     const tbs = AsnConvert.serialize(asnX509.tbsCertificate);
     const signature = await crypto.subtle.sign(signingAlgorithm, params.signingKey, tbs);
-    asnX509.signatureValue = signature;
+
+    // Convert WebCrypto signature to ASN.1 format
+    const signatureFormatters = container.resolveAll<IAsnSignatureFormatter>(diAsnSignatureFormatter).reverse();
+    let asnSignature: ArrayBuffer | null = null;
+    for (const signatureFormatter of signatureFormatters) {
+      asnSignature = signatureFormatter.toAsnSignature(signingAlgorithm, signature);
+      if (asnSignature) {
+        break;
+      }
+    }
+    if (!asnSignature) {
+      throw Error("Cannot convert ASN.1 signature value to WebCrypto format");
+    }
+
+    asnX509.signatureValue = asnSignature;
 
     return new X509Certificate(AsnConvert.serialize(asnX509));
   }
