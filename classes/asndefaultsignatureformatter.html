@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>AttributeFactory | @peculiar/x509</title>
+	<title>AsnDefaultSignatureFormatter | @peculiar/x509</title>
 	<meta name="description" content="Documentation for @peculiar/x509">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,141 +56,97 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="attributefactory.html">AttributeFactory</a>
+					<a href="asndefaultsignatureformatter.html">AsnDefaultSignatureFormatter</a>
 				</li>
 			</ul>
-			<h1>Class AttributeFactory</h1>
+			<h1>Class AsnDefaultSignatureFormatter</h1>
 		</div>
 	</div>
 </header>
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
-			<section class="tsd-panel tsd-comment">
-				<div class="tsd-comment tsd-typography">
-					<div class="lead">
-						<p>Static class to manage X509 attributes</p>
-					</div>
-				</div>
-			</section>
 			<section class="tsd-panel tsd-hierarchy">
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">AttributeFactory</span>
+						<span class="target">AsnDefaultSignatureFormatter</span>
 					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel">
+				<h3>Implements</h3>
+				<ul class="tsd-hierarchy">
+					<li><a href="../interfaces/iasnsignatureformatter.html" class="tsd-signature-type">IAsnSignatureFormatter</a></li>
 				</ul>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
 				<h2>Index</h2>
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
-						<section class="tsd-index-section tsd-is-private tsd-is-private-protected">
-							<h3>Properties</h3>
-							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-static"><a href="attributefactory.html#items" class="tsd-kind-icon">items</a></li>
-							</ul>
-						</section>
 						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="attributefactory.html#create" class="tsd-kind-icon">create</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="attributefactory.html#register" class="tsd-kind-icon">register</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="asndefaultsignatureformatter.html#toasnsignature" class="tsd-kind-icon">to<wbr>Asn<wbr>Signature</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="asndefaultsignatureformatter.html#towebsignature" class="tsd-kind-icon">to<wbr>Web<wbr>Signature</a></li>
 							</ul>
 						</section>
 					</div>
 				</section>
 			</section>
-			<section class="tsd-panel-group tsd-member-group tsd-is-private tsd-is-private-protected">
-				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-static">
-					<a name="items" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagPrivate">Private</span> items</h3>
-					<div class="tsd-signature tsd-kind-icon">items<span class="tsd-signature-symbol">:</span> <a href="cryptoprovider.html#map" class="tsd-signature-type">Map</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-symbol">typeof </span><span class="tsd-signature-type">Attribute</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = new Map()</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/bf5b7b1/src/attributes/attribute_factory.ts#L8">src/attributes/attribute_factory.ts:8</a></li>
-						</ul>
-					</aside>
-				</section>
-			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Methods</h2>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
-					<a name="create" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagStatic">Static</span> create</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
-						<li class="tsd-signature tsd-kind-icon">create<span class="tsd-signature-symbol">(</span>data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">BufferSource</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="attribute.html" class="tsd-signature-type">Attribute</a></li>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="toasnsignature" class="tsd-anchor"></a>
+					<h3>to<wbr>Asn<wbr>Signature</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">to<wbr>Asn<wbr>Signature<span class="tsd-signature-symbol">(</span>algorithm<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Algorithm</span>, signature<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">BufferSource</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ArrayBuffer</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/iasnsignatureformatter.html">IAsnSignatureFormatter</a>.<a href="../interfaces/iasnsignatureformatter.html#toasnsignature">toAsnSignature</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/bf5b7b1/src/attributes/attribute_factory.ts#L33">src/attributes/attribute_factory.ts:33</a></li>
+									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/bf5b7b1/src/asn_signature_formatter.ts#L36">src/asn_signature_formatter.ts:36</a></li>
 								</ul>
 							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Returns X509 Attribute based on it&#39;s identifier</p>
-								</div>
-								<dl class="tsd-comment-tags">
-									<dt>example</dt>
-									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> attr = AttributeFactory.create(asnAttrRaw);</code></pre>
-									</dd>
-								</dl>
-							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>data: <span class="tsd-signature-type">BufferSource</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>DER encoded buffer</p>
-									</div>
+									<h5>algorithm: <span class="tsd-signature-type">Algorithm</span></h5>
+								</li>
+								<li>
+									<h5>signature: <span class="tsd-signature-type">BufferSource</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="attribute.html" class="tsd-signature-type">Attribute</a></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">ArrayBuffer</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h4>
 						</li>
 					</ul>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
-					<a name="register" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagStatic">Static</span> register</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
-						<li class="tsd-signature tsd-kind-icon">register<span class="tsd-signature-symbol">(</span>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="towebsignature" class="tsd-anchor"></a>
+					<h3>to<wbr>Web<wbr>Signature</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">to<wbr>Web<wbr>Signature<span class="tsd-signature-symbol">(</span>algorithm<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Algorithm</span>, signature<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">BufferSource</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ArrayBuffer</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/iasnsignatureformatter.html">IAsnSignatureFormatter</a>.<a href="../interfaces/iasnsignatureformatter.html#towebsignature">toWebSignature</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/bf5b7b1/src/attributes/attribute_factory.ts#L20">src/attributes/attribute_factory.ts:20</a></li>
+									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/bf5b7b1/src/asn_signature_formatter.ts#L40">src/asn_signature_formatter.ts:40</a></li>
 								</ul>
 							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Registers a new X509 Attribute class. If id already exists replaces it</p>
-								</div>
-								<dl class="tsd-comment-tags">
-									<dt>example</dt>
-									<dd><pre><code class="language-js">AttributeFactory.register(asnPkcs9.id_pkcs9_at_challengePassword, ChallengePasswordAttribute);</code></pre>
-									</dd>
-								</dl>
-							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>id: <span class="tsd-signature-type">string</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>Attribute identifier</p>
-									</div>
+									<h5>algorithm: <span class="tsd-signature-type">Algorithm</span></h5>
 								</li>
 								<li>
-									<h5>type: <span class="tsd-signature-type">any</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>Attribute class</p>
-									</div>
+									<h5>signature: <span class="tsd-signature-type">BufferSource</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">ArrayBuffer</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -209,16 +165,13 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-class">
-						<a href="attributefactory.html" class="tsd-kind-icon">Attribute<wbr>Factory</a>
+						<a href="asndefaultsignatureformatter.html" class="tsd-kind-icon">Asn<wbr>Default<wbr>Signature<wbr>Formatter</a>
 						<ul>
-							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-static">
-								<a href="attributefactory.html#items" class="tsd-kind-icon">items</a>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="asndefaultsignatureformatter.html#toasnsignature" class="tsd-kind-icon">to<wbr>Asn<wbr>Signature</a>
 							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
-								<a href="attributefactory.html#create" class="tsd-kind-icon">create</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
-								<a href="attributefactory.html#register" class="tsd-kind-icon">register</a>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="asndefaultsignatureformatter.html#towebsignature" class="tsd-kind-icon">to<wbr>Web<wbr>Signature</a>
 							</li>
 						</ul>
 					</li>
