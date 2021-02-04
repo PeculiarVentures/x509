@@ -660,4 +660,49 @@ D314IEOg4mnS8Q==
 
   });
 
+  it("Parse EdDSA certificate and validate it", async () => {
+    const pem = `-----BEGIN CERTIFICATE-----
+MIIBfzCCATGgAwIBAgIUfI5kSdcO2S0+LkpdL3b2VUJG10YwBQYDK2VwMDUxCzAJ
+BgNVBAYTAklUMQ8wDQYDVQQHDAZNaWxhbm8xFTATBgNVBAMMDFRlc3QgZWQyNTUx
+OTAeFw0yMDA5MDIxMzI1MjZaFw0zMDA5MDIxMzI1MjZaMDUxCzAJBgNVBAYTAklU
+MQ8wDQYDVQQHDAZNaWxhbm8xFTATBgNVBAMMDFRlc3QgZWQyNTUxOTAqMAUGAytl
+cAMhADupL/3LF2beQKKS95PeMPgKI6gxIV3QB9hjJC7/aCGFo1MwUTAdBgNVHQ4E
+FgQUa6W9z536I1l4EmQXrh5y2JqASugwHwYDVR0jBBgwFoAUa6W9z536I1l4EmQX
+rh5y2JqASugwDwYDVR0TAQH/BAUwAwEB/zAFBgMrZXADQQBvc3e+KJZaMzbX5TT9
+kPP9QH8fAvkAV/IWDxZrBL9lhLaY0tDSv0zWbw624uidBKPgmVD5wm3ec60dNVeF
+ZYYG
+-----END CERTIFICATE-----`;
+
+    const cert = new x509.X509Certificate(pem);
+    const ok = await cert.verify({
+      signatureOnly: true,
+    });
+    assert.deepStrictEqual(cert.signatureAlgorithm, { name: "EdDSA", namedCurve: "Ed25519" });
+    assert.strictEqual(ok, true);
+  });
+
+  it("Create X448 certificate", async () => {
+    const alg: EcKeyGenParams = {
+      name: "EdDSA",
+      namedCurve: "Ed448"
+    };
+    const keys = await crypto.subtle.generateKey(alg, false, ["sign", "verify"]) as CryptoKeyPair;
+    const spki = await crypto.subtle.exportKey("spki", keys.publicKey);
+    const publicKey = await crypto.subtle.importKey("spki", spki, { name: "ECDH-ES", namedCurve: "X448" } as EcKeyGenParams, true, ["verify"]);
+    const cert = await x509.X509CertificateGenerator.createSelfSigned({
+      serialNumber: "01",
+      name: "CN=Test",
+      notBefore: new Date("2020/01/01"),
+      notAfter: new Date("2024/01/02"),
+      signingAlgorithm: alg,
+      keys: {
+        ...keys,
+        publicKey,
+      }
+    });
+
+    const ok = await cert.verify({ signatureOnly: true });
+    assert.strictEqual(ok, true);
+  });
+
 });

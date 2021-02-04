@@ -186,7 +186,7 @@ export class X509Certificate extends PemData<Certificate> {
    * @param params Verification parameters
    * @param crypto Crypto provider. Default is from CryptoProvider
    */
-  public async verify(params: X509CertificateVerifyParams, crypto = cryptoProvider.get()) {
+  public async verify(params: X509CertificateVerifyParams = {}, crypto = cryptoProvider.get()) {
     let keyAlgorithm: Algorithm;
 
     // Convert public key to CryptoKey
@@ -210,7 +210,10 @@ export class X509Certificate extends PemData<Certificate> {
         keyAlgorithm = { ...paramsKey.algorithm, ...this.signatureAlgorithm };
         publicKey = paramsKey;
       }
-    } catch {
+    } catch (e) {
+      // NOTE: Uncomment the next line to see more information about errors
+      // console.error(e);
+
       // Application will throw exception if public key algorithm is not the same type which is needed for
       // signature validation (eg leaf certificate is signed with RSA mechanism, public key is ECDSA)
       return false;
