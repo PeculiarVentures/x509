@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Pkcs10CertificateRequestGenerator | @peculiar/x509</title>
+	<title>EdAlgorithm | @peculiar/x509</title>
 	<meta name="description" content="Documentation for @peculiar/x509">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,10 +56,10 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="pkcs10certificaterequestgenerator.html">Pkcs10CertificateRequestGenerator</a>
+					<a href="edalgorithm.html">EdAlgorithm</a>
 				</li>
 			</ul>
-			<h1>Class Pkcs10CertificateRequestGenerator</h1>
+			<h1>Class EdAlgorithm</h1>
 		</div>
 	</div>
 </header>
@@ -69,7 +69,7 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>Generator of PKCS10 certificate requests</p>
+						<p>ECDH-ES and EdDSA algorithm provider</p>
 					</div>
 				</div>
 			</section>
@@ -77,8 +77,14 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">Pkcs10CertificateRequestGenerator</span>
+						<span class="target">EdAlgorithm</span>
 					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel">
+				<h3>Implements</h3>
+				<ul class="tsd-hierarchy">
+					<li><a href="../interfaces/ialgorithm.html" class="tsd-signature-type">IAlgorithm</a></li>
 				</ul>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
@@ -88,7 +94,8 @@
 						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="pkcs10certificaterequestgenerator.html#create" class="tsd-kind-icon">create</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="edalgorithm.html#toasnalgorithm" class="tsd-kind-icon">to<wbr>Asn<wbr>Algorithm</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="edalgorithm.html#towebalgorithm" class="tsd-kind-icon">to<wbr>Web<wbr>Algorithm</a></li>
 							</ul>
 						</section>
 					</div>
@@ -96,40 +103,51 @@
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Methods</h2>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
-					<a name="create" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagStatic">Static</span> create</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
-						<li class="tsd-signature tsd-kind-icon">create<span class="tsd-signature-symbol">(</span>params<span class="tsd-signature-symbol">: </span><a href="../interfaces/pkcs10certificaterequestcreateparams.html" class="tsd-signature-type">Pkcs10CertificateRequestCreateParams</a>, crypto<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Crypto</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="pkcs10certificaterequest.html" class="tsd-signature-type">Pkcs10CertificateRequest</a><span class="tsd-signature-symbol">&gt;</span></li>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="toasnalgorithm" class="tsd-anchor"></a>
+					<h3>to<wbr>Asn<wbr>Algorithm</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">to<wbr>Asn<wbr>Algorithm<span class="tsd-signature-symbol">(</span>alg<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">EcKeyGenParams</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">AlgorithmIdentifier</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/ialgorithm.html">IAlgorithm</a>.<a href="../interfaces/ialgorithm.html#toasnalgorithm">toAsnAlgorithm</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/c439ded/src/pkcs10_cert_req_generator.ts#L53">src/pkcs10_cert_req_generator.ts:53</a></li>
+									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/c439ded/src/ed_algorithm.ts#L21">src/ed_algorithm.ts:21</a></li>
 								</ul>
 							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Creates a new PKCS10 Certificate request</p>
-								</div>
-							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>params: <a href="../interfaces/pkcs10certificaterequestcreateparams.html" class="tsd-signature-type">Pkcs10CertificateRequestCreateParams</a></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>Create parameters</p>
-									</div>
-								</li>
-								<li>
-									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> crypto: <span class="tsd-signature-type">Crypto</span><span class="tsd-signature-symbol"> = cryptoProvider.get()</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>Crypto provider. Default is from CryptoProvider</p>
-									</div>
+									<h5>alg: <span class="tsd-signature-type">EcKeyGenParams</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="pkcs10certificaterequest.html" class="tsd-signature-type">Pkcs10CertificateRequest</a><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">AlgorithmIdentifier</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="towebalgorithm" class="tsd-anchor"></a>
+					<h3>to<wbr>Web<wbr>Algorithm</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">to<wbr>Web<wbr>Algorithm<span class="tsd-signature-symbol">(</span>alg<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">AlgorithmIdentifier</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/hashedalgorithm.html" class="tsd-signature-type">HashedAlgorithm</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">EcKeyGenParams</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/ialgorithm.html">IAlgorithm</a>.<a href="../interfaces/ialgorithm.html#towebalgorithm">toWebAlgorithm</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/c439ded/src/ed_algorithm.ts#L53">src/ed_algorithm.ts:53</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>alg: <span class="tsd-signature-type">AlgorithmIdentifier</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="../interfaces/hashedalgorithm.html" class="tsd-signature-type">HashedAlgorithm</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">EcKeyGenParams</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -148,10 +166,13 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-class">
-						<a href="pkcs10certificaterequestgenerator.html" class="tsd-kind-icon">Pkcs10<wbr>Certificate<wbr>Request<wbr>Generator</a>
+						<a href="edalgorithm.html" class="tsd-kind-icon">Ed<wbr>Algorithm</a>
 						<ul>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
-								<a href="pkcs10certificaterequestgenerator.html#create" class="tsd-kind-icon">create</a>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="edalgorithm.html#toasnalgorithm" class="tsd-kind-icon">to<wbr>Asn<wbr>Algorithm</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="edalgorithm.html#towebalgorithm" class="tsd-kind-icon">to<wbr>Web<wbr>Algorithm</a>
 							</li>
 						</ul>
 					</li>
