@@ -195,6 +195,22 @@ context("crypto", () => {
       assert.deepStrictEqual(csr.signatureAlgorithm, { name: "ECDSA", hash: { name: "SHA-384" } });
       assert.deepStrictEqual(csr.publicKey.algorithm, { name: "ECDSA", namedCurve: "P-384" });
     });
+
+    it("ECDSA K-256", async () => {
+        const keys = await crypto.subtle.generateKey({ name: "ECDSA", namedCurve: "K-256" }, false, ["sign", "verify"]) as CryptoKeyPair;
+        const csr = await x509.Pkcs10CertificateRequestGenerator.create({
+          keys,
+          signingAlgorithm: { name: "ECDSA", hash: "SHA-256" },
+        });
+
+        assert(csr);
+        assert.strictEqual(csr.subject, "");
+        assert.deepStrictEqual(csr.attributes.length, 0);
+        assert.deepStrictEqual(csr.extensions.length, 0);
+        assert.deepStrictEqual(csr.signatureAlgorithm, { name: "ECDSA", hash: { name: "SHA-256" } });
+        assert.deepStrictEqual(csr.publicKey.algorithm, { name: "ECDSA", namedCurve: "K-256" });
+    });
+
   });
 
   context("x509", () => {
@@ -423,6 +439,9 @@ D314IEOg4mnS8Q==
         signingAlgorithm: alg,
         publicKey: userKeys.publicKey,
         signingKey: caKeys.privateKey,
+        extensions: [
+          await x509.SubjectKeyIdentifierExtension.create(userKeys.publicKey)
+        ]
       });
 
       ok = await userCert.verify({

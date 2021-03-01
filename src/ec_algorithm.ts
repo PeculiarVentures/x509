@@ -11,6 +11,8 @@ import { AsnConvert } from "@peculiar/asn1-schema";
 @injectable()
 export class EcAlgorithm implements IAlgorithm {
 
+  public static SECP256K1 = "1.3.132.0.10";
+
   public toAsnAlgorithm(alg: HashedAlgorithm | EcKeyGenParams): AlgorithmIdentifier | null {
     switch (alg.name.toLowerCase()) {
       case "ecdsa":
@@ -31,6 +33,9 @@ export class EcAlgorithm implements IAlgorithm {
           switch (alg.namedCurve) {
             case "P-256":
               parameters = asn1Ecc.id_secp256r1;
+              break;
+            case "K-256":
+              parameters = EcAlgorithm.SECP256K1;
               break;
             case "P-384":
               parameters = asn1Ecc.id_secp384r1;
@@ -69,6 +74,8 @@ export class EcAlgorithm implements IAlgorithm {
         switch (parameters.namedCurve) {
           case asn1Ecc.id_secp256r1:
             return { name: "ECDSA", namedCurve: "P-256" };
+          case EcAlgorithm.SECP256K1:
+            return { name: "ECDSA", namedCurve: "K-256" };
           case asn1Ecc.id_secp384r1:
             return { name: "ECDSA", namedCurve: "P-384" };
           case asn1Ecc.id_secp521r1:
