@@ -255,15 +255,18 @@ export class X509Certificate extends PemData<Certificate> {
    */
   public async getThumbprint(algorithm: globalThis.AlgorithmIdentifier, crypto?: Crypto): Promise<ArrayBuffer>;
   public async getThumbprint(...args: any[]) {
-    let crypto = cryptoProvider.get();
+    let crypto: Crypto;
     let algorithm = "SHA-1";
-    if (args.length >= 1 && !args[0]?.subtle) {
-      // crypto?
-      algorithm = args[0] || algorithm;
-      crypto = args[1] || crypto;
-    } else {
-      crypto = args[0] || crypto;
+    if (args[0]) {
+      if (!args[0].subtle) {
+        // crypto?
+        algorithm = args[0] || algorithm;
+        crypto = args[1];
+      } else {
+        crypto = args[0];
+      }
     }
+    crypto ??= cryptoProvider.get();
 
     return await crypto.subtle.digest(algorithm, this.rawData);
   }
