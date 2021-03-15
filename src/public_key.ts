@@ -50,7 +50,7 @@ export class PublicKey extends PemData<SubjectPublicKeyInfo>{
    * @param keyUsages A list of key usages
    * @param crypto Crypto provider. Default is from CryptoProvider
    */
-  public async export(algorithm: Algorithm | EcKeyImportParams, keyUsages: KeyUsage[], crypto?: Crypto): Promise<CryptoKey>;
+  public async export(algorithm: Algorithm | EcKeyImportParams | RsaHashedImportParams, keyUsages: KeyUsage[], crypto?: Crypto): Promise<CryptoKey>;
   public async export(...args: any[]) {
     let crypto: Crypto;
     let keyUsages: KeyUsage[] = ["verify"];
