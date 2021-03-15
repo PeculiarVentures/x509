@@ -1,5 +1,5 @@
 {
-  "inputFiles": ["./src"],
-  "mode": "file",
-  "out": "docs"
+  "entryPoints": ["./src/index.ts"],
+  "out": "docs",
+  "categorizeByGroup": true
 }
