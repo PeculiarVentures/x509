@@ -7,6 +7,7 @@
 	<meta name="description" content="Documentation for @peculiar/x509">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
+	<script async src="../assets/js/search.js" id="search-script"></script>
 </head>
 <body>
 <header>
@@ -40,8 +41,6 @@
 							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
 							<input type="checkbox" id="tsd-filter-externals" checked />
 							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
-							<input type="checkbox" id="tsd-filter-only-exported" />
-							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
 					</div>
 					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
@@ -53,7 +52,7 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../globals.html">Globals</a>
+					<a href="../modules.html">@peculiar/x509</a>
 				</li>
 				<li>
 					<a href="authoritykeyidentifierextension.html">AuthorityKeyIdentifierExtension</a>
@@ -77,7 +76,7 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<a href="extension.html" class="tsd-signature-type">Extension</a>
+						<a href="extension.html" class="tsd-signature-type" data-tsd-kind="Class">Extension</a>
 						<ul class="tsd-hierarchy">
 							<li>
 								<span class="target">AuthorityKeyIdentifierExtension</span>
@@ -124,16 +123,16 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Authority<wbr>Key<wbr>Identifier<wbr>Extension<span class="tsd-signature-symbol">(</span>raw<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">BufferSource</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="authoritykeyidentifierextension.html" class="tsd-signature-type">AuthorityKeyIdentifierExtension</a></li>
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Authority<wbr>Key<wbr>Identifier<wbr>Extension<span class="tsd-signature-symbol">(</span>identifier<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, critical<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="authoritykeyidentifierextension.html" class="tsd-signature-type">AuthorityKeyIdentifierExtension</a></li>
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Authority<wbr>Key<wbr>Identifier<wbr>Extension<span class="tsd-signature-symbol">(</span>id<span class="tsd-signature-symbol">: </span><a href="../interfaces/certificateidentifier.html" class="tsd-signature-type">CertificateIdentifier</a>, critical<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="authoritykeyidentifierextension.html" class="tsd-signature-type">AuthorityKeyIdentifierExtension</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Authority<wbr>Key<wbr>Identifier<wbr>Extension<span class="tsd-signature-symbol">(</span>raw<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">BufferSource</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="authoritykeyidentifierextension.html" class="tsd-signature-type" data-tsd-kind="Class">AuthorityKeyIdentifierExtension</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Authority<wbr>Key<wbr>Identifier<wbr>Extension<span class="tsd-signature-symbol">(</span>identifier<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, critical<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="authoritykeyidentifierextension.html" class="tsd-signature-type" data-tsd-kind="Class">AuthorityKeyIdentifierExtension</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Authority<wbr>Key<wbr>Identifier<wbr>Extension<span class="tsd-signature-symbol">(</span>id<span class="tsd-signature-symbol">: </span><a href="../interfaces/certificateidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">CertificateIdentifier</a>, critical<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="authoritykeyidentifierextension.html" class="tsd-signature-type" data-tsd-kind="Class">AuthorityKeyIdentifierExtension</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Overrides <a href="extension.html">Extension</a>.<a href="extension.html#constructor">constructor</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/f946e2d/src/extensions/authority_key_identifier.ts#L65">src/extensions/authority_key_identifier.ts:65</a></li>
+									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/90c881e/src/extensions/authority_key_identifier.ts#L65">src/extensions/authority_key_identifier.ts:65</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -146,19 +145,17 @@
 								<li>
 									<h5>raw: <span class="tsd-signature-type">BufferSource</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<div class="lead">
-											<p>DER encoded buffer</p>
-										</div>
+										<p>DER encoded buffer</p>
 									</div>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="authoritykeyidentifierextension.html" class="tsd-signature-type">AuthorityKeyIdentifierExtension</a></h4>
+							<h4 class="tsd-returns-title">Returns <a href="authoritykeyidentifierextension.html" class="tsd-signature-type" data-tsd-kind="Class">AuthorityKeyIdentifierExtension</a></h4>
 						</li>
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Overrides <a href="extension.html">Extension</a>.<a href="extension.html#constructor">constructor</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/f946e2d/src/extensions/authority_key_identifier.ts#L71">src/extensions/authority_key_identifier.ts:71</a></li>
+									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/90c881e/src/extensions/authority_key_identifier.ts#L71">src/extensions/authority_key_identifier.ts:71</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -171,27 +168,23 @@
 								<li>
 									<h5>identifier: <span class="tsd-signature-type">string</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<div class="lead">
-											<p>Hexadecimal representation of key identifier</p>
-										</div>
+										<p>Hexadecimal representation of key identifier</p>
 									</div>
 								</li>
 								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> critical: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span></h5>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> critical: <span class="tsd-signature-type">boolean</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<div class="lead">
-											<p>Indicates where extension is critical. Default is <code>false</code></p>
-										</div>
+										<p>Indicates where extension is critical. Default is <code>false</code></p>
 									</div>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="authoritykeyidentifierextension.html" class="tsd-signature-type">AuthorityKeyIdentifierExtension</a></h4>
+							<h4 class="tsd-returns-title">Returns <a href="authoritykeyidentifierextension.html" class="tsd-signature-type" data-tsd-kind="Class">AuthorityKeyIdentifierExtension</a></h4>
 						</li>
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Overrides <a href="extension.html">Extension</a>.<a href="extension.html#constructor">constructor</a></p>
+								<p>Overrides Extension.constructor</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/f946e2d/src/extensions/authority_key_identifier.ts#L77">src/extensions/authority_key_identifier.ts:77</a></li>
+									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/90c881e/src/extensions/authority_key_identifier.ts#L77">src/extensions/authority_key_identifier.ts:77</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -202,23 +195,19 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>id: <a href="../interfaces/certificateidentifier.html" class="tsd-signature-type">CertificateIdentifier</a></h5>
+									<h5>id: <a href="../interfaces/certificateidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">CertificateIdentifier</a></h5>
 									<div class="tsd-comment tsd-typography">
-										<div class="lead">
-											<p>Certificate identifier in the issuer name and serial number</p>
-										</div>
+										<p>Certificate identifier in the issuer name and serial number</p>
 									</div>
 								</li>
 								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> critical: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span></h5>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> critical: <span class="tsd-signature-type">boolean</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<div class="lead">
-											<p>Indicates where extension is critical. Default is <code>false</code></p>
-										</div>
+										<p>Indicates where extension is critical. Default is <code>false</code></p>
 									</div>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="authoritykeyidentifierextension.html" class="tsd-signature-type">AuthorityKeyIdentifierExtension</a></h4>
+							<h4 class="tsd-returns-title">Returns <a href="authoritykeyidentifierextension.html" class="tsd-signature-type" data-tsd-kind="Class">AuthorityKeyIdentifierExtension</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -228,10 +217,10 @@
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="certid" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> cert<wbr>Id</h3>
-					<div class="tsd-signature tsd-kind-icon">cert<wbr>Id<span class="tsd-signature-symbol">:</span> <a href="../interfaces/certificateidentifier.html" class="tsd-signature-type">CertificateIdentifier</a></div>
+					<div class="tsd-signature tsd-kind-icon">cert<wbr>Id<span class="tsd-signature-symbol">:</span> <a href="../interfaces/certificateidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">CertificateIdentifier</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/f946e2d/src/extensions/authority_key_identifier.ts#L65">src/extensions/authority_key_identifier.ts:65</a></li>
+							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/90c881e/src/extensions/authority_key_identifier.ts#L65">src/extensions/authority_key_identifier.ts:65</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -247,7 +236,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="extension.html">Extension</a>.<a href="extension.html#critical">critical</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/f946e2d/src/extension.ts#L18">src/extension.ts:18</a></li>
+							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/90c881e/src/extension.ts#L18">src/extension.ts:18</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -259,10 +248,10 @@
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="keyid" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> key<wbr>Id</h3>
-					<div class="tsd-signature tsd-kind-icon">key<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></div>
+					<div class="tsd-signature tsd-kind-icon">key<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/f946e2d/src/extensions/authority_key_identifier.ts#L60">src/extensions/authority_key_identifier.ts:60</a></li>
+							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/90c881e/src/extensions/authority_key_identifier.ts#L60">src/extensions/authority_key_identifier.ts:60</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -276,9 +265,9 @@
 					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> raw<wbr>Data</h3>
 					<div class="tsd-signature tsd-kind-icon">raw<wbr>Data<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">ArrayBuffer</span></div>
 					<aside class="tsd-sources">
-						<p>Inherited from <a href="asndata.html">AsnData</a>.<a href="asndata.html#rawdata">rawData</a></p>
+						<p>Inherited from <a href="extension.html">Extension</a>.<a href="extension.html#rawdata">rawData</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/f946e2d/src/asn_data.ts#L13">src/asn_data.ts:13</a></li>
+							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/90c881e/src/asn_data.ts#L13">src/asn_data.ts:13</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -294,7 +283,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="extension.html">Extension</a>.<a href="extension.html#type">type</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/f946e2d/src/extension.ts#L14">src/extension.ts:14</a></li>
+							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/90c881e/src/extension.ts#L14">src/extension.ts:14</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -310,7 +299,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="extension.html">Extension</a>.<a href="extension.html#value">value</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/f946e2d/src/extension.ts#L23">src/extension.ts:23</a></li>
+							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/90c881e/src/extension.ts#L23">src/extension.ts:23</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -326,14 +315,14 @@
 					<a name="equal" class="tsd-anchor"></a>
 					<h3>equal</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-						<li class="tsd-signature tsd-kind-icon">equal<span class="tsd-signature-symbol">(</span>data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">data</span><span class="tsd-signature-symbol"> is </span><span class="tsd-signature-type">this</span></li>
+						<li class="tsd-signature tsd-kind-icon">equal<span class="tsd-signature-symbol">(</span>data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">data</span><span class="tsd-signature-symbol"> is </span><a href="authoritykeyidentifierextension.html" class="tsd-signature-type" data-tsd-kind="Class">AuthorityKeyIdentifierExtension</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from <a href="asndata.html">AsnData</a>.<a href="asndata.html#equal">equal</a></p>
+								<p>Inherited from <a href="extension.html">Extension</a>.<a href="extension.html#equal">equal</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/f946e2d/src/asn_data.ts#L50">src/asn_data.ts:50</a></li>
+									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/90c881e/src/asn_data.ts#L50">src/asn_data.ts:50</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -350,7 +339,7 @@
 									</div>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">data</span><span class="tsd-signature-symbol"> is </span><span class="tsd-signature-type">this</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">data</span><span class="tsd-signature-symbol"> is </span><a href="authoritykeyidentifierextension.html" class="tsd-signature-type" data-tsd-kind="Class">AuthorityKeyIdentifierExtension</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -365,7 +354,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="extension.html">Extension</a>.<a href="extension.html#oninit">onInit</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/f946e2d/src/extensions/authority_key_identifier.ts#L101">src/extensions/authority_key_identifier.ts:101</a></li>
+									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/90c881e/src/extensions/authority_key_identifier.ts#L101">src/extensions/authority_key_identifier.ts:101</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -382,15 +371,15 @@
 					<a name="create" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagStatic">Static</span> create</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
-						<li class="tsd-signature tsd-kind-icon">create<span class="tsd-signature-symbol">(</span>cert<span class="tsd-signature-symbol">: </span><a href="x509certificate.html" class="tsd-signature-type">X509Certificate</a>, critical<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span>, crypto<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Crypto</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="authoritykeyidentifierextension.html" class="tsd-signature-type">AuthorityKeyIdentifierExtension</a><span class="tsd-signature-symbol">&gt;</span></li>
-						<li class="tsd-signature tsd-kind-icon">create<span class="tsd-signature-symbol">(</span>certId<span class="tsd-signature-symbol">: </span><a href="../interfaces/certificateidentifier.html" class="tsd-signature-type">CertificateIdentifier</a>, critical<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span>, crypto<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Crypto</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="authoritykeyidentifierextension.html" class="tsd-signature-type">AuthorityKeyIdentifierExtension</a><span class="tsd-signature-symbol">&gt;</span></li>
-						<li class="tsd-signature tsd-kind-icon">create<span class="tsd-signature-symbol">(</span>publicKey<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">CryptoKey</span>, critical<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span>, crypto<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Crypto</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="authoritykeyidentifierextension.html" class="tsd-signature-type">AuthorityKeyIdentifierExtension</a><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">create<span class="tsd-signature-symbol">(</span>cert<span class="tsd-signature-symbol">: </span><a href="x509certificate.html" class="tsd-signature-type" data-tsd-kind="Class">X509Certificate</a>, critical<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span>, crypto<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Crypto</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="authoritykeyidentifierextension.html" class="tsd-signature-type" data-tsd-kind="Class">AuthorityKeyIdentifierExtension</a><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">create<span class="tsd-signature-symbol">(</span>certId<span class="tsd-signature-symbol">: </span><a href="../interfaces/certificateidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">CertificateIdentifier</a>, critical<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span>, crypto<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Crypto</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="authoritykeyidentifierextension.html" class="tsd-signature-type" data-tsd-kind="Class">AuthorityKeyIdentifierExtension</a><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">create<span class="tsd-signature-symbol">(</span>publicKey<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">CryptoKey</span>, critical<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span>, crypto<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Crypto</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="authoritykeyidentifierextension.html" class="tsd-signature-type" data-tsd-kind="Class">AuthorityKeyIdentifierExtension</a><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/f946e2d/src/extensions/authority_key_identifier.ts#L30">src/extensions/authority_key_identifier.ts:30</a></li>
+									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/90c881e/src/extensions/authority_key_identifier.ts#L30">src/extensions/authority_key_identifier.ts:30</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -401,13 +390,13 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>cert: <a href="x509certificate.html" class="tsd-signature-type">X509Certificate</a></h5>
+									<h5>cert: <a href="x509certificate.html" class="tsd-signature-type" data-tsd-kind="Class">X509Certificate</a></h5>
 									<div class="tsd-comment tsd-typography">
 										<p>Certificate</p>
 									</div>
 								</li>
 								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> critical: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span></h5>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> critical: <span class="tsd-signature-type">boolean</span></h5>
 									<div class="tsd-comment tsd-typography">
 										<p>Indicates where extension is critical. Default is <code>false</code></p>
 									</div>
@@ -419,12 +408,12 @@
 									</div>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="authoritykeyidentifierextension.html" class="tsd-signature-type">AuthorityKeyIdentifierExtension</a><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="authoritykeyidentifierextension.html" class="tsd-signature-type" data-tsd-kind="Class">AuthorityKeyIdentifierExtension</a><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/f946e2d/src/extensions/authority_key_identifier.ts#L37">src/extensions/authority_key_identifier.ts:37</a></li>
+									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/90c881e/src/extensions/authority_key_identifier.ts#L37">src/extensions/authority_key_identifier.ts:37</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -435,13 +424,13 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>certId: <a href="../interfaces/certificateidentifier.html" class="tsd-signature-type">CertificateIdentifier</a></h5>
+									<h5>certId: <a href="../interfaces/certificateidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">CertificateIdentifier</a></h5>
 									<div class="tsd-comment tsd-typography">
 										<p>Certificate identifier</p>
 									</div>
 								</li>
 								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> critical: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span></h5>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> critical: <span class="tsd-signature-type">boolean</span></h5>
 									<div class="tsd-comment tsd-typography">
 										<p>Indicates where extension is critical. Default is <code>false</code></p>
 									</div>
@@ -453,12 +442,12 @@
 									</div>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="authoritykeyidentifierextension.html" class="tsd-signature-type">AuthorityKeyIdentifierExtension</a><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="authoritykeyidentifierextension.html" class="tsd-signature-type" data-tsd-kind="Class">AuthorityKeyIdentifierExtension</a><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/f946e2d/src/extensions/authority_key_identifier.ts#L44">src/extensions/authority_key_identifier.ts:44</a></li>
+									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/90c881e/src/extensions/authority_key_identifier.ts#L44">src/extensions/authority_key_identifier.ts:44</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -475,7 +464,7 @@
 									</div>
 								</li>
 								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> critical: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span></h5>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> critical: <span class="tsd-signature-type">boolean</span></h5>
 									<div class="tsd-comment tsd-typography">
 										<p>Indicates where extension is critical. Default is <code>false</code></p>
 									</div>
@@ -487,7 +476,7 @@
 									</div>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="authoritykeyidentifierextension.html" class="tsd-signature-type">AuthorityKeyIdentifierExtension</a><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="authoritykeyidentifierextension.html" class="tsd-signature-type" data-tsd-kind="Class">AuthorityKeyIdentifierExtension</a><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -496,8 +485,8 @@
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 			<nav class="tsd-navigation primary">
 				<ul>
-					<li class="globals  ">
-						<a href="../globals.html"><em>Globals</em></a>
+					<li class=" ">
+						<a href="../modules.html">Exports</a>
 					</li>
 				</ul>
 			</nav>

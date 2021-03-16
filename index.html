@@ -7,6 +7,7 @@
 	<meta name="description" content="Documentation for @peculiar/x509">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="assets/css/main.css">
+	<script async src="assets/js/search.js" id="search-script"></script>
 </head>
 <body>
 <header>
@@ -40,8 +41,6 @@
 							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
 							<input type="checkbox" id="tsd-filter-externals" checked />
 							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
-							<input type="checkbox" id="tsd-filter-only-exported" />
-							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
 					</div>
 					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
@@ -51,11 +50,6 @@
 	</div>
 	<div class="tsd-page-title">
 		<div class="container">
-			<ul class="tsd-breadcrumb">
-				<li>
-					<a href="globals.html">Globals</a>
-				</li>
-			</ul>
 			<h1>@peculiar/x509</h1>
 		</div>
 	</div>
@@ -94,7 +88,8 @@
 				<a href="#installation" id="installation" style="color: inherit; text-decoration: none;">
 					<h2>Installation</h2>
 				</a>
-				<pre><code><span class="hljs-built_in">npm</span> install @peculiar/x509</code></pre>
+				<pre><code><span style="color: #001080">npm</span><span style="color: #000000"> </span><span style="color: #001080">install</span><span style="color: #000000"> @</span><span style="color: #001080">peculiar</span><span style="color: #000000">/</span><span style="color: #001080">x509</span>
+</code></pre>
 				<a href="#documentation" id="documentation" style="color: inherit; text-decoration: none;">
 					<h2>Documentation</h2>
 				</a>
@@ -109,7 +104,8 @@
 				<blockquote>
 					<p>WARN: We recommend hosting and controlling your own copy for security reasons</p>
 				</blockquote>
-				<pre><code class="language-html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">&quot;https://unpkg.com/@peculiar/x509&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
+				<pre><code class="language-html"><span style="color: #800000">&lt;script</span><span style="color: #000000FF"> </span><span style="color: #FF0000">src</span><span style="color: #000000FF">=</span><span style="color: #0000FF">&quot;https://unpkg.com/@peculiar/x509&quot;</span><span style="color: #800000">&gt;&lt;/script&gt;</span>
+</code></pre>
 				<p>A simple web application examples</p>
 				<ul>
 					<li><a href="https://codesandbox.io/s/generate-cert-fjwfh">Generate X509 certificate</a></li>
@@ -120,162 +116,169 @@
 				</a>
 				<p>In some cases you may want to use a different cryptographic implementation, for example when you want to work with an object that supports a cryptographic algorithm not supported by the platform you are on.</p>
 				<p>In these cases you can set a custom provider, these providers need to be compatible with the WebCrypto API, for example on NodeJS you can use <code>@peculiar/webcrypto</code> to allow <code>@peculiar/x509</code> to work the same as it does in browser!</p>
-				<pre><code class="language-js"><span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> x509 <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@peculiar/x509&quot;</span>;
-<span class="hljs-keyword">import</span> { Crypto } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@peculiar/webcrypto&quot;</span>;
+				<pre><code class="language-js"><span style="color: #AF00DB">import</span><span style="color: #000000"> </span><span style="color: #0000FF">*</span><span style="color: #000000"> </span><span style="color: #AF00DB">as</span><span style="color: #000000"> </span><span style="color: #001080">x509</span><span style="color: #000000"> </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;@peculiar/x509&quot;</span><span style="color: #000000">;</span>
+<span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">Crypto</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;@peculiar/webcrypto&quot;</span><span style="color: #000000">;</span>
 
-<span class="hljs-keyword">const</span> crypto = <span class="hljs-keyword">new</span> Crypto();
-x509.cryptoProvider.set(crypto);</code></pre>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">crypto</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">Crypto</span><span style="color: #000000">();</span>
+<span style="color: #001080">x509</span><span style="color: #000000">.</span><span style="color: #001080">cryptoProvider</span><span style="color: #000000">.</span><span style="color: #795E26">set</span><span style="color: #000000">(</span><span style="color: #001080">crypto</span><span style="color: #000000">);</span>
+</code></pre>
 				<a href="#create-a-self-signed-certificate" id="create-a-self-signed-certificate" style="color: inherit; text-decoration: none;">
 					<h3>Create a self-signed certificate</h3>
 				</a>
-				<pre><code class="language-js"><span class="hljs-keyword">const</span> alg = {
-  <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;RSASSA-PKCS1-v1_5&quot;</span>,
-  <span class="hljs-attr">hash</span>: <span class="hljs-string">&quot;SHA-256&quot;</span>,
-  <span class="hljs-attr">publicExponent</span>: <span class="hljs-keyword">new</span> <span class="hljs-built_in">Uint8Array</span>([<span class="hljs-number">1</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>]),
-  <span class="hljs-attr">modulusLength</span>: <span class="hljs-number">2048</span>,
-};
-<span class="hljs-keyword">const</span> keys = <span class="hljs-keyword">await</span> crypto.subtle.generateKey(alg, <span class="hljs-literal">false</span>, [<span class="hljs-string">&quot;sign&quot;</span>, <span class="hljs-string">&quot;verify&quot;</span>]);
-<span class="hljs-keyword">const</span> cert = <span class="hljs-keyword">await</span> x509.X509CertificateGenerator.createSelfSigned({
-  <span class="hljs-attr">serialNumber</span>: <span class="hljs-string">&quot;01&quot;</span>,
-  <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;CN=Test&quot;</span>,
-  <span class="hljs-attr">notBefore</span>: <span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>(<span class="hljs-string">&quot;2020/01/01&quot;</span>),
-  <span class="hljs-attr">notAfter</span>: <span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>(<span class="hljs-string">&quot;2020/01/02&quot;</span>),
-  <span class="hljs-attr">signingAlgorithm</span>: alg,
-  keys,
-  <span class="hljs-attr">extensions</span>: [
-    <span class="hljs-keyword">new</span> x509.BasicConstraintsExtension(<span class="hljs-literal">true</span>, <span class="hljs-number">2</span>, <span class="hljs-literal">true</span>),
-    <span class="hljs-keyword">new</span> x509.ExtendedKeyUsageExtension([<span class="hljs-string">&quot;1.2.3.4.5.6.7&quot;</span>, <span class="hljs-string">&quot;2.3.4.5.6.7.8&quot;</span>], <span class="hljs-literal">true</span>),
-    <span class="hljs-keyword">new</span> x509.KeyUsagesExtension(x509.KeyUsageFlags.keyCertSign | x509.KeyUsageFlags.cRLSign, <span class="hljs-literal">true</span>),
-    <span class="hljs-keyword">await</span> x509.SubjectKeyIdentifierExtension.create(keys.publicKey),
-  ]
-});
+				<pre><code class="language-js"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">alg</span><span style="color: #000000"> = {</span>
+<span style="color: #000000">  </span><span style="color: #001080">name:</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;RSASSA-PKCS1-v1_5&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">hash:</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;SHA-256&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">publicExponent:</span><span style="color: #000000"> </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #267F99">Uint8Array</span><span style="color: #000000">([</span><span style="color: #098658">1</span><span style="color: #000000">, </span><span style="color: #098658">0</span><span style="color: #000000">, </span><span style="color: #098658">1</span><span style="color: #000000">]),</span>
+<span style="color: #000000">  </span><span style="color: #001080">modulusLength:</span><span style="color: #000000"> </span><span style="color: #098658">2048</span><span style="color: #000000">,</span>
+<span style="color: #000000">};</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">keys</span><span style="color: #000000"> = </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">crypto</span><span style="color: #000000">.</span><span style="color: #001080">subtle</span><span style="color: #000000">.</span><span style="color: #795E26">generateKey</span><span style="color: #000000">(</span><span style="color: #001080">alg</span><span style="color: #000000">, </span><span style="color: #0000FF">false</span><span style="color: #000000">, [</span><span style="color: #A31515">&quot;sign&quot;</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;verify&quot;</span><span style="color: #000000">]);</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">cert</span><span style="color: #000000"> = </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">x509</span><span style="color: #000000">.</span><span style="color: #001080">X509CertificateGenerator</span><span style="color: #000000">.</span><span style="color: #795E26">createSelfSigned</span><span style="color: #000000">({</span>
+<span style="color: #000000">  </span><span style="color: #001080">serialNumber:</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;01&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">name:</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;CN=Test&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">notBefore:</span><span style="color: #000000"> </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #267F99">Date</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;2020/01/01&quot;</span><span style="color: #000000">),</span>
+<span style="color: #000000">  </span><span style="color: #001080">notAfter:</span><span style="color: #000000"> </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #267F99">Date</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;2020/01/02&quot;</span><span style="color: #000000">),</span>
+<span style="color: #000000">  </span><span style="color: #001080">signingAlgorithm:</span><span style="color: #000000"> </span><span style="color: #001080">alg</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">keys</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">extensions:</span><span style="color: #000000"> [</span>
+<span style="color: #000000">    </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #001080">x509</span><span style="color: #000000">.</span><span style="color: #795E26">BasicConstraintsExtension</span><span style="color: #000000">(</span><span style="color: #0000FF">true</span><span style="color: #000000">, </span><span style="color: #098658">2</span><span style="color: #000000">, </span><span style="color: #0000FF">true</span><span style="color: #000000">),</span>
+<span style="color: #000000">    </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #001080">x509</span><span style="color: #000000">.</span><span style="color: #795E26">ExtendedKeyUsageExtension</span><span style="color: #000000">([</span><span style="color: #A31515">&quot;1.2.3.4.5.6.7&quot;</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;2.3.4.5.6.7.8&quot;</span><span style="color: #000000">], </span><span style="color: #0000FF">true</span><span style="color: #000000">),</span>
+<span style="color: #000000">    </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #001080">x509</span><span style="color: #000000">.</span><span style="color: #795E26">KeyUsagesExtension</span><span style="color: #000000">(</span><span style="color: #001080">x509</span><span style="color: #000000">.</span><span style="color: #001080">KeyUsageFlags</span><span style="color: #000000">.</span><span style="color: #001080">keyCertSign</span><span style="color: #000000"> | </span><span style="color: #001080">x509</span><span style="color: #000000">.</span><span style="color: #001080">KeyUsageFlags</span><span style="color: #000000">.</span><span style="color: #001080">cRLSign</span><span style="color: #000000">, </span><span style="color: #0000FF">true</span><span style="color: #000000">),</span>
+<span style="color: #000000">    </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">x509</span><span style="color: #000000">.</span><span style="color: #001080">SubjectKeyIdentifierExtension</span><span style="color: #000000">.</span><span style="color: #795E26">create</span><span style="color: #000000">(</span><span style="color: #001080">keys</span><span style="color: #000000">.</span><span style="color: #001080">publicKey</span><span style="color: #000000">),</span>
+<span style="color: #000000">  ]</span>
+<span style="color: #000000">});</span>
 
-<span class="hljs-built_in">console</span>.log(cert.toString(<span class="hljs-string">&quot;pem&quot;</span>)); <span class="hljs-comment">// Certificate in PEM format</span></code></pre>
+<span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #001080">cert</span><span style="color: #000000">.</span><span style="color: #795E26">toString</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;pem&quot;</span><span style="color: #000000">)); </span><span style="color: #008000">// Certificate in PEM format</span>
+</code></pre>
 				<a href="#parse-a-x509-certificate" id="parse-a-x509-certificate" style="color: inherit; text-decoration: none;">
 					<h3>Parse a x509 certificate</h3>
 				</a>
-				<pre><code class="language-js"><span class="hljs-keyword">const</span> base64 = <span class="hljs-string">&quot;MIIDljCCAn6gAwIBAgIOSETcxtRwD...S+kAFXIwugUGYEnTWp0m5bAn5NlD314IEOg4mnS8Q==&quot;</span>;
+				<pre><code class="language-js"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">base64</span><span style="color: #000000"> = </span><span style="color: #A31515">&quot;MIIDljCCAn6gAwIBAgIOSETcxtRwD...S+kAFXIwugUGYEnTWp0m5bAn5NlD314IEOg4mnS8Q==&quot;</span><span style="color: #000000">;</span>
 
-<span class="hljs-keyword">const</span> cert = <span class="hljs-keyword">new</span> x509.X509Certificate(base64);
-<span class="hljs-built_in">console</span>.log(cert.subject); <span class="hljs-comment">// CN=Test, O=PeculiarVentures LLC</span></code></pre>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">cert</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #001080">x509</span><span style="color: #000000">.</span><span style="color: #795E26">X509Certificate</span><span style="color: #000000">(</span><span style="color: #001080">base64</span><span style="color: #000000">);</span>
+<span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #001080">cert</span><span style="color: #000000">.</span><span style="color: #001080">subject</span><span style="color: #000000">); </span><span style="color: #008000">// CN=Test, O=PeculiarVentures LLC</span>
+</code></pre>
 				<a href="#create-a-pkcs10-certificate-request" id="create-a-pkcs10-certificate-request" style="color: inherit; text-decoration: none;">
 					<h3>Create a PKCS#10 certificate request</h3>
 				</a>
-				<pre><code class="language-js"><span class="hljs-keyword">const</span> alg = {
-  <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;ECDSA&quot;</span>,
-  <span class="hljs-attr">namedCurve</span>: <span class="hljs-string">&quot;P-384&quot;</span>,
-  <span class="hljs-attr">hash</span>: <span class="hljs-string">&quot;SHA-384&quot;</span>,
-}
-<span class="hljs-keyword">const</span> keys = <span class="hljs-keyword">await</span> crypto.subtle.generateKey(alg, <span class="hljs-literal">false</span>, [<span class="hljs-string">&quot;sign&quot;</span>, <span class="hljs-string">&quot;verify&quot;</span>]);
-<span class="hljs-keyword">const</span> csr = <span class="hljs-keyword">await</span> x509.Pkcs10CertificateRequestGenerator.create({
-  <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;CN=Test&quot;</span>,
-  keys,
-  <span class="hljs-attr">signingAlgorithm</span>: alg,
-  <span class="hljs-attr">extensions</span>: [
-    <span class="hljs-keyword">new</span> x509.KeyUsagesExtension(x509.KeyUsageFlags.digitalSignature | x509.KeyUsageFlags.keyEncipherment),
-  ],
-  <span class="hljs-attr">attributes</span>: [
-    <span class="hljs-keyword">new</span> x509.ChallengePasswordAttribute(<span class="hljs-string">&quot;password&quot;</span>),
-  ]
-});
+				<pre><code class="language-js"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">alg</span><span style="color: #000000"> = {</span>
+<span style="color: #000000">  </span><span style="color: #001080">name:</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;ECDSA&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">namedCurve:</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;P-384&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">hash:</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;SHA-384&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">}</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">keys</span><span style="color: #000000"> = </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">crypto</span><span style="color: #000000">.</span><span style="color: #001080">subtle</span><span style="color: #000000">.</span><span style="color: #795E26">generateKey</span><span style="color: #000000">(</span><span style="color: #001080">alg</span><span style="color: #000000">, </span><span style="color: #0000FF">false</span><span style="color: #000000">, [</span><span style="color: #A31515">&quot;sign&quot;</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;verify&quot;</span><span style="color: #000000">]);</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">csr</span><span style="color: #000000"> = </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">x509</span><span style="color: #000000">.</span><span style="color: #001080">Pkcs10CertificateRequestGenerator</span><span style="color: #000000">.</span><span style="color: #795E26">create</span><span style="color: #000000">({</span>
+<span style="color: #000000">  </span><span style="color: #001080">name:</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;CN=Test&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">keys</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">signingAlgorithm:</span><span style="color: #000000"> </span><span style="color: #001080">alg</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">extensions:</span><span style="color: #000000"> [</span>
+<span style="color: #000000">    </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #001080">x509</span><span style="color: #000000">.</span><span style="color: #795E26">KeyUsagesExtension</span><span style="color: #000000">(</span><span style="color: #001080">x509</span><span style="color: #000000">.</span><span style="color: #001080">KeyUsageFlags</span><span style="color: #000000">.</span><span style="color: #001080">digitalSignature</span><span style="color: #000000"> | </span><span style="color: #001080">x509</span><span style="color: #000000">.</span><span style="color: #001080">KeyUsageFlags</span><span style="color: #000000">.</span><span style="color: #001080">keyEncipherment</span><span style="color: #000000">),</span>
+<span style="color: #000000">  ],</span>
+<span style="color: #000000">  </span><span style="color: #001080">attributes:</span><span style="color: #000000"> [</span>
+<span style="color: #000000">    </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #001080">x509</span><span style="color: #000000">.</span><span style="color: #795E26">ChallengePasswordAttribute</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;password&quot;</span><span style="color: #000000">),</span>
+<span style="color: #000000">  ]</span>
+<span style="color: #000000">});</span>
 
-<span class="hljs-built_in">console</span>.log(cert.toString(<span class="hljs-string">&quot;base64&quot;</span>)); <span class="hljs-comment">// Certificate request in Base64 format</span></code></pre>
+<span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #001080">cert</span><span style="color: #000000">.</span><span style="color: #795E26">toString</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;base64&quot;</span><span style="color: #000000">)); </span><span style="color: #008000">// Certificate request in Base64 format</span>
+</code></pre>
 				<a href="#decoded-x509-certificate" id="decoded-x509-certificate" style="color: inherit; text-decoration: none;">
 					<h3>Decoded X509 certificate</h3>
 				</a>
-				<pre><code class="language-js">X509Certificate {
-  <span class="hljs-attr">rawData</span>: <span class="hljs-built_in">ArrayBuffer</span> {
-    [Uint8Contents]: &lt;30 82 02 fc 30 82 01 e4 a0 03 02 01 02 02 01 01 30 0d 06 09 2a 86 48 86 f7 0d 01 01 0b 05 00 30 0f 31 0d 30 0b 06 03 55 04 03 13 04 54 65 73 74 30 1e 17 0d 31 39 31 32 33 31 32 31 30 30 30 30 5a 17 0d 32 30 30 31 30 31 32 31 30 30 30 30 5a 30 0f 31 0d 30 0b 06 03 55 04 03 13 04 54 65 73 74 30 82 01 ... 668 more bytes&gt;,
-    byteLength: 768
-  },
-  tbs: ArrayBuffer {
-    [Uint8Contents]: &lt;30 82 01 e4 a0 03 02 01 02 02 01 01 30 0d 06 09 2a 86 48 86 f7 0d 01 01 0b 05 00 30 0f 31 0d 30 0b 06 03 55 04 03 13 04 54 65 73 74 30 1e 17 0d 31 39 31 32 33 31 32 31 30 30 30 30 5a 17 0d 32 30 30 31 30 31 32 31 30 30 30 30 5a 30 0f 31 0d 30 0b 06 03 55 04 03 13 04 54 65 73 74 30 82 01 22 30 0d 06 ... 388 more bytes&gt;,
-    byteLength: 488
-  },
-  serialNumber: &#x27;01&#x27;,
-  subject: &#x27;CN=Test&#x27;,
-  issuer: &#x27;CN=Test&#x27;,
-  signatureAlgorithm: { name: &#x27;RSASSA-PKCS1-v1_5&#x27;, hash: { name: &#x27;SHA-256&#x27; } },
-  signature: ArrayBuffer {
-    [Uint8Contents]: &lt;2e 78 fb 4b f6 c8 a1 9d b4 d1 8b 22 80 20 c1 68 46 39 a6 11 d1 a9 7a 13 03 8d 1e 0e 5e 87 b5 33 2a ba 44 1b 96 6d 91 e7 fd c0 ce b7 93 fe e4 df d3 d0 57 7c 9a eb 7e 3e 8b ed c6 07 ad 80 df fd 8f f7 ce 26 07 db 0e 9f af e6 cb 70 02 2d 17 9f f5 c1 0d ef d6 cf 1d ec 78 a0 dd 5d 46 2a 60 08 71 74 2c 26 ... 156 more bytes&gt;,
-    byteLength: 256
-  },
-  notBefore: 2019-12-31T21:00:00.000Z,
-  notAfter: 2020-01-01T21:00:00.000Z,
-  extensions: Extensions(4) [
-    BasicConstraintsExtension {
-      rawData: [ArrayBuffer],
-      type: &#x27;2.5.29.19&#x27;,
-      critical: true,
-      value: [ArrayBuffer],
-      ca: true,
-      pathLength: 2
-    },
-    ExtendedKeyUsageExtension {
-      rawData: [ArrayBuffer],
-      type: &#x27;2.5.29.37&#x27;,
-      critical: true,
-      value: [ArrayBuffer],
-      usages: [ExtendedKeyUsage]
-    },
-    KeyUsagesExtension {
-      rawData: [ArrayBuffer],
-      type: &#x27;2.5.29.15&#x27;,
-      critical: true,
-      value: [ArrayBuffer],
-      usages: 96
-    },
-    SubjectKeyIdentifierExtension {
-      rawData: [ArrayBuffer],
-      type: &#x27;2.5.29.14&#x27;,
-      critical: false,
-      value: [ArrayBuffer],
-      keyId: &#x27;f525754650a3dee83f8bd777ee3b53ecc2c8d726&#x27;
-    }
-  ],
-  publicKey: PublicKey {
-    rawData: ArrayBuffer {
-      [Uint8Contents]: &lt;30 82 01 22 30 0d 06 09 2a 86 48 86 f7 0d 01 01 01 05 00 03 82 01 0f 00 30 82 01 0a 02 82 01 01 00 b6 f4 f1 cf dd 26 a1 23 45 b6 6e 4e ec 3e 20 8a 3f 90 ec 84 46 49 87 a2 05 c5 eb da ac 84 37 eb a3 bf 46 b5 8e 82 75 25 8a 80 19 10 79 13 c0 13 6c 29 df 56 44 1c ec f8 7b 34 0a f2 13 41 b5 53 98 e1 f5 ... 194 more bytes&gt;,
-      byteLength: 294
-    },
-    algorithm: {
-      name: &#x27;RSASSA-PKCS1-v1_5&#x27;,
-      publicExponent: [Uint8Array],
-      modulusLength: 2048
-    }
-  }
-}</code></pre>
+				<pre><code class="language-js"><span style="color: #001080">X509Certificate</span><span style="color: #000000"> {</span>
+<span style="color: #000000">  rawData: </span><span style="color: #267F99">ArrayBuffer</span><span style="color: #000000"> {</span>
+<span style="color: #000000">    [</span><span style="color: #001080">Uint8Contents</span><span style="color: #000000">]: &lt;</span><span style="color: #098658">30</span><span style="color: #000000"> </span><span style="color: #098658">82</span><span style="color: #000000"> </span><span style="color: #098658">02</span><span style="color: #000000"> </span><span style="color: #001080">fc</span><span style="color: #000000"> </span><span style="color: #098658">30</span><span style="color: #000000"> </span><span style="color: #098658">82</span><span style="color: #000000"> </span><span style="color: #098658">01</span><span style="color: #000000"> </span><span style="color: #001080">e4</span><span style="color: #000000"> </span><span style="color: #001080">a0</span><span style="color: #000000"> </span><span style="color: #098658">03</span><span style="color: #000000"> </span><span style="color: #098658">02</span><span style="color: #000000"> </span><span style="color: #098658">01</span><span style="color: #000000"> </span><span style="color: #098658">02</span><span style="color: #000000"> </span><span style="color: #098658">02</span><span style="color: #000000"> </span><span style="color: #098658">01</span><span style="color: #000000"> </span><span style="color: #098658">01</span><span style="color: #000000"> </span><span style="color: #098658">30</span><span style="color: #000000"> 0</span><span style="color: #001080">d</span><span style="color: #000000"> </span><span style="color: #098658">06</span><span style="color: #000000"> </span><span style="color: #098658">09</span><span style="color: #000000"> 2</span><span style="color: #001080">a</span><span style="color: #000000"> </span><span style="color: #098658">86</span><span style="color: #000000"> </span><span style="color: #098658">48</span><span style="color: #000000"> </span><span style="color: #098658">86</span><span style="color: #000000"> </span><span style="color: #001080">f7</span><span style="color: #000000"> 0</span><span style="color: #001080">d</span><span style="color: #000000"> </span><span style="color: #098658">01</span><span style="color: #000000"> </span><span style="color: #098658">01</span><span style="color: #000000"> 0</span><span style="color: #001080">b</span><span style="color: #000000"> </span><span style="color: #098658">05</span><span style="color: #000000"> </span><span style="color: #098658">00</span><span style="color: #000000"> </span><span style="color: #098658">30</span><span style="color: #000000"> 0</span><span style="color: #001080">f</span><span style="color: #000000"> </span><span style="color: #098658">31</span><span style="color: #000000"> 0</span><span style="color: #001080">d</span><span style="color: #000000"> </span><span style="color: #098658">30</span><span style="color: #000000"> 0</span><span style="color: #001080">b</span><span style="color: #000000"> </span><span style="color: #098658">06</span><span style="color: #000000"> </span><span style="color: #098658">03</span><span style="color: #000000"> </span><span style="color: #098658">55</span><span style="color: #000000"> </span><span style="color: #098658">04</span><span style="color: #000000"> </span><span style="color: #098658">03</span><span style="color: #000000"> </span><span style="color: #098658">13</span><span style="color: #000000"> </span><span style="color: #098658">04</span><span style="color: #000000"> </span><span style="color: #098658">54</span><span style="color: #000000"> </span><span style="color: #098658">65</span><span style="color: #000000"> </span><span style="color: #098658">73</span><span style="color: #000000"> </span><span style="color: #098658">74</span><span style="color: #000000"> </span><span style="color: #098658">30</span><span style="color: #000000"> 1</span><span style="color: #001080">e</span><span style="color: #000000"> </span><span style="color: #098658">17</span><span style="color: #000000"> 0</span><span style="color: #001080">d</span><span style="color: #000000"> </span><span style="color: #098658">31</span><span style="color: #000000"> </span><span style="color: #098658">39</span><span style="color: #000000"> </span><span style="color: #098658">31</span><span style="color: #000000"> </span><span style="color: #098658">32</span><span style="color: #000000"> </span><span style="color: #098658">33</span><span style="color: #000000"> </span><span style="color: #098658">31</span><span style="color: #000000"> </span><span style="color: #098658">32</span><span style="color: #000000"> </span><span style="color: #098658">31</span><span style="color: #000000"> </span><span style="color: #098658">30</span><span style="color: #000000"> </span><span style="color: #098658">30</span><span style="color: #000000"> </span><span style="color: #098658">30</span><span style="color: #000000"> </span><span style="color: #098658">30</span><span style="color: #000000"> 5</span><span style="color: #001080">a</span><span style="color: #000000"> </span><span style="color: #098658">17</span><span style="color: #000000"> 0</span><span style="color: #001080">d</span><span style="color: #000000"> </span><span style="color: #098658">32</span><span style="color: #000000"> </span><span style="color: #098658">30</span><span style="color: #000000"> </span><span style="color: #098658">30</span><span style="color: #000000"> </span><span style="color: #098658">31</span><span style="color: #000000"> </span><span style="color: #098658">30</span><span style="color: #000000"> </span><span style="color: #098658">31</span><span style="color: #000000"> </span><span style="color: #098658">32</span><span style="color: #000000"> </span><span style="color: #098658">31</span><span style="color: #000000"> </span><span style="color: #098658">30</span><span style="color: #000000"> </span><span style="color: #098658">30</span><span style="color: #000000"> </span><span style="color: #098658">30</span><span style="color: #000000"> </span><span style="color: #098658">30</span><span style="color: #000000"> 5</span><span style="color: #001080">a</span><span style="color: #000000"> </span><span style="color: #098658">30</span><span style="color: #000000"> 0</span><span style="color: #001080">f</span><span style="color: #000000"> </span><span style="color: #098658">31</span><span style="color: #000000"> 0</span><span style="color: #001080">d</span><span style="color: #000000"> </span><span style="color: #098658">30</span><span style="color: #000000"> 0</span><span style="color: #001080">b</span><span style="color: #000000"> </span><span style="color: #098658">06</span><span style="color: #000000"> </span><span style="color: #098658">03</span><span style="color: #000000"> </span><span style="color: #098658">55</span><span style="color: #000000"> </span><span style="color: #098658">04</span><span style="color: #000000"> </span><span style="color: #098658">03</span><span style="color: #000000"> </span><span style="color: #098658">13</span><span style="color: #000000"> </span><span style="color: #098658">04</span><span style="color: #000000"> </span><span style="color: #098658">54</span><span style="color: #000000"> </span><span style="color: #098658">65</span><span style="color: #000000"> </span><span style="color: #098658">73</span><span style="color: #000000"> </span><span style="color: #098658">74</span><span style="color: #000000"> </span><span style="color: #098658">30</span><span style="color: #000000"> </span><span style="color: #098658">82</span><span style="color: #000000"> </span><span style="color: #098658">01</span><span style="color: #000000"> ... </span><span style="color: #098658">668</span><span style="color: #000000"> </span><span style="color: #001080">more</span><span style="color: #000000"> </span><span style="color: #001080">bytes</span><span style="color: #000000">&gt;,</span>
+<span style="color: #000000">    byteLength: </span><span style="color: #098658">768</span>
+<span style="color: #000000">  },</span>
+<span style="color: #000000">  tbs: </span><span style="color: #267F99">ArrayBuffer</span><span style="color: #000000"> {</span>
+<span style="color: #000000">    [</span><span style="color: #001080">Uint8Contents</span><span style="color: #000000">]: &lt;</span><span style="color: #098658">30</span><span style="color: #000000"> </span><span style="color: #098658">82</span><span style="color: #000000"> </span><span style="color: #098658">01</span><span style="color: #000000"> </span><span style="color: #001080">e4</span><span style="color: #000000"> </span><span style="color: #001080">a0</span><span style="color: #000000"> </span><span style="color: #098658">03</span><span style="color: #000000"> </span><span style="color: #098658">02</span><span style="color: #000000"> </span><span style="color: #098658">01</span><span style="color: #000000"> </span><span style="color: #098658">02</span><span style="color: #000000"> </span><span style="color: #098658">02</span><span style="color: #000000"> </span><span style="color: #098658">01</span><span style="color: #000000"> </span><span style="color: #098658">01</span><span style="color: #000000"> </span><span style="color: #098658">30</span><span style="color: #000000"> 0</span><span style="color: #001080">d</span><span style="color: #000000"> </span><span style="color: #098658">06</span><span style="color: #000000"> </span><span style="color: #098658">09</span><span style="color: #000000"> 2</span><span style="color: #001080">a</span><span style="color: #000000"> </span><span style="color: #098658">86</span><span style="color: #000000"> </span><span style="color: #098658">48</span><span style="color: #000000"> </span><span style="color: #098658">86</span><span style="color: #000000"> </span><span style="color: #001080">f7</span><span style="color: #000000"> 0</span><span style="color: #001080">d</span><span style="color: #000000"> </span><span style="color: #098658">01</span><span style="color: #000000"> </span><span style="color: #098658">01</span><span style="color: #000000"> 0</span><span style="color: #001080">b</span><span style="color: #000000"> </span><span style="color: #098658">05</span><span style="color: #000000"> </span><span style="color: #098658">00</span><span style="color: #000000"> </span><span style="color: #098658">30</span><span style="color: #000000"> 0</span><span style="color: #001080">f</span><span style="color: #000000"> </span><span style="color: #098658">31</span><span style="color: #000000"> 0</span><span style="color: #001080">d</span><span style="color: #000000"> </span><span style="color: #098658">30</span><span style="color: #000000"> 0</span><span style="color: #001080">b</span><span style="color: #000000"> </span><span style="color: #098658">06</span><span style="color: #000000"> </span><span style="color: #098658">03</span><span style="color: #000000"> </span><span style="color: #098658">55</span><span style="color: #000000"> </span><span style="color: #098658">04</span><span style="color: #000000"> </span><span style="color: #098658">03</span><span style="color: #000000"> </span><span style="color: #098658">13</span><span style="color: #000000"> </span><span style="color: #098658">04</span><span style="color: #000000"> </span><span style="color: #098658">54</span><span style="color: #000000"> </span><span style="color: #098658">65</span><span style="color: #000000"> </span><span style="color: #098658">73</span><span style="color: #000000"> </span><span style="color: #098658">74</span><span style="color: #000000"> </span><span style="color: #098658">30</span><span style="color: #000000"> 1</span><span style="color: #001080">e</span><span style="color: #000000"> </span><span style="color: #098658">17</span><span style="color: #000000"> 0</span><span style="color: #001080">d</span><span style="color: #000000"> </span><span style="color: #098658">31</span><span style="color: #000000"> </span><span style="color: #098658">39</span><span style="color: #000000"> </span><span style="color: #098658">31</span><span style="color: #000000"> </span><span style="color: #098658">32</span><span style="color: #000000"> </span><span style="color: #098658">33</span><span style="color: #000000"> </span><span style="color: #098658">31</span><span style="color: #000000"> </span><span style="color: #098658">32</span><span style="color: #000000"> </span><span style="color: #098658">31</span><span style="color: #000000"> </span><span style="color: #098658">30</span><span style="color: #000000"> </span><span style="color: #098658">30</span><span style="color: #000000"> </span><span style="color: #098658">30</span><span style="color: #000000"> </span><span style="color: #098658">30</span><span style="color: #000000"> 5</span><span style="color: #001080">a</span><span style="color: #000000"> </span><span style="color: #098658">17</span><span style="color: #000000"> 0</span><span style="color: #001080">d</span><span style="color: #000000"> </span><span style="color: #098658">32</span><span style="color: #000000"> </span><span style="color: #098658">30</span><span style="color: #000000"> </span><span style="color: #098658">30</span><span style="color: #000000"> </span><span style="color: #098658">31</span><span style="color: #000000"> </span><span style="color: #098658">30</span><span style="color: #000000"> </span><span style="color: #098658">31</span><span style="color: #000000"> </span><span style="color: #098658">32</span><span style="color: #000000"> </span><span style="color: #098658">31</span><span style="color: #000000"> </span><span style="color: #098658">30</span><span style="color: #000000"> </span><span style="color: #098658">30</span><span style="color: #000000"> </span><span style="color: #098658">30</span><span style="color: #000000"> </span><span style="color: #098658">30</span><span style="color: #000000"> 5</span><span style="color: #001080">a</span><span style="color: #000000"> </span><span style="color: #098658">30</span><span style="color: #000000"> 0</span><span style="color: #001080">f</span><span style="color: #000000"> </span><span style="color: #098658">31</span><span style="color: #000000"> 0</span><span style="color: #001080">d</span><span style="color: #000000"> </span><span style="color: #098658">30</span><span style="color: #000000"> 0</span><span style="color: #001080">b</span><span style="color: #000000"> </span><span style="color: #098658">06</span><span style="color: #000000"> </span><span style="color: #098658">03</span><span style="color: #000000"> </span><span style="color: #098658">55</span><span style="color: #000000"> </span><span style="color: #098658">04</span><span style="color: #000000"> </span><span style="color: #098658">03</span><span style="color: #000000"> </span><span style="color: #098658">13</span><span style="color: #000000"> </span><span style="color: #098658">04</span><span style="color: #000000"> </span><span style="color: #098658">54</span><span style="color: #000000"> </span><span style="color: #098658">65</span><span style="color: #000000"> </span><span style="color: #098658">73</span><span style="color: #000000"> </span><span style="color: #098658">74</span><span style="color: #000000"> </span><span style="color: #098658">30</span><span style="color: #000000"> </span><span style="color: #098658">82</span><span style="color: #000000"> </span><span style="color: #098658">01</span><span style="color: #000000"> </span><span style="color: #098658">22</span><span style="color: #000000"> </span><span style="color: #098658">30</span><span style="color: #000000"> 0</span><span style="color: #001080">d</span><span style="color: #000000"> </span><span style="color: #098658">06</span><span style="color: #000000"> ... </span><span style="color: #098658">388</span><span style="color: #000000"> </span><span style="color: #001080">more</span><span style="color: #000000"> </span><span style="color: #001080">bytes</span><span style="color: #000000">&gt;,</span>
+<span style="color: #000000">    byteLength: </span><span style="color: #098658">488</span>
+<span style="color: #000000">  },</span>
+<span style="color: #000000">  serialNumber: </span><span style="color: #A31515">&#039;01&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">  subject: </span><span style="color: #A31515">&#039;CN=Test&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">  issuer: </span><span style="color: #A31515">&#039;CN=Test&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">  signatureAlgorithm: { name: </span><span style="color: #A31515">&#039;RSASSA-PKCS1-v1_5&#039;</span><span style="color: #000000">, hash: { name: </span><span style="color: #A31515">&#039;SHA-256&#039;</span><span style="color: #000000"> } },</span>
+<span style="color: #000000">  signature: </span><span style="color: #267F99">ArrayBuffer</span><span style="color: #000000"> {</span>
+<span style="color: #000000">    [</span><span style="color: #001080">Uint8Contents</span><span style="color: #000000">]: &lt;2</span><span style="color: #001080">e</span><span style="color: #000000"> </span><span style="color: #098658">78</span><span style="color: #000000"> </span><span style="color: #001080">fb</span><span style="color: #000000"> 4</span><span style="color: #001080">b</span><span style="color: #000000"> </span><span style="color: #001080">f6</span><span style="color: #000000"> </span><span style="color: #001080">c8</span><span style="color: #000000"> </span><span style="color: #001080">a1</span><span style="color: #000000"> 9</span><span style="color: #001080">d</span><span style="color: #000000"> </span><span style="color: #001080">b4</span><span style="color: #000000"> </span><span style="color: #001080">d1</span><span style="color: #000000"> 8</span><span style="color: #001080">b</span><span style="color: #000000"> </span><span style="color: #098658">22</span><span style="color: #000000"> </span><span style="color: #098658">80</span><span style="color: #000000"> </span><span style="color: #098658">20</span><span style="color: #000000"> </span><span style="color: #001080">c1</span><span style="color: #000000"> </span><span style="color: #098658">68</span><span style="color: #000000"> </span><span style="color: #098658">46</span><span style="color: #000000"> </span><span style="color: #098658">39</span><span style="color: #000000"> </span><span style="color: #001080">a6</span><span style="color: #000000"> </span><span style="color: #098658">11</span><span style="color: #000000"> </span><span style="color: #001080">d1</span><span style="color: #000000"> </span><span style="color: #001080">a9</span><span style="color: #000000"> 7</span><span style="color: #001080">a</span><span style="color: #000000"> </span><span style="color: #098658">13</span><span style="color: #000000"> </span><span style="color: #098658">03</span><span style="color: #000000"> 8</span><span style="color: #001080">d</span><span style="color: #000000"> 1</span><span style="color: #001080">e</span><span style="color: #000000"> 0</span><span style="color: #001080">e</span><span style="color: #000000"> 5</span><span style="color: #001080">e</span><span style="color: #000000"> </span><span style="color: #098658">87</span><span style="color: #000000"> </span><span style="color: #001080">b5</span><span style="color: #000000"> </span><span style="color: #098658">33</span><span style="color: #000000"> 2</span><span style="color: #001080">a</span><span style="color: #000000"> </span><span style="color: #001080">ba</span><span style="color: #000000"> </span><span style="color: #098658">44</span><span style="color: #000000"> 1</span><span style="color: #001080">b</span><span style="color: #000000"> </span><span style="color: #098658">96</span><span style="color: #000000"> 6</span><span style="color: #001080">d</span><span style="color: #000000"> </span><span style="color: #098658">91</span><span style="color: #000000"> </span><span style="color: #001080">e7</span><span style="color: #000000"> </span><span style="color: #001080">fd</span><span style="color: #000000"> </span><span style="color: #001080">c0</span><span style="color: #000000"> </span><span style="color: #001080">ce</span><span style="color: #000000"> </span><span style="color: #001080">b7</span><span style="color: #000000"> </span><span style="color: #098658">93</span><span style="color: #000000"> </span><span style="color: #001080">fe</span><span style="color: #000000"> </span><span style="color: #001080">e4</span><span style="color: #000000"> </span><span style="color: #001080">df</span><span style="color: #000000"> </span><span style="color: #001080">d3</span><span style="color: #000000"> </span><span style="color: #001080">d0</span><span style="color: #000000"> </span><span style="color: #098658">57</span><span style="color: #000000"> 7</span><span style="color: #001080">c</span><span style="color: #000000"> 9</span><span style="color: #001080">a</span><span style="color: #000000"> </span><span style="color: #001080">eb</span><span style="color: #000000"> 7</span><span style="color: #001080">e</span><span style="color: #000000"> 3</span><span style="color: #001080">e</span><span style="color: #000000"> 8</span><span style="color: #001080">b</span><span style="color: #000000"> </span><span style="color: #001080">ed</span><span style="color: #000000"> </span><span style="color: #001080">c6</span><span style="color: #000000"> </span><span style="color: #098658">07</span><span style="color: #000000"> </span><span style="color: #001080">ad</span><span style="color: #000000"> </span><span style="color: #098658">80</span><span style="color: #000000"> </span><span style="color: #001080">df</span><span style="color: #000000"> </span><span style="color: #001080">fd</span><span style="color: #000000"> 8</span><span style="color: #001080">f</span><span style="color: #000000"> </span><span style="color: #001080">f7</span><span style="color: #000000"> </span><span style="color: #001080">ce</span><span style="color: #000000"> </span><span style="color: #098658">26</span><span style="color: #000000"> </span><span style="color: #098658">07</span><span style="color: #000000"> </span><span style="color: #001080">db</span><span style="color: #000000"> 0</span><span style="color: #001080">e</span><span style="color: #000000"> 9</span><span style="color: #001080">f</span><span style="color: #000000"> </span><span style="color: #001080">af</span><span style="color: #000000"> </span><span style="color: #001080">e6</span><span style="color: #000000"> </span><span style="color: #001080">cb</span><span style="color: #000000"> </span><span style="color: #098658">70</span><span style="color: #000000"> </span><span style="color: #098658">02</span><span style="color: #000000"> 2</span><span style="color: #001080">d</span><span style="color: #000000"> </span><span style="color: #098658">17</span><span style="color: #000000"> 9</span><span style="color: #001080">f</span><span style="color: #000000"> </span><span style="color: #001080">f5</span><span style="color: #000000"> </span><span style="color: #001080">c1</span><span style="color: #000000"> 0</span><span style="color: #001080">d</span><span style="color: #000000"> </span><span style="color: #001080">ef</span><span style="color: #000000"> </span><span style="color: #001080">d6</span><span style="color: #000000"> </span><span style="color: #001080">cf</span><span style="color: #000000"> 1</span><span style="color: #001080">d</span><span style="color: #000000"> </span><span style="color: #001080">ec</span><span style="color: #000000"> </span><span style="color: #098658">78</span><span style="color: #000000"> </span><span style="color: #001080">a0</span><span style="color: #000000"> </span><span style="color: #001080">dd</span><span style="color: #000000"> 5</span><span style="color: #001080">d</span><span style="color: #000000"> </span><span style="color: #098658">46</span><span style="color: #000000"> 2</span><span style="color: #001080">a</span><span style="color: #000000"> </span><span style="color: #098658">60</span><span style="color: #000000"> </span><span style="color: #098658">08</span><span style="color: #000000"> </span><span style="color: #098658">71</span><span style="color: #000000"> </span><span style="color: #098658">74</span><span style="color: #000000"> 2</span><span style="color: #001080">c</span><span style="color: #000000"> </span><span style="color: #098658">26</span><span style="color: #000000"> ... </span><span style="color: #098658">156</span><span style="color: #000000"> </span><span style="color: #001080">more</span><span style="color: #000000"> </span><span style="color: #001080">bytes</span><span style="color: #000000">&gt;,</span>
+<span style="color: #000000">    byteLength: </span><span style="color: #098658">256</span>
+<span style="color: #000000">  },</span>
+<span style="color: #000000">  notBefore: </span><span style="color: #098658">2019</span><span style="color: #000000">-</span><span style="color: #098658">12</span><span style="color: #000000">-31T21:</span><span style="color: #098658">00</span><span style="color: #000000">:</span><span style="color: #098658">00</span><span style="color: #000000">.000</span><span style="color: #0070C1">Z</span><span style="color: #000000">,</span>
+<span style="color: #000000">  notAfter: </span><span style="color: #098658">2020</span><span style="color: #000000">-</span><span style="color: #098658">01</span><span style="color: #000000">-01T21:</span><span style="color: #098658">00</span><span style="color: #000000">:</span><span style="color: #098658">00</span><span style="color: #000000">.000</span><span style="color: #0070C1">Z</span><span style="color: #000000">,</span>
+<span style="color: #000000">  extensions: </span><span style="color: #795E26">Extensions</span><span style="color: #000000">(</span><span style="color: #098658">4</span><span style="color: #000000">) [</span>
+<span style="color: #000000">    </span><span style="color: #001080">BasicConstraintsExtension</span><span style="color: #000000"> {</span>
+<span style="color: #000000">      </span><span style="color: #001080">rawData:</span><span style="color: #000000"> [</span><span style="color: #267F99">ArrayBuffer</span><span style="color: #000000">],</span>
+<span style="color: #000000">      </span><span style="color: #001080">type:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;2.5.29.19&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">      </span><span style="color: #001080">critical:</span><span style="color: #000000"> </span><span style="color: #0000FF">true</span><span style="color: #000000">,</span>
+<span style="color: #000000">      </span><span style="color: #001080">value:</span><span style="color: #000000"> [</span><span style="color: #267F99">ArrayBuffer</span><span style="color: #000000">],</span>
+<span style="color: #000000">      </span><span style="color: #001080">ca:</span><span style="color: #000000"> </span><span style="color: #0000FF">true</span><span style="color: #000000">,</span>
+<span style="color: #000000">      </span><span style="color: #001080">pathLength:</span><span style="color: #000000"> </span><span style="color: #098658">2</span>
+<span style="color: #000000">    },</span>
+<span style="color: #000000">    </span><span style="color: #001080">ExtendedKeyUsageExtension</span><span style="color: #000000"> {</span>
+<span style="color: #000000">      </span><span style="color: #001080">rawData:</span><span style="color: #000000"> [</span><span style="color: #267F99">ArrayBuffer</span><span style="color: #000000">],</span>
+<span style="color: #000000">      </span><span style="color: #001080">type:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;2.5.29.37&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">      </span><span style="color: #001080">critical:</span><span style="color: #000000"> </span><span style="color: #0000FF">true</span><span style="color: #000000">,</span>
+<span style="color: #000000">      </span><span style="color: #001080">value:</span><span style="color: #000000"> [</span><span style="color: #267F99">ArrayBuffer</span><span style="color: #000000">],</span>
+<span style="color: #000000">      </span><span style="color: #001080">usages:</span><span style="color: #000000"> [</span><span style="color: #001080">ExtendedKeyUsage</span><span style="color: #000000">]</span>
+<span style="color: #000000">    },</span>
+<span style="color: #000000">    </span><span style="color: #001080">KeyUsagesExtension</span><span style="color: #000000"> {</span>
+<span style="color: #000000">      </span><span style="color: #001080">rawData:</span><span style="color: #000000"> [</span><span style="color: #267F99">ArrayBuffer</span><span style="color: #000000">],</span>
+<span style="color: #000000">      </span><span style="color: #001080">type:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;2.5.29.15&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">      </span><span style="color: #001080">critical:</span><span style="color: #000000"> </span><span style="color: #0000FF">true</span><span style="color: #000000">,</span>
+<span style="color: #000000">      </span><span style="color: #001080">value:</span><span style="color: #000000"> [</span><span style="color: #267F99">ArrayBuffer</span><span style="color: #000000">],</span>
+<span style="color: #000000">      </span><span style="color: #001080">usages:</span><span style="color: #000000"> </span><span style="color: #098658">96</span>
+<span style="color: #000000">    },</span>
+<span style="color: #000000">    </span><span style="color: #001080">SubjectKeyIdentifierExtension</span><span style="color: #000000"> {</span>
+<span style="color: #000000">      </span><span style="color: #001080">rawData:</span><span style="color: #000000"> [</span><span style="color: #267F99">ArrayBuffer</span><span style="color: #000000">],</span>
+<span style="color: #000000">      </span><span style="color: #001080">type:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;2.5.29.14&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">      </span><span style="color: #001080">critical:</span><span style="color: #000000"> </span><span style="color: #0000FF">false</span><span style="color: #000000">,</span>
+<span style="color: #000000">      </span><span style="color: #001080">value:</span><span style="color: #000000"> [</span><span style="color: #267F99">ArrayBuffer</span><span style="color: #000000">],</span>
+<span style="color: #000000">      </span><span style="color: #001080">keyId:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;f525754650a3dee83f8bd777ee3b53ecc2c8d726&#039;</span>
+<span style="color: #000000">    }</span>
+<span style="color: #000000">  ],</span>
+<span style="color: #000000">  publicKey: </span><span style="color: #001080">PublicKey</span><span style="color: #000000"> {</span>
+<span style="color: #000000">    rawData: </span><span style="color: #267F99">ArrayBuffer</span><span style="color: #000000"> {</span>
+<span style="color: #000000">      [</span><span style="color: #001080">Uint8Contents</span><span style="color: #000000">]: &lt;</span><span style="color: #098658">30</span><span style="color: #000000"> </span><span style="color: #098658">82</span><span style="color: #000000"> </span><span style="color: #098658">01</span><span style="color: #000000"> </span><span style="color: #098658">22</span><span style="color: #000000"> </span><span style="color: #098658">30</span><span style="color: #000000"> 0</span><span style="color: #001080">d</span><span style="color: #000000"> </span><span style="color: #098658">06</span><span style="color: #000000"> </span><span style="color: #098658">09</span><span style="color: #000000"> 2</span><span style="color: #001080">a</span><span style="color: #000000"> </span><span style="color: #098658">86</span><span style="color: #000000"> </span><span style="color: #098658">48</span><span style="color: #000000"> </span><span style="color: #098658">86</span><span style="color: #000000"> </span><span style="color: #001080">f7</span><span style="color: #000000"> 0</span><span style="color: #001080">d</span><span style="color: #000000"> </span><span style="color: #098658">01</span><span style="color: #000000"> </span><span style="color: #098658">01</span><span style="color: #000000"> </span><span style="color: #098658">01</span><span style="color: #000000"> </span><span style="color: #098658">05</span><span style="color: #000000"> </span><span style="color: #098658">00</span><span style="color: #000000"> </span><span style="color: #098658">03</span><span style="color: #000000"> </span><span style="color: #098658">82</span><span style="color: #000000"> </span><span style="color: #098658">01</span><span style="color: #000000"> 0</span><span style="color: #001080">f</span><span style="color: #000000"> </span><span style="color: #098658">00</span><span style="color: #000000"> </span><span style="color: #098658">30</span><span style="color: #000000"> </span><span style="color: #098658">82</span><span style="color: #000000"> </span><span style="color: #098658">01</span><span style="color: #000000"> 0</span><span style="color: #001080">a</span><span style="color: #000000"> </span><span style="color: #098658">02</span><span style="color: #000000"> </span><span style="color: #098658">82</span><span style="color: #000000"> </span><span style="color: #098658">01</span><span style="color: #000000"> </span><span style="color: #098658">01</span><span style="color: #000000"> </span><span style="color: #098658">00</span><span style="color: #000000"> </span><span style="color: #001080">b6</span><span style="color: #000000"> </span><span style="color: #001080">f4</span><span style="color: #000000"> </span><span style="color: #001080">f1</span><span style="color: #000000"> </span><span style="color: #001080">cf</span><span style="color: #000000"> </span><span style="color: #001080">dd</span><span style="color: #000000"> </span><span style="color: #098658">26</span><span style="color: #000000"> </span><span style="color: #001080">a1</span><span style="color: #000000"> </span><span style="color: #098658">23</span><span style="color: #000000"> </span><span style="color: #098658">45</span><span style="color: #000000"> </span><span style="color: #001080">b6</span><span style="color: #000000"> 6</span><span style="color: #001080">e</span><span style="color: #000000"> 4</span><span style="color: #001080">e</span><span style="color: #000000"> </span><span style="color: #001080">ec</span><span style="color: #000000"> 3</span><span style="color: #001080">e</span><span style="color: #000000"> </span><span style="color: #098658">20</span><span style="color: #000000"> 8</span><span style="color: #001080">a</span><span style="color: #000000"> 3</span><span style="color: #001080">f</span><span style="color: #000000"> </span><span style="color: #098658">90</span><span style="color: #000000"> </span><span style="color: #001080">ec</span><span style="color: #000000"> </span><span style="color: #098658">84</span><span style="color: #000000"> </span><span style="color: #098658">46</span><span style="color: #000000"> </span><span style="color: #098658">49</span><span style="color: #000000"> </span><span style="color: #098658">87</span><span style="color: #000000"> </span><span style="color: #001080">a2</span><span style="color: #000000"> </span><span style="color: #098658">05</span><span style="color: #000000"> </span><span style="color: #001080">c5</span><span style="color: #000000"> </span><span style="color: #001080">eb</span><span style="color: #000000"> </span><span style="color: #001080">da</span><span style="color: #000000"> </span><span style="color: #001080">ac</span><span style="color: #000000"> </span><span style="color: #098658">84</span><span style="color: #000000"> </span><span style="color: #098658">37</span><span style="color: #000000"> </span><span style="color: #001080">eb</span><span style="color: #000000"> </span><span style="color: #001080">a3</span><span style="color: #000000"> </span><span style="color: #001080">bf</span><span style="color: #000000"> </span><span style="color: #098658">46</span><span style="color: #000000"> </span><span style="color: #001080">b5</span><span style="color: #000000"> 8</span><span style="color: #001080">e</span><span style="color: #000000"> </span><span style="color: #098658">82</span><span style="color: #000000"> </span><span style="color: #098658">75</span><span style="color: #000000"> </span><span style="color: #098658">25</span><span style="color: #000000"> 8</span><span style="color: #001080">a</span><span style="color: #000000"> </span><span style="color: #098658">80</span><span style="color: #000000"> </span><span style="color: #098658">19</span><span style="color: #000000"> </span><span style="color: #098658">10</span><span style="color: #000000"> </span><span style="color: #098658">79</span><span style="color: #000000"> </span><span style="color: #098658">13</span><span style="color: #000000"> </span><span style="color: #001080">c0</span><span style="color: #000000"> </span><span style="color: #098658">13</span><span style="color: #000000"> 6</span><span style="color: #001080">c</span><span style="color: #000000"> </span><span style="color: #098658">29</span><span style="color: #000000"> </span><span style="color: #001080">df</span><span style="color: #000000"> </span><span style="color: #098658">56</span><span style="color: #000000"> </span><span style="color: #098658">44</span><span style="color: #000000"> 1</span><span style="color: #001080">c</span><span style="color: #000000"> </span><span style="color: #001080">ec</span><span style="color: #000000"> </span><span style="color: #001080">f8</span><span style="color: #000000"> 7</span><span style="color: #001080">b</span><span style="color: #000000"> </span><span style="color: #098658">34</span><span style="color: #000000"> 0</span><span style="color: #001080">a</span><span style="color: #000000"> </span><span style="color: #001080">f2</span><span style="color: #000000"> </span><span style="color: #098658">13</span><span style="color: #000000"> </span><span style="color: #098658">41</span><span style="color: #000000"> </span><span style="color: #001080">b5</span><span style="color: #000000"> </span><span style="color: #098658">53</span><span style="color: #000000"> </span><span style="color: #098658">98</span><span style="color: #000000"> </span><span style="color: #001080">e1</span><span style="color: #000000"> </span><span style="color: #001080">f5</span><span style="color: #000000"> ... </span><span style="color: #098658">194</span><span style="color: #000000"> </span><span style="color: #001080">more</span><span style="color: #000000"> </span><span style="color: #001080">bytes</span><span style="color: #000000">&gt;,</span>
+<span style="color: #000000">      byteLength: </span><span style="color: #098658">294</span>
+<span style="color: #000000">    },</span>
+<span style="color: #000000">    algorithm: {</span>
+<span style="color: #000000">      name: </span><span style="color: #A31515">&#039;RSASSA-PKCS1-v1_5&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">      publicExponent: [</span><span style="color: #267F99">Uint8Array</span><span style="color: #000000">],</span>
+<span style="color: #000000">      modulusLength: </span><span style="color: #098658">2048</span>
+<span style="color: #000000">    }</span>
+<span style="color: #000000">  }</span>
+<span style="color: #000000">}</span>
+</code></pre>
 				<a href="#build-a-certificate-chain" id="build-a-certificate-chain" style="color: inherit; text-decoration: none;">
 					<h3>Build a certificate chain</h3>
 				</a>
-				<pre><code class="language-js"><span class="hljs-keyword">const</span> chain = <span class="hljs-keyword">new</span> x509.X509ChainBuilder({
-  <span class="hljs-attr">certificates</span>: [
-    <span class="hljs-keyword">new</span> x509.X509Certificate(raw1),
-    <span class="hljs-keyword">new</span> x509.X509Certificate(raw2),
-    <span class="hljs-comment">// ...</span>
-    <span class="hljs-keyword">new</span> x509.X509Certificate(rawN),
-  ],
-});
+				<pre><code class="language-js"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">chain</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #001080">x509</span><span style="color: #000000">.</span><span style="color: #795E26">X509ChainBuilder</span><span style="color: #000000">({</span>
+<span style="color: #000000">  </span><span style="color: #001080">certificates:</span><span style="color: #000000"> [</span>
+<span style="color: #000000">    </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #001080">x509</span><span style="color: #000000">.</span><span style="color: #795E26">X509Certificate</span><span style="color: #000000">(</span><span style="color: #001080">raw1</span><span style="color: #000000">),</span>
+<span style="color: #000000">    </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #001080">x509</span><span style="color: #000000">.</span><span style="color: #795E26">X509Certificate</span><span style="color: #000000">(</span><span style="color: #001080">raw2</span><span style="color: #000000">),</span>
+<span style="color: #000000">    </span><span style="color: #008000">// ...</span>
+<span style="color: #000000">    </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #001080">x509</span><span style="color: #000000">.</span><span style="color: #795E26">X509Certificate</span><span style="color: #000000">(</span><span style="color: #001080">rawN</span><span style="color: #000000">),</span>
+<span style="color: #000000">  ],</span>
+<span style="color: #000000">});</span>
 
-<span class="hljs-keyword">const</span> cert = x509.X509Certificate(raw);
-<span class="hljs-keyword">const</span> items = <span class="hljs-keyword">await</span> chain.build(cert);
-<span class="hljs-built_in">console</span>.log(items); <span class="hljs-comment">// [ X509Certificate, X509Certificate, X509Certificate ]</span></code></pre>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">cert</span><span style="color: #000000"> = </span><span style="color: #001080">x509</span><span style="color: #000000">.</span><span style="color: #795E26">X509Certificate</span><span style="color: #000000">(</span><span style="color: #001080">raw</span><span style="color: #000000">);</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">items</span><span style="color: #000000"> = </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">chain</span><span style="color: #000000">.</span><span style="color: #795E26">build</span><span style="color: #000000">(</span><span style="color: #001080">cert</span><span style="color: #000000">);</span>
+<span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #001080">items</span><span style="color: #000000">); </span><span style="color: #008000">// [ X509Certificate, X509Certificate, X509Certificate ]</span>
+</code></pre>
 				<a href="#export-a-list-of-x509-certificates-to-pkcs7-format" id="export-a-list-of-x509-certificates-to-pkcs7-format" style="color: inherit; text-decoration: none;">
 					<h3>Export a list of X509 certificates to PKCS#7 format</h3>
 				</a>
-				<pre><code class="language-js"><span class="hljs-keyword">const</span> certs = <span class="hljs-keyword">new</span> x509.X509Certificates([
-  <span class="hljs-keyword">new</span> x509.X509Certificate(<span class="hljs-string">&quot;MIIDljCCAn6gAwIBAgIOSETcxtRwD...S+kAFXIwugUGYEnTWp0m5bAn5NlD314IEOg4mnS8Q==&quot;</span>),
-  <span class="hljs-keyword">new</span> x509.X509Certificate(<span class="hljs-string">&quot;MIIDljCCAn6gAwIBAgIOSETcxtRwD...w8Y/o+hk3QzNBVa3ZUvzDhVAmamQflvw3lXMm/JG4U=&quot;</span>),
-]);
+				<pre><code class="language-js"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">certs</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #001080">x509</span><span style="color: #000000">.</span><span style="color: #795E26">X509Certificates</span><span style="color: #000000">([</span>
+<span style="color: #000000">  </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #001080">x509</span><span style="color: #000000">.</span><span style="color: #795E26">X509Certificate</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;MIIDljCCAn6gAwIBAgIOSETcxtRwD...S+kAFXIwugUGYEnTWp0m5bAn5NlD314IEOg4mnS8Q==&quot;</span><span style="color: #000000">),</span>
+<span style="color: #000000">  </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #001080">x509</span><span style="color: #000000">.</span><span style="color: #795E26">X509Certificate</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;MIIDljCCAn6gAwIBAgIOSETcxtRwD...w8Y/o+hk3QzNBVa3ZUvzDhVAmamQflvw3lXMm/JG4U=&quot;</span><span style="color: #000000">),</span>
+<span style="color: #000000">]);</span>
 
-<span class="hljs-built_in">console</span>.log(certs.export(<span class="hljs-string">&quot;base64&quot;</span>)); <span class="hljs-comment">// &quot;MIICTAYJKoZIhvcNAQcCoIICPTCCAjkCAQAxADACBgCgggIq...F7EZPNo3pjbfznpIilRMRrmwf5dkgCdSKDdE94xAA==&quot;);</span></code></pre>
+<span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #001080">certs</span><span style="color: #000000">.</span><span style="color: #795E26">export</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;base64&quot;</span><span style="color: #000000">)); </span><span style="color: #008000">// &quot;MIICTAYJKoZIhvcNAQcCoIICPTCCAjkCAQAxADACBgCgggIq...F7EZPNo3pjbfznpIilRMRrmwf5dkgCdSKDdE94xAA==&quot;);</span>
+</code></pre>
 			</div>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 			<nav class="tsd-navigation primary">
 				<ul>
-					<li class="globals  ">
-						<a href="globals.html"><em>Globals</em></a>
+					<li class=" ">
+						<a href="modules.html">Exports</a>
 					</li>
 				</ul>
 			</nav>
@@ -347,9 +350,6 @@ x509.cryptoProvider.set(crypto);</code></pre>
 					<li class=" tsd-kind-class">
 						<a href="classes/pemconverter.html" class="tsd-kind-icon">Pem<wbr>Converter</a>
 					</li>
-					<li class=" tsd-kind-class tsd-has-type-parameter">
-						<a href="classes/pemdata.html" class="tsd-kind-icon">Pem<wbr>Data</a>
-					</li>
 					<li class=" tsd-kind-class">
 						<a href="classes/pkcs10certificaterequest.html" class="tsd-kind-icon">Pkcs10<wbr>Certificate<wbr>Request</a>
 					</li>
@@ -420,52 +420,37 @@ x509.cryptoProvider.set(crypto);</code></pre>
 						<a href="interfaces/x509certificateverifyparams.html" class="tsd-kind-icon">X509<wbr>Certificate<wbr>Verify<wbr>Params</a>
 					</li>
 					<li class=" tsd-kind-type-alias">
-						<a href="globals.html#asnencodedtype" class="tsd-kind-icon">Asn<wbr>Encoded<wbr>Type</a>
+						<a href="modules.html#jsonname" class="tsd-kind-icon">Json<wbr>Name</a>
 					</li>
 					<li class=" tsd-kind-type-alias">
-						<a href="globals.html#asnexporttype" class="tsd-kind-icon">Asn<wbr>Export<wbr>Type</a>
+						<a href="modules.html#pkcs10certificaterequestcreateparamsname" class="tsd-kind-icon">Pkcs10<wbr>Certificate<wbr>Request<wbr>Create<wbr>Params<wbr>Name</a>
 					</li>
 					<li class=" tsd-kind-type-alias">
-						<a href="globals.html#jsonname" class="tsd-kind-icon">Json<wbr>Name</a>
-					</li>
-					<li class=" tsd-kind-type-alias">
-						<a href="globals.html#pkcs10certificaterequestcreateparamsname" class="tsd-kind-icon">Pkcs10<wbr>Certificate<wbr>Request<wbr>Create<wbr>Params<wbr>Name</a>
-					</li>
-					<li class=" tsd-kind-type-alias">
-						<a href="globals.html#x509certificatecreateparamsname" class="tsd-kind-icon">X509<wbr>Certificate<wbr>Create<wbr>Params<wbr>Name</a>
+						<a href="modules.html#x509certificatecreateparamsname" class="tsd-kind-icon">X509<wbr>Certificate<wbr>Create<wbr>Params<wbr>Name</a>
 					</li>
 					<li class=" tsd-kind-variable">
-						<a href="globals.html#cryptoprovider" class="tsd-kind-icon">crypto<wbr>Provider</a>
+						<a href="modules.html#cryptoprovider" class="tsd-kind-icon">crypto<wbr>Provider</a>
 					</li>
 					<li class=" tsd-kind-variable">
-						<a href="globals.html#dialgorithm" class="tsd-kind-icon">di<wbr>Algorithm</a>
+						<a href="modules.html#dialgorithm" class="tsd-kind-icon">di<wbr>Algorithm</a>
 					</li>
 					<li class=" tsd-kind-variable">
-						<a href="globals.html#dialgorithmprovider" class="tsd-kind-icon">di<wbr>Algorithm<wbr>Provider</a>
+						<a href="modules.html#dialgorithmprovider" class="tsd-kind-icon">di<wbr>Algorithm<wbr>Provider</a>
 					</li>
 					<li class=" tsd-kind-variable">
-						<a href="globals.html#diasnsignatureformatter" class="tsd-kind-icon">di<wbr>Asn<wbr>Signature<wbr>Formatter</a>
+						<a href="modules.html#diasnsignatureformatter" class="tsd-kind-icon">di<wbr>Asn<wbr>Signature<wbr>Formatter</a>
 					</li>
 					<li class=" tsd-kind-variable">
-						<a href="globals.html#ided25519" class="tsd-kind-icon">id<wbr>Ed25519</a>
+						<a href="modules.html#ided25519" class="tsd-kind-icon">id<wbr>Ed25519</a>
 					</li>
 					<li class=" tsd-kind-variable">
-						<a href="globals.html#ided448" class="tsd-kind-icon">id<wbr>Ed448</a>
+						<a href="modules.html#ided448" class="tsd-kind-icon">id<wbr>Ed448</a>
 					</li>
 					<li class=" tsd-kind-variable">
-						<a href="globals.html#idx25519" class="tsd-kind-icon">id<wbr>X25519</a>
+						<a href="modules.html#idx25519" class="tsd-kind-icon">id<wbr>X25519</a>
 					</li>
 					<li class=" tsd-kind-variable">
-						<a href="globals.html#idx448" class="tsd-kind-icon">id<wbr>X448</a>
-					</li>
-					<li class=" tsd-kind-variable">
-						<a href="globals.html#names" class="tsd-kind-icon">names</a>
-					</li>
-					<li class=" tsd-kind-function">
-						<a href="globals.html#escape" class="tsd-kind-icon">escape</a>
-					</li>
-					<li class=" tsd-kind-function">
-						<a href="globals.html#replaceunknowncharacter" class="tsd-kind-icon">replace<wbr>Unknown<wbr>Character</a>
+						<a href="modules.html#idx448" class="tsd-kind-icon">id<wbr>X448</a>
 					</li>
 				</ul>
 			</nav>

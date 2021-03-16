@@ -7,6 +7,7 @@
 	<meta name="description" content="Documentation for @peculiar/x509">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
+	<script async src="../assets/js/search.js" id="search-script"></script>
 </head>
 <body>
 <header>
@@ -40,8 +41,6 @@
 							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
 							<input type="checkbox" id="tsd-filter-externals" checked />
 							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
-							<input type="checkbox" id="tsd-filter-only-exported" />
-							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
 					</div>
 					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
@@ -53,7 +52,7 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../globals.html">Globals</a>
+					<a href="../modules.html">@peculiar/x509</a>
 				</li>
 				<li>
 					<a href="name.html">Name</a>
@@ -119,13 +118,13 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Name<span class="tsd-signature-symbol">(</span>data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">BufferSource</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">AsnName</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../globals.html#jsonname" class="tsd-signature-type">JsonName</a>, extraNames<span class="tsd-signature-symbol">?: </span><a href="../interfaces/idorname.html" class="tsd-signature-type">IdOrName</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="name.html" class="tsd-signature-type">Name</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Name<span class="tsd-signature-symbol">(</span>data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">BufferSource</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Name</span><span class="tsd-signature-symbol"> | </span><a href="../modules.html#jsonname" class="tsd-signature-type" data-tsd-kind="Type alias">JsonName</a>, extraNames<span class="tsd-signature-symbol">?: </span><a href="../interfaces/idorname.html" class="tsd-signature-type" data-tsd-kind="Interface">IdOrName</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="name.html" class="tsd-signature-type" data-tsd-kind="Class">Name</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/f946e2d/src/name.ts#L74">src/name.ts:74</a></li>
+									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/90c881e/src/name.ts#L74">src/name.ts:74</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -146,18 +145,16 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>data: <span class="tsd-signature-type">BufferSource</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">AsnName</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../globals.html#jsonname" class="tsd-signature-type">JsonName</a></h5>
+									<h5>data: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">BufferSource</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Name</span><span class="tsd-signature-symbol"> | </span><a href="../modules.html#jsonname" class="tsd-signature-type" data-tsd-kind="Type alias">JsonName</a></h5>
 								</li>
 								<li>
-									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> extraNames: <a href="../interfaces/idorname.html" class="tsd-signature-type">IdOrName</a><span class="tsd-signature-symbol"> = {}</span></h5>
+									<h5>extraNames: <a href="../interfaces/idorname.html" class="tsd-signature-type" data-tsd-kind="Interface">IdOrName</a><span class="tsd-signature-symbol"> = ...</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<div class="lead">
-											<p>Extra identifiers for name customization</p>
-										</div>
+										<p>Extra identifiers for name customization</p>
 									</div>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="name.html" class="tsd-signature-type">Name</a></h4>
+							<h4 class="tsd-returns-title">Returns <a href="name.html" class="tsd-signature-type" data-tsd-kind="Class">Name</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -167,10 +164,10 @@
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
 					<a name="asn" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagPrivate">Private</span> asn</h3>
-					<div class="tsd-signature tsd-kind-icon">asn<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Name</span><span class="tsd-signature-symbol"> = new AsnName()</span></div>
+					<div class="tsd-signature tsd-kind-icon">asn<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Name</span><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/f946e2d/src/name.ts#L74">src/name.ts:74</a></li>
+							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/90c881e/src/name.ts#L74">src/name.ts:74</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -182,10 +179,10 @@
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
 					<a name="extranames" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagPrivate">Private</span> extra<wbr>Names</h3>
-					<div class="tsd-signature tsd-kind-icon">extra<wbr>Names<span class="tsd-signature-symbol">:</span> <a href="nameidentifier.html" class="tsd-signature-type">NameIdentifier</a><span class="tsd-signature-symbol"> = new NameIdentifier()</span></div>
+					<div class="tsd-signature tsd-kind-icon">extra<wbr>Names<span class="tsd-signature-symbol">:</span> <a href="nameidentifier.html" class="tsd-signature-type" data-tsd-kind="Class">NameIdentifier</a><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/f946e2d/src/name.ts#L69">src/name.ts:69</a></li>
+							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/90c881e/src/name.ts#L69">src/name.ts:69</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -196,13 +193,13 @@
 					<a name="fromjson" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagPrivate">Private</span> fromJSON</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
-						<li class="tsd-signature tsd-kind-icon">fromJSON<span class="tsd-signature-symbol">(</span>data<span class="tsd-signature-symbol">: </span><a href="../globals.html#jsonname" class="tsd-signature-type">JsonName</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">AsnName</span></li>
+						<li class="tsd-signature tsd-kind-icon">fromJSON<span class="tsd-signature-symbol">(</span>data<span class="tsd-signature-symbol">: </span><a href="../modules.html#jsonname" class="tsd-signature-type" data-tsd-kind="Type alias">JsonName</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Name</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/f946e2d/src/name.ts#L224">src/name.ts:224</a></li>
+									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/90c881e/src/name.ts#L224">src/name.ts:224</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -213,12 +210,12 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>data: <a href="../globals.html#jsonname" class="tsd-signature-type">JsonName</a></h5>
+									<h5>data: <a href="../modules.html#jsonname" class="tsd-signature-type" data-tsd-kind="Type alias">JsonName</a></h5>
 									<div class="tsd-comment tsd-typography">
 									</div>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">AsnName</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Name</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -232,7 +229,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/f946e2d/src/name.ts#L159">src/name.ts:159</a></li>
+									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/90c881e/src/name.ts#L159">src/name.ts:159</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -262,7 +259,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/f946e2d/src/name.ts#L107">src/name.ts:107</a></li>
+									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/90c881e/src/name.ts#L107">src/name.ts:107</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -285,7 +282,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/f946e2d/src/name.ts#L263">src/name.ts:263</a></li>
+									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/90c881e/src/name.ts#L263">src/name.ts:263</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -301,13 +298,13 @@
 					<a name="tojson" class="tsd-anchor"></a>
 					<h3>toJSON</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">toJSON<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../globals.html#jsonname" class="tsd-signature-type">JsonName</a></li>
+						<li class="tsd-signature tsd-kind-icon">toJSON<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../modules.html#jsonname" class="tsd-signature-type" data-tsd-kind="Type alias">JsonName</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/f946e2d/src/name.ts#L139">src/name.ts:139</a></li>
+									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/90c881e/src/name.ts#L139">src/name.ts:139</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -315,7 +312,7 @@
 									<p>Returns a JSON representation of the Name</p>
 								</div>
 							</div>
-							<h4 class="tsd-returns-title">Returns <a href="../globals.html#jsonname" class="tsd-signature-type">JsonName</a></h4>
+							<h4 class="tsd-returns-title">Returns <a href="../modules.html#jsonname" class="tsd-signature-type" data-tsd-kind="Type alias">JsonName</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -329,7 +326,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/f946e2d/src/name.ts#L114">src/name.ts:114</a></li>
+									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/90c881e/src/name.ts#L114">src/name.ts:114</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -346,8 +343,8 @@
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 			<nav class="tsd-navigation primary">
 				<ul>
-					<li class="globals  ">
-						<a href="../globals.html"><em>Globals</em></a>
+					<li class=" ">
+						<a href="../modules.html">Exports</a>
 					</li>
 				</ul>
 			</nav>

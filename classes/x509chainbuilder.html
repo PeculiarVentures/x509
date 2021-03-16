@@ -7,6 +7,7 @@
 	<meta name="description" content="Documentation for @peculiar/x509">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
+	<script async src="../assets/js/search.js" id="search-script"></script>
 </head>
 <body>
 <header>
@@ -40,8 +41,6 @@
 							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
 							<input type="checkbox" id="tsd-filter-externals" checked />
 							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
-							<input type="checkbox" id="tsd-filter-only-exported" />
-							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
 					</div>
 					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
@@ -53,7 +52,7 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../globals.html">Globals</a>
+					<a href="../modules.html">@peculiar/x509</a>
 				</li>
 				<li>
 					<a href="x509chainbuilder.html">X509ChainBuilder</a>
@@ -73,17 +72,18 @@
 					</div>
 					<dl class="tsd-comment-tags">
 						<dt>example</dt>
-						<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> chain = <span class="hljs-keyword">new</span> x509.X509ChainBuilder({
-  <span class="hljs-attr">certificates</span>: [
-    <span class="hljs-keyword">new</span> x509.X509Certificate(raw1),
-    <span class="hljs-keyword">new</span> x509.X509Certificate(raw2),
-    <span class="hljs-comment">// ...</span>
-    <span class="hljs-keyword">new</span> x509.X509Certificate(rawN),
-  ],
-});
+						<dd><pre><code class="language-js"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">chain</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #001080">x509</span><span style="color: #000000">.</span><span style="color: #795E26">X509ChainBuilder</span><span style="color: #000000">({</span>
+<span style="color: #000000">  </span><span style="color: #001080">certificates:</span><span style="color: #000000"> [</span>
+<span style="color: #000000">    </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #001080">x509</span><span style="color: #000000">.</span><span style="color: #795E26">X509Certificate</span><span style="color: #000000">(</span><span style="color: #001080">raw1</span><span style="color: #000000">),</span>
+<span style="color: #000000">    </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #001080">x509</span><span style="color: #000000">.</span><span style="color: #795E26">X509Certificate</span><span style="color: #000000">(</span><span style="color: #001080">raw2</span><span style="color: #000000">),</span>
+<span style="color: #000000">    </span><span style="color: #008000">// ...</span>
+<span style="color: #000000">    </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #001080">x509</span><span style="color: #000000">.</span><span style="color: #795E26">X509Certificate</span><span style="color: #000000">(</span><span style="color: #001080">rawN</span><span style="color: #000000">),</span>
+<span style="color: #000000">  ],</span>
+<span style="color: #000000">});</span>
 
-<span class="hljs-keyword">const</span> cert = x509.X509Certificate(raw);
-<span class="hljs-keyword">const</span> items = <span class="hljs-keyword">await</span> chain.build(cert);</code></pre>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">cert</span><span style="color: #000000"> = </span><span style="color: #001080">x509</span><span style="color: #000000">.</span><span style="color: #795E26">X509Certificate</span><span style="color: #000000">(</span><span style="color: #001080">raw</span><span style="color: #000000">);</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">items</span><span style="color: #000000"> = </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">chain</span><span style="color: #000000">.</span><span style="color: #795E26">build</span><span style="color: #000000">(</span><span style="color: #001080">cert</span><span style="color: #000000">);</span>
+</code></pre>
 						</dd>
 					</dl>
 				</div>
@@ -128,22 +128,22 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>X509<wbr>Chain<wbr>Builder<span class="tsd-signature-symbol">(</span>params<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="x509chainbuilder.html" class="tsd-signature-type">X509ChainBuilder</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="x509chainbuilder.html" class="tsd-signature-type">X509ChainBuilder</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>X509<wbr>Chain<wbr>Builder<span class="tsd-signature-symbol">(</span>params<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="x509chainbuilder.html" class="tsd-signature-type" data-tsd-kind="Class">X509ChainBuilder</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="x509chainbuilder.html" class="tsd-signature-type" data-tsd-kind="Class">X509ChainBuilder</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/f946e2d/src/x509_chain_builder.ts#L27">src/x509_chain_builder.ts:27</a></li>
+									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/90c881e/src/x509_chain_builder.ts#L27">src/x509_chain_builder.ts:27</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> params: <span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="x509chainbuilder.html" class="tsd-signature-type">X509ChainBuilder</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = {}</span></h5>
+									<h5>params: <span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="x509chainbuilder.html" class="tsd-signature-type" data-tsd-kind="Class">X509ChainBuilder</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = ...</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="x509chainbuilder.html" class="tsd-signature-type">X509ChainBuilder</a></h4>
+							<h4 class="tsd-returns-title">Returns <a href="x509chainbuilder.html" class="tsd-signature-type" data-tsd-kind="Class">X509ChainBuilder</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -153,10 +153,10 @@
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="certificates" class="tsd-anchor"></a>
 					<h3>certificates</h3>
-					<div class="tsd-signature tsd-kind-icon">certificates<span class="tsd-signature-symbol">:</span> <a href="x509certificate.html" class="tsd-signature-type">X509Certificate</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = []</span></div>
+					<div class="tsd-signature tsd-kind-icon">certificates<span class="tsd-signature-symbol">:</span> <a href="x509certificate.html" class="tsd-signature-type" data-tsd-kind="Class">X509Certificate</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/f946e2d/src/x509_chain_builder.ts#L27">src/x509_chain_builder.ts:27</a></li>
+							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/90c881e/src/x509_chain_builder.ts#L27">src/x509_chain_builder.ts:27</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -167,22 +167,22 @@
 					<a name="build" class="tsd-anchor"></a>
 					<h3>build</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">build<span class="tsd-signature-symbol">(</span>cert<span class="tsd-signature-symbol">: </span><a href="x509certificate.html" class="tsd-signature-type">X509Certificate</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="x509certificates.html" class="tsd-signature-type">X509Certificates</a><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">build<span class="tsd-signature-symbol">(</span>cert<span class="tsd-signature-symbol">: </span><a href="x509certificate.html" class="tsd-signature-type" data-tsd-kind="Class">X509Certificate</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="x509certificates.html" class="tsd-signature-type" data-tsd-kind="Class">X509Certificates</a><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/f946e2d/src/x509_chain_builder.ts#L35">src/x509_chain_builder.ts:35</a></li>
+									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/90c881e/src/x509_chain_builder.ts#L35">src/x509_chain_builder.ts:35</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>cert: <a href="x509certificate.html" class="tsd-signature-type">X509Certificate</a></h5>
+									<h5>cert: <a href="x509certificate.html" class="tsd-signature-type" data-tsd-kind="Class">X509Certificate</a></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="x509certificates.html" class="tsd-signature-type">X509Certificates</a><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="x509certificates.html" class="tsd-signature-type" data-tsd-kind="Class">X509Certificates</a><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -190,22 +190,22 @@
 					<a name="findissuer" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagPrivate">Private</span> find<wbr>Issuer</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
-						<li class="tsd-signature tsd-kind-icon">find<wbr>Issuer<span class="tsd-signature-symbol">(</span>cert<span class="tsd-signature-symbol">: </span><a href="x509certificate.html" class="tsd-signature-type">X509Certificate</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><a href="x509certificate.html" class="tsd-signature-type">X509Certificate</a><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">find<wbr>Issuer<span class="tsd-signature-symbol">(</span>cert<span class="tsd-signature-symbol">: </span><a href="x509certificate.html" class="tsd-signature-type" data-tsd-kind="Class">X509Certificate</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><a href="x509certificate.html" class="tsd-signature-type" data-tsd-kind="Class">X509Certificate</a><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/f946e2d/src/x509_chain_builder.ts#L56">src/x509_chain_builder.ts:56</a></li>
+									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/90c881e/src/x509_chain_builder.ts#L56">src/x509_chain_builder.ts:56</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>cert: <a href="x509certificate.html" class="tsd-signature-type">X509Certificate</a></h5>
+									<h5>cert: <a href="x509certificate.html" class="tsd-signature-type" data-tsd-kind="Class">X509Certificate</a></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><a href="x509certificate.html" class="tsd-signature-type">X509Certificate</a><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><a href="x509certificate.html" class="tsd-signature-type" data-tsd-kind="Class">X509Certificate</a><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -214,8 +214,8 @@
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 			<nav class="tsd-navigation primary">
 				<ul>
-					<li class="globals  ">
-						<a href="../globals.html"><em>Globals</em></a>
+					<li class=" ">
+						<a href="../modules.html">Exports</a>
 					</li>
 				</ul>
 			</nav>

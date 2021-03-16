@@ -7,6 +7,7 @@
 	<meta name="description" content="Documentation for @peculiar/x509">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
+	<script async src="../assets/js/search.js" id="search-script"></script>
 </head>
 <body>
 <header>
@@ -40,8 +41,6 @@
 							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
 							<input type="checkbox" id="tsd-filter-externals" checked />
 							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
-							<input type="checkbox" id="tsd-filter-only-exported" />
-							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
 					</div>
 					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
@@ -53,7 +52,7 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../globals.html">Globals</a>
+					<a href="../modules.html">@peculiar/x509</a>
 				</li>
 				<li>
 					<a href="subjectalternativenameextension.html">SubjectAlternativeNameExtension</a>
@@ -77,7 +76,7 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<a href="extension.html" class="tsd-signature-type">Extension</a>
+						<a href="extension.html" class="tsd-signature-type" data-tsd-kind="Class">Extension</a>
 						<ul class="tsd-hierarchy">
 							<li>
 								<span class="target">SubjectAlternativeNameExtension</span>
@@ -132,15 +131,15 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Subject<wbr>Alternative<wbr>Name<wbr>Extension<span class="tsd-signature-symbol">(</span>raw<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">BufferSource</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="subjectalternativenameextension.html" class="tsd-signature-type">SubjectAlternativeNameExtension</a></li>
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Subject<wbr>Alternative<wbr>Name<wbr>Extension<span class="tsd-signature-symbol">(</span>data<span class="tsd-signature-symbol">?: </span><a href="../interfaces/jsonsubjectalternativename.html" class="tsd-signature-type">JsonSubjectAlternativeName</a>, critical<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="subjectalternativenameextension.html" class="tsd-signature-type">SubjectAlternativeNameExtension</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Subject<wbr>Alternative<wbr>Name<wbr>Extension<span class="tsd-signature-symbol">(</span>raw<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">BufferSource</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="subjectalternativenameextension.html" class="tsd-signature-type" data-tsd-kind="Class">SubjectAlternativeNameExtension</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Subject<wbr>Alternative<wbr>Name<wbr>Extension<span class="tsd-signature-symbol">(</span>data<span class="tsd-signature-symbol">?: </span><a href="../interfaces/jsonsubjectalternativename.html" class="tsd-signature-type" data-tsd-kind="Interface">JsonSubjectAlternativeName</a>, critical<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="subjectalternativenameextension.html" class="tsd-signature-type" data-tsd-kind="Class">SubjectAlternativeNameExtension</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Overrides <a href="extension.html">Extension</a>.<a href="extension.html#constructor">constructor</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/f946e2d/src/extensions/subject_alt_name.ts#L84">src/extensions/subject_alt_name.ts:84</a></li>
+									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/90c881e/src/extensions/subject_alt_name.ts#L84">src/extensions/subject_alt_name.ts:84</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -153,19 +152,17 @@
 								<li>
 									<h5>raw: <span class="tsd-signature-type">BufferSource</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<div class="lead">
-											<p>DER encoded buffer</p>
-										</div>
+										<p>DER encoded buffer</p>
 									</div>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="subjectalternativenameextension.html" class="tsd-signature-type">SubjectAlternativeNameExtension</a></h4>
+							<h4 class="tsd-returns-title">Returns <a href="subjectalternativenameextension.html" class="tsd-signature-type" data-tsd-kind="Class">SubjectAlternativeNameExtension</a></h4>
 						</li>
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Overrides <a href="extension.html">Extension</a>.<a href="extension.html#constructor">constructor</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/f946e2d/src/extensions/subject_alt_name.ts#L90">src/extensions/subject_alt_name.ts:90</a></li>
+									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/90c881e/src/extensions/subject_alt_name.ts#L90">src/extensions/subject_alt_name.ts:90</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -176,23 +173,19 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> data: <a href="../interfaces/jsonsubjectalternativename.html" class="tsd-signature-type">JsonSubjectAlternativeName</a></h5>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> data: <a href="../interfaces/jsonsubjectalternativename.html" class="tsd-signature-type" data-tsd-kind="Interface">JsonSubjectAlternativeName</a></h5>
 									<div class="tsd-comment tsd-typography">
-										<div class="lead">
-											<p>JSON representation of SAN</p>
-										</div>
+										<p>JSON representation of SAN</p>
 									</div>
 								</li>
 								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> critical: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span></h5>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> critical: <span class="tsd-signature-type">boolean</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<div class="lead">
-											<p>Indicates where extension is critical. Default is <code>false</code></p>
-										</div>
+										<p>Indicates where extension is critical. Default is <code>false</code></p>
 									</div>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="subjectalternativenameextension.html" class="tsd-signature-type">SubjectAlternativeNameExtension</a></h4>
+							<h4 class="tsd-returns-title">Returns <a href="subjectalternativenameextension.html" class="tsd-signature-type" data-tsd-kind="Class">SubjectAlternativeNameExtension</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -206,7 +199,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="extension.html">Extension</a>.<a href="extension.html#critical">critical</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/f946e2d/src/extension.ts#L18">src/extension.ts:18</a></li>
+							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/90c881e/src/extension.ts#L18">src/extension.ts:18</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -221,7 +214,7 @@
 					<div class="tsd-signature tsd-kind-icon">dns<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/f946e2d/src/extensions/subject_alt_name.ts#L77">src/extensions/subject_alt_name.ts:77</a></li>
+							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/90c881e/src/extensions/subject_alt_name.ts#L77">src/extensions/subject_alt_name.ts:77</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -231,7 +224,7 @@
 					<div class="tsd-signature tsd-kind-icon">email<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/f946e2d/src/extensions/subject_alt_name.ts#L78">src/extensions/subject_alt_name.ts:78</a></li>
+							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/90c881e/src/extensions/subject_alt_name.ts#L78">src/extensions/subject_alt_name.ts:78</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -241,7 +234,7 @@
 					<div class="tsd-signature tsd-kind-icon">guid<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/f946e2d/src/extensions/subject_alt_name.ts#L79">src/extensions/subject_alt_name.ts:79</a></li>
+							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/90c881e/src/extensions/subject_alt_name.ts#L79">src/extensions/subject_alt_name.ts:79</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -251,17 +244,17 @@
 					<div class="tsd-signature tsd-kind-icon">ip<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/f946e2d/src/extensions/subject_alt_name.ts#L80">src/extensions/subject_alt_name.ts:80</a></li>
+							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/90c881e/src/extensions/subject_alt_name.ts#L80">src/extensions/subject_alt_name.ts:80</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="othernames" class="tsd-anchor"></a>
 					<h3>other<wbr>Names</h3>
-					<div class="tsd-signature tsd-kind-icon">other<wbr>Names<span class="tsd-signature-symbol">:</span> <a href="othername.html" class="tsd-signature-type">OtherName</a><span class="tsd-signature-symbol">[]</span></div>
+					<div class="tsd-signature tsd-kind-icon">other<wbr>Names<span class="tsd-signature-symbol">:</span> <a href="othername.html" class="tsd-signature-type" data-tsd-kind="Class">OtherName</a><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/f946e2d/src/extensions/subject_alt_name.ts#L83">src/extensions/subject_alt_name.ts:83</a></li>
+							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/90c881e/src/extensions/subject_alt_name.ts#L83">src/extensions/subject_alt_name.ts:83</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -270,9 +263,9 @@
 					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> raw<wbr>Data</h3>
 					<div class="tsd-signature tsd-kind-icon">raw<wbr>Data<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">ArrayBuffer</span></div>
 					<aside class="tsd-sources">
-						<p>Inherited from <a href="asndata.html">AsnData</a>.<a href="asndata.html#rawdata">rawData</a></p>
+						<p>Inherited from <a href="extension.html">Extension</a>.<a href="extension.html#rawdata">rawData</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/f946e2d/src/asn_data.ts#L13">src/asn_data.ts:13</a></li>
+							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/90c881e/src/asn_data.ts#L13">src/asn_data.ts:13</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -287,7 +280,7 @@
 					<div class="tsd-signature tsd-kind-icon">registered<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/f946e2d/src/extensions/subject_alt_name.ts#L84">src/extensions/subject_alt_name.ts:84</a></li>
+							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/90c881e/src/extensions/subject_alt_name.ts#L84">src/extensions/subject_alt_name.ts:84</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -298,7 +291,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="extension.html">Extension</a>.<a href="extension.html#type">type</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/f946e2d/src/extension.ts#L14">src/extension.ts:14</a></li>
+							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/90c881e/src/extension.ts#L14">src/extension.ts:14</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -313,7 +306,7 @@
 					<div class="tsd-signature tsd-kind-icon">upn<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/f946e2d/src/extensions/subject_alt_name.ts#L82">src/extensions/subject_alt_name.ts:82</a></li>
+							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/90c881e/src/extensions/subject_alt_name.ts#L82">src/extensions/subject_alt_name.ts:82</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -323,7 +316,7 @@
 					<div class="tsd-signature tsd-kind-icon">url<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/f946e2d/src/extensions/subject_alt_name.ts#L81">src/extensions/subject_alt_name.ts:81</a></li>
+							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/90c881e/src/extensions/subject_alt_name.ts#L81">src/extensions/subject_alt_name.ts:81</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -334,7 +327,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="extension.html">Extension</a>.<a href="extension.html#value">value</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/f946e2d/src/extension.ts#L23">src/extension.ts:23</a></li>
+							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/90c881e/src/extension.ts#L23">src/extension.ts:23</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -349,7 +342,7 @@
 					<div class="tsd-signature tsd-kind-icon">GUID<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &quot;1.3.6.1.4.1.311.25.1&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/f946e2d/src/extensions/subject_alt_name.ts#L74">src/extensions/subject_alt_name.ts:74</a></li>
+							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/90c881e/src/extensions/subject_alt_name.ts#L74">src/extensions/subject_alt_name.ts:74</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -359,7 +352,7 @@
 					<div class="tsd-signature tsd-kind-icon">UPN<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &quot;1.3.6.1.4.1.311.20.2.3&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/f946e2d/src/extensions/subject_alt_name.ts#L75">src/extensions/subject_alt_name.ts:75</a></li>
+							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/90c881e/src/extensions/subject_alt_name.ts#L75">src/extensions/subject_alt_name.ts:75</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -370,14 +363,14 @@
 					<a name="equal" class="tsd-anchor"></a>
 					<h3>equal</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-						<li class="tsd-signature tsd-kind-icon">equal<span class="tsd-signature-symbol">(</span>data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">data</span><span class="tsd-signature-symbol"> is </span><span class="tsd-signature-type">this</span></li>
+						<li class="tsd-signature tsd-kind-icon">equal<span class="tsd-signature-symbol">(</span>data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">data</span><span class="tsd-signature-symbol"> is </span><a href="subjectalternativenameextension.html" class="tsd-signature-type" data-tsd-kind="Class">SubjectAlternativeNameExtension</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from <a href="asndata.html">AsnData</a>.<a href="asndata.html#equal">equal</a></p>
+								<p>Inherited from <a href="extension.html">Extension</a>.<a href="extension.html#equal">equal</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/f946e2d/src/asn_data.ts#L50">src/asn_data.ts:50</a></li>
+									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/90c881e/src/asn_data.ts#L50">src/asn_data.ts:50</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -394,7 +387,7 @@
 									</div>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">data</span><span class="tsd-signature-symbol"> is </span><span class="tsd-signature-type">this</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">data</span><span class="tsd-signature-symbol"> is </span><a href="subjectalternativenameextension.html" class="tsd-signature-type" data-tsd-kind="Class">SubjectAlternativeNameExtension</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -409,7 +402,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="extension.html">Extension</a>.<a href="extension.html#oninit">onInit</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/f946e2d/src/extensions/subject_alt_name.ts#L188">src/extensions/subject_alt_name.ts:188</a></li>
+									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/90c881e/src/extensions/subject_alt_name.ts#L188">src/extensions/subject_alt_name.ts:188</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -426,16 +419,16 @@
 					<a name="tojson" class="tsd-anchor"></a>
 					<h3>toJSON</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">toJSON<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/jsonsubjectalternativename.html" class="tsd-signature-type">JsonSubjectAlternativeName</a></li>
+						<li class="tsd-signature tsd-kind-icon">toJSON<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/jsonsubjectalternativename.html" class="tsd-signature-type" data-tsd-kind="Interface">JsonSubjectAlternativeName</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/f946e2d/src/extensions/subject_alt_name.ts#L229">src/extensions/subject_alt_name.ts:229</a></li>
+									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/90c881e/src/extensions/subject_alt_name.ts#L229">src/extensions/subject_alt_name.ts:229</a></li>
 								</ul>
 							</aside>
-							<h4 class="tsd-returns-title">Returns <a href="../interfaces/jsonsubjectalternativename.html" class="tsd-signature-type">JsonSubjectAlternativeName</a></h4>
+							<h4 class="tsd-returns-title">Returns <a href="../interfaces/jsonsubjectalternativename.html" class="tsd-signature-type" data-tsd-kind="Interface">JsonSubjectAlternativeName</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -444,8 +437,8 @@
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 			<nav class="tsd-navigation primary">
 				<ul>
-					<li class="globals  ">
-						<a href="../globals.html"><em>Globals</em></a>
+					<li class=" ">
+						<a href="../modules.html">Exports</a>
 					</li>
 				</ul>
 			</nav>

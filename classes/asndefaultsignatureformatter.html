@@ -7,6 +7,7 @@
 	<meta name="description" content="Documentation for @peculiar/x509">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
+	<script async src="../assets/js/search.js" id="search-script"></script>
 </head>
 <body>
 <header>
@@ -40,8 +41,6 @@
 							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
 							<input type="checkbox" id="tsd-filter-externals" checked />
 							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
-							<input type="checkbox" id="tsd-filter-only-exported" />
-							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
 					</div>
 					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
@@ -53,7 +52,7 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../globals.html">Globals</a>
+					<a href="../modules.html">@peculiar/x509</a>
 				</li>
 				<li>
 					<a href="asndefaultsignatureformatter.html">AsnDefaultSignatureFormatter</a>
@@ -77,13 +76,19 @@
 			<section class="tsd-panel">
 				<h3>Implements</h3>
 				<ul class="tsd-hierarchy">
-					<li><a href="../interfaces/iasnsignatureformatter.html" class="tsd-signature-type">IAsnSignatureFormatter</a></li>
+					<li><a href="../interfaces/iasnsignatureformatter.html" class="tsd-signature-type" data-tsd-kind="Interface">IAsnSignatureFormatter</a></li>
 				</ul>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
 				<h2>Index</h2>
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
+						<section class="tsd-index-section ">
+							<h3>Constructors</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="asndefaultsignatureformatter.html#constructor" class="tsd-kind-icon">constructor</a></li>
+							</ul>
+						</section>
 						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
@@ -95,21 +100,43 @@
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Constructors</h2>
+				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class">
+					<a name="constructor" class="tsd-anchor"></a>
+					<h3>constructor</h3>
+					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Asn<wbr>Default<wbr>Signature<wbr>Formatter<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asndefaultsignatureformatter.html" class="tsd-signature-type" data-tsd-kind="Class">AsnDefaultSignatureFormatter</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+							</aside>
+							<h4 class="tsd-returns-title">Returns <a href="asndefaultsignatureformatter.html" class="tsd-signature-type" data-tsd-kind="Class">AsnDefaultSignatureFormatter</a></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Methods</h2>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 					<a name="toasnsignature" class="tsd-anchor"></a>
 					<h3>to<wbr>Asn<wbr>Signature</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">to<wbr>Asn<wbr>Signature<span class="tsd-signature-symbol">(</span>algorithm<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Algorithm</span>, signature<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">BufferSource</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ArrayBuffer</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></li>
+						<li class="tsd-signature tsd-kind-icon">to<wbr>Asn<wbr>Signature<span class="tsd-signature-symbol">(</span>algorithm<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Algorithm</span>, signature<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">BufferSource</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">ArrayBuffer</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/iasnsignatureformatter.html">IAsnSignatureFormatter</a>.<a href="../interfaces/iasnsignatureformatter.html#toasnsignature">toAsnSignature</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/f946e2d/src/asn_signature_formatter.ts#L36">src/asn_signature_formatter.ts:36</a></li>
+									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/90c881e/src/asn_signature_formatter.ts#L36">src/asn_signature_formatter.ts:36</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Converts ASN.1 signature to WebCrypto format</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
@@ -119,7 +146,7 @@
 									<h5>signature: <span class="tsd-signature-type">BufferSource</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">ArrayBuffer</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">ArrayBuffer</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -127,16 +154,21 @@
 					<a name="towebsignature" class="tsd-anchor"></a>
 					<h3>to<wbr>Web<wbr>Signature</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">to<wbr>Web<wbr>Signature<span class="tsd-signature-symbol">(</span>algorithm<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Algorithm</span>, signature<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">BufferSource</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ArrayBuffer</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></li>
+						<li class="tsd-signature tsd-kind-icon">to<wbr>Web<wbr>Signature<span class="tsd-signature-symbol">(</span>algorithm<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Algorithm</span>, signature<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">BufferSource</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">ArrayBuffer</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/iasnsignatureformatter.html">IAsnSignatureFormatter</a>.<a href="../interfaces/iasnsignatureformatter.html#towebsignature">toWebSignature</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/f946e2d/src/asn_signature_formatter.ts#L40">src/asn_signature_formatter.ts:40</a></li>
+									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/90c881e/src/asn_signature_formatter.ts#L40">src/asn_signature_formatter.ts:40</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Converts WebCrypto signature to ASN.1 DER encoded signature value</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
@@ -146,7 +178,7 @@
 									<h5>signature: <span class="tsd-signature-type">BufferSource</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">ArrayBuffer</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">ArrayBuffer</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -155,8 +187,8 @@
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 			<nav class="tsd-navigation primary">
 				<ul>
-					<li class="globals  ">
-						<a href="../globals.html"><em>Globals</em></a>
+					<li class=" ">
+						<a href="../modules.html">Exports</a>
 					</li>
 				</ul>
 			</nav>
@@ -167,6 +199,9 @@
 					<li class="current tsd-kind-class">
 						<a href="asndefaultsignatureformatter.html" class="tsd-kind-icon">Asn<wbr>Default<wbr>Signature<wbr>Formatter</a>
 						<ul>
+							<li class=" tsd-kind-constructor tsd-parent-kind-class">
+								<a href="asndefaultsignatureformatter.html#constructor" class="tsd-kind-icon">constructor</a>
+							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="asndefaultsignatureformatter.html#toasnsignature" class="tsd-kind-icon">to<wbr>Asn<wbr>Signature</a>
 							</li>
