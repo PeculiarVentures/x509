@@ -1,6 +1,11 @@
 import { AlgorithmIdentifier } from "@peculiar/asn1-x509";
 import { container } from "tsyringe";
 
+export interface UnknownAlgorithm extends Algorithm {
+  name: string;
+  parameters?: ArrayBuffer | null;
+}
+
 export interface IAlgorithm {
 
   /**
@@ -36,7 +41,7 @@ export class AlgorithmProvider {
   /**
    * Converts WebCrypto algorithm to ASN.1 algorithm
    * @param alg WebCrypto algorithm
-   * @returns ASN.1 algorithm or null
+   * @returns ASN.1 algorithm
    * @throws Error whenever cannot convert an algorithm
    */
   public toAsnAlgorithm(alg: Algorithm): AlgorithmIdentifier {
@@ -52,14 +57,27 @@ export class AlgorithmProvider {
         return res;
       }
     }
+
+    if (/[0-9.]+/.test(alg.name)) {
+      const res = new AlgorithmIdentifier({
+        algorithm: alg.name,
+      });
+
+      if ("parameters" in alg) {
+        const unknown = alg as UnknownAlgorithm;
+        res.parameters = unknown.parameters;
+      }
+
+      return res;
+    }
+
     throw new Error("Cannot convert WebCrypto algorithm to ASN.1 algorithm");
   }
 
   /**
    * ConvertsASN.1 algorithm to WebCrypto algorithm
    * @param alg ASN.1 algorithm
-   * @returns  algorithm or null
-   * @throws Error whenever cannot convert an algorithm
+   * @returns  algorithm
    */
   public toWebAlgorithm(alg: AlgorithmIdentifier): Algorithm {
     for (const algorithm of this.getAlgorithms()) {
@@ -68,7 +86,13 @@ export class AlgorithmProvider {
         return res;
       }
     }
-    throw new Error("Cannot convert ASN.1 algorithm to WebCrypto algorithm");
+
+    const unknown: UnknownAlgorithm = {
+      name: alg.algorithm,
+      parameters: alg.parameters,
+    };
+
+    return unknown;
   }
 
 }
