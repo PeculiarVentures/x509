@@ -125,14 +125,14 @@
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
 						<li class="tsd-signature tsd-kind-icon">new <wbr>Public<wbr>Key<span class="tsd-signature-symbol">(</span>asn<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">SubjectPublicKeyInfo</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="publickey.html" class="tsd-signature-type" data-tsd-kind="Class">PublicKey</a></li>
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Public<wbr>Key<span class="tsd-signature-symbol">(</span>raw<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">BufferSource</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="publickey.html" class="tsd-signature-type" data-tsd-kind="Class">PublicKey</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Public<wbr>Key<span class="tsd-signature-symbol">(</span>raw<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">AsnEncodedType</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="publickey.html" class="tsd-signature-type" data-tsd-kind="Class">PublicKey</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Overrides PemData&lt;SubjectPublicKeyInfo&gt;.constructor</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/69ee3ff/src/public_key.ts#L20">src/public_key.ts:20</a></li>
+									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/26e90af/src/public_key.ts#L20">src/public_key.ts:20</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -155,7 +155,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides PemData&lt;SubjectPublicKeyInfo&gt;.constructor</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/69ee3ff/src/public_key.ts#L26">src/public_key.ts:26</a></li>
+									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/26e90af/src/public_key.ts#L26">src/public_key.ts:26</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -166,7 +166,7 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>raw: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">BufferSource</span></h5>
+									<h5>raw: <span class="tsd-signature-type">AsnEncodedType</span></h5>
 									<div class="tsd-comment tsd-typography">
 										<p>Encoded buffer (DER, PEM, HEX, Base64, Base64Url)</p>
 									</div>
@@ -185,7 +185,7 @@
 					<div class="tsd-signature tsd-kind-icon">algorithm<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Algorithm</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/69ee3ff/src/public_key.ts#L20">src/public_key.ts:20</a></li>
+							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/26e90af/src/public_key.ts#L20">src/public_key.ts:20</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -201,7 +201,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from PemData.rawData</p>
 						<ul>
-							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/69ee3ff/src/asn_data.ts#L13">src/asn_data.ts:13</a></li>
+							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/26e90af/src/asn_data.ts#L13">src/asn_data.ts:13</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -217,7 +217,7 @@
 					<aside class="tsd-sources">
 						<p>Overrides PemData.tag</p>
 						<ul>
-							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/69ee3ff/src/public_key.ts#L15">src/public_key.ts:15</a></li>
+							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/26e90af/src/public_key.ts#L15">src/public_key.ts:15</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -235,7 +235,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from PemData.equal</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/69ee3ff/src/asn_data.ts#L50">src/asn_data.ts:50</a></li>
+									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/26e90af/src/asn_data.ts#L50">src/asn_data.ts:50</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -267,7 +267,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/69ee3ff/src/public_key.ts#L46">src/public_key.ts:46</a></li>
+									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/26e90af/src/public_key.ts#L46">src/public_key.ts:46</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -289,7 +289,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/69ee3ff/src/public_key.ts#L53">src/public_key.ts:53</a></li>
+									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/26e90af/src/public_key.ts#L53">src/public_key.ts:53</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -333,7 +333,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/69ee3ff/src/public_key.ts#L92">src/public_key.ts:92</a></li>
+									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/26e90af/src/public_key.ts#L92">src/public_key.ts:92</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -355,7 +355,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/69ee3ff/src/public_key.ts#L98">src/public_key.ts:98</a></li>
+									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/26e90af/src/public_key.ts#L98">src/public_key.ts:98</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -393,7 +393,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides PemData.onInit</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/69ee3ff/src/public_key.ts#L73">src/public_key.ts:73</a></li>
+									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/26e90af/src/public_key.ts#L73">src/public_key.ts:73</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -418,7 +418,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from PemData.toString</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/69ee3ff/src/pem_data.ts#L64">src/pem_data.ts:64</a></li>
+									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/26e90af/src/pem_data.ts#L64">src/pem_data.ts:64</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -432,7 +432,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from PemData.toString</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/69ee3ff/src/pem_data.ts#L69">src/pem_data.ts:69</a></li>
+									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/26e90af/src/pem_data.ts#L69">src/pem_data.ts:69</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -457,14 +457,14 @@
 					<a name="isasnencoded" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagStatic">Static</span> is<wbr>Asn<wbr>Encoded</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static">
-						<li class="tsd-signature tsd-kind-icon">is<wbr>Asn<wbr>Encoded<span class="tsd-signature-symbol">(</span>data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">data</span><span class="tsd-signature-symbol"> is </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">BufferSource</span></li>
+						<li class="tsd-signature tsd-kind-icon">is<wbr>Asn<wbr>Encoded<span class="tsd-signature-symbol">(</span>data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">data</span><span class="tsd-signature-symbol"> is </span><span class="tsd-signature-type">AsnEncodedType</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Inherited from PemData.isAsnEncoded</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/69ee3ff/src/pem_data.ts#L11">src/pem_data.ts:11</a></li>
+									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/26e90af/src/pem_data.ts#L11">src/pem_data.ts:11</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -473,7 +473,7 @@
 									<h5>data: <span class="tsd-signature-type">any</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">data</span><span class="tsd-signature-symbol"> is </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">BufferSource</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">data</span><span class="tsd-signature-symbol"> is </span><span class="tsd-signature-type">AsnEncodedType</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -488,7 +488,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from PemData.toArrayBuffer</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/69ee3ff/src/pem_data.ts#L19">src/pem_data.ts:19</a></li>
+									<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/26e90af/src/pem_data.ts#L19">src/pem_data.ts:19</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">

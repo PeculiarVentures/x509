@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>CertificateIdentifier | @peculiar/x509</title>
+	<title>UnknownAlgorithm | @peculiar/x509</title>
 	<meta name="description" content="Documentation for @peculiar/x509">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -55,10 +55,10 @@
 					<a href="../modules.html">@peculiar/x509</a>
 				</li>
 				<li>
-					<a href="certificateidentifier.html">CertificateIdentifier</a>
+					<a href="unknownalgorithm.html">UnknownAlgorithm</a>
 				</li>
 			</ul>
-			<h1>Interface CertificateIdentifier</h1>
+			<h1>Interface UnknownAlgorithm</h1>
 		</div>
 	</div>
 </header>
@@ -69,7 +69,12 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">CertificateIdentifier</span>
+						<span class="tsd-signature-type">Algorithm</span>
+						<ul class="tsd-hierarchy">
+							<li>
+								<span class="target">UnknownAlgorithm</span>
+							</li>
+						</ul>
 					</li>
 				</ul>
 			</section>
@@ -80,8 +85,8 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="certificateidentifier.html#name" class="tsd-kind-icon">name</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="certificateidentifier.html#serialnumber" class="tsd-kind-icon">serial<wbr>Number</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-overwrite"><a href="unknownalgorithm.html#name" class="tsd-kind-icon">name</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="unknownalgorithm.html#parameters" class="tsd-kind-icon">parameters</a></li>
 							</ul>
 						</section>
 					</div>
@@ -89,35 +94,26 @@
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-overwrite">
 					<a name="name" class="tsd-anchor"></a>
 					<h3>name</h3>
-					<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">GeneralName</span><span class="tsd-signature-symbol">[]</span></div>
+					<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
+						<p>Overrides Algorithm.name</p>
 						<ul>
-							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/26e90af/src/extensions/authority_key_identifier.ts#L12">src/extensions/authority_key_identifier.ts:12</a></li>
+							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/26e90af/src/algorithm.ts#L5">src/algorithm.ts:5</a></li>
 						</ul>
 					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Name</p>
-						</div>
-					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="serialnumber" class="tsd-anchor"></a>
-					<h3>serial<wbr>Number</h3>
-					<div class="tsd-signature tsd-kind-icon">serial<wbr>Number<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<a name="parameters" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> parameters</h3>
+					<div class="tsd-signature tsd-kind-icon">parameters<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">ArrayBuffer</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/26e90af/src/extensions/authority_key_identifier.ts#L16">src/extensions/authority_key_identifier.ts:16</a></li>
+							<li>Defined in <a href="https://github.com/PeculiarVentures/x509/blob/26e90af/src/algorithm.ts#L6">src/algorithm.ts:6</a></li>
 						</ul>
 					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Hexadecimal string</p>
-						</div>
-					</div>
 				</section>
 			</section>
 		</div>
@@ -134,13 +130,13 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-interface">
-						<a href="certificateidentifier.html" class="tsd-kind-icon">Certificate<wbr>Identifier</a>
+						<a href="unknownalgorithm.html" class="tsd-kind-icon">Unknown<wbr>Algorithm</a>
 						<ul>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="certificateidentifier.html#name" class="tsd-kind-icon">name</a>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-overwrite">
+								<a href="unknownalgorithm.html#name" class="tsd-kind-icon">name</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="certificateidentifier.html#serialnumber" class="tsd-kind-icon">serial<wbr>Number</a>
+								<a href="unknownalgorithm.html#parameters" class="tsd-kind-icon">parameters</a>
 							</li>
 						</ul>
 					</li>
