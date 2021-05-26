@@ -108,7 +108,7 @@ export class X509Certificates extends Array<X509Certificate> {
     }
   }
 
-  public toString(format: AsnEncodedType = "pem") {
+  public toString(format: AsnExportType = "pem") {
     const raw = this.export("raw");
     switch (format) {
       case "pem":
