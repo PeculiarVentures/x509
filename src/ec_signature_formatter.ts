@@ -16,18 +16,29 @@ export class AsnEcSignatureFormatter implements IAsnSignatureFormatter {
     return res;
   }
 
-  private removePadding(data: BufferSource) {
-    const bytes = BufferSourceConverter.toUint8Array(data);
+  private removePadding(data: BufferSource, positive = false) {
+    let bytes = BufferSourceConverter.toUint8Array(data);
+
     for (let i = 0; i < bytes.length; i++) {
       if (!bytes[i]) {
         continue;
       }
-
-      return bytes.slice(i).buffer;
+      bytes = bytes.slice(i);
+      break;
     }
 
-    return new ArrayBuffer(0);
+    if (positive && bytes[0] > 127) {
+      // Add 0 padding to make ASN.1 positive Integer value
+      const result = new Uint8Array(bytes.length + 1);
+      result.set(bytes, 1);
+
+      return result.buffer;
+    }
+
+    return bytes.buffer;
   }
+
+
 
   public toAsnSignature(algorithm: Algorithm, signature: BufferSource): ArrayBuffer | null {
     if (algorithm.name === "ECDSA") {
@@ -36,8 +47,8 @@ export class AsnEcSignatureFormatter implements IAsnSignatureFormatter {
       const pointSize = AsnEcSignatureFormatter.namedCurveSize.get(namedCurve) || AsnEcSignatureFormatter.defaultNamedCurveSize;
       const ecSignature = new ECDSASigValue();
       const uint8Signature = BufferSourceConverter.toUint8Array(signature);
-      ecSignature.r = this.removePadding(uint8Signature.slice(0, pointSize));
-      ecSignature.s = this.removePadding(uint8Signature.slice(pointSize, pointSize + pointSize));
+      ecSignature.r = this.removePadding(uint8Signature.slice(0, pointSize), true);
+      ecSignature.s = this.removePadding(uint8Signature.slice(pointSize, pointSize + pointSize), true);
 
       return AsnConvert.serialize(ecSignature);
     }
