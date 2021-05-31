@@ -20,13 +20,13 @@ export class EcAlgorithm implements IAlgorithm {
           const hash = typeof alg.hash === "string" ? alg.hash : alg.hash.name;
           switch (hash.toLowerCase()) {
             case "sha-1":
-              return new AlgorithmIdentifier({ algorithm: asn1Ecc.id_ecdsaWithSHA1, parameters: null });
+              return asn1Ecc.ecdsaWithSHA1;
             case "sha-256":
-              return new AlgorithmIdentifier({ algorithm: asn1Ecc.id_ecdsaWithSHA256, parameters: null });
+              return asn1Ecc.ecdsaWithSHA256;
             case "sha-384":
-              return new AlgorithmIdentifier({ algorithm: asn1Ecc.id_ecdsaWithSHA384, parameters: null });
+              return asn1Ecc.ecdsaWithSHA384;
             case "sha-512":
-              return new AlgorithmIdentifier({ algorithm: asn1Ecc.id_ecdsaWithSHA512, parameters: null });
+              return asn1Ecc.ecdsaWithSHA512;
           }
         } else if ("namedCurve" in alg) {
           let parameters = "";
