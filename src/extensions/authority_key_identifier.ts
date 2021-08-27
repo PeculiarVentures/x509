@@ -3,6 +3,7 @@ import * as asn1X509 from "@peculiar/asn1-x509";
 import { BufferSourceConverter, Convert } from "pvtsutils";
 import { Extension } from "../extension";
 import { CryptoProvider, cryptoProvider } from "../provider";
+import { PublicKey } from "../public_key";
 import { X509Certificate } from "../x509_cert";
 
 export interface CertificateIdentifier {
@@ -46,9 +47,10 @@ export class AuthorityKeyIdentifierExtension extends Extension {
     if (param instanceof X509Certificate || CryptoProvider.isCryptoKey(param)) {
       const publicKey = param instanceof X509Certificate ? await param.publicKey.export(crypto) : param;
       const spki = await crypto.subtle.exportKey("spki", publicKey);
-      const ski = await crypto.subtle.digest("SHA-1", spki);
+      const key = new PublicKey(spki);
+      const id = await key.getKeyIdentifier(crypto);
 
-      return new AuthorityKeyIdentifierExtension(Convert.ToHex(ski), critical);
+      return new AuthorityKeyIdentifierExtension(Convert.ToHex(id), critical);
     } else {
       return new AuthorityKeyIdentifierExtension(param, critical);
     }
