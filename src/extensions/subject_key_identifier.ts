@@ -3,6 +3,7 @@ import { id_ce_subjectKeyIdentifier, SubjectKeyIdentifier } from "@peculiar/asn1
 import { BufferSourceConverter, Convert } from "pvtsutils";
 import { Extension } from "../extension";
 import { cryptoProvider } from "../provider";
+import { PublicKey } from "../public_key";
 
 /**
  * Represents the Subject Key Identifier certificate extension
@@ -17,9 +18,10 @@ export class SubjectKeyIdentifierExtension extends Extension {
    */
   public static async create(publicKey: CryptoKey, critical = false, crypto = cryptoProvider.get()) {
     const spki = await crypto.subtle.exportKey("spki", publicKey);
-    const ski = await crypto.subtle.digest("SHA-1", spki);
+    const key = new PublicKey(spki);
+    const id = await key.getKeyIdentifier();
 
-    return new SubjectKeyIdentifierExtension(Convert.ToHex(ski), critical);
+    return new SubjectKeyIdentifierExtension(Convert.ToHex(id), critical);
   }
 
   /**

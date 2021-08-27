@@ -111,4 +111,22 @@ export class PublicKey extends PemData<SubjectPublicKeyInfo>{
     return await crypto.subtle.digest(algorithm, this.rawData);
   }
 
+  /**
+   * Returns Subject Key Identifier as specified in {@link https://datatracker.ietf.org/doc/html/rfc5280#section-4.2.1.2 RFC5280}
+   * @param crypto Crypto provider. Default is from CryptoProvider
+   */
+  public async getKeyIdentifier(crypto?: Crypto) {
+    if (!crypto) {
+      crypto = cryptoProvider.get();
+    }
+
+    // The keyIdentifier is composed of the 160-bit SHA-1 hash of the
+    // value of the BIT STRING subjectPublicKey (excluding the tag,
+    // length, and number of unused bits).
+
+    const asn = AsnConvert.parse(this.rawData, SubjectPublicKeyInfo);
+
+    return await crypto.subtle.digest("SHA-1", asn.subjectPublicKey);
+  }
+
 }
