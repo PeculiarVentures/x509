@@ -69,6 +69,22 @@ export class Name {
   private extraNames = new NameIdentifier();
 
   /**
+   * Returns `true` if text is ASCII otherwise `false`
+   * @param text Text
+   * @returns
+   */
+  public static isASCII(text: string) {
+    for (let i = 0; i < text.length; i++) {
+      const code = text.charCodeAt(i);
+      if (code > 0xFF) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  /**
    * ASN.1 Name
    */
   private asn = new AsnName();
@@ -165,9 +181,9 @@ export class Name {
     // eslint-disable-next-line no-cond-assign
     while (matches = regex.exec(`${data},`)) {
       let [, type, value] = matches;
-      const lastChar = value[value.length-1];
+      const lastChar = value[value.length - 1];
       if (lastChar === "," || lastChar === "+") {
-        value = value.slice(0, value.length-1);
+        value = value.slice(0, value.length - 1);
         matches[3] = lastChar;
       }
       const next = matches[3];
@@ -202,7 +218,12 @@ export class Name {
         if (type === this.getName("E") || type === this.getName("DC")) {
           attr.value.ia5String = value;
         } else {
-          attr.value.printableString = value;
+          // Use Utf8String for non ASCII strings
+          if (Name.isASCII(value)) {
+            attr.value.printableString = value;
+          } else {
+            attr.value.utf8String = value;
+          }
         }
       }
       if (level === "+") {

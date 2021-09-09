@@ -416,7 +416,7 @@ D314IEOg4mnS8Q==
       const keys = await crypto.subtle.generateKey(alg, false, ["sign", "verify"]) as CryptoKeyPair;
       const cert = await x509.X509CertificateGenerator.createSelfSigned({
         serialNumber: "01",
-        name: "CN=Test",
+        name: "CN=Test, O=Дом",
         notBefore: new Date("2020/01/01"),
         notAfter: new Date("2020/01/02"),
         signingAlgorithm: alg,
