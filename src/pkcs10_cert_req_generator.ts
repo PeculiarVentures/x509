@@ -51,6 +51,13 @@ export class Pkcs10CertificateRequestGenerator {
    * @param crypto Crypto provider. Default is from CryptoProvider
    */
   public static async create(params: Pkcs10CertificateRequestCreateParams, crypto = cryptoProvider.get()) {
+    if (!params.keys.privateKey) {
+      throw new Error("Bad field 'keys' in 'params' argument. 'privateKey' is empty");
+    }
+    if (!params.keys.publicKey) {
+      throw new Error("Bad field 'keys' in 'params' argument. 'privateKey' is empty");
+    }
+
     const spki = await crypto.subtle.exportKey("spki", params.keys.publicKey);
     const asnReq = new CertificationRequest({
       certificationRequestInfo: new CertificationRequestInfo({

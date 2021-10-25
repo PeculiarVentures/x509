@@ -70,7 +70,7 @@ const browser = [
     output: [
       {
         banner,
-        file: pkg.browser,
+        file: pkg.unpkg,
         format: "iife",
         plugins: [
           getBabelOutputPlugin({

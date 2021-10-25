@@ -7,7 +7,7 @@ import { UnknownAlgorithm } from "../src";
 
 context("crypto", () => {
 
-  const crypto = new Crypto();
+  const crypto = new Crypto() as globalThis.Crypto;
   x509.cryptoProvider.set(crypto);
 
   context("Name", () => {
@@ -161,7 +161,9 @@ context("crypto", () => {
   context("Pkcs10CertificateRequestGenerator", () => {
 
     it("simple", async () => {
-      const keys = await crypto.subtle.generateKey({ name: "ECDSA", namedCurve: "P-256" }, false, ["sign", "verify"]) as CryptoKeyPair;
+      const keys = await crypto.subtle.generateKey({ name: "ECDSA", namedCurve: "P-256" }, false, ["sign", "verify"]);
+      assert.ok(keys.publicKey);
+      assert.ok(keys.privateKey);
       const csr = await x509.Pkcs10CertificateRequestGenerator.create({
         keys,
         signingAlgorithm: { name: "ECDSA", hash: "SHA-256" },
@@ -176,7 +178,9 @@ context("crypto", () => {
     });
 
     it("with attributes and extensions", async () => {
-      const keys = await crypto.subtle.generateKey({ name: "ECDSA", namedCurve: "P-384" }, false, ["sign", "verify"]) as CryptoKeyPair;
+      const keys = await crypto.subtle.generateKey({ name: "ECDSA", namedCurve: "P-384" }, false, ["sign", "verify"]);
+      assert.ok(keys.publicKey);
+      assert.ok(keys.privateKey);
       const csr = await x509.Pkcs10CertificateRequestGenerator.create({
         name: "CN=Test",
         keys,
@@ -198,7 +202,9 @@ context("crypto", () => {
     });
 
     it("ECDSA K-256", async () => {
-      const keys = await crypto.subtle.generateKey({ name: "ECDSA", namedCurve: "K-256" }, false, ["sign", "verify"]) as CryptoKeyPair;
+      const keys = await crypto.subtle.generateKey({ name: "ECDSA", namedCurve: "K-256" }, false, ["sign", "verify"]);
+      assert.ok(keys.publicKey);
+      assert.ok(keys.privateKey);
       const csr = await x509.Pkcs10CertificateRequestGenerator.create({
         keys,
         signingAlgorithm: { name: "ECDSA", hash: "SHA-256" },
@@ -413,7 +419,9 @@ D314IEOg4mnS8Q==
         publicExponent: new Uint8Array([1, 0, 1]),
         modulusLength: 2048,
       };
-      const keys = await crypto.subtle.generateKey(alg, false, ["sign", "verify"]) as CryptoKeyPair;
+      const keys = await crypto.subtle.generateKey(alg, false, ["sign", "verify"]);
+      assert.ok(keys.publicKey);
+      assert.ok(keys.privateKey);
       const cert = await x509.X509CertificateGenerator.createSelfSigned({
         serialNumber: "01",
         name: "CN=Test, O=Дом",
@@ -438,7 +446,9 @@ D314IEOg4mnS8Q==
         hash: "SHA-256",
         namedCurve: "P-256",
       };
-      const caKeys = await crypto.subtle.generateKey(alg, false, ["sign", "verify"]) as CryptoKeyPair;
+      const caKeys = await crypto.subtle.generateKey(alg, false, ["sign", "verify"]);
+      assert.ok(caKeys.publicKey);
+      assert.ok(caKeys.privateKey);
       const caCert = await x509.X509CertificateGenerator.create({
         serialNumber: "01",
         subject: "CN=Test CA",
@@ -454,6 +464,8 @@ D314IEOg4mnS8Q==
       assert.strictEqual(ok, true);
 
       const userKeys = await crypto.subtle.generateKey(alg, false, ["sign", "verify"]) as CryptoKeyPair;
+      assert.ok(userKeys.publicKey);
+      assert.ok(userKeys.privateKey);
       const userCert = await x509.X509CertificateGenerator.create({
         serialNumber: "01",
         subject: "CN=Test",
@@ -483,7 +495,9 @@ D314IEOg4mnS8Q==
 
     before(async () => {
       const alg: EcKeyGenParams & EcdsaParams = { name: "ECDSA", namedCurve: "P-256", hash: "SHA-256" };
-      const keys = await crypto.subtle.generateKey(alg, false, ["sign", "verify"]) as CryptoKeyPair;
+      const keys = await crypto.subtle.generateKey(alg, false, ["sign", "verify"]);
+      assert.ok(keys.publicKey);
+      assert.ok(keys.privateKey);
       certs.push(await x509.X509CertificateGenerator.createSelfSigned({
         name: "CN=Test #1",
         notBefore: new Date("2020/01/01"),
@@ -562,7 +576,9 @@ D314IEOg4mnS8Q==
     };
 
     async function createCert(name: string, cert?: x509.X509Certificate, useKeyId = false) {
-      const keys = await crypto.subtle.generateKey(alg, false, ["sign", "verify"]) as CryptoKeyPair;
+      const keys = await crypto.subtle.generateKey(alg, false, ["sign", "verify"]);
+      assert.ok(keys.publicKey);
+      assert.ok(keys.privateKey);
 
       const extensions: x509.Extension[] = [];
       const skiExt = await x509.SubjectKeyIdentifierExtension.create(keys.publicKey);
@@ -729,7 +745,9 @@ ZYYG
       name: "EdDSA",
       namedCurve: "Ed448"
     };
-    const keys = await crypto.subtle.generateKey(alg, false, ["sign", "verify"]) as CryptoKeyPair;
+    const keys = await crypto.subtle.generateKey(alg, false, ["sign", "verify"]);
+    assert.ok(keys.publicKey);
+    assert.ok(keys.privateKey);
     const spki = await crypto.subtle.exportKey("spki", keys.publicKey);
     const publicKey = await crypto.subtle.importKey("spki", spki, { name: "ECDH-ES", namedCurve: "X448" } as EcKeyGenParams, true, ["verify"]);
     const cert = await x509.X509CertificateGenerator.createSelfSigned({

@@ -67,6 +67,13 @@ export class X509CertificateGenerator {
    * @param crypto Crypto provider. Default is from CryptoProvider
    */
   public static async createSelfSigned(params: X509CertificateCreateSelfSignedParams, crypto = cryptoProvider.get()) {
+    if (!params.keys.privateKey) {
+      throw new Error("Bad field 'keys' in 'params' argument. 'privateKey' is empty");
+    }
+    if (!params.keys.publicKey) {
+      throw new Error("Bad field 'keys' in 'params' argument. 'privateKey' is empty");
+    }
+
     return this.create({
       serialNumber: params.serialNumber,
       subject: params.name,
