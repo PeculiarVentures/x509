@@ -7,7 +7,7 @@ import { UnknownAlgorithm } from "../src";
 
 context("crypto", () => {
 
-  const crypto = new Crypto() as globalThis.Crypto;
+  const crypto = new Crypto();
   x509.cryptoProvider.set(crypto);
 
   context("Name", () => {
@@ -428,6 +428,35 @@ D314IEOg4mnS8Q==
         notBefore: new Date("2020/01/01"),
         notAfter: new Date("2020/01/02"),
         signingAlgorithm: alg,
+        keys: keys,
+        extensions: [
+          new x509.BasicConstraintsExtension(true, 2, true),
+          new x509.ExtendedKeyUsageExtension(["1.2.3.4.5.6.7", "2.3.4.5.6.7.8"], true),
+          new x509.KeyUsagesExtension(x509.KeyUsageFlags.keyCertSign | x509.KeyUsageFlags.cRLSign, true),
+          await x509.SubjectKeyIdentifierExtension.create(keys.publicKey),
+        ]
+      });
+      const ok = await cert.verify({ date: new Date("2020/01/01 12:00") });
+      assert.strictEqual(ok, true);
+    });
+
+    it("generate self-signed certificate with EC `brainpoolP256r1` curve", async () => {
+      const alg: EcKeyImportParams = {
+        name: "ECDSA",
+        namedCurve: "brainpoolP256r1",
+      };
+      const keys = await crypto.subtle.generateKey(alg, false, ["sign", "verify"]);
+      assert.ok(keys.publicKey);
+      assert.ok(keys.privateKey);
+      const cert = await x509.X509CertificateGenerator.createSelfSigned({
+        serialNumber: "01",
+        name: "CN=Test, O=Дом",
+        notBefore: new Date("2020/01/01"),
+        notAfter: new Date("2020/01/02"),
+        signingAlgorithm: {
+          name: "ECDSA",
+          hash: "SHA-256",
+        },
         keys: keys,
         extensions: [
           new x509.BasicConstraintsExtension(true, 2, true),
