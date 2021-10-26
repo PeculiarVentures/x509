@@ -4,5 +4,6 @@ export * from "./extended_key_usage";
 export * from "./key_usages";
 export * from "./subject_key_identifier";
 export * from "./subject_alt_name";
+export * from "./certificate_policy";
 
 export * from "./extension_factory";

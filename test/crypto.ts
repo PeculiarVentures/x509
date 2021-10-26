@@ -433,6 +433,11 @@ D314IEOg4mnS8Q==
           new x509.BasicConstraintsExtension(true, 2, true),
           new x509.ExtendedKeyUsageExtension(["1.2.3.4.5.6.7", "2.3.4.5.6.7.8"], true),
           new x509.KeyUsagesExtension(x509.KeyUsageFlags.keyCertSign | x509.KeyUsageFlags.cRLSign, true),
+          new x509.CertificatePolicyExtension([
+            "1.2.3.4.5",
+            "1.2.3.4.5.6",
+            "1.2.3.4.5.6.7",
+          ]),
           await x509.SubjectKeyIdentifierExtension.create(keys.publicKey),
         ]
       });
