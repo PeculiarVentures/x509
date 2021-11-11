@@ -1,6 +1,7 @@
 import * as assert from "assert";
 import { Convert } from "pvtsutils";
 import { Crypto } from "@peculiar/webcrypto";
+import * as asn1Schema from "@peculiar/asn1-schema";
 import * as asn1X509 from "@peculiar/asn1-x509";
 import * as x509 from "../src";
 import { UnknownAlgorithm } from "../src";
@@ -137,6 +138,40 @@ context("crypto", () => {
         { "IP": ["192.168.0.1"] },
         { "GUID": ["{8ee13e53-2c1c-42bb-8df7-39927c0bdbb6}"] },
       ]);
+    });
+
+    it("use Utf8String for Common name", () => {
+      const asnName = new asn1X509.Name([
+        new asn1X509.RelativeDistinguishedName([
+          new asn1X509.AttributeTypeAndValue({
+            type: "2.5.4.3",
+            value: new asn1X509.AttributeValue({
+              utf8String: "Some name",
+            })
+          })
+        ]),
+      ]);
+
+      const name = new x509.Name(asn1Schema.AsnConvert.serialize(asnName));
+      assert.strictEqual(name.toString(), "CN=Some name");
+
+      assert.strictEqual(Convert.ToHex(name.toArrayBuffer()), "30143112301006035504030c09536f6d65206e616d65");
+    });
+
+    context("get thumbprint", () => {
+
+      it("default", async () => {
+        const name = new x509.Name("CN=Some");
+        const hash = await name.getThumbprint();
+        assert.strictEqual(Convert.ToHex(hash), "4c19048809647a5cd443000c4b1b9d174164bf03");
+      });
+
+      it("SHA-256", async () => {
+        const name = new x509.Name("CN=Some");
+        const hash = await name.getThumbprint("SHA-256");
+        assert.strictEqual(Convert.ToHex(hash), "38e29244d77fb9f2735d034aba8a6ecaf5070f5fe18efb050424f96cecb0db03");
+      });
+
     });
 
   });

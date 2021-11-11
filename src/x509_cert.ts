@@ -39,9 +39,19 @@ export class X509Certificate extends PemData<Certificate> {
   public serialNumber!: string;
 
   /**
+   * Gets the subject value from the certificate as an Name
+   */
+  public subjectName!: Name;
+
+  /**
    * Gets a string subject name
    */
   public subject!: string;
+
+  /**
+   * Gets the issuer value from the certificate as an Name
+   */
+  public issuerName!: Name;
 
   /**
    * Gets a string issuer name
@@ -107,8 +117,10 @@ export class X509Certificate extends PemData<Certificate> {
     const tbs = asn.tbsCertificate;
     this.tbs = AsnConvert.serialize(tbs);
     this.serialNumber = Convert.ToHex(tbs.serialNumber);
+    this.subjectName = new Name(tbs.subject);
     this.subject = new Name(tbs.subject).toString();
-    this.issuer = new Name(tbs.issuer).toString();
+    this.issuerName = new Name(tbs.issuer);
+    this.issuer = this.issuerName.toString();
     const algProv = container.resolve<AlgorithmProvider>(diAlgorithmProvider);
     this.signatureAlgorithm = algProv.toWebAlgorithm(asn.signatureAlgorithm) as HashedAlgorithm;
     this.signature = asn.signatureValue;

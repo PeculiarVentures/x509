@@ -26,6 +26,11 @@ export class Pkcs10CertificateRequest extends PemData<CertificationRequest> {
   private tbs!: ArrayBuffer;
 
   /**
+   * Gets the subject value from the certificate as an Name
+   */
+  public subjectName!: Name;
+
+  /**
    * Gets a string subject name
    */
   public subject!: string;
@@ -88,7 +93,8 @@ export class Pkcs10CertificateRequest extends PemData<CertificationRequest> {
     if (extensions instanceof ExtensionsAttribute) {
         this.extensions = extensions.items;
     }
-    this.subject = new Name(asn.certificationRequestInfo.subject).toString();
+    this.subjectName = new Name(asn.certificationRequestInfo.subject);
+    this.subject = this.subjectName.toString();
   }
 
   /**

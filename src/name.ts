@@ -1,6 +1,7 @@
 import { AttributeTypeAndValue, Name as AsnName, RelativeDistinguishedName } from "@peculiar/asn1-x509";
 import { AsnConvert } from "@peculiar/asn1-schema";
 import { BufferSourceConverter, Convert } from "pvtsutils";
+import { cryptoProvider } from "./provider";
 
 
 export interface IdOrName {
@@ -284,5 +285,31 @@ export class Name {
   public toArrayBuffer() {
     return AsnConvert.serialize(this.asn);
   }
+
+  /**
+   * Returns a SHA-1 thumbprint
+   * @param crypto Crypto provider. Default is from CryptoProvider
+   */
+   public async getThumbprint(crypto?: Crypto): Promise<ArrayBuffer>;
+   /**
+    * Returns a thumbprint for specified mechanism
+    * @param algorithm Hash algorithm
+    * @param crypto Crypto provider. Default is from CryptoProvider
+    */
+   public async getThumbprint(algorithm: globalThis.AlgorithmIdentifier, crypto?: Crypto): Promise<ArrayBuffer>;
+   public async getThumbprint(...args: any[]) {
+     let crypto: Crypto;
+     let algorithm = "SHA-1";
+
+     if (args.length >= 1 && !args[0]?.subtle) {
+       // crypto?
+       algorithm = args[0] || algorithm;
+       crypto = args[1] || cryptoProvider.get();
+     } else {
+       crypto = args[0] || cryptoProvider.get();
+     }
+
+     return await crypto.subtle.digest(algorithm, this.toArrayBuffer());
+   }
 
 }

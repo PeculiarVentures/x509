@@ -10,7 +10,7 @@ import { HashedAlgorithm } from "./types";
 import { X509Certificate } from "./x509_cert";
 import { diAsnSignatureFormatter, IAsnSignatureFormatter } from "./asn_signature_formatter";
 
-export type X509CertificateCreateParamsName = string | JsonName;
+export type X509CertificateCreateParamsName = string | JsonName | Name;
 
 /**
  * Base arguments for certificate creation
@@ -107,10 +107,16 @@ export class X509CertificateGenerator {
       }),
     });
     if (params.subject) {
-      asnX509.tbsCertificate.subject = AsnConvert.parse(new Name(params.subject).toArrayBuffer(), asn1X509.Name);
+      const name = params.subject instanceof Name
+        ? params.subject
+        : new Name(params.subject);
+      asnX509.tbsCertificate.subject = AsnConvert.parse(name.toArrayBuffer(), asn1X509.Name);
     }
     if (params.issuer) {
-      asnX509.tbsCertificate.issuer = AsnConvert.parse(new Name(params.issuer).toArrayBuffer(), asn1X509.Name);
+      const name = params.issuer instanceof Name
+        ? params.issuer
+        : new Name(params.issuer);
+      asnX509.tbsCertificate.issuer = AsnConvert.parse(name.toArrayBuffer(), asn1X509.Name);
     }
 
     // Set signing algorithm

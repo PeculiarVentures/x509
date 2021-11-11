@@ -12,7 +12,7 @@ import { Pkcs10CertificateRequest } from "./pkcs10_cert_req";
 import { HashedAlgorithm } from "./types";
 import { diAsnSignatureFormatter, IAsnSignatureFormatter } from "./asn_signature_formatter";
 
-export type Pkcs10CertificateRequestCreateParamsName = string | JsonName;
+export type Pkcs10CertificateRequestCreateParamsName = string | JsonName | Name;
 
 /**
  * Pkcs10CertificateRequest create parameters
@@ -65,7 +65,10 @@ export class Pkcs10CertificateRequestGenerator {
       }),
     });
     if (params.name) {
-      asnReq.certificationRequestInfo.subject = AsnConvert.parse(new Name(params.name).toArrayBuffer(), AsnName);
+      const name = params.name instanceof Name
+        ? params.name
+        : new Name(params.name);
+      asnReq.certificationRequestInfo.subject = AsnConvert.parse(name.toArrayBuffer(), AsnName);
     }
 
     if (params.attributes) {
