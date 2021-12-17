@@ -16,7 +16,7 @@ export abstract class PemData<T> extends AsnData<T> {
    * Converts encoded raw to ArrayBuffer. Supported formats are HEX, DER, Base64, Base64Url, PEM
    * @param raw Encoded data
    */
-  public static toArrayBuffer(raw: BufferSource | string) {
+  public static toArrayBuffer(raw: BufferSource | string): ArrayBuffer {
     if (typeof raw === "string") {
       if (PemConverter.isPem(raw)) {
         return PemConverter.decode(raw)[0];
@@ -30,7 +30,18 @@ export abstract class PemData<T> extends AsnData<T> {
         throw new TypeError("Unsupported format of 'raw' argument. Must be one of DER, PEM, HEX, Base64, or Base4Url");
       }
     } else {
-      return raw;
+      const stringRaw = Convert.ToBinary(raw);
+      if (PemConverter.isPem(stringRaw)) {
+        return PemConverter.decode(stringRaw)[0];
+      } else if (Convert.isHex(stringRaw)) {
+        return Convert.FromHex(stringRaw);
+      } else if (Convert.isBase64(stringRaw)) {
+        return Convert.FromBase64(stringRaw);
+      } else if (Convert.isBase64Url(stringRaw)) {
+        return Convert.FromBase64Url(stringRaw);
+      }
+
+      return BufferSourceConverter.toArrayBuffer(raw);
     }
   }
 
