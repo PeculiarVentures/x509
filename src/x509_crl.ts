@@ -1,5 +1,5 @@
 import { AsnConvert } from "@peculiar/asn1-schema";
-import { RevokedCertificate, TBSCertList, Version } from "@peculiar/asn1-x509";
+import { RevokedCertificate, CertificateList, Version, AlgorithmIdentifier } from "@peculiar/asn1-x509";
 import { container } from "tsyringe";
 import { HashedAlgorithm } from "./types";
 import { cryptoProvider } from "./provider";
@@ -23,13 +23,23 @@ export interface X509CrlVerifyParams {
 /**
  * Representation of X.509 Certificate Revocation List (CRL)
  */
-export class X509Crl extends PemData<TBSCertList> {
+export class X509Crl extends PemData<CertificateList> {
   protected readonly tag;
 
   /**
    * ToBeSigned block of crl
    */
   private tbs!: ArrayBuffer;
+
+  /**
+   * Signature field in the sequence tbsCertList
+   */
+  private tbsCertListSignatureAlgorithm!: AlgorithmIdentifier;
+
+  /**
+   * Signature algorithm field in the sequence CertificateList
+   */
+   private certListSignatureAlgorithm!: AlgorithmIdentifier;
 
   /**
    * Gets a version
@@ -39,7 +49,12 @@ export class X509Crl extends PemData<TBSCertList> {
   /**
    * Gets a signature algorithm
    */
-  public signature!: HashedAlgorithm;
+  public signatureAlgorithm!: HashedAlgorithm;
+
+  /**
+   * Gets a signature
+   */
+  public signature!: ArrayBuffer;
 
   /**
    * Gets a string issuer name
@@ -64,7 +79,7 @@ export class X509Crl extends PemData<TBSCertList> {
   /**
    * Gets a revokedCertificates from the CRL
    */
-   public revokedCertificates!: RevokedCertificate[];
+  public revokedCertificates!: RevokedCertificate[];
 
   /**
    * Gts a list of crl extensions
@@ -72,18 +87,18 @@ export class X509Crl extends PemData<TBSCertList> {
   public extensions!: Extension[];
 
   /**
-   * Creates a new instance from ASN.1 TBSCertList object
-   * @param asn ASN.1 TBSCertList object
+   * Creates a new instance from ASN.1 CertificateList object
+   * @param asn ASN.1 CertificateList object
    */
-  public constructor(asn: TBSCertList);
+  public constructor(asn: CertificateList);
   /**
    * Creates a new instance
    * @param raw Encoded buffer (DER, PEM, HEX, Base64, Base64Url)
    */
   public constructor(raw: AsnEncodedType);
-  public constructor(param: AsnEncodedType | TBSCertList) {
+  public constructor(param: AsnEncodedType | CertificateList) {
     if (PemData.isAsnEncoded(param)) {
-      super(param, TBSCertList);
+      super(param, CertificateList);
     } else {
       super(param);
     }
@@ -91,24 +106,29 @@ export class X509Crl extends PemData<TBSCertList> {
     this.tag = "CRL";
   }
 
-  protected onInit(asn: TBSCertList) {
-    this.version = asn.version;
+  protected onInit(asn: CertificateList) {
+    const tbs = asn.tbsCertList;
+    this.tbs = AsnConvert.serialize(tbs);
+    this.version = tbs.version;
     const algProv = container.resolve<AlgorithmProvider>(diAlgorithmProvider);
-    this.signature = algProv.toWebAlgorithm(asn.signature) as HashedAlgorithm;
-    this.issuerName = new Name(asn.issuer);
+    this.signatureAlgorithm = algProv.toWebAlgorithm(asn.signatureAlgorithm) as HashedAlgorithm;
+    this.tbsCertListSignatureAlgorithm = tbs.signature;
+    this.certListSignatureAlgorithm = asn.signatureAlgorithm;
+    this.signature = asn.signature;
+    this.issuerName = new Name(tbs.issuer);
     this.issuer = this.issuerName.toString();
-    const thisUpdate = asn.thisUpdate.utcTime || asn.thisUpdate.generalTime;
+    const thisUpdate = tbs.thisUpdate.utcTime || tbs.thisUpdate.generalTime;
     if (!thisUpdate) {
       throw new Error("Cannot get 'thisUpdate' value");
     }
     this.thisUpdate = thisUpdate;
-    const nextUpdate = asn.nextUpdate?.utcTime || asn.nextUpdate?.generalTime;
+    const nextUpdate = tbs.nextUpdate?.utcTime || tbs.nextUpdate?.generalTime;
     this.nextUpdate = nextUpdate;
-    this.revokedCertificates = asn.revokedCertificates || [];
+    this.revokedCertificates = tbs.revokedCertificates || [];
 
     this.extensions = [];
-    if (asn.crlExtensions) {
-      this.extensions = asn.crlExtensions.map((o) =>
+    if (tbs.crlExtensions) {
+      this.extensions = tbs.crlExtensions.map((o) =>
         ExtensionFactory.create(AsnConvert.serialize(o))
       );
     }
@@ -183,6 +203,10 @@ export class X509Crl extends PemData<TBSCertList> {
     params: X509CrlVerifyParams = {},
     crypto = cryptoProvider.get()
   ) {
+    if (!this.certListSignatureAlgorithm.isEqual(this.tbsCertListSignatureAlgorithm)) {
+      throw new Error("algorithm identifier in the sequence tbsCertList and CertificateList mismatch");
+    }
+
     let keyAlgorithm: Algorithm;
 
     // Convert public key to CryptoKey
@@ -194,8 +218,8 @@ export class X509Crl extends PemData<TBSCertList> {
       } else if (paramsKey instanceof X509Certificate) {
         // X509Certificate
         keyAlgorithm = {
-          ...paramsKey.publicKey.algorithm,
-          ...this.signature,
+          ...paramsKey.signatureAlgorithm,
+          ...paramsKey.signature,
         };
         publicKey = await paramsKey.publicKey.export(keyAlgorithm, ["verify"]);
       } else if (paramsKey instanceof PublicKey) {
@@ -215,6 +239,21 @@ export class X509Crl extends PemData<TBSCertList> {
       // signature validation (eg leaf certificate is signed with RSA mechanism, public key is ECDSA)
       return false;
     }
+
+    // Convert ASN.1 signature to WebCrypto format
+    const signatureFormatters = container.resolveAll<IAsnSignatureFormatter>(diAsnSignatureFormatter).reverse();
+    let signature: ArrayBuffer | null = null;
+    for (const signatureFormatter of signatureFormatters) {
+      signature = signatureFormatter.toWebSignature(keyAlgorithm, this.signature);
+      if (signature) {
+        break;
+      }
+    }
+    if (!signature) {
+      throw Error("Cannot convert ASN.1 signature value to WebCrypto format");
+    }
+
+    return await crypto.subtle.verify(this.signatureAlgorithm, publicKey, signature, this.tbs);
   }
 
   /**

@@ -23,6 +23,7 @@ export * from "./x509_cert";
 export * from "./x509_chain_builder";
 export * from "./x509_cert_generator";
 export * from "./x509_certs";
+export * from "./x509_crl";
 
 import * as asnX509 from "@peculiar/asn1-x509";
 import * as asnPkcs9 from "@peculiar/asn1-pkcs9";
