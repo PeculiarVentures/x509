@@ -14,6 +14,7 @@ import {
   IAsnSignatureFormatter,
 } from "./asn_signature_formatter";
 import { X509Certificate } from "./x509_cert";
+import { CRLEntry } from "./crl_entry";
 
 export interface X509CrlVerifyParams {
   publicKey?: CryptoKey | PublicKey | X509Certificate;
@@ -39,7 +40,7 @@ export class X509Crl extends PemData<CertificateList> {
   /**
    * Signature algorithm field in the sequence CertificateList
    */
-   private certListSignatureAlgorithm!: AlgorithmIdentifier;
+  private certListSignatureAlgorithm!: AlgorithmIdentifier;
 
   /**
    * Gets a version
