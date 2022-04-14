@@ -109,5 +109,4 @@ export class X509CrlGenerator {
 
     return new X509Crl(AsnConvert.serialize(asnX509Crl));
   }
-
 }
