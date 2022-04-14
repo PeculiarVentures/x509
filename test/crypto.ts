@@ -4,7 +4,7 @@ import { Crypto } from "@peculiar/webcrypto";
 import * as asn1Schema from "@peculiar/asn1-schema";
 import * as asn1X509 from "@peculiar/asn1-x509";
 import * as x509 from "../src";
-import { UnknownAlgorithm } from "../src";
+import { CRLEntry, UnknownAlgorithm } from "../src";
 
 context("crypto", () => {
 
@@ -900,6 +900,16 @@ ZYYG
       const error = await crl.verify({ publicKey: cert2 });
       assert.strictEqual(error, false);
     });
-  });
 
+    it("findRevoked", () => {
+      const crl = new x509.X509Crl(Convert.FromBase64(pem));
+      const entry = crl.findRevoked("0e");
+      assert.strictEqual(entry && entry.serialNumber, "0e");
+      assert.deepStrictEqual(entry && entry.revocationDate, new Date("2010-01-01T08:30:00.000Z"));
+      assert.strictEqual(entry && entry.crlEntryExtensions.length, 1);
+
+      const entry2 = crl.findRevoked("1");
+      assert.strictEqual(entry2, null);
+    });
+  });
 });

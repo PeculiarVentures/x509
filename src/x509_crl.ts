@@ -287,4 +287,23 @@ export class X509Crl extends PemData<CertificateList> {
 
     return await crypto.subtle.digest(algorithm, this.rawData);
   }
+
+  /**
+   *  Gets the CRL entry, with the given X509Certificate or certificate serialNumber.
+   *
+   * @param {(...[certificate: X509Certificate] | [serialNumber: string])} args certificate | serialNumber
+   * @return {*} {(CRLEntry | null)}
+   * @memberof X509Crl
+   */
+  public findRevoked(...args: [certificate: X509Certificate] | [serialNumber: string]): CRLEntry | null {
+    for (const revocedCertificate of this.revokedCertificates) {
+      const crlEntry = new CRLEntry(revocedCertificate);
+      const serialNumber = typeof args[0] === "string" ? args[0] : args[0].serialNumber;
+      if (crlEntry.serialNumber === serialNumber) {
+        return crlEntry;
+      }
+    }
+
+    return null;
+  }
 }
