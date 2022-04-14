@@ -1,5 +1,5 @@
 import { AsnConvert } from "@peculiar/asn1-schema";
-import { RevokedCertificate, CertificateList, Version, AlgorithmIdentifier } from "@peculiar/asn1-x509";
+import { CertificateList, Version, AlgorithmIdentifier } from "@peculiar/asn1-x509";
 import { container } from "tsyringe";
 import { HashedAlgorithm } from "./types";
 import { cryptoProvider } from "./provider";
@@ -14,11 +14,10 @@ import {
   IAsnSignatureFormatter,
 } from "./asn_signature_formatter";
 import { X509Certificate } from "./x509_cert";
-import { CRLEntry } from "./crl_entry";
+import { X509CrlEntry } from "./x509_crl_entry";
 
 export interface X509CrlVerifyParams {
   publicKey?: CryptoKey | PublicKey | X509Certificate;
-  algorithm?: Algorithm;
 }
 
 /**
@@ -78,9 +77,9 @@ export class X509Crl extends PemData<CertificateList> {
   public nextUpdate?: Date;
 
   /**
-   * Gets a revokedCertificates from the CRL
+   * Gets a crlEntrys from the CRL
    */
-  public revokedCertificates!: RevokedCertificate[];
+  public crlEntrys!: ReadonlyArray<X509CrlEntry>;
 
   /**
    * Gts a list of crl extensions
@@ -118,14 +117,14 @@ export class X509Crl extends PemData<CertificateList> {
     this.signature = asn.signature;
     this.issuerName = new Name(tbs.issuer);
     this.issuer = this.issuerName.toString();
-    const thisUpdate = tbs.thisUpdate.utcTime || tbs.thisUpdate.generalTime;
+    const thisUpdate = tbs.thisUpdate.getTime();
     if (!thisUpdate) {
       throw new Error("Cannot get 'thisUpdate' value");
     }
     this.thisUpdate = thisUpdate;
-    const nextUpdate = tbs.nextUpdate?.utcTime || tbs.nextUpdate?.generalTime;
+    const nextUpdate = tbs.nextUpdate?.getTime();
     this.nextUpdate = nextUpdate;
-    this.revokedCertificates = tbs.revokedCertificates || [];
+    this.crlEntrys = tbs.revokedCertificates?.map(o => new X509CrlEntry(AsnConvert.serialize(o))) || [];
 
     this.extensions = [];
     if (tbs.crlExtensions) {
@@ -291,16 +290,13 @@ export class X509Crl extends PemData<CertificateList> {
   /**
    *  Gets the CRL entry, with the given X509Certificate or certificate serialNumber.
    *
-   * @param {(...[certificate: X509Certificate] | [serialNumber: string])} args certificate | serialNumber
-   * @return {*} {(CRLEntry | null)}
-   * @memberof X509Crl
+   * @param args certificate | serialNumber
    */
-  public findRevoked(...args: [certificate: X509Certificate] | [serialNumber: string]): CRLEntry | null {
-    for (const revocedCertificate of this.revokedCertificates) {
-      const crlEntry = new CRLEntry(revocedCertificate);
+  public findRevoked(...args: [certificate: X509Certificate] | [serialNumber: string]): X509CrlEntry | null {
+    for (const entry of this.crlEntrys) {
       const serialNumber = typeof args[0] === "string" ? args[0] : args[0].serialNumber;
-      if (crlEntry.serialNumber === serialNumber) {
-        return crlEntry;
+      if (entry.serialNumber === serialNumber) {
+        return entry;
       }
     }
 

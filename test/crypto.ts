@@ -941,6 +941,12 @@ ZYYG
         issuer: caCert.issuer,
         thisUpdate: new Date("2022/01/01"),
         nextUpdate: new Date("2022/12/12"),
+        crlEntrys:
+          {
+            serialNumber: "01",
+            revocationDate: new Date("2022/01/01"),
+          }
+        ,
         signingAlgorithm: alg,
         signingKey: caKeys.privateKey,
       });
