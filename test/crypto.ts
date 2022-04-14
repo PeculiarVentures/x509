@@ -912,4 +912,44 @@ ZYYG
       assert.strictEqual(entry2, null);
     });
   });
+
+  context("X509 crl generator", () => {
+    it("generate ca and crl", async () => {
+      const alg: EcdsaParams & EcKeyGenParams = {
+        name: "ECDSA",
+        hash: "SHA-256",
+        namedCurve: "P-256",
+      };
+      const caKeys = await crypto.subtle.generateKey(alg, false, ["sign", "verify"]);
+      assert.ok(caKeys.publicKey);
+      assert.ok(caKeys.privateKey);
+      const caCert = await x509.X509CertificateGenerator.create({
+        serialNumber: "01",
+        subject: "CN=Test CA",
+        issuer: "CN=Test CA",
+        notBefore: new Date("2020/01/01"),
+        notAfter: new Date("2020/01/03"),
+        signingAlgorithm: alg,
+        publicKey: caKeys.publicKey,
+        signingKey: caKeys.privateKey,
+      });
+
+      let ok = await caCert.verify({ date: new Date("2020/01/01 12:00") });
+      assert.strictEqual(ok, true);
+
+      const crl = await x509.X509CrlGenerator.create({
+        issuer: caCert.issuer,
+        thisUpdate: new Date("2022/01/01"),
+        nextUpdate: new Date("2022/12/12"),
+        signingAlgorithm: alg,
+        signingKey: caKeys.privateKey,
+      });
+
+      ok = await crl.verify({
+        publicKey: await caCert.publicKey.export()
+      });
+      assert.strictEqual(ok, true);
+    });
+
+  });
 });
