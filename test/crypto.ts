@@ -950,6 +950,8 @@ ZYYG
           {
             serialNumber: "01",
             revocationDate: new Date("2022/01/01"),
+            reason: x509.X509CRLReason.certificateHold,
+            invalidity: new Date("2022/01/01"),
           }
         ],
         signingAlgorithm: alg,

@@ -1,9 +1,27 @@
 import { AsnConvert } from "@peculiar/asn1-schema";
-import { RevokedCertificate, Time } from "@peculiar/asn1-x509";
+import { CRLReason, id_ce_cRLReasons, id_ce_invalidityDate, InvalidityDate, Reason, RevokedCertificate, Time } from "@peculiar/asn1-x509";
 import { Extension } from "./extension";
 import { ExtensionFactory } from "./extensions/extension_factory";
 import { BufferSourceConverter, Convert } from "pvtsutils";
 import { AsnData } from "./asn_data";
+
+/**
+ * Reason Code
+ * The reasonCode is a non-critical CRL entry extension that identifies
+   the reason for the certificate revocation.
+ */
+export enum X509CRLReason {
+  unspecified = 0,
+  keyCompromise = 1,
+  cACompromise = 2,
+  affiliationChanged = 3,
+  superseded = 4,
+  cessationOfOperation = 5,
+  certificateHold = 6,
+  removeFromCRL = 8,
+  privilegeWithdrawn = 9,
+  aACompromise = 10
+}
 
 /**
  * Representation of X509CrlEntry
@@ -18,6 +36,19 @@ export class X509CrlEntry extends AsnData<RevokedCertificate> {
   * Gets the revocation date
   */
   public revocationDate!: Date;
+
+  /**
+  * Gets the reason code
+  */
+  public reason?: X509CRLReason;
+
+  /**
+ * Gets the invalidity Date
+ * The invalidity date is a non-critical CRL entry extension that
+  provides the date on which it is known or suspected that the private
+  key was compromised or that the certificate otherwise became invalid.
+ */
+  public invalidity?: Date;
 
   /**
   * Gets crl entry extensions
@@ -61,8 +92,18 @@ export class X509CrlEntry extends AsnData<RevokedCertificate> {
 
     this.extensions = [];
     if (asn.crlEntryExtensions) {
-      this.extensions = asn.crlEntryExtensions.map((o) =>
-        ExtensionFactory.create(AsnConvert.serialize(o))
+      this.extensions = asn.crlEntryExtensions.map((o) => {
+        const extension = ExtensionFactory.create(AsnConvert.serialize(o));
+        if (extension.type === id_ce_cRLReasons) {
+          this.reason = AsnConvert.parse(extension.value, CRLReason).reason as unknown as X509CRLReason;
+        }
+
+        if (extension.type === id_ce_invalidityDate) {
+          this.invalidity = AsnConvert.parse(extension.value, InvalidityDate).value;
+        }
+
+        return extension;
+      }
       );
     }
   }

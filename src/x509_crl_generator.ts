@@ -1,4 +1,4 @@
-import { AsnConvert } from "@peculiar/asn1-schema";
+import { AsnConvert, OctetString } from "@peculiar/asn1-schema";
 import * as asn1X509 from "@peculiar/asn1-x509";
 import { container } from "tsyringe";
 import { cryptoProvider } from "./provider";
@@ -7,11 +7,12 @@ import { Extension } from "./extension";
 import { Name } from "./name";
 import { HashedAlgorithm } from "./types";
 import { diAsnSignatureFormatter, IAsnSignatureFormatter } from "./asn_signature_formatter";
-import { X509CrlEntry } from "./x509_crl_entry";
-import { RevokedCertificate, Time } from "@peculiar/asn1-x509";
+import { X509CrlEntry, X509CRLReason } from "./x509_crl_entry";
+import { CRLReason, id_ce_cRLReasons, id_ce_invalidityDate, InvalidityDate, RevokedCertificate, Time } from "@peculiar/asn1-x509";
 import { X509Crl } from "./x509_crl";
 import { X509CertificateCreateParamsName } from "./x509_cert_generator";
 import { PemData } from "./pem_data";
+import { BufferSourceConverter, Convert } from "pvtsutils";
 
 interface X509CrlEntryParamsBase {
   /**
@@ -22,15 +23,12 @@ interface X509CrlEntryParamsBase {
 }
 
 interface X509CrlEntryParams extends X509CrlEntryParamsBase {
-  reason?: number;
-  invalidityDate?: Date;
+  reason?: X509CRLReason;
+  invalidity?: Date;
+  issuer?: X509CertificateCreateParamsName;
 }
 
-interface X509CrlEntryParamsWithExtensions extends X509CrlEntryParamsBase {
-  extensions?: Extension[];
-}
-
-export type X509CrlEntryParamsForCreate = X509CrlEntry[] | X509CrlEntryParams[] | X509CrlEntryParamsWithExtensions[];
+export type X509CrlEntryParamsForCreate = X509CrlEntry[] | X509CrlEntryParams[];
 
 /**
  * Base arguments for crl creation
@@ -86,14 +84,14 @@ export class X509CrlGenerator {
     if (params.entries) {
       asnX509Crl.tbsCertList.revokedCertificates = [];
       for (const entry of params.entries || []) {
-        const revocationDate = new Time(entry.revocationDate);
-        let extensions: Extension[] = [];
-        if (entry instanceof X509CrlEntry) {
-          extensions = entry.extensions;
+        const revokedCert = new RevokedCertificate({
+          userCertificate: PemData.toArrayBuffer(entry.serialNumber),
+          revocationDate: new Time(entry.revocationDate),
+        });
+        if ("extensions" in entry && entry.extensions?.length) {
+          revokedCert.crlEntryExtensions = entry.extensions.map(o => AsnConvert.parse(o.rawData, asn1X509.Extension));
         }
-        asnX509Crl.tbsCertList.revokedCertificates.push(
-          new RevokedCertificate({ userCertificate: PemData.toArrayBuffer(entry.serialNumber), revocationDate, crlEntryExtensions: new asn1X509.Extensions(extensions.map(o => AsnConvert.parse(o.rawData, asn1X509.Extension)) || []) }),
-        );
+        asnX509Crl.tbsCertList.revokedCertificates.push(revokedCert);
       }
     }
 
