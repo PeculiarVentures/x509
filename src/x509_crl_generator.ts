@@ -1,4 +1,4 @@
-import { AsnConvert, OctetString } from "@peculiar/asn1-schema";
+import { AsnConvert } from "@peculiar/asn1-schema";
 import * as asn1X509 from "@peculiar/asn1-x509";
 import { container } from "tsyringe";
 import { cryptoProvider } from "./provider";
@@ -8,11 +8,10 @@ import { Name } from "./name";
 import { HashedAlgorithm } from "./types";
 import { diAsnSignatureFormatter, IAsnSignatureFormatter } from "./asn_signature_formatter";
 import { X509CrlEntry, X509CRLReason } from "./x509_crl_entry";
-import { CRLReason, id_ce_cRLReasons, id_ce_invalidityDate, InvalidityDate, RevokedCertificate, Time } from "@peculiar/asn1-x509";
+import {  RevokedCertificate, Time } from "@peculiar/asn1-x509";
 import { X509Crl } from "./x509_crl";
 import { X509CertificateCreateParamsName } from "./x509_cert_generator";
 import { PemData } from "./pem_data";
-import { BufferSourceConverter, Convert } from "pvtsutils";
 
 interface X509CrlEntryParamsBase {
   /**
