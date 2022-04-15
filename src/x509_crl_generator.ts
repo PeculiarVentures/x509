@@ -30,7 +30,7 @@ interface X509CrlEntryParamsWithExtensions extends X509CrlEntryParamsBase {
   extensions?: Extension[];
 }
 
-export type X509CrlEntryParamsForCreate = X509CrlEntry[] | X509CrlEntryParams | X509CrlEntryParamsWithExtensions;
+export type X509CrlEntryParamsForCreate = X509CrlEntry[] | X509CrlEntryParams[] | X509CrlEntryParamsWithExtensions[];
 
 /**
  * Base arguments for crl creation
@@ -50,7 +50,7 @@ export interface X509CrlCreateParamsBase {
 export interface X509CrlCreateParams extends X509CrlCreateParamsBase {
   nextUpdate?: Date;
   extensions?: Extension[];
-  crlEntrys?: X509CrlEntryParamsForCreate;
+  entries?: X509CrlEntryParamsForCreate;
   signingKey: CryptoKey;
 }
 
@@ -83,14 +83,16 @@ export class X509CrlGenerator {
       asnX509Crl.tbsCertList.crlExtensions = new asn1X509.Extensions(params.extensions.map(o => AsnConvert.parse(o.rawData, asn1X509.Extension)) || []);
     }
 
-    if (params.crlEntrys) {
+    if (params.entries) {
       asnX509Crl.tbsCertList.revokedCertificates = [];
-      if (Array.isArray(params.crlEntrys)) {
-        //
-      } else if (params.crlEntrys.serialNumber) {
-        const revocationDate = new Time(params.crlEntrys.revocationDate);
+      for (const entry of params.entries || []) {
+        const revocationDate = new Time(entry.revocationDate);
+        let extensions: Extension[] = [];
+        if (entry instanceof X509CrlEntry) {
+          extensions = entry.extensions;
+        }
         asnX509Crl.tbsCertList.revokedCertificates.push(
-          new RevokedCertificate({ userCertificate: PemData.toArrayBuffer(params.crlEntrys.serialNumber), revocationDate }),
+          new RevokedCertificate({ userCertificate: PemData.toArrayBuffer(entry.serialNumber), revocationDate, crlEntryExtensions: new asn1X509.Extensions(extensions.map(o => AsnConvert.parse(o.rawData, asn1X509.Extension)) || []) }),
         );
       }
     }

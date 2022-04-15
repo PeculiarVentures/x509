@@ -906,7 +906,7 @@ ZYYG
       const entry = crl.findRevoked("0e");
       assert.strictEqual(entry && entry.serialNumber, "0e");
       assert.deepStrictEqual(entry && entry.revocationDate, new Date("2010-01-01T08:30:00.000Z"));
-      assert.strictEqual(entry && entry.crlEntryExtensions.length, 1);
+      assert.strictEqual(entry && entry.extensions.length, 1);
 
       const entry2 = crl.findRevoked("1");
       assert.strictEqual(entry2, null);
@@ -914,6 +914,8 @@ ZYYG
   });
 
   context("X509 crl generator", () => {
+    const pem = "MIICADCB6QIBATANBgkqhkiG9w0BAQsFADBAMQswCQYDVQQGEwJVUzEfMB0GA1UEChMWVGVzdCBDZXJ0aWZpY2F0ZXMgMjAxMTEQMA4GA1UEAxMHR29vZCBDQRcNMTAwMTAxMDgzMDAwWhcNMzAxMjMxMDgzMDAwWjBEMCACAQ4XDTEwMDEwMTA4MzAwMFowDDAKBgNVHRUEAwoBATAgAgEPFw0xMDAxMDEwODMwMDFaMAwwCgYDVR0VBAMKAQGgLzAtMB8GA1UdIwQYMBaAFFgBhCQbvCtSlEo9pRByFFH1rzrJMAoGA1UdFAQDAgEBMA0GCSqGSIb3DQEBCwUAA4IBAQA9vPMLiinD8G7FaoTsu8T2jUrTi1OLPHxKnrlBrAP/eHa+VQV1HJfY5Gjq1dpNgzZqDIgQM5QHPm0aSgMN7Ultx+XzbxRswLnwgQrZ7f76Tlky1I+jz7/p3AEynrNR72v64SZt46UhpSuWBHoF1uEVtgirTZNfOEaGUJTNOaTA5U55/iw9BKjHN0e/Vd7OGnrk5h6FsgWOiasGn6/tym9teDt/L2hlOdsZsvX1KPc0ExUHVjJIUBYTooqyy/CuTzFHla6RYVYvJuRF5qYCxa0GTZK3ImCtJ3XfsGdfLEJDZ7T17xBQHucMvIVLm6vY44WUy7PqQhZJskhJMEvj01ZE";
+
     it("generate ca and crl", async () => {
       const alg: EcdsaParams & EcKeyGenParams = {
         name: "ECDSA",
@@ -937,16 +939,19 @@ ZYYG
       let ok = await caCert.verify({ date: new Date("2020/01/01 12:00") });
       assert.strictEqual(ok, true);
 
+      const crlBase = new x509.X509Crl(Convert.FromBase64(pem));
+
       const crl = await x509.X509CrlGenerator.create({
         issuer: caCert.issuer,
         thisUpdate: new Date("2022/01/01"),
         nextUpdate: new Date("2022/12/12"),
-        crlEntrys:
+        entries: [
+          ...crlBase.entries,
           {
             serialNumber: "01",
             revocationDate: new Date("2022/01/01"),
           }
-        ,
+        ],
         signingAlgorithm: alg,
         signingKey: caKeys.privateKey,
       });

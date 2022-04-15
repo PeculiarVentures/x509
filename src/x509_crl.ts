@@ -77,9 +77,9 @@ export class X509Crl extends PemData<CertificateList> {
   public nextUpdate?: Date;
 
   /**
-   * Gets a crlEntrys from the CRL
+   * Gets a crlEntries from the CRL
    */
-  public crlEntrys!: ReadonlyArray<X509CrlEntry>;
+  public entries!: ReadonlyArray<X509CrlEntry>;
 
   /**
    * Gts a list of crl extensions
@@ -124,7 +124,7 @@ export class X509Crl extends PemData<CertificateList> {
     this.thisUpdate = thisUpdate;
     const nextUpdate = tbs.nextUpdate?.getTime();
     this.nextUpdate = nextUpdate;
-    this.crlEntrys = tbs.revokedCertificates?.map(o => new X509CrlEntry(AsnConvert.serialize(o))) || [];
+    this.entries = tbs.revokedCertificates?.map(o => new X509CrlEntry(AsnConvert.serialize(o))) || [];
 
     this.extensions = [];
     if (tbs.crlExtensions) {
@@ -293,7 +293,7 @@ export class X509Crl extends PemData<CertificateList> {
    * @param args certificate | serialNumber
    */
   public findRevoked(...args: [certificate: X509Certificate] | [serialNumber: string]): X509CrlEntry | null {
-    for (const entry of this.crlEntrys) {
+    for (const entry of this.entries) {
       const serialNumber = typeof args[0] === "string" ? args[0] : args[0].serialNumber;
       if (entry.serialNumber === serialNumber) {
         return entry;

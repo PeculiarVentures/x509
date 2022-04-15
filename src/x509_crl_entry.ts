@@ -22,7 +22,7 @@ export class X509CrlEntry extends AsnData<RevokedCertificate> {
   /**
   * Gets crl entry extensions
   */
-  public crlEntryExtensions!: Extension[];
+  public extensions!: Extension[];
 
   /**
   * Creates a new instance from DER encoded Buffer
@@ -59,9 +59,9 @@ export class X509CrlEntry extends AsnData<RevokedCertificate> {
     }
     this.revocationDate = revocationDate;
 
-    this.crlEntryExtensions = [];
+    this.extensions = [];
     if (asn.crlEntryExtensions) {
-      this.crlEntryExtensions = asn.crlEntryExtensions.map((o) =>
+      this.extensions = asn.crlEntryExtensions.map((o) =>
         ExtensionFactory.create(AsnConvert.serialize(o))
       );
     }
