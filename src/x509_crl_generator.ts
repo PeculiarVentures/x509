@@ -1,4 +1,4 @@
-import { AsnConvert } from "@peculiar/asn1-schema";
+import { AsnConvert, OctetString } from "@peculiar/asn1-schema";
 import * as asn1X509 from "@peculiar/asn1-x509";
 import { container } from "tsyringe";
 import { cryptoProvider } from "./provider";
@@ -7,27 +7,23 @@ import { Extension } from "./extension";
 import { Name } from "./name";
 import { HashedAlgorithm } from "./types";
 import { diAsnSignatureFormatter, IAsnSignatureFormatter } from "./asn_signature_formatter";
-import { X509CrlEntry, X509CRLReason } from "./x509_crl_entry";
-import {  RevokedCertificate, Time } from "@peculiar/asn1-x509";
+import { X509CrlReason } from "./x509_crl_entry";
+import { CRLReasons, RevokedCertificate, Time } from "@peculiar/asn1-x509";
 import { X509Crl } from "./x509_crl";
 import { X509CertificateCreateParamsName } from "./x509_cert_generator";
 import { PemData } from "./pem_data";
 
-interface X509CrlEntryParamsBase {
+export interface X509CrlEntryParams {
   /**
    * Hexadecimal serial number
    */
   serialNumber: string;
-  revocationDate: Date;
-}
-
-interface X509CrlEntryParams extends X509CrlEntryParamsBase {
-  reason?: X509CRLReason;
+  revocationDate?: Date;
+  reason?: X509CrlReason;
   invalidity?: Date;
   issuer?: X509CertificateCreateParamsName;
+  extensions?: Extension[];
 }
-
-export type X509CrlEntryParamsForCreate = X509CrlEntry[] | X509CrlEntryParams[];
 
 /**
  * Base arguments for crl creation
@@ -47,7 +43,7 @@ export interface X509CrlCreateParamsBase {
 export interface X509CrlCreateParams extends X509CrlCreateParamsBase {
   nextUpdate?: Date;
   extensions?: Extension[];
-  entries?: X509CrlEntryParamsForCreate;
+  entries?: X509CrlEntryParams[];
   signingKey: CryptoKey;
 }
 
@@ -68,7 +64,7 @@ export class X509CrlGenerator {
       tbsCertList: new asn1X509.TBSCertList({
         version: asn1X509.Version.v3,
         issuer: AsnConvert.parse(name.toArrayBuffer(), asn1X509.Name),
-        thisUpdate: params.thisUpdate ? new Time(params.thisUpdate) : new Time(new Date()),
+        thisUpdate: new Time(params.thisUpdate || new Date()),
       }),
     });
 
@@ -85,11 +81,45 @@ export class X509CrlGenerator {
       for (const entry of params.entries || []) {
         const revokedCert = new RevokedCertificate({
           userCertificate: PemData.toArrayBuffer(entry.serialNumber),
-          revocationDate: new Time(entry.revocationDate),
+          revocationDate: new Time(entry.revocationDate || new Date())
         });
+
         if ("extensions" in entry && entry.extensions?.length) {
           revokedCert.crlEntryExtensions = entry.extensions.map(o => AsnConvert.parse(o.rawData, asn1X509.Extension));
+        } else {
+          revokedCert.crlEntryExtensions = [];
         }
+
+        if (entry.reason) {
+          revokedCert.crlEntryExtensions.push(new asn1X509.Extension({
+            extnID: asn1X509.id_ce_cRLReasons,
+            critical: false,
+            extnValue: new OctetString(AsnConvert.serialize(new asn1X509.CRLReason(entry.reason as unknown as CRLReasons))),
+          }));
+        }
+
+        if (entry.invalidity) {
+          revokedCert.crlEntryExtensions.push(new asn1X509.Extension({
+            extnID: asn1X509.id_ce_invalidityDate,
+            critical: false,
+            extnValue: new OctetString(AsnConvert.serialize(new asn1X509.InvalidityDate(entry.invalidity))),
+          }));
+        }
+
+
+        if (entry.issuer) {
+          const name = params.issuer instanceof Name
+            ? params.issuer
+            : new Name(params.issuer);
+
+          revokedCert.crlEntryExtensions.push(new asn1X509.Extension({
+            extnID: asn1X509.id_ce_certificateIssuer,
+            critical: false,
+            extnValue: new OctetString(AsnConvert.serialize(AsnConvert.parse(name.toArrayBuffer(), asn1X509.Name))),
+          }));
+        }
+
+
         asnX509Crl.tbsCertList.revokedCertificates.push(revokedCert);
       }
     }
