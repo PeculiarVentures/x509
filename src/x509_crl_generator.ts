@@ -7,11 +7,12 @@ import { Extension } from "./extension";
 import { Name } from "./name";
 import { HashedAlgorithm } from "./types";
 import { diAsnSignatureFormatter, IAsnSignatureFormatter } from "./asn_signature_formatter";
-import { X509CrlReason } from "./x509_crl_entry";
+import { X509CrlEntry, X509CrlReason } from "./x509_crl_entry";
 import { CRLReasons, RevokedCertificate, Time } from "@peculiar/asn1-x509";
 import { X509Crl } from "./x509_crl";
 import { X509CertificateCreateParamsName } from "./x509_cert_generator";
 import { PemData } from "./pem_data";
+import { isEqual } from "pvtsutils";
 
 export interface X509CrlEntryParams {
   /**
@@ -79,8 +80,14 @@ export class X509CrlGenerator {
     if (params.entries) {
       asnX509Crl.tbsCertList.revokedCertificates = [];
       for (const entry of params.entries || []) {
+        const userCertificate = PemData.toArrayBuffer(entry.serialNumber);
+        const index = asnX509Crl.tbsCertList.revokedCertificates.findIndex(cert => isEqual(cert.userCertificate, userCertificate));
+        if (index > -1) {
+          throw new Error(`Certificate serial number ${entry.serialNumber} already exists in tbsCertList`);
+        }
+
         const revokedCert = new RevokedCertificate({
-          userCertificate: PemData.toArrayBuffer(entry.serialNumber),
+          userCertificate: userCertificate,
           revocationDate: new Time(entry.revocationDate || new Date())
         });
 
@@ -90,35 +97,36 @@ export class X509CrlGenerator {
           revokedCert.crlEntryExtensions = [];
         }
 
-        if (entry.reason) {
-          revokedCert.crlEntryExtensions.push(new asn1X509.Extension({
-            extnID: asn1X509.id_ce_cRLReasons,
-            critical: false,
-            extnValue: new OctetString(AsnConvert.serialize(new asn1X509.CRLReason(entry.reason as unknown as CRLReasons))),
-          }));
+        if (!(entry instanceof X509CrlEntry)) {
+          if (entry.reason) {
+            revokedCert.crlEntryExtensions.push(new asn1X509.Extension({
+              extnID: asn1X509.id_ce_cRLReasons,
+              critical: false,
+              extnValue: new OctetString(AsnConvert.serialize(new asn1X509.CRLReason(entry.reason as unknown as CRLReasons))),
+            }));
+          }
+
+          if (entry.invalidity) {
+            revokedCert.crlEntryExtensions.push(new asn1X509.Extension({
+              extnID: asn1X509.id_ce_invalidityDate,
+              critical: false,
+              extnValue: new OctetString(AsnConvert.serialize(new asn1X509.InvalidityDate(entry.invalidity))),
+            }));
+          }
+
+
+          if (entry.issuer) {
+            const name = params.issuer instanceof Name
+              ? params.issuer
+              : new Name(params.issuer);
+
+            revokedCert.crlEntryExtensions.push(new asn1X509.Extension({
+              extnID: asn1X509.id_ce_certificateIssuer,
+              critical: false,
+              extnValue: new OctetString(AsnConvert.serialize(AsnConvert.parse(name.toArrayBuffer(), asn1X509.Name))),
+            }));
+          }
         }
-
-        if (entry.invalidity) {
-          revokedCert.crlEntryExtensions.push(new asn1X509.Extension({
-            extnID: asn1X509.id_ce_invalidityDate,
-            critical: false,
-            extnValue: new OctetString(AsnConvert.serialize(new asn1X509.InvalidityDate(entry.invalidity))),
-          }));
-        }
-
-
-        if (entry.issuer) {
-          const name = params.issuer instanceof Name
-            ? params.issuer
-            : new Name(params.issuer);
-
-          revokedCert.crlEntryExtensions.push(new asn1X509.Extension({
-            extnID: asn1X509.id_ce_certificateIssuer,
-            critical: false,
-            extnValue: new OctetString(AsnConvert.serialize(AsnConvert.parse(name.toArrayBuffer(), asn1X509.Name))),
-          }));
-        }
-
 
         asnX509Crl.tbsCertList.revokedCertificates.push(revokedCert);
       }
