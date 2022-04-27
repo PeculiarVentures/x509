@@ -100,7 +100,7 @@
     "@peculiar/asn1-pkcs9": "^2.0.44",
     "@peculiar/asn1-rsa": "^2.0.44",
     "@peculiar/asn1-schema": "^2.0.44",
-    "@peculiar/asn1-x509": "^2.0.44",
+    "@peculiar/asn1-x509": "^2.1.3",
     "pvtsutils": "^1.2.1",
     "reflect-metadata": "^0.1.13",
     "tslib": "^2.3.1",
