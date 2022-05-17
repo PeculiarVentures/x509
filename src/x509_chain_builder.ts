@@ -79,7 +79,7 @@ export class X509ChainBuilder {
         if (!await cert.verify({
           publicKey: await item.publicKey.export(crypto),
           signatureOnly: true,
-        })) {
+        }, crypto)) {
           continue;
         }
 
