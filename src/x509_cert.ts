@@ -283,7 +283,7 @@ export class X509Certificate extends PemData<Certificate> {
     return await crypto.subtle.digest(algorithm, this.rawData);
   }
 
-  public async isSelfSigned() {
-    return this.subject === this.issuer && await this.verify({ signatureOnly: true });
+  public async isSelfSigned(crypto = cryptoProvider.get()) {
+    return this.subject === this.issuer && await this.verify({ signatureOnly: true }, crypto);
   }
 }
