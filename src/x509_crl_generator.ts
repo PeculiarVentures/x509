@@ -63,7 +63,7 @@ export class X509CrlGenerator {
       : new Name(params.issuer);
     const asnX509Crl = new asn1X509.CertificateList({
       tbsCertList: new asn1X509.TBSCertList({
-        version: asn1X509.Version.v3,
+        version: asn1X509.Version.v2,
         issuer: AsnConvert.parse(name.toArrayBuffer(), asn1X509.Name),
         thisUpdate: new Time(params.thisUpdate || new Date()),
       }),
