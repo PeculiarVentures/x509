@@ -17,7 +17,7 @@ import { X509Certificate } from "./x509_cert";
 import { X509CrlEntry } from "./x509_crl_entry";
 
 export interface X509CrlVerifyParams {
-  publicKey?: CryptoKey | PublicKey | X509Certificate;
+  publicKey: CryptoKey | PublicKey | X509Certificate;
 }
 
 /**
@@ -200,7 +200,7 @@ export class X509Crl extends PemData<CertificateList> {
    * @param crypto Crypto provider. Default is from CryptoProvider
    */
   public async verify(
-    params: X509CrlVerifyParams = {},
+    params: X509CrlVerifyParams,
     crypto = cryptoProvider.get()
   ) {
     if (!this.certListSignatureAlgorithm.isEqual(this.tbsCertListSignatureAlgorithm)) {
@@ -213,13 +213,11 @@ export class X509Crl extends PemData<CertificateList> {
     let publicKey: CryptoKey;
     const paramsKey = params.publicKey;
     try {
-      if (!paramsKey) {
-        throw new Error("Cannot get publicKey for verify sign");
-      } else if (paramsKey instanceof X509Certificate) {
+      if (paramsKey instanceof X509Certificate) {
         // X509Certificate
         keyAlgorithm = {
+          ...paramsKey.publicKey.algorithm,
           ...paramsKey.signatureAlgorithm,
-          ...paramsKey.signature,
         };
         publicKey = await paramsKey.publicKey.export(keyAlgorithm, ["verify"]);
       } else if (paramsKey instanceof PublicKey) {
