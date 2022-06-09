@@ -77,9 +77,9 @@ export class X509CrlGenerator {
       asnX509Crl.tbsCertList.crlExtensions = new asn1X509.Extensions(params.extensions.map(o => AsnConvert.parse(o.rawData, asn1X509.Extension)) || []);
     }
 
-    if (params.entries) {
+    if (params.entries && params.entries.length) {
       asnX509Crl.tbsCertList.revokedCertificates = [];
-      for (const entry of params.entries || []) {
+      for (const entry of params.entries) {
         const userCertificate = PemData.toArrayBuffer(entry.serialNumber);
         const index = asnX509Crl.tbsCertList.revokedCertificates.findIndex(cert => isEqual(cert.userCertificate, userCertificate));
         if (index > -1) {
