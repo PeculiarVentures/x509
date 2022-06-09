@@ -1,13 +1,13 @@
 import { AsnConvert } from "@peculiar/asn1-schema";
 import { Certificate } from "@peculiar/asn1-x509";
-import { Convert } from "pvtsutils";
+import { BufferSourceConverter, Convert } from "pvtsutils";
 import { container } from "tsyringe";
 import { HashedAlgorithm } from "./types";
 import { cryptoProvider } from "./provider";
 import { Name } from "./name";
 import { Extension } from "./extension";
 import { ExtensionFactory } from "./extensions/extension_factory";
-import { PublicKey } from "./public_key";
+import { IPublicKeyContainer, PublicKey, PublicKeyType } from "./public_key";
 import { AlgorithmProvider, diAlgorithmProvider } from "./algorithm";
 import { AsnEncodedType, PemData } from "./pem_data";
 import { diAsnSignatureFormatter, IAsnSignatureFormatter } from "./asn_signature_formatter";
@@ -17,14 +17,14 @@ import { diAsnSignatureFormatter, IAsnSignatureFormatter } from "./asn_signature
  */
 export interface X509CertificateVerifyParams {
   date?: Date;
-  publicKey?: CryptoKey | PublicKey | X509Certificate;
+  publicKey?: PublicKeyType;
   signatureOnly?: boolean;
 }
 
 /**
  * Representation of X509 certificate
  */
-export class X509Certificate extends PemData<Certificate> {
+export class X509Certificate extends PemData<Certificate> implements IPublicKeyContainer {
 
   protected readonly tag;
 
@@ -209,14 +209,18 @@ export class X509Certificate extends PemData<Certificate> {
         // self-signed
         keyAlgorithm = { ...this.publicKey.algorithm, ...this.signatureAlgorithm };
         publicKey = await this.publicKey.export(keyAlgorithm, ["verify"], crypto);
-      } else if (paramsKey instanceof X509Certificate) {
-        // X509Certificate
+      } else if ("publicKey" in paramsKey) {
+        // IPublicKeyContainer
         keyAlgorithm = { ...paramsKey.publicKey.algorithm, ...this.signatureAlgorithm };
         publicKey = await paramsKey.publicKey.export(keyAlgorithm, ["verify"]);
       } else if (paramsKey instanceof PublicKey) {
         // PublicKey
         keyAlgorithm = { ...paramsKey.algorithm, ...this.signatureAlgorithm };
         publicKey = await paramsKey.export(keyAlgorithm, ["verify"]);
+      } else if (BufferSourceConverter.isBufferSource(paramsKey)) {
+        const key = new PublicKey(paramsKey);
+        keyAlgorithm = { ...key.algorithm, ...this.signatureAlgorithm };
+        publicKey = await key.export(keyAlgorithm, ["verify"]);
       } else {
         // CryptoKey
         keyAlgorithm = { ...paramsKey.algorithm, ...this.signatureAlgorithm };

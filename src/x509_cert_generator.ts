@@ -1,6 +1,6 @@
 import { AsnConvert } from "@peculiar/asn1-schema";
 import * as asn1X509 from "@peculiar/asn1-x509";
-import { Convert } from "pvtsutils";
+import { BufferSource, BufferSourceConverter, Convert } from "pvtsutils";
 import { container } from "tsyringe";
 import { cryptoProvider } from "./provider";
 import { AlgorithmProvider, diAlgorithmProvider } from "./algorithm";
@@ -9,6 +9,7 @@ import { JsonName, Name } from "./name";
 import { HashedAlgorithm } from "./types";
 import { X509Certificate } from "./x509_cert";
 import { diAsnSignatureFormatter, IAsnSignatureFormatter } from "./asn_signature_formatter";
+import { PublicKey, PublicKeyType } from "./public_key";
 
 export type X509CertificateCreateParamsName = string | JsonName | Name;
 
@@ -44,7 +45,7 @@ export interface X509CertificateCreateParamsBase {
 export interface X509CertificateCreateParams extends X509CertificateCreateParamsBase {
   subject?: X509CertificateCreateParamsName;
   issuer?: X509CertificateCreateParamsName;
-  publicKey: CryptoKey;
+  publicKey: PublicKeyType;
   signingKey: CryptoKey;
 }
 
@@ -93,7 +94,17 @@ export class X509CertificateGenerator {
    * @param crypto Crypto provider. Default is from CryptoProvider
    */
   public static async create(params: X509CertificateCreateParams, crypto = cryptoProvider.get()) {
-    const spki = await crypto.subtle.exportKey("spki", params.publicKey);
+    let spki: BufferSource;
+    if (params.publicKey instanceof PublicKey) {
+      spki = params.publicKey.rawData;
+    } else if ("publicKey" in params.publicKey) {
+      spki = params.publicKey.publicKey.rawData;
+    } else if (BufferSourceConverter.isBufferSource(params.publicKey)) {
+      spki = params.publicKey;
+    } else {
+      spki = await crypto.subtle.exportKey("spki", params.publicKey);
+    }
+
     const asnX509 = new asn1X509.Certificate({
       tbsCertificate: new asn1X509.TBSCertificate({
         version: asn1X509.Version.v3,
