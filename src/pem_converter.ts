@@ -36,6 +36,20 @@ export class PemConverter {
   }
 
   /**
+   * Decodes PEM and returns first item from the list
+   * @param pem message in PEM format
+   * @throw Throws RangeError if list of decoded items is empty
+   */
+  public static decodeFirst(pem: string): ArrayBuffer {
+    const items = this.decode(pem);
+    if (!items.length) {
+      throw new RangeError("PEM string doesn't contain any objects");
+    }
+
+    return items[0];
+  }
+
+  /**
    * Encodes a raw data to PEM format
    * @param rawData Raw data
    * @param tag PEM tag

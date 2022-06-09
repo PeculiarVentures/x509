@@ -3,7 +3,7 @@ import { id_ce_subjectKeyIdentifier, SubjectKeyIdentifier } from "@peculiar/asn1
 import { BufferSourceConverter, Convert } from "pvtsutils";
 import { Extension } from "../extension";
 import { cryptoProvider } from "../provider";
-import { PublicKey } from "../public_key";
+import { PublicKey, PublicKeyType } from "../public_key";
 
 /**
  * Represents the Subject Key Identifier certificate extension
@@ -16,8 +16,18 @@ export class SubjectKeyIdentifierExtension extends Extension {
    * @param critical Indicates where extension is critical. Default is `false`
    * @param crypto WebCrypto provider. Default is from CryptoProvider
    */
-  public static async create(publicKey: CryptoKey, critical = false, crypto = cryptoProvider.get()) {
-    const spki = await crypto.subtle.exportKey("spki", publicKey);
+  public static async create(publicKey: PublicKeyType, critical = false, crypto = cryptoProvider.get()) {
+    let spki: BufferSource;
+    if (publicKey instanceof PublicKey) {
+      spki = publicKey.rawData;
+    } else if ("publicKey" in publicKey) {
+      spki = publicKey.publicKey.rawData;
+    } else if (BufferSourceConverter.isBufferSource(publicKey)) {
+      spki = publicKey;
+    } else {
+      spki = await crypto.subtle.exportKey("spki", publicKey);
+    }
+
     const key = new PublicKey(spki);
     const id = await key.getKeyIdentifier(crypto);
 

@@ -7,7 +7,7 @@ import { cryptoProvider } from "./provider";
 import { HashedAlgorithm } from "./types";
 import { Attribute } from "./attribute";
 import { Extension } from "./extension";
-import { PublicKey } from "./public_key";
+import { IPublicKeyContainer, PublicKey } from "./public_key";
 import { AlgorithmProvider, diAlgorithmProvider } from "./algorithm";
 import { AttributeFactory, ExtensionsAttribute } from "./attributes";
 import { AsnEncodedType, PemData } from "./pem_data";
@@ -16,7 +16,7 @@ import { diAsnSignatureFormatter, IAsnSignatureFormatter } from "./asn_signature
 /**
  * Representation of PKCS10 Certificate Request
  */
-export class Pkcs10CertificateRequest extends PemData<CertificationRequest> {
+export class Pkcs10CertificateRequest extends PemData<CertificationRequest> implements IPublicKeyContainer {
 
   protected readonly tag: string;
 

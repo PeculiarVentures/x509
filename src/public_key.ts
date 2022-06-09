@@ -1,11 +1,17 @@
 import { id_rsaEncryption, RSAPublicKey } from "@peculiar/asn1-rsa";
 import { AsnConvert } from "@peculiar/asn1-schema";
 import { SubjectPublicKeyInfo } from "@peculiar/asn1-x509";
-import { BufferSourceConverter } from "pvtsutils";
+import { BufferSource, BufferSourceConverter } from "pvtsutils";
 import { container } from "tsyringe";
 import { AlgorithmProvider, diAlgorithmProvider } from "./algorithm";
 import { AsnEncodedType, PemData } from "./pem_data";
 import { cryptoProvider } from "./provider";
+
+export interface IPublicKeyContainer {
+  publicKey: PublicKey;
+}
+
+export type PublicKeyType = PublicKey | CryptoKey | IPublicKeyContainer | BufferSource;
 
 /**
  * Representation of Subject Public Key Info
