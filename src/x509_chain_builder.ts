@@ -2,6 +2,7 @@ import { AsnConvert } from "@peculiar/asn1-schema";
 import * as asn1X509 from "@peculiar/asn1-x509";
 import { isEqual } from "pvtsutils";
 import { AuthorityKeyIdentifierExtension, SubjectKeyIdentifierExtension } from "./extensions";
+import { cryptoProvider } from "./provider";
 import { X509Certificate } from "./x509_cert";
 import { X509Certificates } from "./x509_certs";
 
@@ -32,16 +33,16 @@ export class X509ChainBuilder {
     }
   }
 
-  public async build(cert: X509Certificate) {
+  public async build(cert: X509Certificate, crypto = cryptoProvider.get()) {
     const chain = new X509Certificates(cert);
 
     let current: X509Certificate | null = cert;
     // eslint-disable-next-line no-cond-assign
-    while (current = await this.findIssuer(current)) {
+    while (current = await this.findIssuer(current, crypto)) {
       // check out circular dependency
-      const thumbprint = await current.getThumbprint();
+      const thumbprint = await current.getThumbprint(crypto);
       for (const item of chain) {
-        const thumbprint2 = await item.getThumbprint();
+        const thumbprint2 = await item.getThumbprint(crypto);
         if (isEqual(thumbprint, thumbprint2)) {
           throw new Error("Cannot build a certificate chain. Circular dependency.");
         }
@@ -53,8 +54,8 @@ export class X509ChainBuilder {
     return chain;
   }
 
-  private async findIssuer(cert: X509Certificate) {
-    if (!await cert.isSelfSigned()) {
+  private async findIssuer(cert: X509Certificate, crypto = cryptoProvider.get()) {
+    if (!await cert.isSelfSigned(crypto)) {
       const akiExt = cert.getExtension<AuthorityKeyIdentifierExtension>(asn1X509.id_ce_authorityKeyIdentifier);
       for (const item of this.certificates) {
         if (item.subject !== cert.issuer) {
@@ -76,9 +77,9 @@ export class X509ChainBuilder {
           }
         }
         if (!await cert.verify({
-          publicKey: await item.publicKey.export(),
+          publicKey: await item.publicKey.export(crypto),
           signatureOnly: true,
-        })) {
+        }, crypto)) {
           continue;
         }
 
