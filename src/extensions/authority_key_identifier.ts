@@ -1,4 +1,4 @@
-import { AsnConvert, OctetString } from "@peculiar/asn1-schema";
+import { AsnConvert } from "@peculiar/asn1-schema";
 import * as asn1X509 from "@peculiar/asn1-x509";
 import { BufferSourceConverter, Convert } from "pvtsutils";
 import { Extension } from "../extension";
@@ -87,7 +87,7 @@ export class AuthorityKeyIdentifierExtension extends Extension {
     if (BufferSourceConverter.isBufferSource(args[0])) {
       super(args[0]);
     } else if (typeof args[0] === "string") {
-      const value = new asn1X509.AuthorityKeyIdentifier({ keyIdentifier: new OctetString(Convert.FromHex(args[0])) });
+      const value = new asn1X509.AuthorityKeyIdentifier({ keyIdentifier: new asn1X509.KeyIdentifier(Convert.FromHex(args[0])) });
       super(asn1X509.id_ce_authorityKeyIdentifier, args[1], AsnConvert.serialize(value));
     } else {
       const certId = args[0] as CertificateIdentifier;
