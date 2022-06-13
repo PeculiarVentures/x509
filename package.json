@@ -66,8 +66,7 @@
     ],
     "reporter": [
       "lcov",
-      "text-summary",
-      "html"
+      "text-summary"
     ]
   },
   "devDependencies": {
