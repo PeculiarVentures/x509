@@ -1,5 +1,5 @@
 import { AsnConvert } from "@peculiar/asn1-schema";
-import { CertificateIssuer, CRLReason, id_ce_certificateIssuer, id_ce_cRLReasons, id_ce_invalidityDate, InvalidityDate, Name, RevokedCertificate, Time } from "@peculiar/asn1-x509";
+import { CRLReason, id_ce_cRLReasons, id_ce_invalidityDate, InvalidityDate, RevokedCertificate, Time } from "@peculiar/asn1-x509";
 import { Extension } from "./extension";
 import { ExtensionFactory } from "./extensions/extension_factory";
 import { BufferSourceConverter, Convert } from "pvtsutils";
