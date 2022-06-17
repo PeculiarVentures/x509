@@ -1,9 +1,13 @@
+export type MapForEachCallback = (value: Crypto, key: string, map: Map<string, Crypto>) => void;
+
 /**
  * Crypto provider
  */
-export class CryptoProvider extends Map<string, Crypto> {
+export class CryptoProvider implements Map<string, Crypto> {
 
   public static DEFAULT = "default";
+
+  private items = new Map<string, Crypto>();
 
   /**
    * Returns `true` if data is CryptoKeyPair
@@ -21,13 +25,45 @@ export class CryptoProvider extends Map<string, Crypto> {
    * Creates a new instance
    */
   public constructor() {
-    super();
-
     if (typeof self !== "undefined" && typeof crypto !== "undefined") { // if Browser
       // Use global crypto as default
       this.set(CryptoProvider.DEFAULT, crypto);
     }
   }
+  clear(): void {
+    this.items.clear();
+  }
+
+  delete(key: string): boolean {
+    return this.items.delete(key);
+  }
+
+  forEach(callbackfn: MapForEachCallback, thisArg?: any): void {
+    return this.items.forEach(callbackfn, thisArg);
+  }
+
+  has(key: string): boolean {
+    return this.items.has(key);
+  }
+
+  get size(): number {
+    return this.items.size;
+  }
+
+  entries(): IterableIterator<[string, Crypto]> {
+    return this.items.entries();
+  }
+
+  keys(): IterableIterator<string> {
+    return this.items.keys();
+  }
+  values(): IterableIterator<Crypto> {
+    return this.items.values();
+  }
+  [Symbol.iterator](): IterableIterator<[string, Crypto]> {
+    return this.items[Symbol.iterator]();
+  }
+  [Symbol.toStringTag] = "CryptoProvider";
 
   /**
    * Returns default crypto
@@ -41,7 +77,7 @@ export class CryptoProvider extends Map<string, Crypto> {
    */
   public get(key: string): Crypto;
   public get(key = CryptoProvider.DEFAULT) {
-    const crypto = super.get(key.toLowerCase());
+    const crypto = this.items.get(key.toLowerCase());
     if (!crypto) {
       throw new Error(`Cannot get Crypto by name '${key}'`);
     }
@@ -65,9 +101,9 @@ export class CryptoProvider extends Map<string, Crypto> {
       if (!value) {
         throw new TypeError("Argument 'value' is required");
       }
-      super.set(key.toLowerCase(), value);
+      this.items.set(key.toLowerCase(), value);
     } else {
-      super.set(CryptoProvider.DEFAULT, key);
+      this.items.set(CryptoProvider.DEFAULT, key);
     }
 
     return this;
