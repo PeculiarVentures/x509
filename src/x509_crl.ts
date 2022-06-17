@@ -288,10 +288,10 @@ export class X509Crl extends PemData<CertificateList> {
   /**
    *  Gets the CRL entry, with the given X509Certificate or certificate serialNumber.
    *
-   * @param args certificate | serialNumber
+   * @param certOrSerialNumber certificate | serialNumber
    */
-  public findRevoked(...args: [certificate: X509Certificate] | [serialNumber: string]): X509CrlEntry | null {
-    const serialNumber = typeof args[0] === "string" ? args[0] : args[0].serialNumber;
+  public findRevoked(certOrSerialNumber: X509Certificate | string): X509CrlEntry | null {
+    const serialNumber = typeof certOrSerialNumber === "string" ? certOrSerialNumber : certOrSerialNumber.serialNumber;
     for (const entry of this.entries) {
       if (entry.serialNumber === serialNumber) {
         return entry;
