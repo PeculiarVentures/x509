@@ -37,6 +37,10 @@ export interface X509CertificateCreateParamsBase {
    * Signing algorithm
    */
   signingAlgorithm: Algorithm | EcdsaParams;
+  /**
+   * Signature for manually initialized certificates
+   */
+  signature?: Buffer;
 }
 
 /**
@@ -137,7 +141,7 @@ export class X509CertificateGenerator {
 
     // Sign
     const tbs = AsnConvert.serialize(asnX509.tbsCertificate);
-    const signature = await crypto.subtle.sign(signingAlgorithm, params.signingKey, tbs);
+    const signature = params.signature || await crypto.subtle.sign(signingAlgorithm, params.signingKey, tbs);
 
     // Convert WebCrypto signature to ASN.1 format
     const signatureFormatters = container.resolveAll<IAsnSignatureFormatter>(diAsnSignatureFormatter).reverse();
