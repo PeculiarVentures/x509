@@ -40,7 +40,7 @@ export interface X509CertificateCreateParamsBase {
   /**
    * Signature for manually initialized certificates
    */
-  signature?: Buffer;
+  signature?: BufferSource;
 }
 
 /**
