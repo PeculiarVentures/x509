@@ -61,6 +61,7 @@ export class X509Certificates extends Array<X509Certificate> {
   public export(format?: AsnExportType | "raw") {
     const signedData = new asn1Cms.SignedData();
 
+    signedData.encapContentInfo.eContentType = asn1Cms.id_data;
     signedData.certificates = new asn1Cms.CertificateSet(this.map(o => new asn1Cms.CertificateChoices({
       certificate: AsnConvert.parse(o.rawData, Certificate)
     })));
