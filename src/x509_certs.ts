@@ -1,5 +1,5 @@
 import * as asn1Cms from "@peculiar/asn1-cms";
-import { AsnConvert } from "@peculiar/asn1-schema";
+import { AsnConvert, OctetString } from "@peculiar/asn1-schema";
 import { Certificate } from "@peculiar/asn1-x509";
 import { Convert } from "pvtsutils";
 import { PemConverter } from "./pem_converter";
@@ -61,7 +61,11 @@ export class X509Certificates extends Array<X509Certificate> {
   public export(format?: AsnExportType | "raw") {
     const signedData = new asn1Cms.SignedData();
 
+    signedData.version = 1;
     signedData.encapContentInfo.eContentType = asn1Cms.id_data;
+    signedData.encapContentInfo.eContent = new asn1Cms.EncapsulatedContent({
+      single: new OctetString(),
+    });
     signedData.certificates = new asn1Cms.CertificateSet(this.map(o => new asn1Cms.CertificateChoices({
       certificate: AsnConvert.parse(o.rawData, Certificate)
     })));

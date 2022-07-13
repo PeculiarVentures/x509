@@ -2,9 +2,9 @@ import * as assert from "assert";
 import { Convert } from "pvtsutils";
 import { Crypto } from "@peculiar/webcrypto";
 import * as asn1Schema from "@peculiar/asn1-schema";
+import * as asn1CMS from "@peculiar/asn1-cms";
 import * as asn1X509 from "@peculiar/asn1-x509";
 import * as x509 from "../src";
-import { UnknownAlgorithm } from "../src";
 
 context("crypto", () => {
 
@@ -320,7 +320,7 @@ W+K8+llxOFmtVzU=
 -----END CERTIFICATE-----`;
       const cert = new x509.X509Certificate(pem);
       assert.strictEqual(cert.publicKey.algorithm.name, "1.2.840.10040.4.1");
-      assert.strictEqual((cert.publicKey.algorithm as UnknownAlgorithm).parameters instanceof ArrayBuffer, true);
+      assert.strictEqual((cert.publicKey.algorithm as x509.UnknownAlgorithm).parameters instanceof ArrayBuffer, true);
     });
 
     it("read", () => {
@@ -630,6 +630,18 @@ D314IEOg4mnS8Q==
       it("raw", async () => {
         const raw = await certs.export("raw");
         assert.strictEqual(raw instanceof ArrayBuffer, true);
+
+        // check CMS structure
+        const contentInfo = asn1Schema.AsnConvert.parse(raw, asn1CMS.ContentInfo);
+        assert.strictEqual(contentInfo.contentType, asn1CMS.id_signedData, "CMS is not a SignedData");
+        const signedData = asn1Schema.AsnConvert.parse(contentInfo.content, asn1CMS.SignedData);
+        assert.strictEqual(signedData.version, 1, "SignedData.version should be 1");
+        assert.strictEqual(signedData.encapContentInfo.eContentType, asn1CMS.id_data, "SignedData is not a Data");
+        assert.ok(signedData.encapContentInfo.eContent, "SignedData.encapContentInfo.eContent is empty");
+        assert.ok(signedData.encapContentInfo.eContent.single, "SignedData.encapContentInfo.eContent.single is empty");
+        assert.ok(signedData.certificates, "The list of certificates is empty");
+        assert.strictEqual(signedData.certificates.length, 2, "The list of certificates should have 2 items");
+
         const certs2 = new x509.X509Certificates(raw);
 
         assert.strictEqual(certs2.length, 2);
