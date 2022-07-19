@@ -37,10 +37,6 @@ export interface X509CertificateCreateParamsBase {
    * Signing algorithm
    */
   signingAlgorithm: Algorithm | EcdsaParams;
-  /**
-   * Signature for manually initialized certificates
-   */
-  signature?: BufferSource;
 }
 
 /**
@@ -63,7 +59,14 @@ export interface X509CertificateCreateWithKeyParams extends X509CertificateCreat
  * Parameters for X509 Certificate generation with existing signature value
  */
 export interface X509CertificateCreateWithSignatureParams extends X509CertificateCreateCommonParams {
+  /**
+   * Signature for manually initialized certificates
+   */
   signature: BufferSource;
+
+  /**
+   * Manual signing requires CryptoKey that includes signature algorithm
+   */
   publicKey: CryptoKey;
 }
 
@@ -151,33 +154,27 @@ export class X509CertificateGenerator {
       asnX509.tbsCertificate.issuer = AsnConvert.parse(name.toArrayBuffer(), asn1X509.Name);
     }
 
-    const signingAlgorithm = (() => {
-      if ("signingKey" in params) {
-        return { ...params.signingAlgorithm, ...params.signingKey.algorithm } as HashedAlgorithm;
-      } else {
-        return params.publicKey.algorithm as HashedAlgorithm;
-      }
-    })();
+    // Set signing algorithm
+    const signatureAlgorithm = ("signingKey" in params)
+      ? { ...params.signingAlgorithm, ...params.signingKey.algorithm } as HashedAlgorithm
+      : params.publicKey.algorithm as HashedAlgorithm;
 
     const algProv = container.resolve<AlgorithmProvider>(diAlgorithmProvider);
-    asnX509.tbsCertificate.signature = asnX509.signatureAlgorithm = algProv.toAsnAlgorithm(signingAlgorithm);
-    const tbs = AsnConvert.serialize(asnX509.tbsCertificate);
+    asnX509.tbsCertificate.signature = asnX509.signatureAlgorithm = algProv.toAsnAlgorithm(signatureAlgorithm);
 
-    const signatureValue = await (async () => {
-      if ("signingKey" in params) {
-        // Sign self-signed certificate with provided private key.
-        return crypto.subtle.sign(signingAlgorithm, params.signingKey, tbs)
-      } else {
-        // Otherwise use given pre-signed certificate signature
-        return Promise.resolve(params.signature);
-      }
-    })();
+    // Sign
+    const tbs = AsnConvert.serialize(asnX509.tbsCertificate);
+    const signatureValue = ("signingKey" in params)
+      // Sign self-signed certificate with provided private key.
+      ? await crypto.subtle.sign(signatureAlgorithm, params.signingKey, tbs)
+      // Otherwise use given pre-signed certificate signature
+      : params.signature;
 
     // Convert WebCrypto signature to ASN.1 format
     const signatureFormatters = container.resolveAll<IAsnSignatureFormatter>(diAsnSignatureFormatter).reverse();
     let asnSignature: ArrayBuffer | null = null;
     for (const signatureFormatter of signatureFormatters) {
-      asnSignature = signatureFormatter.toAsnSignature(signingAlgorithm, signatureValue);
+      asnSignature = signatureFormatter.toAsnSignature(signatureAlgorithm, signatureValue);
       if (asnSignature) {
         break;
       }
