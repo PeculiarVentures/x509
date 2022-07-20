@@ -265,6 +265,18 @@ export class Name {
           } else {
             if (typeId === this.getName("E") || typeId === this.getName("DC")) {
               asnAttr.value.ia5String = value;
+            } else if (typeof value === "object") {
+                const entry = value as object
+                for (const key in entry) {
+                  switch (key) {
+                    case "ia5String": asnAttr.value.ia5String = value[key]; break;
+                    case "utf8String": asnAttr.value.utf8String = value[key]; break;
+                    case "universalString": asnAttr.value.universalString = value[key]; break;
+                    case "bmpString": asnAttr.value.bmpString = value[key]; break;
+                    default:
+                    case "printableString": asnAttr.value.printableString = value[key]; break;
+                  }
+                }
             } else {
               asnAttr.value.printableString = value;
             }
