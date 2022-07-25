@@ -55,7 +55,7 @@ export class Pkcs10CertificateRequestGenerator {
       throw new Error("Bad field 'keys' in 'params' argument. 'privateKey' is empty");
     }
     if (!params.keys.publicKey) {
-      throw new Error("Bad field 'keys' in 'params' argument. 'privateKey' is empty");
+      throw new Error("Bad field 'keys' in 'params' argument. 'publicKey' is empty");
     }
 
     const spki = await crypto.subtle.exportKey("spki", params.keys.publicKey);
