@@ -98,12 +98,6 @@ eZUq5DVls0Fhw/kkUzC4FG4mLGs=
     },
 ];
 
-function buf2hex(buffer:ArrayBuffer) { // buffer is an ArrayBuffer
-  return [...new Uint8Array(buffer)]
-      .map(x => x.toString(16).padStart(2, '0'))
-      .join('');
-}
-
 function testCertSelfSign(testEntry:any) {
 
   it("Test X509CertificateGenerator.create self-signed", async () => {
@@ -118,15 +112,6 @@ function testCertSelfSign(testEntry:any) {
     });
     const ok = await cert.verify({ date: testEntry.testDate });
     assert.strictEqual(ok, true);
-
-    var publicKeySpki = await crypto.subtle.exportKey('spki', keys.publicKey)
-    var privateKeyPkcs8 = await crypto.subtle.exportKey('pkcs8', keys.privateKey)
-
-    console.log("PEM = "+cert.toString('pem'))
-    console.log("DER = "+cert.toString('hex'))
-    console.log("SIG = "+buf2hex(cert.signature))
-    console.log("PRIV = "+buf2hex(privateKeyPkcs8))
-    console.log("PUB = "+buf2hex(publicKeySpki))
   });
 }
 

@@ -266,7 +266,7 @@ export class Name {
             if (typeId === this.getName("E") || typeId === this.getName("DC")) {
               asnAttr.value.ia5String = value;
             } else if (typeof value === "object") {
-                const entry = value as object
+                const entry = value as object;
                 for (const key in entry) {
                   switch (key) {
                     case "ia5String": asnAttr.value.ia5String = value[key]; break;
