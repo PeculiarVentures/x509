@@ -38,9 +38,24 @@ names.register("T", "2.5.4.12");
 /**
  * JSON representation of Attribute and Value
  */
-export interface JsonAttributeAndValue {
+export interface JsonAttributeAndStringValue {
   [type: string]: string[];
 }
+
+export interface JsonAttributeObject {
+  ia5String?: string;
+  utf8String?: string;
+  universalString?: string;
+  bmpString?: string;
+  printableString?: string;
+}
+
+export interface JsonAttributeAndObjectValue {
+  [type: string]: JsonAttributeObject[];
+}
+
+export type JsonAttributeAndValue = JsonAttributeAndStringValue | JsonAttributeAndObjectValue;
+
 
 /**
  * JSON array of Attribute and Value
@@ -260,23 +275,21 @@ export class Name {
         const values = item[type];
         for (const value of values) {
           const asnAttr = new AttributeTypeAndValue({ type: typeId });
-          if (value[0] === "#") {
+          if (typeof value === "object") {
+            for (const key in value) {
+              switch (key) {
+                case "ia5String": asnAttr.value.ia5String = value[key]; break;
+                case "utf8String": asnAttr.value.utf8String = value[key]; break;
+                case "universalString": asnAttr.value.universalString = value[key]; break;
+                case "bmpString": asnAttr.value.bmpString = value[key]; break;
+                case "printableString": asnAttr.value.printableString = value[key]; break;
+              }
+            }
+          } else if (value[0] === "#") {
             asnAttr.value.anyValue = Convert.FromHex(value.slice(1));
           } else {
             if (typeId === this.getName("E") || typeId === this.getName("DC")) {
               asnAttr.value.ia5String = value;
-            } else if (typeof value === "object") {
-                const entry = value as object;
-                for (const key in entry) {
-                  switch (key) {
-                    case "ia5String": asnAttr.value.ia5String = value[key]; break;
-                    case "utf8String": asnAttr.value.utf8String = value[key]; break;
-                    case "universalString": asnAttr.value.universalString = value[key]; break;
-                    case "bmpString": asnAttr.value.bmpString = value[key]; break;
-                    default:
-                    case "printableString": asnAttr.value.printableString = value[key]; break;
-                  }
-                }
             } else {
               asnAttr.value.printableString = value;
             }
