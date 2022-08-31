@@ -56,11 +56,12 @@ export interface JsonAttributeAndObjectValue {
 
 export type JsonAttributeAndValue = JsonAttributeAndStringValue | JsonAttributeAndObjectValue;
 
-
 /**
  * JSON array of Attribute and Value
  */
-export type JsonName = Array<JsonAttributeAndValue>;
+export type JsonName = Array<JsonAttributeAndStringValue>;
+
+export type JsonNameParams = Array<JsonAttributeAndValue>;
 
 function replaceUnknownCharacter(text: string, char: string) {
   return `\\${Convert.ToHex(Convert.FromUtf8String(char)).toUpperCase()}`;
@@ -117,7 +118,7 @@ export class Name {
    *   "GUID": "1.2.3.4.5.3",
    * });
    */
-  public constructor(data: BufferSource | AsnName | string | JsonName, extraNames: IdOrName = {}) {
+  public constructor(data: BufferSource | AsnName | string | JsonNameParams, extraNames: IdOrName = {}) {
     for (const key in extraNames) {
       if (Object.prototype.hasOwnProperty.call(extraNames, key)) {
         const value = extraNames[key];
@@ -168,11 +169,11 @@ export class Name {
   /**
    * Returns a JSON representation of the Name
    */
-  public toJSON() {
+  public toJSON(): JsonName {
     const json: JsonName = [];
 
     for (const rdn of this.asn) {
-      const jsonItem: JsonAttributeAndValue = {};
+      const jsonItem: JsonAttributeAndStringValue = {};
       for (const attr of rdn) {
         const type = this.getName(attr.type) || attr.type;
         jsonItem[type] ??= [];
@@ -258,7 +259,7 @@ export class Name {
    * Creates AsnName from JSON
    * @param data
    */
-  private fromJSON(data: JsonName): AsnName {
+  private fromJSON(data: JsonNameParams): AsnName {
     const asn = new AsnName();
 
     for (const item of data) {
@@ -315,26 +316,26 @@ export class Name {
    * Returns a SHA-1 thumbprint
    * @param crypto Crypto provider. Default is from CryptoProvider
    */
-   public async getThumbprint(crypto?: Crypto): Promise<ArrayBuffer>;
-   /**
-    * Returns a thumbprint for specified mechanism
-    * @param algorithm Hash algorithm
-    * @param crypto Crypto provider. Default is from CryptoProvider
-    */
-   public async getThumbprint(algorithm: globalThis.AlgorithmIdentifier, crypto?: Crypto): Promise<ArrayBuffer>;
-   public async getThumbprint(...args: any[]) {
-     let crypto: Crypto;
-     let algorithm = "SHA-1";
+  public async getThumbprint(crypto?: Crypto): Promise<ArrayBuffer>;
+  /**
+   * Returns a thumbprint for specified mechanism
+   * @param algorithm Hash algorithm
+   * @param crypto Crypto provider. Default is from CryptoProvider
+   */
+  public async getThumbprint(algorithm: globalThis.AlgorithmIdentifier, crypto?: Crypto): Promise<ArrayBuffer>;
+  public async getThumbprint(...args: any[]) {
+    let crypto: Crypto;
+    let algorithm = "SHA-1";
 
-     if (args.length >= 1 && !args[0]?.subtle) {
-       // crypto?
-       algorithm = args[0] || algorithm;
-       crypto = args[1] || cryptoProvider.get();
-     } else {
-       crypto = args[0] || cryptoProvider.get();
-     }
+    if (args.length >= 1 && !args[0]?.subtle) {
+      // crypto?
+      algorithm = args[0] || algorithm;
+      crypto = args[1] || cryptoProvider.get();
+    } else {
+      crypto = args[0] || cryptoProvider.get();
+    }
 
-     return await crypto.subtle.digest(algorithm, this.toArrayBuffer());
-   }
+    return await crypto.subtle.digest(algorithm, this.toArrayBuffer());
+  }
 
 }
