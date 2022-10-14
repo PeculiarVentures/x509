@@ -117,7 +117,7 @@ const csr = await x509.Pkcs10CertificateRequestGenerator.create({
   ]
 });
 
-console.log(cert.toString("base64")); // Certificate request in Base64 format
+console.log(csr.toString("base64")); // Certificate request in Base64 format
 ```
 
 ### Decoded X509 certificate
