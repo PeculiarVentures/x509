@@ -320,7 +320,7 @@ W+K8+llxOFmtVzU=
 -----END CERTIFICATE-----`;
       const cert = new x509.X509Certificate(pem);
       assert.strictEqual(cert.publicKey.algorithm.name, "1.2.840.10040.4.1");
-      assert.strictEqual((cert.publicKey.algorithm as x509.UnknownAlgorithm).parameters instanceof ArrayBuffer, true);
+      assert.strictEqual((cert.publicKey.algorithm as x509.UnknownAlgorithm).parameters?.byteLength, 159);
     });
 
     it("read", () => {
