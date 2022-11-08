@@ -4,11 +4,9 @@ import { getBabelOutputPlugin } from "@rollup/plugin-babel";
 import commonjs from "@rollup/plugin-commonjs";
 import typescript from "rollup-plugin-typescript2";
 import { terser } from "rollup-plugin-terser";
+import pkg from "./package.json" assert { type: "json" };
 
-const license = fs.readFileSync("LICENSE", {encoding: "utf-8"});
-
-// eslint-disable-next-line @typescript-eslint/no-var-requires, no-undef
-const pkg = require("./package.json");
+const license = fs.readFileSync("LICENSE", { encoding: "utf-8" });
 
 const banner = [
   "/*!",
