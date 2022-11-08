@@ -11,6 +11,7 @@ import { IPublicKeyContainer, PublicKey, PublicKeyType } from "./public_key";
 import { AlgorithmProvider, diAlgorithmProvider } from "./algorithm";
 import { AsnEncodedType, PemData } from "./pem_data";
 import { diAsnSignatureFormatter, IAsnSignatureFormatter } from "./asn_signature_formatter";
+import { PemConverter } from "./pem_converter";
 
 /**
  * Verification params of X509 certificate
@@ -110,7 +111,7 @@ export class X509Certificate extends PemData<Certificate> implements IPublicKeyC
       super(param);
     }
 
-    this.tag = "CERTIFICATE";
+    this.tag = PemConverter.CertificateTag;
   }
 
   protected onInit(asn: Certificate) {
