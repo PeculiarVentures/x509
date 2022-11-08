@@ -15,6 +15,7 @@ import {
 } from "./asn_signature_formatter";
 import { X509Certificate } from "./x509_cert";
 import { X509CrlEntry } from "./x509_crl_entry";
+import { PemConverter } from "./pem_converter";
 
 export interface X509CrlVerifyParams {
   publicKey: CryptoKey | PublicKey | X509Certificate;
@@ -103,7 +104,7 @@ export class X509Crl extends PemData<CertificateList> {
       super(param);
     }
 
-    this.tag = "CRL";
+    this.tag = PemConverter.CrlTag;
   }
 
   protected onInit(asn: CertificateList) {

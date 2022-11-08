@@ -12,6 +12,7 @@ import { AlgorithmProvider, diAlgorithmProvider } from "./algorithm";
 import { AttributeFactory, ExtensionsAttribute } from "./attributes";
 import { AsnEncodedType, PemData } from "./pem_data";
 import { diAsnSignatureFormatter, IAsnSignatureFormatter } from "./asn_signature_formatter";
+import { PemConverter } from "./pem_converter";
 
 /**
  * Representation of PKCS10 Certificate Request
@@ -76,7 +77,7 @@ export class Pkcs10CertificateRequest extends PemData<CertificationRequest> impl
     } else {
       super(param);
     }
-    this.tag = "CERTIFICATE REQUEST";
+    this.tag = PemConverter.CertificateRequestTag;
   }
 
   protected onInit(asn: CertificationRequest): void {
@@ -91,7 +92,7 @@ export class Pkcs10CertificateRequest extends PemData<CertificationRequest> impl
     const extensions = this.getAttribute(id_pkcs9_at_extensionRequest);
     this.extensions = [];
     if (extensions instanceof ExtensionsAttribute) {
-        this.extensions = extensions.items;
+      this.extensions = extensions.items;
     }
     this.subjectName = new Name(asn.certificationRequestInfo.subject);
     this.subject = this.subjectName.toString();
