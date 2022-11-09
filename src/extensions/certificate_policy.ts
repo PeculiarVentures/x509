@@ -3,11 +3,14 @@ import { AsnConvert } from "@peculiar/asn1-schema";
 import { BufferSource, BufferSourceConverter } from "pvtsutils";
 import { Extension } from "../extension";
 import { ExtensionFactory } from "./extension_factory";
+import { OidSerializer, TextObject } from "../text_converter";
 
 /**
  * Represents the Certificate Policy extension
  */
 export class CertificatePolicyExtension extends Extension {
+
+  public static override NAME = "Certificate Policies";
 
   /**
    * Gets the list of certificate policies
@@ -39,11 +42,18 @@ export class CertificatePolicyExtension extends Extension {
         policyIdentifier: o,
       }))));
 
-
       super(asnX509.id_ce_certificatePolicies, critical, AsnConvert.serialize(value));
 
       this.policies = policies;
     }
+  }
+
+  public override toTextObject(): TextObject {
+    const obj = this.toTextObjectWithoutValue();
+
+    obj["Policy"] = this.policies.map(o => new TextObject("", {}, OidSerializer.toString(o)));
+
+    return obj;
   }
 
 }
