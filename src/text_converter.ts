@@ -8,7 +8,7 @@ export interface TextObjectConvertible {
   toTextObject(): TextObject;
 }
 
-export type TextObjectItemType = string | number | boolean | Date | BufferSource | TextObject | TextObjectConvertible;
+export type TextObjectItemType = string | number | boolean | Date | BufferSource | TextObject | TextObject[] | TextObjectConvertible;
 
 const NAME = Symbol("name");
 const VALUE = Symbol("value");
@@ -131,6 +131,11 @@ export abstract class TextConverter {
         res.push(`${pad}${keyValue}${value}`); // key: value
       } else if (value instanceof Date) {
         res.push(`${pad}${keyValue}${value.toUTCString()}`); // key: UTC(date)
+      } else if (Array.isArray(value)) {
+        for (const obj of value) {
+          obj[TextObject.NAME] = key;
+          res.push(...this.serializeObj(obj, deep));
+        }
       } else if (value instanceof TextObject) {
         value[TextObject.NAME] = key;
         res.push(...this.serializeObj(value, deep));
