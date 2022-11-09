@@ -1,6 +1,6 @@
 import * as asn1Ecc from "@peculiar/asn1-ecc";
 import * as asn1Rsa from "@peculiar/asn1-rsa";
-import { AlgorithmIdentifier } from "@peculiar/asn1-x509";
+import * as asn1X509 from "@peculiar/asn1-x509";
 import { BufferSourceConverter } from "pvtsutils";
 import { EcAlgorithm } from "./ec_algorithm";
 
@@ -32,11 +32,11 @@ export class TextObject {
 }
 
 export interface AlgorithmSerializer {
-  toTextObject(alg: AlgorithmIdentifier): TextObject;
+  toTextObject(alg: asn1X509.AlgorithmIdentifier): TextObject;
 }
 
 export abstract class DefaultAlgorithmSerializer {
-  public static toTextObject(alg: AlgorithmIdentifier): TextObject {
+  public static toTextObject(alg: asn1X509.AlgorithmIdentifier): TextObject {
     const obj = new TextObject("Algorithm Identifier", {}, OidSerializer.toString(alg.algorithm));
 
     if (alg.parameters) {
@@ -80,6 +80,12 @@ export abstract class OidSerializer {
     [asn1Ecc.id_ecdsaWithSHA256]: "ecdsaWithSHA256",
     [asn1Ecc.id_ecdsaWithSHA384]: "ecdsaWithSHA384",
     [asn1Ecc.id_ecdsaWithSHA512]: "ecdsaWithSHA512",
+    [asn1X509.id_kp_serverAuth]: "TLS WWW server authentication",
+    [asn1X509.id_kp_clientAuth]: "TLS WWW client authentication",
+    [asn1X509.id_kp_codeSigning]: "Code Signing",
+    [asn1X509.id_kp_emailProtection]: "E-mail Protection",
+    [asn1X509.id_kp_timeStamping]: "Time Stamping",
+    [asn1X509.id_kp_OCSPSigning]: "OCSP Signing",
   };
 
   public static toString(oid: string): string {
@@ -181,7 +187,7 @@ export abstract class TextConverter {
     return res;
   }
 
-  static serializeAlgorithm(alg: AlgorithmIdentifier): TextObject {
+  static serializeAlgorithm(alg: asn1X509.AlgorithmIdentifier): TextObject {
     return this.algorithmSerializer.toTextObject(alg);
   }
 
