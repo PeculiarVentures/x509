@@ -26,6 +26,9 @@ export * from "./x509_certs";
 export * from "./x509_crl";
 export * from "./x509_crl_entry";
 export * from "./x509_crl_generator";
+export * from "./x509_chain_validator";
+export * from "./certificate_storage_handler";
+export * from "./x509_certificate_tree";
 
 import * as asnX509 from "@peculiar/asn1-x509";
 import * as asnPkcs9 from "@peculiar/asn1-pkcs9";

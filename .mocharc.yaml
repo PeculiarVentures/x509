@@ -3,5 +3,5 @@ require:
 extension:
   - ts
 timeout: 5000
-spec":
+spec:
   - test/**
