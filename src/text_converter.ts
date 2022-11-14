@@ -187,7 +187,7 @@ export abstract class TextConverter {
     return res;
   }
 
-  static serializeAlgorithm(alg: asn1X509.AlgorithmIdentifier): TextObject {
+  public static serializeAlgorithm(alg: asn1X509.AlgorithmIdentifier): TextObject {
     return this.algorithmSerializer.toTextObject(alg);
   }
 
