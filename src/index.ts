@@ -27,6 +27,7 @@ export * from "./x509_crl";
 export * from "./x509_crl_entry";
 export * from "./x509_crl_generator";
 export * from "./text_converter";
+export * from "./general_name";
 
 import * as asnX509 from "@peculiar/asn1-x509";
 import * as asnPkcs9 from "@peculiar/asn1-pkcs9";
