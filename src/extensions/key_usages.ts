@@ -24,7 +24,7 @@ export enum KeyUsageFlags {
  */
 export class KeyUsagesExtension extends Extension {
 
-  public static override NAME = "Key Usage";
+  public static override NAME = "Key Usages";
 
   /**
    * Gets a key usages flag
