@@ -1,3 +1,4 @@
+import * as asn1Cms from "@peculiar/asn1-cms";
 import * as asn1Ecc from "@peculiar/asn1-ecc";
 import * as asn1Rsa from "@peculiar/asn1-rsa";
 import * as asn1X509 from "@peculiar/asn1-x509";
@@ -86,6 +87,7 @@ export abstract class OidSerializer {
     [asn1X509.id_kp_emailProtection]: "E-mail Protection",
     [asn1X509.id_kp_timeStamping]: "Time Stamping",
     [asn1X509.id_kp_OCSPSigning]: "OCSP Signing",
+    [asn1Cms.id_signedData]: "Signed Data",
   };
 
   public static toString(oid: string): string {

@@ -1,5 +1,4 @@
 import * as assert from "assert";
-import { GeneralName } from "@peculiar/asn1-x509";
 import { Crypto } from "@peculiar/webcrypto";
 import * as x509 from "../src";
 
@@ -251,7 +250,9 @@ context("text", () => {
 
     const tests: {
       name: string;
-      factory: () => Promise<x509.AsnData<any>>;
+      factory: () => Promise<{
+        toString(format?: string): string;
+      }>;
       want: string;
     }[] = [
         {
@@ -301,7 +302,66 @@ context("text", () => {
             "    12 e3 e2 89 52 11 c1 05  2b 66 79 85 ca 06 fd 5a",
             "    67 9d 3c ae 00 0b 1d",
           ].join("\n")
-        }
+        },
+        {
+          name: "Certificates",
+          factory: async () => {
+            const cert = new x509.X509Certificate([
+              "MIIBljCCATygAwIBAgIQAQIDBAUGBwgJCgsMDQ4PADAKBggqhkjOPQQDAjA2MRgw",
+              "FgYDVQQDEw9JbnRlcm1lZGlhdGUgQ0ExGjAYBgNVBAoTEVNvbWUgb3JnYW5pemF0",
+              "aW9uMCQXDTIyMTEwOTEyMTMxNFoYEzIxMjIxMTA5MTIxMzE0LjAxNVowSjENMAsG",
+              "A1UEAxMEVGVzdDEaMBgGA1UEChMRU29tZSBvcmdhbml6YXRpb24xHTAbBgkqhkiG",
+              "9w0BCQEWDnNvbWVAZW1haWwuY29tMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE",
+              "nigiclJd1LARwEb8i4rQzWspjOqW8piqB4EtA6nhnWDDANhLm3AKOvQ2RAp/Cdg8",
+              "tKBSSYxv6XE1Ge8NHsgA16MSMBAwDgYDVR0PAQH/BAQDAgbAMAoGCCqGSM49BAMC",
+              "A0gAMEUCIGwtZZPzsy1FpzMgdB3LmzmHfagzq7qxoyQT4QY8j0ZzAiEA0S17Ns5D",
+              "GfDTEuPiiVIRwQUrZnmFygb9WmedPK4ACx0=",
+            ].join(""));
+
+            return new x509.X509Certificates([cert, cert]);
+          },
+          want: [
+            "X509Certificates:",
+            "  Content Type: Signed Data",
+            "  Content:",
+            "    Version: v1 (1)",
+            "    Certificates:",
+            ...[0, 0].map(() => {
+              return [
+                "      Certificate:",
+                "        Data:",
+                "          Version: v3 (2)",
+                "          Serial Number: ",
+                "            01 02 03 04 05 06 07 08  09 0a 0b 0c 0d 0e 0f 00",
+                "          Signature Algorithm: ecdsaWithSHA256",
+                "          Issuer: CN=Intermediate CA, O=Some organization",
+                "          Validity:",
+                "            Not Before: Wed, 09 Nov 2022 12:13:14 GMT",
+                "            Not After: Mon, 09 Nov 2122 12:13:14 GMT",
+                "          Subject: CN=Test, O=Some organization, E=some@email.com",
+                "          Subject Public Key Info:",
+                "            Algorithm: ecPublicKey",
+                "              Named Curve: P-256",
+                "            EC Point: ",
+                "              04 9e 28 22 72 52 5d d4  b0 11 c0 46 fc 8b 8a d0",
+                "              cd 6b 29 8c ea 96 f2 98  aa 07 81 2d 03 a9 e1 9d",
+                "              60 c3 00 d8 4b 9b 70 0a  3a f4 36 44 0a 7f 09 d8",
+                "              3c b4 a0 52 49 8c 6f e9  71 35 19 ef 0d 1e c8 00",
+                "              d7",
+                "          Extensions:",
+                "            Key Usages: critical",
+                "              digitalSignature, nonRepudiation",
+                "        Signature:",
+                "          Algorithm: ecdsaWithSHA256",
+                "          30 45 02 20 6c 2d 65 93  f3 b3 2d 45 a7 33 20 74",
+                "          1d cb 9b 39 87 7d a8 33  ab ba b1 a3 24 13 e1 06",
+                "          3c 8f 46 73 02 21 00 d1  2d 7b 36 ce 43 19 f0 d3",
+                "          12 e3 e2 89 52 11 c1 05  2b 66 79 85 ca 06 fd 5a",
+                "          67 9d 3c ae 00 0b 1d",
+              ].join("\n");
+            })
+          ].join("\n")
+        },
       ];
     for (const t of tests) {
       it(t.name, async () => {
