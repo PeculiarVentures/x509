@@ -362,11 +362,87 @@ context("text", () => {
             })
           ].join("\n")
         },
+        {
+          name: "PKCS#10 certificate request",
+          factory: async () => new x509.Pkcs10CertificateRequest([
+            "MIH/MIGnAgEAMA8xDTALBgNVBAMTBFRlc3QwWTATBgcqhkjOPQIBBggqhkjOPQMB",
+            "BwNCAAR9n6IcxaoH5ftByzUxSVVC0OrIx4Ixc+dtopjY+z0/SVzepEEb3LGgHmWU",
+            "4H/G2X1P/BMJzWKjrhl9D795pq7AoDYwFQYJKoZIhvcNAQkHMQgTBkFCQ0RFRjAd",
+            "BgkqhkiG9w0BCQ4xEDAOMAwGA1UdEwEB/wQCMAAwCgYIKoZIzj0EAwIDRwAwRAIg",
+            "XMkMPhrRJT+tPPDMRwJLJqHslzscT8MHtvfa0Gg3q6kCIDu9ZvR8ad93PI5ZQZ2G",
+            "7TxS/mRRYFgcgjC2lCFfkr8p",
+          ].join("")),
+          want: [
+            "PKCS#10 Certificate Request:",
+            "  Data:",
+            "    Version: v1 (0)",
+            "    Subject: CN=Test",
+            "    Subject Public Key Info:",
+            "      Algorithm: ecPublicKey",
+            "        Named Curve: P-256",
+            "      EC Point: ",
+            "        04 7d 9f a2 1c c5 aa 07  e5 fb 41 cb 35 31 49 55",
+            "        42 d0 ea c8 c7 82 31 73  e7 6d a2 98 d8 fb 3d 3f",
+            "        49 5c de a4 41 1b dc b1  a0 1e 65 94 e0 7f c6 d9",
+            "        7d 4f fc 13 09 cd 62 a3  ae 19 7d 0f bf 79 a6 ae",
+            "        c0",
+            "    Attributes:",
+            "      Challenge Password: ABCDEF",
+            "      Extensions:",
+            "        Basic Constraints: critical",
+            "  Signature:",
+            "    Algorithm: ecdsaWithSHA256",
+            "    30 44 02 20 5c c9 0c 3e  1a d1 25 3f ad 3c f0 cc",
+            "    47 02 4b 26 a1 ec 97 3b  1c 4f c3 07 b6 f7 da d0",
+            "    68 37 ab a9 02 20 3b bd  66 f4 7c 69 df 77 3c 8e",
+            "    59 41 9d 86 ed 3c 52 fe  64 51 60 58 1c 82 30 b6",
+            "    94 21 5f 92 bf 29",
+          ].join("\n"),
+        }
       ];
     for (const t of tests) {
       it(t.name, async () => {
         const obj = await t.factory();
         const text = obj.toString("text");
+        assert.strictEqual(text, t.want);
+      });
+    }
+
+  });
+
+  context("attributes", async () => {
+    const tests: {
+      name: string;
+      factory: () => Promise<x509.Attribute>;
+      want: string;
+    }[] = [
+        {
+          name: "Challenge Password",
+          factory: async () => {
+            return new x509.ChallengePasswordAttribute("ABCDEF");
+          },
+          want: [
+            "Challenge Password: ABCDEF",
+          ].join("\n"),
+        },
+        {
+          name: "Extensions",
+          factory: async () => {
+            return new x509.ExtensionsAttribute([
+              new x509.KeyUsagesExtension(x509.KeyUsageFlags.cRLSign, true),
+            ]);
+          },
+          want: [
+            "Extensions:",
+            "  Key Usages: critical",
+            "    crlSign",
+          ].join("\n"),
+        },
+      ];
+    for (const t of tests) {
+      it(t.name, async () => {
+        const ext = await t.factory();
+        const text = ext.toString("text");
         assert.strictEqual(text, t.want);
       });
     }

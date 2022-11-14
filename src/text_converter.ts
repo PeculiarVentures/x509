@@ -6,6 +6,9 @@ import { BufferSourceConverter } from "pvtsutils";
 import { EcAlgorithm } from "./ec_algorithm";
 
 export interface TextObjectConvertible {
+  /**
+   * Returns the object in textual representation
+   */
   toTextObject(): TextObject;
 }
 
