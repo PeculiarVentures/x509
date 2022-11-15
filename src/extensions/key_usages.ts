@@ -2,6 +2,7 @@ import { AsnConvert } from "@peculiar/asn1-schema";
 import { id_ce_keyUsage, KeyUsage } from "@peculiar/asn1-x509";
 import { BufferSourceConverter } from "pvtsutils";
 import { Extension } from "../extension";
+import { TextObject } from "../text_converter";
 
 /**
  * X509 key usages flags
@@ -22,6 +23,8 @@ export enum KeyUsageFlags {
  * Represents the Key Usage certificate extension
  */
 export class KeyUsagesExtension extends Extension {
+
+  public static override NAME = "Key Usages";
 
   /**
    * Gets a key usages flag
@@ -51,5 +54,15 @@ export class KeyUsagesExtension extends Extension {
 
       this.usages = args[0];
     }
+  }
+
+  public override toTextObject(): TextObject {
+    const obj = this.toTextObjectWithoutValue();
+
+    const asn = AsnConvert.parse(this.value, KeyUsage);
+
+    obj[""] = asn.toJSON().join(", ");
+
+    return obj;
   }
 }

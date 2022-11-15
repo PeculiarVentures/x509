@@ -2,6 +2,7 @@ import { AsnConvert, OctetString } from "@peculiar/asn1-schema";
 import { Extension as AsnExtension } from "@peculiar/asn1-x509";
 import { BufferSourceConverter } from "pvtsutils";
 import { AsnData } from "./asn_data";
+import { OidSerializer, TextObject } from "./text_converter";
 
 /**
  * Represents the certificate extension
@@ -53,5 +54,23 @@ export class Extension extends AsnData<AsnExtension>{
     this.type = asn.extnID;
     this.critical = asn.critical;
     this.value = asn.extnValue.buffer;
+  }
+
+  public override toTextObject(): TextObject {
+    const obj = this.toTextObjectWithoutValue();
+
+    obj[""] = this.value;
+
+    return obj;
+  }
+
+  public toTextObjectWithoutValue(): TextObject {
+    const obj = this.toTextObjectEmpty(this.critical ? "critical" : undefined);
+
+    if (obj[TextObject.NAME] === Extension.NAME) {
+      obj[TextObject.NAME] = OidSerializer.toString(this.type);
+    }
+
+    return obj;
   }
 }

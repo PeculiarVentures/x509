@@ -2,15 +2,17 @@ import { AsnConvert } from "@peculiar/asn1-schema";
 import * as asn1X509 from "@peculiar/asn1-x509";
 import { BufferSourceConverter, Convert } from "pvtsutils";
 import { Extension } from "../extension";
+import { GeneralNames } from "../general_name";
 import { CryptoProvider, cryptoProvider } from "../provider";
 import { PublicKey } from "../public_key";
+import { TextObject } from "../text_converter";
 import { X509Certificate } from "../x509_cert";
 
 export interface CertificateIdentifier {
   /**
    * Name
    */
-  name: asn1X509.GeneralName[];
+  name: asn1X509.GeneralName[] | asn1X509.GeneralNames | GeneralNames;
   /**
    * Hexadecimal string
    */
@@ -21,6 +23,8 @@ export interface CertificateIdentifier {
  * Represents the Authority Key Identifier certificate extension
  */
 export class AuthorityKeyIdentifierExtension extends Extension {
+
+  public static override NAME = "Authority Key Identifier";
 
   /**
    * Creates authority key identifier extension from certificate
@@ -91,8 +95,11 @@ export class AuthorityKeyIdentifierExtension extends Extension {
       super(asn1X509.id_ce_authorityKeyIdentifier, args[1], AsnConvert.serialize(value));
     } else {
       const certId = args[0] as CertificateIdentifier;
+      const certIdName = certId.name instanceof GeneralNames
+        ? AsnConvert.parse(certId.name.rawData, asn1X509.GeneralNames)
+        : certId.name;
       const value = new asn1X509.AuthorityKeyIdentifier({
-        authorityCertIssuer: certId.name,
+        authorityCertIssuer: certIdName,
         authorityCertSerialNumber: Convert.FromHex(certId.serialNumber),
       });
       super(asn1X509.id_ce_authorityKeyIdentifier, args[1], AsnConvert.serialize(value));
@@ -114,6 +121,24 @@ export class AuthorityKeyIdentifierExtension extends Extension {
         serialNumber: Convert.ToHex(aki.authorityCertSerialNumber),
       };
     }
+  }
+
+  public override toTextObject(): TextObject {
+    const obj = this.toTextObjectWithoutValue();
+
+    const asn = AsnConvert.parse(this.value, asn1X509.AuthorityKeyIdentifier);
+
+    if (asn.authorityCertIssuer) {
+      obj["Authority Issuer"] = new GeneralNames(asn.authorityCertIssuer).toTextObject();
+    }
+    if (asn.authorityCertSerialNumber) {
+      obj["Authority Serial Number"] = asn.authorityCertSerialNumber;
+    }
+    if (asn.keyIdentifier) {
+      obj[""] = asn.keyIdentifier;
+    }
+
+    return obj;
   }
 
 }

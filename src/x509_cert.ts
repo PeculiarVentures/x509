@@ -1,5 +1,5 @@
 import { AsnConvert } from "@peculiar/asn1-schema";
-import { Certificate } from "@peculiar/asn1-x509";
+import { Certificate, Version } from "@peculiar/asn1-x509";
 import { BufferSourceConverter, Convert } from "pvtsutils";
 import { container } from "tsyringe";
 import { HashedAlgorithm } from "./types";
@@ -12,6 +12,7 @@ import { AlgorithmProvider, diAlgorithmProvider } from "./algorithm";
 import { AsnEncodedType, PemData } from "./pem_data";
 import { diAsnSignatureFormatter, IAsnSignatureFormatter } from "./asn_signature_formatter";
 import { PemConverter } from "./pem_converter";
+import { TextConverter, TextObject } from "./text_converter";
 
 /**
  * Verification params of X509 certificate
@@ -26,6 +27,8 @@ export interface X509CertificateVerifyParams {
  * Representation of X509 certificate
  */
 export class X509Certificate extends PemData<Certificate> implements IPublicKeyContainer {
+
+  public static override NAME = "Certificate";
 
   protected readonly tag;
 
@@ -288,7 +291,50 @@ export class X509Certificate extends PemData<Certificate> implements IPublicKeyC
     return await crypto.subtle.digest(algorithm, this.rawData);
   }
 
-  public async isSelfSigned(crypto = cryptoProvider.get()) {
+  public async isSelfSigned(crypto = cryptoProvider.get()): Promise<boolean> {
     return this.subject === this.issuer && await this.verify({ signatureOnly: true }, crypto);
   }
+
+  public override toTextObject(): TextObject {
+    const obj = this.toTextObjectEmpty();
+
+    const cert = AsnConvert.parse(this.rawData, Certificate);
+
+    const tbs = cert.tbsCertificate;
+    const data = new TextObject("", {
+      "Version": `${Version[tbs.version]} (${tbs.version})`,
+      "Serial Number": tbs.serialNumber,
+      "Signature Algorithm": TextConverter.serializeAlgorithm(tbs.signature),
+      "Issuer": this.issuer,
+      "Validity": new TextObject("", {
+        "Not Before": tbs.validity.notBefore.getTime(),
+        "Not After": tbs.validity.notAfter.getTime(),
+      }),
+      "Subject": this.subject,
+      "Subject Public Key Info": this.publicKey,
+    });
+    if (tbs.issuerUniqueID) {
+      data["Issuer Unique ID"] = tbs.issuerUniqueID;
+    }
+    if (tbs.subjectUniqueID) {
+      data["Subject Unique ID"] = tbs.subjectUniqueID;
+    }
+    if (this.extensions.length) {
+      const extensions = new TextObject("");
+      for (const ext of this.extensions) {
+        const extObj = ext.toTextObject();
+        extensions[extObj[TextObject.NAME]] = extObj;
+      }
+      data["Extensions"] = extensions;
+    }
+    obj["Data"] = data;
+
+    obj["Signature"] = new TextObject("", {
+      "Algorithm": TextConverter.serializeAlgorithm(cert.signatureAlgorithm),
+      "": cert.signatureValue,
+    });
+
+    return obj;
+  }
+
 }

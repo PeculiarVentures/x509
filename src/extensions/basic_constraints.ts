@@ -2,11 +2,14 @@ import { AsnConvert } from "@peculiar/asn1-schema";
 import { BasicConstraints as AsnBasicConstraints, id_ce_basicConstraints } from "@peculiar/asn1-x509";
 import { BufferSourceConverter } from "pvtsutils";
 import { Extension } from "../extension";
+import { TextObject } from "../text_converter";
 
 /**
  * Represents the Basic Constraints certificate extension
  */
 export class BasicConstraintsExtension extends Extension {
+
+  public static override NAME = "Basic Constraints";
 
   /**
    * Indicates whether the certified public key may be used
@@ -50,4 +53,18 @@ export class BasicConstraintsExtension extends Extension {
       this.pathLength = args[1];
     }
   }
+
+  public override toTextObject(): TextObject {
+    const obj = this.toTextObjectWithoutValue();
+
+    if (this.ca) {
+      obj["CA"] = this.ca;
+    }
+    if (this.pathLength !== undefined) {
+      obj["Path Length"] = this.pathLength;
+    }
+
+    return obj;
+  }
+
 }
