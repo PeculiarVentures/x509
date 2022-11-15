@@ -3,6 +3,12 @@ import { AsnConvert } from "@peculiar/asn1-schema";
 import { BufferSourceConverter, Convert } from "pvtsutils";
 import { cryptoProvider } from "./provider";
 
+const OID_REGEX = /^[0-2](?:\.[1-9][0-9]*)+$/;
+
+function isOID(id: string) {
+  return new RegExp(OID_REGEX).test(id);
+}
+
 
 export interface IdOrName {
   [idOrName: string]: string;
@@ -11,8 +17,22 @@ export class NameIdentifier {
 
   private items: IdOrName = {};
 
-  public get(idOrName: string) {
+  public constructor(names: Record<string, string> = {}) {
+    for (const id in names) {
+      this.register(id, names[id]);
+    }
+  }
+
+  public get(idOrName: string): string | null {
     return this.items[idOrName] || null;
+  }
+
+  public findId(idOrName: string): string | null {
+    if (!isOID(idOrName)) {
+      return this.get(idOrName);
+    }
+
+    return idOrName;
   }
 
   public register(id: string, name: string) {
@@ -135,6 +155,26 @@ export class Name {
     } else {
       this.asn = this.fromJSON(data);
     }
+  }
+
+  /**
+   * Returns a list of string values filtered by specified id or name
+   * @param idOrName ObjectIdentifier or string name
+   * @returns Returns a list of strings. Returns an empty list if there are not any values for specified id/name.
+   */
+  public getField(idOrName: string): string[] {
+    const id = this.extraNames.findId(idOrName) || names.findId(idOrName);
+    const res: string[] = [];
+
+    for (const name of this.asn) {
+      for (const rdn of name) {
+        if (rdn.type === id) {
+          res.push(rdn.value.toString());
+        }
+      }
+    }
+
+    return res;
   }
 
   private getName(idOrName: string) {
