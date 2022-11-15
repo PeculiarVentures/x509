@@ -157,6 +157,11 @@ export class Name {
     }
   }
 
+  /**
+   * Returns a list of string values filtered by specified id or name
+   * @param idOrName ObjectIdentifier or string name
+   * @returns Returns a list of strings. Returns an empty list if there are not any values for specified id/name.
+   */
   public getField(idOrName: string): string[] {
     const id = this.extraNames.findId(idOrName) || names.findId(idOrName);
     const res: string[] = [];
