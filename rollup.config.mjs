@@ -101,7 +101,10 @@ const types = {
   plugins: [
     dts({
       // eslint-disable-next-line no-undef
-      tsconfig: path.resolve(__dirname, "./tsconfig.json")
+      tsconfig: path.resolve(__dirname, "./tsconfig.json"),
+      compilerOptions: {
+        removeComments: false,
+      }
     })
   ],
   output: [
