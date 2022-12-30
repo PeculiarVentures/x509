@@ -216,15 +216,15 @@ export class X509Certificate extends PemData<Certificate> implements IPublicKeyC
       } else if ("publicKey" in paramsKey) {
         // IPublicKeyContainer
         keyAlgorithm = { ...paramsKey.publicKey.algorithm, ...this.signatureAlgorithm };
-        publicKey = await paramsKey.publicKey.export(keyAlgorithm, ["verify"]);
+        publicKey = await paramsKey.publicKey.export(keyAlgorithm, ["verify"], crypto);
       } else if (paramsKey instanceof PublicKey) {
         // PublicKey
         keyAlgorithm = { ...paramsKey.algorithm, ...this.signatureAlgorithm };
-        publicKey = await paramsKey.export(keyAlgorithm, ["verify"]);
+        publicKey = await paramsKey.export(keyAlgorithm, ["verify"], crypto);
       } else if (BufferSourceConverter.isBufferSource(paramsKey)) {
         const key = new PublicKey(paramsKey);
         keyAlgorithm = { ...key.algorithm, ...this.signatureAlgorithm };
-        publicKey = await key.export(keyAlgorithm, ["verify"]);
+        publicKey = await key.export(keyAlgorithm, ["verify"], crypto);
       } else {
         // CryptoKey
         keyAlgorithm = { ...paramsKey.algorithm, ...this.signatureAlgorithm };
