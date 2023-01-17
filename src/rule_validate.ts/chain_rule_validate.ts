@@ -37,30 +37,26 @@ class Rules {
 
   public verifiedCertificates: ChainValidatorItem[] = [];
 
-  public recordingCertificateVerificationResults(params: ChainRuleValidateParams, result: ChainRuleValidateResult) {
-    for (const chainCert of params.chain) {
-      if (chainCert.notAfter.getTime() < params.checkDate.getTime()) {
-        const desiredCertificate = this.verifiedCertificates.find(async (certInfo) => {
-          const thumbprint = await certInfo.certificate.getThumbprint(crypto);
-          const thumbprint2 = await chainCert.getThumbprint(crypto);
-          isEqual(thumbprint, thumbprint2);
-        });
-        if (!!desiredCertificate) {
-          desiredCertificate.results.push(result);
-        } else {
-          this.verifiedCertificates.push({ certificate: chainCert, results: [result], status: true });
-        }
-      };
+  public recordingCertificateVerificationResults(chainCert: X509Certificate, result: ChainRuleValidateResult) {
+    const desiredCertificate = this.verifiedCertificates.find(async (certInfo) => {
+      const thumbprint = await certInfo.certificate.getThumbprint(crypto);
+      const thumbprint2 = await chainCert.getThumbprint(crypto);
+      isEqual(thumbprint, thumbprint2);
+    });
+    if (!!desiredCertificate) {
+      desiredCertificate.results.push(result);
+    } else {
+      this.verifiedCertificates.push({ certificate: chainCert, results: [result], status: true });
     }
   }
 
   public async expiredValidate(params: ChainRuleValidateParams): Promise<ChainValidatorItem[]> {
     for (const chainCert of params.chain) {
       if (chainCert.notAfter.getTime() < params.checkDate.getTime()) {
-        this.recordingCertificateVerificationResults(params, { status: false, details: "The certificate is expired" });
+        this.recordingCertificateVerificationResults(chainCert, { status: false, details: "The certificate is expired" });
       }
       if (chainCert.notBefore.getTime() > params.checkDate.getTime()) {
-        this.recordingCertificateVerificationResults(params, { status: false, details: "The certificate is not valid" });
+        this.recordingCertificateVerificationResults(chainCert, { status: false, details: "The certificate is not valid" });
       }
     }
 
@@ -71,9 +67,9 @@ class Rules {
     for (const chainCert of params.chain) {
       const trustedChain = await (params.chain as unknown as DefaultCertificateStorageHandler).isTrusted(chainCert);
       if (!trustedChain.result) {
-        this.recordingCertificateVerificationResults(params, { status: false, details: "Parent certificates are not included in trusted list" });
+        this.recordingCertificateVerificationResults(chainCert, { status: false, details: "Parent certificates are not included in trusted list" });
       } else {
-        this.recordingCertificateVerificationResults(params, { status: true, details: "Parent certificates are included in trusted list" });
+        this.recordingCertificateVerificationResults(chainCert, { status: true, details: "Parent certificates are included in trusted list" });
       }
     }
 
