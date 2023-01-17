@@ -40,18 +40,18 @@ class Rules {
   public recordingCertificateVerificationResults(params: ChainRuleValidateParams, result: ChainRuleValidateResult) {
     for (const chainCert of params.chain) {
       if (chainCert.notAfter.getTime() < params.checkDate.getTime()) {
-        this.verifiedCertificates.forEach(async (certInfo) => {
+        const desiredCertificate = this.verifiedCertificates.find(async (certInfo) => {
           const thumbprint = await certInfo.certificate.getThumbprint(crypto);
           const thumbprint2 = await chainCert.getThumbprint(crypto);
-          if (isEqual(thumbprint, thumbprint2)) {
-            certInfo.results.push(result);
-          } else {
-            this.verifiedCertificates.push({ certificate: chainCert, results: [result], status: true });
-          }
+          isEqual(thumbprint, thumbprint2);
         });
-      }
+        if (!!desiredCertificate) {
+          desiredCertificate.results.push(result);
+        } else {
+          this.verifiedCertificates.push({ certificate: chainCert, results: [result], status: true });
+        }
+      };
     }
-
   }
 
   public async expiredValidate(params: ChainRuleValidateParams): Promise<ChainValidatorItem[]> {
