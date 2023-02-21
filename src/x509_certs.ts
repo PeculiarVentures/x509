@@ -4,12 +4,15 @@ import { Certificate } from "@peculiar/asn1-x509";
 import { Convert } from "pvtsutils";
 import { PemConverter } from "./pem_converter";
 import { AsnEncodedType, AsnExportType, PemData } from "./pem_data";
+import { OidSerializer, TextConverter, TextObject, TextObjectConvertible } from "./text_converter";
 import { X509Certificate } from "./x509_cert";
+
+export type X509CertificatesExportType = AsnExportType | "pem-chain";
 
 /**
  * X509 Certificate collection
  */
-export class X509Certificates extends Array<X509Certificate> {
+export class X509Certificates extends Array<X509Certificate> implements TextObjectConvertible {
 
   /**
    * Creates a new instance
@@ -113,20 +116,43 @@ export class X509Certificates extends Array<X509Certificate> {
     }
   }
 
-  public toString(format: AsnExportType = "pem") {
+  public toString(format: X509CertificatesExportType = "pem") {
     const raw = this.export("raw");
     switch (format) {
       case "pem":
         return PemConverter.encode(raw, "CMS");
+      case "pem-chain":
+        return this
+          .map(o => o.toString("pem"))
+          .join("\n");
+      case "asn":
+        return AsnConvert.toString(raw);
       case "hex":
         return Convert.ToHex(raw);
       case "base64":
         return Convert.ToBase64(raw);
       case "base64url":
         return Convert.ToBase64Url(raw);
+      case "text":
+        return TextConverter.serialize(this.toTextObject());
       default:
         throw TypeError("Argument 'format' is unsupported value");
     }
+  }
+
+  public toTextObject(): TextObject {
+    const contentInfo = AsnConvert.parse(this.export("raw"), asn1Cms.ContentInfo);
+    const signedData = AsnConvert.parse(contentInfo.content, asn1Cms.SignedData);
+
+    const obj = new TextObject("X509Certificates", {
+      "Content Type": OidSerializer.toString(contentInfo.contentType),
+      "Content": new TextObject("", {
+        "Version": `${asn1Cms.CMSVersion[signedData.version]} (${signedData.version})`,
+        "Certificates": new TextObject("", { "Certificate": this.map(o => o.toTextObject()) }),
+      }),
+    });
+
+    return obj;
   }
 
 }

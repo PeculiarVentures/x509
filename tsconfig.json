@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "incremental": true,
     "target": "ES2019",
     "module": "CommonJS",
     "moduleResolution": "node",
@@ -10,8 +9,5 @@
     "importHelpers": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
-  },
-  "exclude": [
-    "test"
-  ]
+  }
 }

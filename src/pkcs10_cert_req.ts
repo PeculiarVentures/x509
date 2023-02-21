@@ -12,11 +12,16 @@ import { AlgorithmProvider, diAlgorithmProvider } from "./algorithm";
 import { AttributeFactory, ExtensionsAttribute } from "./attributes";
 import { AsnEncodedType, PemData } from "./pem_data";
 import { diAsnSignatureFormatter, IAsnSignatureFormatter } from "./asn_signature_formatter";
+import { PemConverter } from "./pem_converter";
+import { TextConverter, TextObject } from "./text_converter";
+import { Version } from "@peculiar/asn1-x509";
 
 /**
  * Representation of PKCS10 Certificate Request
  */
 export class Pkcs10CertificateRequest extends PemData<CertificationRequest> implements IPublicKeyContainer {
+
+  public static override NAME = "PKCS#10 Certificate Request";
 
   protected readonly tag: string;
 
@@ -76,7 +81,7 @@ export class Pkcs10CertificateRequest extends PemData<CertificationRequest> impl
     } else {
       super(param);
     }
-    this.tag = "CERTIFICATE REQUEST";
+    this.tag = PemConverter.CertificateRequestTag;
   }
 
   protected onInit(asn: CertificationRequest): void {
@@ -91,7 +96,7 @@ export class Pkcs10CertificateRequest extends PemData<CertificationRequest> impl
     const extensions = this.getAttribute(id_pkcs9_at_extensionRequest);
     this.extensions = [];
     if (extensions instanceof ExtensionsAttribute) {
-        this.extensions = extensions.items;
+      this.extensions = extensions.items;
     }
     this.subjectName = new Name(asn.certificationRequestInfo.subject);
     this.subject = this.subjectName.toString();
@@ -167,6 +172,35 @@ export class Pkcs10CertificateRequest extends PemData<CertificationRequest> impl
     const ok = await crypto.subtle.verify(this.signatureAlgorithm, publicKey, signature, this.tbs);
 
     return ok;
+  }
+
+  public override toTextObject(): TextObject {
+    const obj = this.toTextObjectEmpty();
+
+    const req = AsnConvert.parse(this.rawData, CertificationRequest);
+
+    const tbs = req.certificationRequestInfo;
+    const data = new TextObject("", {
+      "Version": `${Version[tbs.version]} (${tbs.version})`,
+      "Subject": this.subject,
+      "Subject Public Key Info": this.publicKey,
+    });
+    if (this.attributes.length) {
+      const attrs = new TextObject("");
+      for (const ext of this.attributes) {
+        const attrObj = ext.toTextObject();
+        attrs[attrObj[TextObject.NAME]] = attrObj;
+      }
+      data["Attributes"] = attrs;
+    }
+    obj["Data"] = data;
+
+    obj["Signature"] = new TextObject("", {
+      "Algorithm": TextConverter.serializeAlgorithm(req.signatureAlgorithm),
+      "": req.signature,
+    });
+
+    return obj;
   }
 
 }

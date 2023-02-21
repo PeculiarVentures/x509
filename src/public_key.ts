@@ -1,11 +1,14 @@
+import { id_ecPublicKey } from "@peculiar/asn1-ecc";
 import { id_rsaEncryption, RSAPublicKey } from "@peculiar/asn1-rsa";
 import { AsnConvert } from "@peculiar/asn1-schema";
 import { SubjectPublicKeyInfo } from "@peculiar/asn1-x509";
 import { BufferSource, BufferSourceConverter } from "pvtsutils";
 import { container } from "tsyringe";
 import { AlgorithmProvider, diAlgorithmProvider } from "./algorithm";
+import { PemConverter } from "./pem_converter";
 import { AsnEncodedType, PemData } from "./pem_data";
 import { cryptoProvider } from "./provider";
+import { TextConverter, TextObject } from "./text_converter";
 
 export interface IPublicKeyContainer {
   publicKey: PublicKey;
@@ -42,7 +45,7 @@ export class PublicKey extends PemData<SubjectPublicKeyInfo>{
       super(param);
     }
 
-    this.tag = "PUBLIC KEY";
+    this.tag = PemConverter.PublicKeyTag;
   }
 
   /**
@@ -133,6 +136,25 @@ export class PublicKey extends PemData<SubjectPublicKeyInfo>{
     const asn = AsnConvert.parse(this.rawData, SubjectPublicKeyInfo);
 
     return await crypto.subtle.digest("SHA-1", asn.subjectPublicKey);
+  }
+
+  public override toTextObject(): TextObject {
+    const obj = this.toTextObjectEmpty();
+
+    const asn = AsnConvert.parse(this.rawData, SubjectPublicKeyInfo);
+
+    obj["Algorithm"] = TextConverter.serializeAlgorithm(asn.algorithm);
+
+    switch (asn.algorithm.algorithm) {
+      case id_ecPublicKey:
+        obj["EC Point"] = asn.subjectPublicKey;
+        break;
+      case id_rsaEncryption:
+      default:
+        obj["Raw Data"] = asn.subjectPublicKey;
+    }
+
+    return obj;
   }
 
 }

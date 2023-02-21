@@ -1,8 +1,8 @@
 import { BufferSourceConverter, Convert } from "pvtsutils";
-import { AsnData } from "./asn_data";
+import { AsnData, AsnDataStringFormat } from "./asn_data";
 import { PemConverter } from "./pem_converter";
 
-export type AsnExportType = "hex" | "base64" | "base64url" | "pem";
+export type AsnExportType = "pem" | AsnDataStringFormat;
 
 export type AsnEncodedType = BufferSource | string;
 
@@ -75,21 +75,15 @@ export abstract class PemData<T> extends AsnData<T> {
   public toString(): string;
   /**
    * Returns encoded object in selected format
-   * @param format hex, base64, base64url, pem
+   * @param format hex, base64, base64url, pem, asn, text
    */
-  public toString(format: "hex" | "base64" | "base64url" | "pem"): string;
-  public toString(format: AsnExportType = "pem") {
+  public toString(format: AsnExportType): string;
+  public override toString(format: AsnExportType = "pem") {
     switch (format) {
       case "pem":
         return PemConverter.encode(this.rawData, this.tag);
-      case "hex":
-        return Convert.ToHex(this.rawData);
-      case "base64":
-        return Convert.ToBase64(this.rawData);
-      case "base64url":
-        return Convert.ToBase64Url(this.rawData);
       default:
-        throw TypeError("Argument 'format' is unsupported value");
+        return super.toString(format);
     }
   }
 

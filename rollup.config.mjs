@@ -1,14 +1,18 @@
 import fs from "fs";
+import path from "path";
+import url from "url";
 import resolve from "@rollup/plugin-node-resolve";
 import { getBabelOutputPlugin } from "@rollup/plugin-babel";
 import commonjs from "@rollup/plugin-commonjs";
+import dts from "rollup-plugin-dts";
 import typescript from "rollup-plugin-typescript2";
 import { terser } from "rollup-plugin-terser";
+import pkg from "./package.json" assert { type: "json" };
 
-const license = fs.readFileSync("LICENSE", {encoding: "utf-8"});
+const __filename = url.fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires, no-undef
-const pkg = require("./package.json");
+const license = fs.readFileSync("LICENSE", { encoding: "utf-8" });
 
 const banner = [
   "/*!",
@@ -91,7 +95,28 @@ const browser = [
   },
 ];
 
+const types = {
+  input,
+  external: [...external],
+  plugins: [
+    dts({
+      // eslint-disable-next-line no-undef
+      tsconfig: path.resolve(__dirname, "./tsconfig.json"),
+      compilerOptions: {
+        removeComments: false,
+      }
+    })
+  ],
+  output: [
+    {
+      banner,
+      file: pkg.types,
+    }
+  ]
+};
+
 export default [
   main,
   ...browser,
+  types,
 ];

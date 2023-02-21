@@ -1,14 +1,17 @@
 import { AsnConvert } from "@peculiar/asn1-schema";
-import { id_ce_subjectKeyIdentifier, SubjectKeyIdentifier } from "@peculiar/asn1-x509";
+import * as asn1X509 from "@peculiar/asn1-x509";
 import { BufferSourceConverter, Convert } from "pvtsutils";
 import { Extension } from "../extension";
 import { cryptoProvider } from "../provider";
 import { PublicKey, PublicKeyType } from "../public_key";
+import { TextObject } from "../text_converter";
 
 /**
  * Represents the Subject Key Identifier certificate extension
  */
 export class SubjectKeyIdentifierExtension extends Extension {
+
+  public static override NAME = "Subject Key Identifier";
 
   /**
    * Creates subject key identifier extension from CryptoKey
@@ -54,16 +57,27 @@ export class SubjectKeyIdentifierExtension extends Extension {
     if (BufferSourceConverter.isBufferSource(args[0])) {
       super(args[0]);
 
-      const value = AsnConvert.parse(this.value, SubjectKeyIdentifier);
+      const value = AsnConvert.parse(this.value, asn1X509.SubjectKeyIdentifier);
       this.keyId = Convert.ToHex(value);
     } else {
       const identifier = typeof args[0] === "string"
         ? Convert.FromHex(args[0])
         : args[0];
-      const value = new SubjectKeyIdentifier(identifier);
-      super(id_ce_subjectKeyIdentifier, args[1], AsnConvert.serialize(value));
+      const value = new asn1X509.SubjectKeyIdentifier(identifier);
+      super(asn1X509.id_ce_subjectKeyIdentifier, args[1], AsnConvert.serialize(value));
 
       this.keyId = Convert.ToHex(identifier);
     }
   }
+
+  public override toTextObject(): TextObject {
+    const obj = this.toTextObjectWithoutValue();
+
+    const asn = AsnConvert.parse(this.value, asn1X509.SubjectKeyIdentifier);
+
+    obj[""] = asn;
+
+    return obj;
+  }
+
 }

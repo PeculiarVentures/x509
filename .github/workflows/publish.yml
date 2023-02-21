@@ -7,17 +7,17 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v1
-      with:
-        node-version: '14.x'
-    - name: Install dependencies
-      run: yarn
-    - name: Build
-      run: npm run build
-    - name: Publish to NPM
-      run: |
-            npm set //registry.npmjs.org/:_authToken=$NODE_AUTH_TOKEN
-            npm publish --access public
-      env:
-        NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: "18.x"
+      - name: Install dependencies
+        run: yarn
+      - name: Build
+        run: npm run build
+      - name: Publish to NPM
+        run: |
+          npm set //registry.npmjs.org/:_authToken=$NODE_AUTH_TOKEN
+          npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}

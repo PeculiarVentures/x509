@@ -2,11 +2,14 @@ import { AsnConvert } from "@peculiar/asn1-schema";
 import { Attribute as AsnAttribute } from "@peculiar/asn1-x509";
 import { BufferSourceConverter } from "pvtsutils";
 import { AsnData } from "./asn_data";
+import { OidSerializer, TextObject } from "./text_converter";
 
 /**
  * Represents the Attribute structure
  */
 export class Attribute extends AsnData<AsnAttribute>{
+
+  public static override NAME = "Attribute";
 
   /**
    * Gets an attribute identifier
@@ -45,5 +48,23 @@ export class Attribute extends AsnData<AsnAttribute>{
   protected onInit(asn: AsnAttribute): void {
     this.type = asn.type;
     this.values = asn.values;
+  }
+
+  public override toTextObject(): TextObject {
+    const obj = this.toTextObjectWithoutValue();
+
+    obj["Value"] = this.values.map(o => new TextObject("", { "": o }));
+
+    return obj;
+  }
+
+  public toTextObjectWithoutValue(): TextObject {
+    const obj = this.toTextObjectEmpty();
+
+    if (obj[TextObject.NAME] === Attribute.NAME) {
+      obj[TextObject.NAME] = OidSerializer.toString(this.type);
+    }
+
+    return obj;
   }
 }
