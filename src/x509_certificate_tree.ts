@@ -1,8 +1,7 @@
-import { ICertificateStorage, ICertificateStorageHandler, IResult } from "./certificate_storage_handler";
+import { ICertificateStorage, ICertificateStorageHandler } from "./certificate_storage_handler";
 import { DefaultCertificateStorageHandler } from "./certificate_storage_handler";
 import { cryptoProvider } from "./provider";
 import { X509Certificate } from "./x509_cert";
-import { X509Certificates } from "./x509_certs";
 import { Convert } from "pvtsutils";
 
 type IX509CertificateNodeState = "valid" | "invalid" | "unknown";
@@ -13,50 +12,79 @@ export interface IX509CertificateNode {
   state: IX509CertificateNodeState;
 }
 
+type CertificateThumbprint = string;
+
+type X509ChainNodeStorage = Record<CertificateThumbprint, IX509CertificateNode>;
+
 export class X509CertificateTree implements ICertificateStorage {
   public certificateStorage: ICertificateStorageHandler = new DefaultCertificateStorageHandler();
-  public certificatesTree: IX509CertificateNode | null = null;
+  public chainNodeStorage: X509ChainNodeStorage = {};
 
-  //deep walk through the object tree
-  public treeBranchFilling(certificatesTree: IX509CertificateNode, lastCert: X509Certificate, parentCert: X509Certificate): IX509CertificateNode {
+  /**
+   * Returns the node of the certificate
+   */
+  public createNode(cert: X509Certificate): IX509CertificateNode {
+    return { certificate: cert, nodes: [], state: "unknown" };
+  }
+
+  /**
+   * Returns a filled node
+   * @param certificatesTree Certificates tree
+   * @param lastCert Issued certificate
+   * @param parentCert Issuer certificates
+   * @param crypto Crypto provider. Default is from CryptoProvider
+   * @returns certificates tree
+   */
+  public async fillNode(certificatesTree: IX509CertificateNode, lastCert: X509Certificate, parentCert: X509Certificate, crypto = cryptoProvider.get()) {
+    const thumbprint2 = Convert.ToHex(await parentCert.getThumbprint(crypto));
     if (certificatesTree.certificate.equal(lastCert)) {
-      if (certificatesTree.nodes.length) {
-        if (!certificatesTree.nodes.some(item => { item.certificate.equal(parentCert); })) {
-          certificatesTree.nodes.push({ certificate: parentCert, nodes: [], state: 'unknown' });
-        }
+      if (this.chainNodeStorage && !(thumbprint2 in this.chainNodeStorage)) {
+        certificatesTree.nodes.push(this.createNode(parentCert));
       } else {
-        certificatesTree.nodes.push({ certificate: parentCert, nodes: [], state: 'unknown' });
+        if (!certificatesTree.nodes.some(item => item.certificate.equal(parentCert))) {
+          certificatesTree.nodes.push(this.createNode(parentCert));
+        }
       }
     } else {
       certificatesTree.nodes.forEach(item => {
-        this.treeBranchFilling(item, lastCert, parentCert);
+        this.fillNode(item, lastCert, parentCert);
       });
     }
+  }
+
+
+  /**
+   * Returns part of the constructed certificate tree
+   * @param cert Issued certificate
+   * @param crypto Crypto provider. Default is from CryptoProvider
+   * @returns certificates tree
+   */
+  async #build(cert: X509Certificate, certificatesTree: IX509CertificateNode, crypto = cryptoProvider.get()): Promise<IX509CertificateNode> {
+    const thumbprint = Convert.ToHex(await cert.getThumbprint(crypto));
+    if (this.chainNodeStorage && !(thumbprint in this.chainNodeStorage) || !this.chainNodeStorage) {
+      this.chainNodeStorage = { [thumbprint]: this.createNode(cert), ...this.chainNodeStorage };
+    }
+
+    if (await cert.isSelfSigned(crypto)) {
+      return certificatesTree;
+    }
+
+    const lastCerts = await this.certificateStorage.findIssuers(cert, crypto);
+
+    if (lastCerts) {
+      for (let i = 0; i < lastCerts.length; i++) {
+        this.fillNode(certificatesTree, cert, lastCerts[i]);
+        if (!this.chainNodeStorage[thumbprint].nodes.some(item => lastCerts && item.certificate.equal(lastCerts[i]))) {
+          this.chainNodeStorage[thumbprint].nodes.push(this.createNode(lastCerts[i]));
+        }
+        await this.#build(lastCerts[i], certificatesTree);
+      }
+    }
+
     return certificatesTree;
   }
 
-  public async buildTree(cert: X509Certificate, crypto = cryptoProvider.get()): Promise<IX509CertificateNode> {
-    let lastCert: X509Certificate | null = cert;
-    let lastCerts: X509Certificates | null;
-    const certificateInfo: IX509CertificateNode = { certificate: lastCert, nodes: [], state: "unknown" };
-
-    if (!this.certificatesTree) {
-      this.certificatesTree = certificateInfo;
-    }
-
-    if (lastCert.subject === lastCert.issuer) {
-      return this.certificatesTree;
-    }
-
-    lastCerts = await this.certificateStorage.findIssuers(lastCert, crypto);
-
-    if (lastCerts) {
-      for (var i = 0; i < lastCerts.length; i++) {
-        this.certificatesTree = this.treeBranchFilling(this.certificatesTree, lastCert, lastCerts[i]);
-
-        await this.buildTree(lastCerts[i], crypto);
-      }
-    }
-    return this.certificatesTree;
+  public async buildTree(cert: X509Certificate): Promise<IX509CertificateNode> {
+    return await this.#build(cert, this.createNode(cert));
   }
 }
