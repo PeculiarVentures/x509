@@ -26,6 +26,9 @@ export * from "./x509_certs";
 export * from "./x509_crl";
 export * from "./x509_crl_entry";
 export * from "./x509_crl_generator";
+export * from "./x509_chain_validator";
+export * from "./certificate_storage_handler";
+export * from "./x509_certificate_tree";
 export * from "./text_converter";
 export * from "./general_name";
 
@@ -36,6 +39,7 @@ import * as extensions from "./extensions";
 import { container } from "tsyringe";
 import { AsnDefaultSignatureFormatter, diAsnSignatureFormatter } from "./asn_signature_formatter";
 import { AsnEcSignatureFormatter } from "./ec_signature_formatter";
+export * as rules from "./rules";
 
 // Register x509 extensions
 extensions.ExtensionFactory.register(asnX509.id_ce_basicConstraints, extensions.BasicConstraintsExtension);
