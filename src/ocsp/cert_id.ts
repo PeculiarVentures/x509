@@ -1,11 +1,13 @@
 import * as ocsp from "@peculiar/asn1-ocsp";
+import * as asn1X509 from "@peculiar/asn1-x509";
 import { AsnData } from "../asn_data";
 import { X509Certificate } from "../x509_cert";
 import { HashedAlgorithm } from "../types";
 import { AsnEncodedType, PemData } from "../pem_data";
-import { AsnConvert } from "@peculiar/asn1-schema";
 import { container } from "tsyringe";
 import { AlgorithmProvider, diAlgorithmProvider } from "../algorithm";
+import { Convert } from "pvtsutils";
+import { OctetString } from "@peculiar/asn1-schema";
 
 export class CertificateID extends AsnData<ocsp.CertID> {
 
@@ -16,12 +18,25 @@ export class CertificateID extends AsnData<ocsp.CertID> {
    * @param serialNumber Hexadecimal string of the serial number
    * @param crypto Crypto provider. Default is from CryptoProvider
    */
-  public static async create(algorithm: AlgorithmIdentifier, issuer: X509Certificate, serialNumber: string, crypto?: Crypto): Promise<CertificateID>;
+  public static async create(algorithm: AlgorithmIdentifier, issuer: X509Certificate, serialNumber: string): Promise<CertificateID> {
+    const algProv = container.resolve<AlgorithmProvider>(diAlgorithmProvider);
+
+    const pkiCertId = new ocsp.CertID({
+      hashAlgorithm: typeof (algorithm) === "string" ?
+        new asn1X509.AlgorithmIdentifier({ algorithm: algorithm, parameters: null })
+        : algProv.toAsnAlgorithm(algorithm),
+      issuerKeyHash: new OctetString(issuer.publicKey.rawData),
+      issuerNameHash: new OctetString(issuer.subjectName.toArrayBuffer()),
+      serialNumber: Convert.FromHex(serialNumber)
+    });
+
+    return new CertificateID(pkiCertId);
+  }
 
   /**
    * Gets a signature algorithm
    */
-  public algorithm!: HashedAlgorithm;
+  public hashAlgorithm!: HashedAlgorithm;
 
   /**
    * The hash of the name of the issuer of the certificate
@@ -40,10 +55,10 @@ export class CertificateID extends AsnData<ocsp.CertID> {
 
   protected onInit(asn: ocsp.CertID): void {
     const algProv = container.resolve<AlgorithmProvider>(diAlgorithmProvider);
-    this.algorithm = algProv.toWebAlgorithm(asn.hashAlgorithm) as HashedAlgorithm;
-    this.issuerNameHash = AsnConvert.serialize(asn.issuerNameHash);
-    this.issuerKeyHash = AsnConvert.serialize(asn.issuerKeyHash);
-    this.serialNumber = AsnConvert.toString(AsnConvert.serialize(asn.serialNumber));
+    this.hashAlgorithm = algProv.toWebAlgorithm(asn.hashAlgorithm) as HashedAlgorithm;
+    this.issuerNameHash = asn.issuerNameHash.buffer;
+    this.issuerKeyHash = asn.issuerKeyHash.buffer;
+    this.serialNumber = Convert.ToHex(asn.serialNumber);
   }
 
   /**

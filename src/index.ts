@@ -40,6 +40,7 @@ import { container } from "tsyringe";
 import { AsnDefaultSignatureFormatter, diAsnSignatureFormatter } from "./asn_signature_formatter";
 import { AsnEcSignatureFormatter } from "./ec_signature_formatter";
 export * as rules from "./rules";
+export * as ocsp from "./ocsp";
 
 // Register x509 extensions
 extensions.ExtensionFactory.register(asnX509.id_ce_basicConstraints, extensions.BasicConstraintsExtension);

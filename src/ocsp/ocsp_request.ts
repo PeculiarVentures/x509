@@ -27,11 +27,7 @@ export class Request extends AsnData<ocsp.Request> implements IExtensionable {
   public extensions!: Extension[];
 
   protected onInit(asn: ocsp.Request): void {
-    const algProv = container.resolve<AlgorithmProvider>(diAlgorithmProvider);
-    this.certificateID.algorithm = algProv.toWebAlgorithm(asn.reqCert.hashAlgorithm) as HashedAlgorithm;
-    this.certificateID.issuerKeyHash = AsnConvert.serialize(asn.reqCert.issuerKeyHash);
-    this.certificateID.issuerNameHash = AsnConvert.serialize(asn.reqCert.issuerNameHash);
-    this.certificateID.serialNumber = AsnConvert.toString(AsnConvert.serialize(asn.reqCert.serialNumber));
+    this.certificateID = new CertificateID(asn.reqCert);
     this.extensions = [];
     if (asn.singleRequestExtensions) {
       this.extensions = asn.singleRequestExtensions.map(o => ExtensionFactory.create(AsnConvert.serialize(o)));
