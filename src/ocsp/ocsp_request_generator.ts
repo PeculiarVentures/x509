@@ -1,14 +1,14 @@
 import * as ocsp from "@peculiar/asn1-ocsp";
 import * as asn1X509 from "@peculiar/asn1-x509";
+import { AsnConvert, OctetString } from "@peculiar/asn1-schema";
+import { container } from "tsyringe";
 import { Extension } from "../extension";
 import { GeneralName } from "../general_name";
 import { X509Certificate } from "../x509_cert";
 import { OCSPRequest } from "./ocsp_request";
-import { container } from "tsyringe";
 import { AlgorithmProvider, diAlgorithmProvider } from "../algorithm";
 import { cryptoProvider } from "../provider";
 import { IAsnSignatureFormatter, diAsnSignatureFormatter } from "../asn_signature_formatter";
-import { AsnConvert, OctetString } from "@peculiar/asn1-schema";
 import { CertificateID } from "./cert_id";
 import { HashedAlgorithm } from "../types";
 
@@ -49,7 +49,7 @@ export class OCSPRequestGenerator {
    * @returns OCSP request
    */
   public static async create(params: OCSPRequestCreateParams, crypto = cryptoProvider.get()): Promise<OCSPRequest> {
-    const certID = await CertificateID.create(params.certificate.publicKey.algorithm, params.issuer, params.certificate.serialNumber);
+    const certID = await CertificateID.create(params.certificate.signatureAlgorithm.hash, params.issuer, params.certificate.serialNumber);
     const nonce = crypto.getRandomValues(new Uint8Array(20));
 
     const asnOcspReq = new ocsp.OCSPRequest({
@@ -101,6 +101,6 @@ export class OCSPRequestGenerator {
       }
     }
 
-    return new OCSPRequest(AsnConvert.serialize(asnOcspReq));
+    return new OCSPRequest(asnOcspReq);
   }
 }

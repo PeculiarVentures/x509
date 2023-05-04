@@ -1,13 +1,14 @@
 import * as ocsp from "@peculiar/asn1-ocsp";
 import * as asn1X509 from "@peculiar/asn1-x509";
+import { OctetString } from "@peculiar/asn1-schema";
+import { container } from "tsyringe";
+import { Convert } from "pvtsutils";
 import { AsnData } from "../asn_data";
 import { X509Certificate } from "../x509_cert";
 import { HashedAlgorithm } from "../types";
 import { AsnEncodedType, PemData } from "../pem_data";
-import { container } from "tsyringe";
 import { AlgorithmProvider, diAlgorithmProvider } from "../algorithm";
-import { Convert } from "pvtsutils";
-import { OctetString } from "@peculiar/asn1-schema";
+import { cryptoProvider } from "../provider";
 
 export class CertificateID extends AsnData<ocsp.CertID> {
 
@@ -18,15 +19,15 @@ export class CertificateID extends AsnData<ocsp.CertID> {
    * @param serialNumber Hexadecimal string of the serial number
    * @param crypto Crypto provider. Default is from CryptoProvider
    */
-  public static async create(algorithm: AlgorithmIdentifier, issuer: X509Certificate, serialNumber: string): Promise<CertificateID> {
+  public static async create(algorithm: AlgorithmIdentifier, issuer: X509Certificate, serialNumber: string, crypto = cryptoProvider.get()): Promise<CertificateID> {
     const algProv = container.resolve<AlgorithmProvider>(diAlgorithmProvider);
 
     const pkiCertId = new ocsp.CertID({
       hashAlgorithm: typeof (algorithm) === "string" ?
         new asn1X509.AlgorithmIdentifier({ algorithm: algorithm, parameters: null })
         : algProv.toAsnAlgorithm(algorithm),
-      issuerKeyHash: new OctetString(issuer.publicKey.rawData),
-      issuerNameHash: new OctetString(issuer.subjectName.toArrayBuffer()),
+      issuerKeyHash: new OctetString(await issuer.publicKey.getThumbprint(algorithm, crypto)),
+      issuerNameHash: new OctetString(await issuer.subjectName.getThumbprint(algorithm, crypto)),
       serialNumber: Convert.FromHex(serialNumber)
     });
 
