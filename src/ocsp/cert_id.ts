@@ -22,7 +22,7 @@ export class CertificateID extends AsnData<ocsp.CertID> {
   public static async create(algorithm: AlgorithmIdentifier, issuer: X509Certificate, serialNumber: string, crypto = cryptoProvider.get()): Promise<CertificateID> {
     const algProv = container.resolve<AlgorithmProvider>(diAlgorithmProvider);
 
-    const pkiCertId = new ocsp.CertID({
+    const certId = new ocsp.CertID({
       hashAlgorithm: typeof (algorithm) === "string" ?
         new asn1X509.AlgorithmIdentifier({ algorithm: algorithm, parameters: null })
         : algProv.toAsnAlgorithm(algorithm),
@@ -31,7 +31,7 @@ export class CertificateID extends AsnData<ocsp.CertID> {
       serialNumber: Convert.FromHex(serialNumber)
     });
 
-    return new CertificateID(pkiCertId);
+    return new CertificateID(certId);
   }
 
   /**

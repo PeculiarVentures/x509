@@ -39,6 +39,10 @@ export interface OCSPRequestCreateParams {
    * If not specified, no signature is required
    */
   signingKey?: CryptoKey;
+  /**
+   * The hashing algorithm identifier for CertificateID generation. Default is SHA-256.
+   */
+  hashAlgorithm?: AlgorithmIdentifier;
 }
 
 export class OCSPRequestGenerator {
@@ -49,7 +53,8 @@ export class OCSPRequestGenerator {
    * @returns OCSP request
    */
   public static async create(params: OCSPRequestCreateParams, crypto = cryptoProvider.get()): Promise<OCSPRequest> {
-    const certID = await CertificateID.create(params.certificate.signatureAlgorithm.hash, params.issuer, params.certificate.serialNumber);
+    const algorithm = params.hashAlgorithm ? params.hashAlgorithm : "SHA-256";
+    const certID = await CertificateID.create(algorithm, params.issuer, params.certificate.serialNumber, crypto);
     const nonce = crypto.getRandomValues(new Uint8Array(20));
 
     const asnOcspReq = new ocsp.OCSPRequest({

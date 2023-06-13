@@ -13,6 +13,7 @@ import { IAsnSignatureFormatter, diAsnSignatureFormatter } from "../asn_signatur
 import { PemConverter } from "../pem_converter";
 import { AlgorithmProvider, diAlgorithmProvider } from "../algorithm";
 import { ExtensionFactory } from "../extensions/extension_factory";
+import { cryptoProvider } from "../provider";
 
 /**
  * Class that represents the ID of the certificate for which the status is being requested
@@ -181,7 +182,7 @@ export class OCSPRequest extends PemData<ocsp.OCSPRequest> implements IExtension
    * @remarks
    * If the OCSP request is not signed, then the check always returns `true`.
    */
-  public async verify(signer: PublicKeyType, crypto: Crypto): Promise<boolean> {
+  public async verify(signer: PublicKeyType, crypto = cryptoProvider.get()): Promise<boolean> {
     let keyAlgorithm: Algorithm;
 
     // Convert public key to CryptoKey

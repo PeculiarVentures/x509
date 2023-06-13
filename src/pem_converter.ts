@@ -51,6 +51,7 @@ export class PemConverter {
   public static PublicKeyTag = "PUBLIC KEY";
   public static PrivateKeyTag = "PRIVATE KEY";
   public static OCSPRequestTag = "OCSP REQUEST";
+  public static OCSPResponseTag = "OCSP RESPONSE";
 
   public static isPem(data: any): data is string {
     return typeof data === "string"
