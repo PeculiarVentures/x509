@@ -10,11 +10,20 @@ import { HashedAlgorithm } from "./types";
 @injectable()
 export class RsaAlgorithm implements IAlgorithm {
 
-  public toAsnAlgorithm(alg: HashedAlgorithm): AlgorithmIdentifier | null {
+  public toAsnAlgorithm(alg: Algorithm): AlgorithmIdentifier | null {
     switch (alg.name.toLowerCase()) {
       case "rsassa-pkcs1-v1_5":
-        if (alg.hash) {
-          switch (alg.hash.name.toLowerCase()) {
+        if ("hash" in alg) {
+          let hash: string;
+          if (typeof alg.hash === "string") {
+            hash = alg.hash;
+          } else if (alg.hash && typeof alg.hash === "object"
+            && "name" in alg.hash && typeof alg.hash.name === "string") {
+            hash = alg.hash.name.toUpperCase();
+          } else {
+            throw new Error("Cannot get hash algorithm name");
+          }
+          switch (hash.toLowerCase()) {
             case "sha-1":
               return new AlgorithmIdentifier({ algorithm: asn1Rsa.id_sha1WithRSAEncryption, parameters: null });
             case "sha-256":
