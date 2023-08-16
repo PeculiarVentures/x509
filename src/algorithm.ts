@@ -58,7 +58,7 @@ export class AlgorithmProvider {
       }
     }
 
-    if (/[0-9.]+/.test(alg.name)) {
+    if (/^[0-9.]+$/.test(alg.name)) {
       const res = new AlgorithmIdentifier({
         algorithm: alg.name,
       });
