@@ -6,6 +6,10 @@ import { cryptoProvider } from "./provider";
 import { X509Certificate } from "./x509_cert";
 import { X509Certificates } from "./x509_certs";
 
+export interface X509ChainBuilderParams {
+  certificates?: X509Certificate[];
+}
+
 /**
  * Represents a chain-building engine for X509Certificate certificates
  * @example
@@ -27,7 +31,7 @@ export class X509ChainBuilder {
 
   public certificates: X509Certificate[] = [];
 
-  public constructor(params: Partial<X509ChainBuilder> = {}) {
+  public constructor(params: X509ChainBuilderParams = {}) {
     if (params.certificates) {
       this.certificates = params.certificates;
     }
@@ -76,10 +80,13 @@ export class X509ChainBuilder {
             }
           }
         }
-        if (!await cert.verify({
-          publicKey: await item.publicKey.export(cert.signatureAlgorithm, ["verify"], crypto),
-          signatureOnly: true,
-        }, crypto)) {
+        try {
+          const algorithm = { ...item.publicKey.algorithm, ...cert.signatureAlgorithm };
+          const publicKey = await item.publicKey.export(algorithm, ["verify"], crypto);
+          if (!await cert.verify({ publicKey, signatureOnly: true }, crypto)) {
+            continue;
+          }
+        } catch (e) {
           continue;
         }
 
