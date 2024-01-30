@@ -96,7 +96,7 @@ export class X509CertificateGenerator {
       throw new Error("Bad field 'keys' in 'params' argument. 'privateKey' is empty");
     }
     if (!params.keys.publicKey) {
-      throw new Error("Bad field 'keys' in 'params' argument. 'privateKey' is empty");
+      throw new Error("Bad field 'keys' in 'params' argument. 'publicKey' is empty");
     }
 
     return this.create({
