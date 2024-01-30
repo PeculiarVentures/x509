@@ -39,13 +39,18 @@ jobs:
       - name: Run test with coverage
         run: npm run coverage
 
-      # Fixes problem with incorrect SF paths. See https://github.com/coverallsapp/github-action/issues/125
-      - name: Update lcov.info
-        run: |
-          sed -E "s/SF:(.+file:(.+))/SF:\2/g" ./coverage/lcov.info > coverage/lcov.new.info
-          mv ./coverage/lcov.new.info ./coverage/lcov.info
-
       - name: Coveralls
-        uses: coverallsapp/github-action@master
+        uses: coverallsapp/github-action@v1
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          parallel: true
+          flag-name: run-${{ matrix.node-version }}
+
+  finish:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Close parallel build
+        uses: coverallsapp/github-action@v1
+        with:
+          parallel-finished: true
+          carryforward: "run-20.x"

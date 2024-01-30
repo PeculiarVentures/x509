@@ -167,10 +167,74 @@ function testCertPreSigned(testEntry: any) {
   });
 }
 
-
 describe(path.basename(__filename), () => {
   theTestX509CertificateGeneratorVector.forEach(testEntry => {
     testCertSelfSign(testEntry);
     testCertPreSigned(testEntry);
+  });
+
+  context("create", () => {
+    let keys: CryptoKeyPair;
+
+    before(async () => {
+      keys = await crypto.subtle.generateKey(alg, true, ["sign", "verify"]);
+    });
+
+    it("should handle PublicKey instance", async () => {
+      const spki = await crypto.subtle.exportKey("spki", keys.publicKey);
+      const publicKey = new x509.PublicKey(spki);
+      const cert = await x509.X509CertificateGenerator.create({
+        publicKey,
+        signingKey: keys.privateKey,
+      });
+      assert.ok(cert);
+    });
+
+    it("should handle object with publicKey property", async () => {
+      const certWithPublicKey = await x509.X509CertificateGenerator.create({
+        publicKey: keys.publicKey,
+        signingKey: keys.privateKey,
+      });
+      const cert = await x509.X509CertificateGenerator.create({
+        publicKey: certWithPublicKey,
+        signingKey: keys.privateKey,
+      });
+      assert.ok(cert);
+    });
+
+    it("should handle BufferSource publicKey", async () => {
+      const spki = await crypto.subtle.exportKey("spki", keys.publicKey);
+      const cert = await x509.X509CertificateGenerator.create({
+        publicKey: spki,
+        signingKey: keys.privateKey,
+      });
+      assert.ok(cert);
+    });
+  });
+
+  context("createSelfSigned", () => {
+    it("should throw an error if privateKey is empty", async () => {
+      await assert.rejects(
+        x509.X509CertificateGenerator.createSelfSigned({
+          keys: { privateKey: null, publicKey: {} } as any,
+          // other parameters...
+        }),
+        {
+          message: "Bad field 'keys' in 'params' argument. 'privateKey' is empty"
+        }
+      );
+    });
+
+    it("should throw an error if publicKey is empty", async () => {
+      await assert.rejects(
+        x509.X509CertificateGenerator.createSelfSigned({
+          keys: { privateKey: {}, publicKey: null } as any,
+          // other parameters...
+        }),
+        {
+          message: "Bad field 'keys' in 'params' argument. 'publicKey' is empty"
+        }
+      );
+    });
   });
 });

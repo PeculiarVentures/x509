@@ -18,25 +18,25 @@ export type X509CertificateCreateParamsName = string | JsonName | Name;
  */
 export interface X509CertificateCreateParamsBase {
   /**
-   * Hexadecimal serial number
+   * Hexadecimal serial number. If not specified, random value will be generated
    */
-  serialNumber: string;
+  serialNumber?: string;
   /**
-   * Date before which certificate can't be used
+   * Date before which certificate can't be used. Default is current date
    */
-  notBefore: Date;
+  notBefore?: Date;
   /**
-   * Date after which certificate can't be used
+   * Date after which certificate can't be used. Default is 1 year from now
    */
-  notAfter: Date;
+  notAfter?: Date;
   /**
    * List of extensions
    */
   extensions?: Extension[];
   /**
-   * Signing algorithm
+   * Signing algorithm. Default is SHA-256 with key algorithm
    */
-  signingAlgorithm: Algorithm | EcdsaParams;
+  signingAlgorithm?: Algorithm | EcdsaParams;
 }
 
 /**
@@ -96,7 +96,7 @@ export class X509CertificateGenerator {
       throw new Error("Bad field 'keys' in 'params' argument. 'privateKey' is empty");
     }
     if (!params.keys.publicKey) {
-      throw new Error("Bad field 'keys' in 'params' argument. 'privateKey' is empty");
+      throw new Error("Bad field 'keys' in 'params' argument. 'publicKey' is empty");
     }
 
     return this.create({
@@ -129,13 +129,24 @@ export class X509CertificateGenerator {
       spki = await crypto.subtle.exportKey("spki", params.publicKey);
     }
 
+    // SerialNumber must be positive integer
+    const serialNumber = params.serialNumber
+      ? BufferSourceConverter.toUint8Array(Convert.FromHex(params.serialNumber))
+      : crypto.getRandomValues(new Uint8Array(16));
+    if (serialNumber[0] > 0x7F) {
+      serialNumber[0] &= 0x7F;
+    }
+
+    const notBefore = params.notBefore || new Date();
+    const notAfter = params.notAfter || new Date(notBefore.getTime() + 31536000000); // 1 year
+
     const asnX509 = new asn1X509.Certificate({
       tbsCertificate: new asn1X509.TBSCertificate({
         version: asn1X509.Version.v3,
-        serialNumber: Convert.FromHex(params.serialNumber),
+        serialNumber: serialNumber,
         validity: new asn1X509.Validity({
-          notBefore: params.notBefore,
-          notAfter: params.notAfter,
+          notBefore,
+          notAfter,
         }),
         extensions: new asn1X509.Extensions(params.extensions?.map(o => AsnConvert.parse(o.rawData, asn1X509.Extension)) || []),
         subjectPublicKeyInfo: AsnConvert.parse(spki, asn1X509.SubjectPublicKeyInfo),
@@ -155,8 +166,11 @@ export class X509CertificateGenerator {
     }
 
     // Set signing algorithm
+    const defaultSigningAlgorithm = {
+      hash: "SHA-256",
+    };
     const signatureAlgorithm = ("signingKey" in params)
-      ? { ...params.signingAlgorithm, ...params.signingKey.algorithm } as HashedAlgorithm
+      ? { ...defaultSigningAlgorithm, ...params.signingAlgorithm, ...params.signingKey.algorithm } as HashedAlgorithm
       : params.publicKey.algorithm as HashedAlgorithm;
 
     const algProv = container.resolve<AlgorithmProvider>(diAlgorithmProvider);
