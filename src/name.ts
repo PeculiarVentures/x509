@@ -122,6 +122,17 @@ export class Name {
   }
 
   /**
+   * Checks if a given string is a printable string.
+   * A printable string contains only printable ASCII characters.
+   *
+   * @param text - The string to be checked.
+   * @returns True if the string is a printable string, false otherwise.
+   */
+  public static isPrintableString(text: string): boolean {
+    return /^[A-Za-z0-9 '()+,-./:=?]*$/g.test(text);
+  }
+
+  /**
    * ASN.1 Name
    */
   private asn = new AsnName();
@@ -275,10 +286,11 @@ export class Name {
         if (type === this.getName("E") || type === this.getName("DC")) {
           attr.value.ia5String = value;
         } else {
-          // Use Utf8String for non ASCII strings
-          if (Name.isASCII(value)) {
+          if (Name.isPrintableString(value)) {
+            // PrintableString
             attr.value.printableString = value;
           } else {
+            // UTF8String
             attr.value.utf8String = value;
           }
         }

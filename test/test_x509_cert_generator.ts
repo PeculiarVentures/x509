@@ -167,7 +167,6 @@ function testCertPreSigned(testEntry: any) {
   });
 }
 
-
 describe(path.basename(__filename), () => {
   theTestX509CertificateGeneratorVector.forEach(testEntry => {
     testCertSelfSign(testEntry);
