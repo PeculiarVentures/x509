@@ -33,7 +33,10 @@ const main = {
       tsconfigOverride: {
         compilerOptions: {
           module: "ES2015",
-        }
+        },
+        exclude: [
+          "test",
+        ],
       },
     }),
   ],
@@ -67,7 +70,10 @@ const browser = [
         tsconfigOverride: {
           compilerOptions: {
             module: "es2015",
-          }
+          },
+          exclude: [
+            "test",
+          ],
         }
       }),
     ],
