@@ -1,6 +1,6 @@
 {
   "name": "@peculiar/x509",
-  "version": "1.9.6",
+  "version": "1.9.7",
   "description": "@peculiar/x509 is an easy to use TypeScript/Javascript library based on @peculiar/asn1-schema that makes generating X.509 Certificates and Certificate Requests as well as validating certificate chains easy",
   "main": "build/x509.cjs.js",
   "module": "build/x509.es.js",
