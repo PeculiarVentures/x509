@@ -247,4 +247,16 @@ context("NameIdentifier", () => {
 
   });
 
+  context("isASCII", () => {
+    it("should return true for ASCII text", () => {
+      const result = x509.Name.isASCII("Hello, World!");
+      assert.strictEqual(result, true);
+    });
+
+    it("should return false for non-ASCII text", () => {
+      const result = x509.Name.isASCII("Привет, мир!");
+      assert.strictEqual(result, false);
+    });
+  });
+
 });
