@@ -53,23 +53,25 @@ export class OCSPRequestGenerator {
    * @returns OCSP request
    */
   public static async create(params: OCSPRequestCreateParams, crypto = cryptoProvider.get()): Promise<OCSPRequest> {
-    const algorithm = params.hashAlgorithm ? params.hashAlgorithm : "SHA-256";
+    const algorithm = params.hashAlgorithm ? params.hashAlgorithm : "SHA-1";
     const certID = await CertificateID.create(algorithm, params.issuer, params.certificate.serialNumber, crypto);
     const nonce = crypto.getRandomValues(new Uint8Array(20));
+
+
+    // process request extensions and add nonce
+    const requestExtensions = params.extensions?.map(o => AsnConvert.parse(o.rawData, asn1X509.Extension)) || [];
+    requestExtensions.push(new asn1X509.Extension({
+      extnID: ocsp.id_pkix_ocsp_nonce,
+      extnValue: new OctetString(nonce),
+    }));
 
     const asnOcspReq = new ocsp.OCSPRequest({
       tbsRequest: new ocsp.TBSRequest({
         version: ocsp.Version.v1,
-        requestExtensions: new asn1X509.Extensions(params.extensions?.map(o => AsnConvert.parse(o.rawData, asn1X509.Extension)) || []),
+        requestExtensions: requestExtensions,
         requestList: [
           new ocsp.Request({
             reqCert: AsnConvert.parse(certID.rawData, ocsp.CertID),
-            singleRequestExtensions: [
-              new asn1X509.Extension({
-                extnID: ocsp.id_pkix_ocsp_nonce,
-                extnValue: new OctetString(nonce),
-              })
-            ]
           })
         ],
       })

@@ -22,12 +22,20 @@ export class CertificateID extends AsnData<ocsp.CertID> {
   public static async create(algorithm: AlgorithmIdentifier, issuer: X509Certificate, serialNumber: string, crypto = cryptoProvider.get()): Promise<CertificateID> {
     const algProv = container.resolve<AlgorithmProvider>(diAlgorithmProvider);
 
+    // ONLY SHA-1 is supported
+    // TODO add support for other hashing algorithms
+    // TODO make better parser for algorithm identifier so there is no need to manualy set OID for algorithm
+    if(algorithm != "SHA-1") {
+      throw new Error("The algorithm is not supported");
+    }
+
+    const hashAlgorithm  = new asn1X509.AlgorithmIdentifier({ algorithm: algorithm, parameters: null })
+    hashAlgorithm.algorithm = "1.3.14.3.2.26";
+
     const certId = new ocsp.CertID({
-      hashAlgorithm: typeof (algorithm) === "string" ?
-        new asn1X509.AlgorithmIdentifier({ algorithm: algorithm, parameters: null })
-        : algProv.toAsnAlgorithm(algorithm),
-      issuerKeyHash: new OctetString(await issuer.publicKey.getThumbprint(algorithm, crypto)),
+      hashAlgorithm: hashAlgorithm,
       issuerNameHash: new OctetString(await issuer.subjectName.getThumbprint(algorithm, crypto)),
+      issuerKeyHash: new OctetString(await issuer.publicKey.getKeyIdentifier(crypto)),
       serialNumber: Convert.FromHex(serialNumber)
     });
 

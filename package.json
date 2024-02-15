@@ -95,6 +95,7 @@
     "@peculiar/asn1-cms": "^2.3.4",
     "@peculiar/asn1-csr": "^2.3.4",
     "@peculiar/asn1-ecc": "^2.3.4",
+    "@peculiar/asn1-ocsp": "^2.3.8",
     "@peculiar/asn1-pkcs9": "^2.3.4",
     "@peculiar/asn1-rsa": "^2.3.4",
     "@peculiar/asn1-schema": "^2.3.3",
