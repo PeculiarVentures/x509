@@ -1,6 +1,8 @@
 import * as assert from "assert";
 import * as x509 from "../src";
 import { Convert } from "pvtsutils";
+import { AuthorityInformationAccessExtension } from "../src/extensions"
+import { AccessDescription } from "@peculiar/asn1-x509";
 
 context("OCSP", async () => {
 
@@ -62,11 +64,38 @@ CHvqqpg/8YJPDn8NJIS/Rg+lYraOseXeuNYzkjeY6RLxIDB+nLVDs9QJ3/co89Cd
 -----END CERTIFICATE-----`;
 
 // const ocspURL = "http://ocsp.digicert.com/";
-const ocspURL = "http://oneocsp.microsoft.com/ocsp"
+// const ocspURL = "http://oneocsp.microsoft.com/ocsp"
 
   it("generating an OCSP request", async () => {
     const certificate = new x509.X509Certificate(pemLeaf);
     const issuer = new x509.X509Certificate(pemCA);
+
+    // get URL of OCSP server from the certificate
+    // find extension with type  = "1.3.6.1.5.5.7.1.1"
+    // const authInfoAccess = certificate.extensions.find(obj => obj.type === "1.3.6.1.5.5.7.1.1");
+    const authInfoAccess = certificate.extensions.find(obj => obj.type === "1.3.6.1.5.5.7.1.1") as AuthorityInformationAccessExtension;
+    if(!authInfoAccess) throw new Error("No Authority Information Access extension found");
+    // const test: AuthorityInformationAccessExtension = authInfoAccess as AuthorityInformationAccessExtension;
+    if(!authInfoAccess.data) throw new Error("No data found in Authority Information Access extension");
+
+    for(const accessDescription of authInfoAccess.data){
+      if(typeof(accessDescription) === "string") throw new Error("AccessDescription is not an object");
+      if(accessDescription.accessMethod === "1.3.6.1.5.5.7.48.1"){
+        var ocspURL = accessDescription.accessLocation.uniformResourceIdentifier;
+      }else if(accessDescription.accessMethod === "1.3.6.1.5.5.7.48.2"){
+        var caIssuersURL = accessDescription.accessLocation.uniformResourceIdentifier;
+      }else{
+        throw new Error("Unknown accessMethod in Authority Information Access extension");
+      }
+    }
+
+    if(!ocspURL) throw new Error("No OCSP URL found in Authority Information Access extension");
+
+
+    // const ocspURL = authInfoAccess.data.find(obj => obj.accessMethod === "1.3.6.1.5.5.7.48.1");
+
+    // find accessDescription with accesMethod = "1.3.6.1.5.5.7.48.1"
+
 
     const request = await x509.ocsp.OCSPRequestGenerator.create({
       certificate,
