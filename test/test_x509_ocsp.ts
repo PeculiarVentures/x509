@@ -1,8 +1,7 @@
 import * as assert from "assert";
 import * as x509 from "../src";
-import { Convert } from "pvtsutils";
-import { AuthorityInformationAccessExtension } from "../src/extensions"
-import { AccessDescription } from "@peculiar/asn1-x509";
+import { AuthorityInformationAccessExtension } from "../src/extensions";
+import { OCSPResponse } from "../src/ocsp";
 
 context("OCSP", async () => {
 
@@ -72,30 +71,25 @@ CHvqqpg/8YJPDn8NJIS/Rg+lYraOseXeuNYzkjeY6RLxIDB+nLVDs9QJ3/co89Cd
 
     // get URL of OCSP server from the certificate
     // find extension with type  = "1.3.6.1.5.5.7.1.1"
-    // const authInfoAccess = certificate.extensions.find(obj => obj.type === "1.3.6.1.5.5.7.1.1");
     const authInfoAccess = certificate.extensions.find(obj => obj.type === "1.3.6.1.5.5.7.1.1") as AuthorityInformationAccessExtension;
     if(!authInfoAccess) throw new Error("No Authority Information Access extension found");
     // const test: AuthorityInformationAccessExtension = authInfoAccess as AuthorityInformationAccessExtension;
     if(!authInfoAccess.data) throw new Error("No data found in Authority Information Access extension");
 
+    let ocspURL: string | undefined;
+    let caIssuersURL: string | undefined;
     for(const accessDescription of authInfoAccess.data){
       if(typeof(accessDescription) === "string") throw new Error("AccessDescription is not an object");
-      if(accessDescription.accessMethod === "1.3.6.1.5.5.7.48.1"){
-        var ocspURL = accessDescription.accessLocation.uniformResourceIdentifier;
-      }else if(accessDescription.accessMethod === "1.3.6.1.5.5.7.48.2"){
-        var caIssuersURL = accessDescription.accessLocation.uniformResourceIdentifier;
+      if(accessDescription.method === "1.3.6.1.5.5.7.48.1"){
+        ocspURL = accessDescription.location;
+      }else if(accessDescription.method === "1.3.6.1.5.5.7.48.2"){
+        caIssuersURL = accessDescription.location;
       }else{
         throw new Error("Unknown accessMethod in Authority Information Access extension");
       }
     }
 
     if(!ocspURL) throw new Error("No OCSP URL found in Authority Information Access extension");
-
-
-    // const ocspURL = authInfoAccess.data.find(obj => obj.accessMethod === "1.3.6.1.5.5.7.48.1");
-
-    // find accessDescription with accesMethod = "1.3.6.1.5.5.7.48.1"
-
 
     const request = await x509.ocsp.OCSPRequestGenerator.create({
       certificate,
@@ -107,24 +101,21 @@ CHvqqpg/8YJPDn8NJIS/Rg+lYraOseXeuNYzkjeY6RLxIDB+nLVDs9QJ3/co89Cd
 
     // Send get request to OCSP server with the generated OCSP request
     const response = await fetch(ocspURL, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/ocsp-request',
+        "Content-Type": "application/ocsp-request",
       },
       body: postRequest,
     });
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
+    assert(response.ok, "OCSP request failed")
 
     const data = await response.arrayBuffer();
-    // console.log(Convert.ToString(data, 'hex')); // Logs the ArrayBuffer as a Uint8Array for readability
-    assert.notEqual(data.byteLength, 5, "OCSP response is malformed")
+    // console.log(Convert.ToString(data, "hex")); // Logs the ArrayBuffer as a Uint8Array for readability
 
+    // Parse the OCSP response
+    const ocspResponse = new OCSPResponse(data);
 
+    assert.equal(ocspResponse.status, 0, "OCSP response is malformed")
   });
-
-
-
 });
