@@ -69,25 +69,17 @@ CHvqqpg/8YJPDn8NJIS/Rg+lYraOseXeuNYzkjeY6RLxIDB+nLVDs9QJ3/co89Cd
     const certificate = new x509.X509Certificate(pemLeaf);
     const issuer = new x509.X509Certificate(pemCA);
 
-    // get URL of OCSP server from the certificate
+
     // find extension with type  = "1.3.6.1.5.5.7.1.1"
     const authInfoAccess = certificate.extensions.find(obj => obj.type === "1.3.6.1.5.5.7.1.1") as AuthorityInformationAccessExtension;
     if(!authInfoAccess) throw new Error("No Authority Information Access extension found");
-    // const test: AuthorityInformationAccessExtension = authInfoAccess as AuthorityInformationAccessExtension;
-    if(!authInfoAccess.data) throw new Error("No data found in Authority Information Access extension");
 
-    let ocspURL: string | undefined;
-    let caIssuersURL: string | undefined;
-    for(const accessDescription of authInfoAccess.data){
-      if(typeof(accessDescription) === "string") throw new Error("AccessDescription is not an object");
-      if(accessDescription.method === "1.3.6.1.5.5.7.48.1"){
-        ocspURL = accessDescription.location;
-      }else if(accessDescription.method === "1.3.6.1.5.5.7.48.2"){
-        caIssuersURL = accessDescription.location;
-      }else{
-        throw new Error("Unknown accessMethod in Authority Information Access extension");
-      }
-    }
+
+    // find OCSP URL and CA Issuers URL
+
+    const ocspURL = authInfoAccess.getOcsp()[0];
+    const caIssuers = authInfoAccess.getCaIssuers()[0];
+
 
     if(!ocspURL) throw new Error("No OCSP URL found in Authority Information Access extension");
 

@@ -84,4 +84,38 @@ export class AuthorityInformationAccessExtension extends Extension {
 
     return obj;
   }
+
+   /**
+   * Returns the CA Issuers from the extension data
+   */
+  public getCaIssuers(): string[] {
+    const caIssuers = [];
+
+    for(const accessDescription of this.data){
+      if(accessDescription.method === "1.3.6.1.5.5.7.48.2"){
+        if (accessDescription.location !== undefined){
+          caIssuers.push(accessDescription.location);
+        }
+      }
+    }
+
+    return caIssuers;
+  }
+
+  /**
+   * Returns the OCSP from the extension data
+   */
+  public getOcsp(): string[] {
+    const ocsp = [];
+
+    for(const accessDescription of this.data){
+      if(accessDescription.method === "1.3.6.1.5.5.7.48.1"){
+        if (accessDescription.location !== undefined){
+          ocsp.push(accessDescription.location);
+        }
+      }
+    }
+
+    return ocsp;
+  }
 }
