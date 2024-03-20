@@ -15,7 +15,16 @@ import { ExtensionFactory } from "../extensions/extension_factory";
 import { DefaultCertificateStorageHandler } from "../default_certificate_storage_handler";
 import { cryptoProvider } from "../provider";
 import { PublicKey } from "../public_key";
-
+function arrayBufferToHex(buffer: ArrayBuffer): string {
+  const byteArray = new Uint8Array(buffer);
+  let hexParts = [];
+  for (let i = 0; i < byteArray.length; i++) {
+    let hex = byteArray[i].toString(16);
+    let paddedHex = ('00' + hex).slice(-2);
+    hexParts.push(paddedHex);
+  }
+  return hexParts.join('');
+}
 /**
  * A class that represents the basic response to an open certificate status request (OCSP)
  */

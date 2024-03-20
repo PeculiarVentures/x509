@@ -5,3 +5,4 @@ export * from "./basic_ocsp_response";
 export * from "./ocsp_response";
 export * from "./ocsp_response_generator";
 export * from "./single_response";
+export * from "./ocsp_worker";
