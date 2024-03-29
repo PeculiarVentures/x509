@@ -97,6 +97,7 @@ context("text", () => {
           ].join("\n"),
         },
         {
+
           name: "Key Usages",
           factory: async () => {
             return new x509.KeyUsagesExtension(x509.KeyUsageFlags.keyCertSign | x509.KeyUsageFlags.cRLSign, true);
@@ -133,6 +134,26 @@ context("text", () => {
             "Subject Key Identifier:",
             "  b2 94 47 5d 79 b4 99 8b  d6 bb 4e 56 26 87 dd d7",
             "  f0 f3 e9 48",
+          ].join("\n"),
+        },
+        {
+          name: "Authority Information Access",
+          factory: async () => {
+            return new x509.AuthorityInformationAccessExtension([
+              {
+                method: "1.3.6.1.5.5.7.48.1",
+                location: "http://ocsp.com"
+              },
+              {
+                method: "1.3.6.1.5.5.7.48.2",
+                location: undefined
+              }
+            ], false);
+          },
+          want: [
+            "Authority Information Access:",
+            "  1.3.6.1.5.5.7.48.1: http://ocsp.com",
+            "  1.3.6.1.5.5.7.48.2:",
           ].join("\n"),
         },
         {

@@ -7,6 +7,7 @@ import { CyclicRule } from "./rules/cyclic_rule";
 import { ExpiredRule } from "./rules/expired_rule";
 import { TrustedRule } from "./rules/trusted_rule";
 import { X509Certificates } from "./x509_certs";
+import {ChainRuleType} from "./rules/rule_registry";
 export interface ChainValidatorResult {
   status: boolean;
   items: ChainValidatorItem[];
@@ -27,6 +28,7 @@ export interface ChainRuleValidateParams {
 export interface ChainRuleValidateResult {
   code: string;
   status: boolean;
+  type: ChainRuleType;
   details: string;
 }
 
@@ -110,7 +112,7 @@ export class X509ChainValidator {
     // проверить цепочку используя Rule
     const ruleValidator = new Rules(this.rules);
 
-    for (let i = 0; i < chain.length; i++) {
+    for (let i = chain.length-1; i >0; i--) {
       const node = chain[i];
 
       const result = await ruleValidator.validates({

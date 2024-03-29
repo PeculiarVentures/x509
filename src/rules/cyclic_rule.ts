@@ -10,7 +10,7 @@ import { ChainRuleValidateParams, ChainRuleValidateResult } from "../x509_chain_
 export class CyclicRule implements ChainRule {
 
   public id = "cyclic";
-  public type: ChainRuleType = "critical";
+  public type = ChainRuleType.critical;
 
   public async validate(params: ChainRuleValidateParams): Promise<ChainRuleValidateResult> {
     const crypto = cryptoProvider.get();
@@ -19,11 +19,11 @@ export class CyclicRule implements ChainRule {
       for (let j = i + 1; j < params.chain.length; j++) {
         const thumbprint2 = await params.chain[j].getThumbprint(crypto);
         if (isEqual(thumbprint, thumbprint2)) {
-          return { code: this.id, status: false, details: "Circular dependency." };
+          return { code: this.id,type: this.type, status: false, details: "Circular dependency." };
         }
       }
     }
 
-    return { code: this.id, status: true, details: "The certificate chain is valid" };
+    return { code: this.id,type: this.type, status: true, details: "The certificate chain is valid" };
   }
 }

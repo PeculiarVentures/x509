@@ -2,7 +2,7 @@ import { AsnConvert } from "@peculiar/asn1-schema";
 import { Certificate, Version } from "@peculiar/asn1-x509";
 import { BufferSourceConverter, Convert } from "pvtsutils";
 import { container } from "tsyringe";
-import { HashedAlgorithm } from "./types";
+import { HashedAlgorithm, IExtensionable } from "./types";
 import { cryptoProvider } from "./provider";
 import { Name } from "./name";
 import { Extension } from "./extension";
@@ -26,7 +26,7 @@ export interface X509CertificateVerifyParams {
 /**
  * Representation of X509 certificate
  */
-export class X509Certificate extends PemData<Certificate> implements IPublicKeyContainer {
+export class X509Certificate extends PemData<Certificate> implements IPublicKeyContainer, IExtensionable {
 
   public static override NAME = "Certificate";
 

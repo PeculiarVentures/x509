@@ -6,6 +6,7 @@ export * from "./asn_data";
 export * from "./asn_signature_formatter";
 export * from "./algorithm";
 export * from "./rsa_algorithm";
+export * from "./sha_algorithm";
 export * from "./ec_algorithm";
 export * from "./ec_signature_formatter";
 export * from "./ed_algorithm";
@@ -40,6 +41,7 @@ import { container } from "tsyringe";
 import { AsnDefaultSignatureFormatter, diAsnSignatureFormatter } from "./asn_signature_formatter";
 import { AsnEcSignatureFormatter } from "./ec_signature_formatter";
 export * as rules from "./rules";
+export * as ocsp from "./ocsp";
 
 // Register x509 extensions
 extensions.ExtensionFactory.register(asnX509.id_ce_basicConstraints, extensions.BasicConstraintsExtension);
@@ -48,7 +50,7 @@ extensions.ExtensionFactory.register(asnX509.id_ce_keyUsage, extensions.KeyUsage
 extensions.ExtensionFactory.register(asnX509.id_ce_subjectKeyIdentifier, extensions.SubjectKeyIdentifierExtension);
 extensions.ExtensionFactory.register(asnX509.id_ce_authorityKeyIdentifier, extensions.AuthorityKeyIdentifierExtension);
 extensions.ExtensionFactory.register(asnX509.id_ce_subjectAltName, extensions.SubjectAlternativeNameExtension);
-
+extensions.ExtensionFactory.register(asnX509.id_pe_authorityInfoAccess, extensions.AuthorityInformationAccessExtension);
 // Register x509 attributes
 attributes.AttributeFactory.register(asnPkcs9.id_pkcs9_at_challengePassword, attributes.ChallengePasswordAttribute);
 attributes.AttributeFactory.register(asnPkcs9.id_pkcs9_at_extensionRequest, attributes.ExtensionsAttribute);

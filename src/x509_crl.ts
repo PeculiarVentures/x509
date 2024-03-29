@@ -1,7 +1,7 @@
 import { AsnConvert } from "@peculiar/asn1-schema";
 import { CertificateList, Version, AlgorithmIdentifier } from "@peculiar/asn1-x509";
 import { container } from "tsyringe";
-import { HashedAlgorithm } from "./types";
+import { HashedAlgorithm, IExtensionable } from "./types";
 import { cryptoProvider } from "./provider";
 import { Name } from "./name";
 import { Extension } from "./extension";
@@ -24,7 +24,7 @@ export interface X509CrlVerifyParams {
 /**
  * Representation of X.509 Certificate Revocation List (CRL)
  */
-export class X509Crl extends PemData<CertificateList> {
+export class X509Crl extends PemData<CertificateList> implements IExtensionable {
   protected readonly tag;
 
   /**

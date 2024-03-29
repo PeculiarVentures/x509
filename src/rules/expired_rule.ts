@@ -8,16 +8,16 @@ import { ChainRule, ChainRuleType } from "./rule_registry";
 export class ExpiredRule implements ChainRule {
 
   public id = "expired";
-  public type: ChainRuleType = "critical";
+  public type = ChainRuleType.critical;
   public checkDate: Date = new Date();
 
   public async validate(params: ChainRuleValidateParams): Promise<ChainRuleValidateResult> {
     if (params.cert.notAfter.getTime() < this.checkDate.getTime()) {
-      return { code: this.id, status: false, details: "The certificate is expired" };
+      return { code: this.id, type: this.type, status: false, details: "The certificate is expired" };
     } else if (params.cert.notBefore.getTime() > this.checkDate.getTime()) {
-      return { code: this.id, status: false, details: "The certificate is not yet valid" };
+      return { code: this.id, type: this.type, status: false, details: "The certificate is not yet valid" };
     } else {
-      return { code: this.id, status: true, details: "The certificate is valid" };
+      return { code: this.id, type: this.type, status: true, details: "The certificate is valid" };
     }
   }
 }
