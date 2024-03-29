@@ -30,6 +30,7 @@ export class ShaAlgorithm implements IAlgorithm {
     if (algorithm) {
       return new AlgorithmIdentifier({
         algorithm,
+        parameters: null,
       });
     }
 
