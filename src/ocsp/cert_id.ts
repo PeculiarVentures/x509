@@ -29,8 +29,10 @@ export class CertificateID extends AsnData<ocsp.CertID> {
       throw new Error("The algorithm is not supported");
     }
 
-    const hashAlgorithm  = new asn1X509.AlgorithmIdentifier({ algorithm: algorithm, parameters: null })
-    hashAlgorithm.algorithm = "1.3.14.3.2.26";
+    // const hashAlgorithm  = new asn1X509.AlgorithmIdentifier({ algorithm: algorithm, parameters: null })
+    // hashAlgorithm.algorithm = "1.3.14.3.2.26";
+
+    const hashAlgorithm = algProv.toAsnAlgorithm({name: algorithm});
 
     const certId = new ocsp.CertID({
       hashAlgorithm: hashAlgorithm,
