@@ -102,10 +102,10 @@ export class OCSPRequestGenerator {
         throw Error("Cannot convert ASN.1 signature value to WebCrypto format");
       }
 
-      if (asnOcspReq.optionalSignature) {
-        asnOcspReq.optionalSignature.signature = asnSignature;
-        asnOcspReq.optionalSignature.signatureAlgorithm = algProv.toAsnAlgorithm(params.signatureAlgorithm as HashedAlgorithm);
-      }
+      asnOcspReq.optionalSignature = new ocsp.Signature({
+        signature: asnSignature,
+        signatureAlgorithm: algProv.toAsnAlgorithm(params.signatureAlgorithm as HashedAlgorithm),
+      });
     }
 
     return new OCSPRequest(asnOcspReq);
