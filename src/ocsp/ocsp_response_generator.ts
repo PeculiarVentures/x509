@@ -139,13 +139,7 @@ export class OCSPResponseGenerator {
 
     // const signatureAlgorithm2 = {...paramsSignatureAlgorithm, ...params.signingKey.algorithm} as HashedAlgorithm;
     const basicOCSPResp = new ocsp.BasicOCSPResponse({
-      tbsResponseData: new ocsp.ResponseData({
-        version: ocsp.Version.v1,
-        responderID: new ocsp.ResponderID({ byKey: new OctetString(await params.responderCertificate.publicKey.getThumbprint("SHA-1", crypto)) }),
-        producedAt: params.date || new Date(),
-        responses,
-        responseExtensions: new asn1X509.Extensions(params.extensions?.map(o => AsnConvert.parse(o.rawData, asn1X509.Extension)) || [])
-      }),
+      tbsResponseData: tbsResponseData,
       signature: signatureValue,
       signatureAlgorithm: algProv.toAsnAlgorithm(signingAlgorithm)
     });
@@ -162,7 +156,7 @@ export class OCSPResponseGenerator {
     const asnOcspResponse = new ocsp.OCSPResponse({
       responseStatus: params.status || OCSPResponseStatus.successful,
       responseBytes: new ocsp.ResponseBytes({
-        responseType: "",
+        responseType: "1.3.6.1.5.5.7.48.1.1",
         response: new OctetString(AsnConvert.serialize(basicOCSPResp))
       })
     });
