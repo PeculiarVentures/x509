@@ -1,7 +1,9 @@
-import {OCSPResponseCreateParams} from "../src/ocsp"
-import {OCSPResponseGenerator} from "../src/ocsp"
-import {SingleResponseInterface} from "../src/ocsp"
+import {OCSPResponseCreateParams} from "../src/ocsp";
+import {OCSPResponseGenerator} from "../src/ocsp";
+import {SingleResponseInterface} from "../src/ocsp";
+import {OctetString} from "@peculiar/asn1-schema";
 import * as asn1X509 from "@peculiar/asn1-x509";
+import * as ocsp from "@peculiar/asn1-ocsp";
 import * as x509 from "../src";
 import * as assert from "assert";
 import { Crypto } from "@peculiar/webcrypto";
@@ -72,6 +74,23 @@ VR0gBBYwFDAIBgZngQwBAgEwCAYGZ4EMAQICMAoGCCqGSM49BAMDA2cAMGQCMD+q
 CHvqqpg/8YJPDn8NJIS/Rg+lYraOseXeuNYzkjeY6RLxIDB+nLVDs9QJ3/co89Cd
 -----END CERTIFICATE-----`;
 
+const pemSigning = `-----BEGIN CERTIFICATE-----
+MIICgDCCAgagAwIBAgITMwAAExoZB42E3cpifgAAAAATGjAKBggqhkjOPQQDAzBd
+MQswCQYDVQQGEwJVUzEeMBwGA1UEChMVTWljcm9zb2Z0IENvcnBvcmF0aW9uMS4w
+LAYDVQQDEyVNaWNyb3NvZnQgQXp1cmUgRUNDIFRMUyBJc3N1aW5nIENBIDA4MB4X
+DTI0MDQyNzE1NTAyOVoXDTI0MDUyNzE1NTAyOVowHzEdMBsGA1UEAxMUQXp1cmVF
+Q0MwOCBPQ1NQIENlcnQwWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAAQp91EZCvSf
+zcJxVq1nPS+M8FFLD1lbqDeB+7ffSxGA41VKBNOBtmeFcO0qdoX4moUsChZaKrpt
+lb+GH3U/d3ipo4HiMIHfMA4GA1UdDwEB/wQEAwIHgDAMBgNVHRMBAf8EAjAAMBMG
+A1UdJQQMMAoGCCsGAQUFBwMJMB0GA1UdDgQWBBRiVhX2B3hJ09it0w2ks64AfDqe
+WTAfBgNVHSMEGDAWgBStVB0DVHHGL17WWxhYzm4kxdaiCjA8BgkrBgEEAYI3FQcE
+LzAtBiUrBgEEAYI3FQiHvdcbgefrRoKBnS6O0AyH8NodXYPZ1yKB9N4fAgFkAgEX
+MBsGCSsGAQQBgjcVCgQOMAwwCgYIKwYBBQUHAwkwDwYJKwYBBQUHMAEFBAIFADAK
+BggqhkjOPQQDAwNoADBlAjBv1c+46GRbmZENdVaHVNGDF0yx5ZCOLOVA8el0GzwT
+vH3TWSI8I4Aut2/r2BXQd1ACMQDLGW3LKT7YtMHyxkvatoDsLp0EeTjVTE6hsWX4
+f/deM4VHt8ZHvUZibX0pSq9U/ac=
+-----END CERTIFICATE-----`;
+
 context("OCSP", async () => {
 
   const CAIssuerVector = {
@@ -120,6 +139,7 @@ context("OCSP", async () => {
 
     const certificate = new x509.X509Certificate(pemLeaf);
     const issuer = new x509.X509Certificate(pemCA);
+    const signing = new x509.X509Certificate(pemSigning);
 
     const keysCA = await crypto.subtle.generateKey(alg, true, ["sign", "verify"]);
     assert.ok(keysCA.publicKey);
@@ -145,10 +165,15 @@ context("OCSP", async () => {
       issuer: issuer,
       certificate: certificate,
       thisUpdate: new Date(),
-      // nextUpdate: new Date(),
+      nextUpdate: new Date(),
       extensions : [],
       status: 0,
     };
+
+    // generate nonce extension for the OCSP response
+    const nonce = crypto.getRandomValues(new Uint8Array(20));
+
+
     const ocspRequestParams: OCSPResponseCreateParams = {
       /**
        * Response signature algorithm
@@ -165,11 +190,11 @@ context("OCSP", async () => {
       /**
        * The certificate that will be used to sign the response
        */
-      responderCertificate: CACert,
+      responderCertificate: signing,
       /**
        * List of certificates that can be used to verify the signature of the response
        */
-      certificates: [CACert],
+      certificates: [signing],
       /**
        * The date and time for which the status of the certificate is issued
        * The default is the current time
@@ -183,7 +208,9 @@ context("OCSP", async () => {
       /**
        * List of response extensions
        */
-      // extensions?: Extension[],
+      extensions: [],
+
+      nonce: nonce,
     };
 
   const response = await OCSPResponseGenerator.create(ocspRequestParams);

@@ -73,6 +73,10 @@ export interface OCSPResponseCreateParams {
    * List of response extensions
    */
   extensions?: Extension[];
+  /**
+   * nonce data
+   */
+  nonce?: Uint8Array;
 }
 
 export class OCSPResponseGenerator {
@@ -125,13 +129,21 @@ export class OCSPResponseGenerator {
       responses.push(response);
     }
 
+    const responseExtensions = new asn1X509.Extensions(params.extensions?.map(o => AsnConvert.parse(o.rawData, asn1X509.Extension)) || []);
+    // if nonce is provided add it to the response extensions
+    if(params.nonce) {
+      responseExtensions.push(new asn1X509.Extension({
+        extnID: ocsp.id_pkix_ocsp_nonce,
+        extnValue: new OctetString(params.nonce),
+      }));
+    }
     // construct tbsResponseData and get signature using signing key
     const tbsResponseData = new ocsp.ResponseData({
       version: ocsp.Version.v1,
       responderID: new ocsp.ResponderID({ byKey: new OctetString(await params.responderCertificate.publicKey.getThumbprint("SHA-1", crypto)) }),
       producedAt: params.date || new Date(),
       responses,
-      responseExtensions: new asn1X509.Extensions(params.extensions?.map(o => AsnConvert.parse(o.rawData, asn1X509.Extension)) || [])
+      responseExtensions: responseExtensions
     });
 
     const tbs = AsnConvert.serialize(tbsResponseData);
@@ -156,7 +168,7 @@ export class OCSPResponseGenerator {
     const asnOcspResponse = new ocsp.OCSPResponse({
       responseStatus: params.status || OCSPResponseStatus.successful,
       responseBytes: new ocsp.ResponseBytes({
-        responseType: "1.3.6.1.5.5.7.48.1.1",
+        responseType: ocsp.id_pkix_ocsp_nonce,
         response: new OctetString(AsnConvert.serialize(basicOCSPResp))
       })
     });
