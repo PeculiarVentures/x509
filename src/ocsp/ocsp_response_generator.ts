@@ -8,6 +8,9 @@ import { cryptoProvider } from "../provider";
 import { X509Certificate } from "../x509_cert";
 import { OCSPResponse, OCSPResponseStatus } from "./ocsp_response";
 import { AlgorithmProvider, diAlgorithmProvider } from "../algorithm";
+import { IAsnSignatureFormatter, diAsnSignatureFormatter } from "../asn_signature_formatter";
+import { HashedAlgorithm } from "../types";
+
 
 export interface SingleResponseInterface {
   /**
@@ -76,7 +79,6 @@ export interface OCSPResponseCreateParams {
   /**
    * nonce data
    */
-  nonce?: Uint8Array;
 }
 
 export class OCSPResponseGenerator {
@@ -129,30 +131,35 @@ export class OCSPResponseGenerator {
       responses.push(response);
     }
 
-    const responseExtensions = new asn1X509.Extensions(params.extensions?.map(o => AsnConvert.parse(o.rawData, asn1X509.Extension)) || []);
-    // if nonce is provided add it to the response extensions
-    if(params.nonce) {
-      responseExtensions.push(new asn1X509.Extension({
-        extnID: ocsp.id_pkix_ocsp_nonce,
-        extnValue: new OctetString(params.nonce),
-      }));
-    }
     // construct tbsResponseData and get signature using signing key
     const tbsResponseData = new ocsp.ResponseData({
       version: ocsp.Version.v1,
       responderID: new ocsp.ResponderID({ byKey: new OctetString(await params.responderCertificate.publicKey.getThumbprint("SHA-1", crypto)) }),
       producedAt: params.date || new Date(),
       responses,
-      responseExtensions: responseExtensions
+      responseExtensions: new asn1X509.Extensions(params.extensions?.map(o => AsnConvert.parse(o.rawData, asn1X509.Extension)) || [])
     });
 
     const tbs = AsnConvert.serialize(tbsResponseData);
     const signatureValue = await crypto.subtle.sign(signingAlgorithm, params.signingKey, tbs);
 
+    // Convert WebCrypto signature to ASN.1 format
+    const signatureFormatters = container.resolveAll<IAsnSignatureFormatter>(diAsnSignatureFormatter).reverse();
+    let asnSignature: ArrayBuffer | null = null;
+    for (const signatureFormatter of signatureFormatters) {
+      asnSignature = signatureFormatter.toAsnSignature(signingAlgorithm as HashedAlgorithm, signatureValue);
+      if (asnSignature) {
+        break;
+      }
+    }
+    if (!asnSignature) {
+      throw Error("Cannot convert ASN.1 signature value to WebCrypto format");
+    }
+
     // const signatureAlgorithm2 = {...paramsSignatureAlgorithm, ...params.signingKey.algorithm} as HashedAlgorithm;
     const basicOCSPResp = new ocsp.BasicOCSPResponse({
       tbsResponseData: tbsResponseData,
-      signature: signatureValue,
+      signature: asnSignature,
       signatureAlgorithm: algProv.toAsnAlgorithm(signingAlgorithm)
     });
 
@@ -168,7 +175,7 @@ export class OCSPResponseGenerator {
     const asnOcspResponse = new ocsp.OCSPResponse({
       responseStatus: params.status || OCSPResponseStatus.successful,
       responseBytes: new ocsp.ResponseBytes({
-        responseType: ocsp.id_pkix_ocsp_nonce,
+        responseType: ocsp.id_pkix_ocsp_basic,
         response: new OctetString(AsnConvert.serialize(basicOCSPResp))
       })
     });

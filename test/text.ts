@@ -1,6 +1,7 @@
 import * as assert from "assert";
 import { Crypto } from "@peculiar/webcrypto";
 import * as x509 from "../src";
+import { OctetString } from "@peculiar/asn1-schema";
 
 const crypto = new Crypto();
 
@@ -154,6 +155,26 @@ context("text", () => {
             "Authority Information Access:",
             "  1.3.6.1.5.5.7.48.1: http://ocsp.com",
             "  1.3.6.1.5.5.7.48.2:",
+          ].join("\n"),
+        },
+        {
+          name: "Nonce UINT8",
+          factory: async () => {
+            return new x509.NonceExtension(new TextEncoder().encode("Test Nonce"), false);
+          },
+          want: [
+            "Nonce:",
+            "  1.3.6.1.5.5.7.48.1.2: Test Nonce",
+          ].join("\n"),
+        },
+        {
+          name: "Nonce STRING",
+          factory: async () => {
+            return new x509.NonceExtension("Test Nonce", false);
+          },
+          want: [
+            "Nonce:",
+            "  1.3.6.1.5.5.7.48.1.2: Test Nonce",
           ].join("\n"),
         },
         {

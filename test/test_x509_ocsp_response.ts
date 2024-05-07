@@ -1,9 +1,8 @@
 import {OCSPResponseCreateParams} from "../src/ocsp";
 import {OCSPResponseGenerator} from "../src/ocsp";
 import {SingleResponseInterface} from "../src/ocsp";
-import {OctetString} from "@peculiar/asn1-schema";
-import * as asn1X509 from "@peculiar/asn1-x509";
-import * as ocsp from "@peculiar/asn1-ocsp";
+import { NonceExtension } from "../src/extensions";
+
 import * as x509 from "../src";
 import * as assert from "assert";
 import { Crypto } from "@peculiar/webcrypto";
@@ -91,6 +90,11 @@ vH3TWSI8I4Aut2/r2BXQd1ACMQDLGW3LKT7YtMHyxkvatoDsLp0EeTjVTE6hsWX4
 f/deM4VHt8ZHvUZibX0pSq9U/ac=
 -----END CERTIFICATE-----`;
 
+const leafPrivateKey = "MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgM5McsRyvuC8+aFYwu2ci0Qh8bolc3kWCiF7F1WAQH1ahRANCAAS6zcN8ZmKsXlSR1FAPtooB6nGmsbNVNbkT2tNF6EDcAveJnd5xhNFtZ5dvPY6SR1Jjp/oytNlNFYXUrryrLfCJ";
+const leafPublicKey = "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEus3DfGZirF5UkdRQD7aKAepxprGzVTW5E9rTRehA3AL3iZ3ecYTRbWeXbz2OkkdSY6f6MrTZTRWF1K68qy3wiQ==";
+const caPrivateKey = "MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgE/+gM0YVMwVMLEJZRlTnFHjQdA7PGlvx4RrwbNjWvEChRANCAAT9AozzW2pwptkjuponmuLdwEdnpTKNdrzQt0UxC7/GtA4rdy6xl9w8FtuN1rbeDo3b6EkYv/jtbsU3yL+0oQ1o";
+const caPublicKey = "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE/QKM81tqcKbZI7qaJ5ri3cBHZ6UyjXa80LdFMQu/xrQOK3cusZfcPBbbjda23g6N2+hJGL/47W7FN8i/tKENaA==";
+
 context("OCSP", async () => {
 
   const CAIssuerVector = {
@@ -137,11 +141,16 @@ context("OCSP", async () => {
 
   it("generating an OCSP response", async () => {
 
-    const certificate = new x509.X509Certificate(pemLeaf);
-    const issuer = new x509.X509Certificate(pemCA);
-    const signing = new x509.X509Certificate(pemSigning);
+    const keysCA = {
+      publicKey: await crypto.subtle.importKey("spki", Buffer.from(caPublicKey, "base64"), alg, true, ["verify"]),
+      privateKey: await crypto.subtle.importKey("pkcs8", Buffer.from(caPrivateKey, "base64"), alg, true, ["sign"]),
+    };
 
-    const keysCA = await crypto.subtle.generateKey(alg, true, ["sign", "verify"]);
+    const keysLeaf = {
+      publicKey: await crypto.subtle.importKey("spki", Buffer.from(leafPublicKey, "base64"), alg, true, ["verify"]),
+      privateKey: await crypto.subtle.importKey("pkcs8", Buffer.from(leafPrivateKey, "base64"), alg, true, ["sign"]),
+    };
+
     assert.ok(keysCA.publicKey);
     assert.ok(keysCA.privateKey);
     const CACert = await x509.X509CertificateGenerator.createSelfSigned({
@@ -150,8 +159,6 @@ context("OCSP", async () => {
       ...CAIssuerVector,
     });
 
-
-    const keysLeaf = await crypto.subtle.generateKey(alg, true, ["sign", "verify"]);
     const leafCert = await x509.X509CertificateGenerator.create({
       publicKey: keysLeaf.publicKey,
       signingKey: keysCA.privateKey,
@@ -162,17 +169,13 @@ context("OCSP", async () => {
 
     // create OCSPResponseCreateParams object and fill it with data
     const singleResponse: SingleResponseInterface ={
-      issuer: issuer,
-      certificate: certificate,
-      thisUpdate: new Date(),
-      nextUpdate: new Date(),
+      issuer: CACert,
+      certificate: leafCert,
+      thisUpdate: new Date(Date.UTC(2024, 0, 1, 8, 0, 0)),
+      nextUpdate: new Date(Date.UTC(2025, 0, 1, 8, 0, 0)),
       extensions : [],
       status: 0,
     };
-
-    // generate nonce extension for the OCSP response
-    const nonce = crypto.getRandomValues(new Uint8Array(20));
-
 
     const ocspRequestParams: OCSPResponseCreateParams = {
       /**
@@ -190,16 +193,16 @@ context("OCSP", async () => {
       /**
        * The certificate that will be used to sign the response
        */
-      responderCertificate: signing,
+      responderCertificate: CACert,
       /**
        * List of certificates that can be used to verify the signature of the response
        */
-      certificates: [signing],
+      certificates: [CACert],
       /**
        * The date and time for which the status of the certificate is issued
        * The default is the current time
        */
-      // date?: Date,
+      date: new Date(Date.UTC(2020, 0, 1, 8, 0, 0)),
       /**
        * Certificate status
        * The default is successful
@@ -208,14 +211,11 @@ context("OCSP", async () => {
       /**
        * List of response extensions
        */
-      extensions: [],
-
-      nonce: nonce,
+      extensions: [new NonceExtension(new TextEncoder().encode("Test Nonce"))],
     };
 
   const response = await OCSPResponseGenerator.create(ocspRequestParams);
-  console.log(response.toString())
-
-
+  assert.ok(await response.verify(keysCA.publicKey));
+  // console.log(response.toString());
   });
 });

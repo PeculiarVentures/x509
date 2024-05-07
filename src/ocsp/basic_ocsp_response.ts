@@ -14,7 +14,10 @@ import { AlgorithmProvider, diAlgorithmProvider } from "../algorithm";
 import { ExtensionFactory } from "../extensions/extension_factory";
 import { DefaultCertificateStorageHandler } from "../default_certificate_storage_handler";
 import { cryptoProvider } from "../provider";
-import { PublicKey } from "../public_key";
+import { PublicKey, PublicKeyType } from "../public_key";
+import { BufferSourceConverter } from "pvtsutils";
+import { IAsnSignatureFormatter, diAsnSignatureFormatter } from "../asn_signature_formatter";
+
 
 /**
  * A class that represents the basic response to an open certificate status request (OCSP)
@@ -71,7 +74,7 @@ export class BasicOCSPResponse extends AsnData<ocsp.BasicOCSPResponse> implement
     this.certificateStorage = new DefaultCertificateStorageHandler();
     const algProv = container.resolve<AlgorithmProvider>(diAlgorithmProvider);
     this.signatureAlgorithm = algProv.toWebAlgorithm(asn.signatureAlgorithm) as HashedAlgorithm;
-    this.signature = asn.signature;
+    this.signature = BufferSourceConverter.toArrayBuffer(asn.signature);
     if (asn.tbsResponseData.responderID.byName) {
       this.responderID = asn.tbsResponseData.responderID.byName.toString();
     }
@@ -170,9 +173,57 @@ export class BasicOCSPResponse extends AsnData<ocsp.BasicOCSPResponse> implement
    * @remarks
    * Checks only the mathematical correctness of the signature, does not check the respondent's certificate.
    */
-  public async verify(crypto = cryptoProvider.get()): Promise<boolean> {
-    const publicKey = await new PublicKey(this.tbs).export(crypto);
+  public async verify(signer: PublicKeyType, crypto = cryptoProvider.get()): Promise<boolean> {
+    let keyAlgorithm: Algorithm;
 
-    return await crypto.subtle.verify(this.signatureAlgorithm, publicKey, this.signature, this.tbs);
+    // Convert public key to CryptoKey
+    let publicKey: CryptoKey;
+    try {
+      if ("publicKey" in signer) {
+        // IPublicKeyContainer
+        keyAlgorithm = { ...signer.publicKey.algorithm, ...this.signatureAlgorithm };
+        publicKey = await signer.publicKey.export(keyAlgorithm, ["verify"], crypto);
+      } else if (signer instanceof PublicKey) {
+        // PublicKey
+        keyAlgorithm = { ...signer.algorithm, ...this.signatureAlgorithm };
+        publicKey = await signer.export(keyAlgorithm, ["verify"], crypto);
+      } else if (BufferSourceConverter.isBufferSource(signer)) {
+        const key = new PublicKey(signer);
+        keyAlgorithm = { ...key.algorithm, ...this.signatureAlgorithm };
+        publicKey = await key.export(keyAlgorithm, ["verify"], crypto);
+      } else {
+        // CryptoKey
+        keyAlgorithm = { ...signer.algorithm, ...this.signatureAlgorithm };
+        publicKey = signer;
+      }
+    } catch (e) {
+      // NOTE: Uncomment the next line to see more information about errors
+      // console.error(e);
+
+      // Application will throw exception if public key algorithm is not the same type which is needed for
+      // signature validation (eg leaf certificate is signed with RSA mechanism, public key is ECDSA)
+      return false;
+    }
+
+    // Convert ASN.1 signature to WebCrypto format
+    const signatureFormatters = container.resolveAll<IAsnSignatureFormatter>(diAsnSignatureFormatter).reverse();
+    let signature: ArrayBuffer | null = null;
+    for (const signatureFormatter of signatureFormatters) {
+      if (this.signature) {
+        signature = signatureFormatter.toWebSignature(keyAlgorithm, this.signature);
+        if (signature) {
+          break;
+        }
+      }
+    }
+    if (!signature) {
+      throw Error("Cannot convert ASN.1 signature value to WebCrypto format");
+    }
+
+    if (this.signatureAlgorithm) {
+      return await crypto.subtle.verify(this.signatureAlgorithm, publicKey, signature, this.tbs);
+    }
+
+    return false;
   }
 }

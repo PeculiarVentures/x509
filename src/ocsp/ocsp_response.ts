@@ -2,6 +2,10 @@ import * as ocsp from "@peculiar/asn1-ocsp";
 import { AsnEncodedType, PemData } from "../pem_data";
 import { PemConverter } from "../pem_converter";
 import { BasicOCSPResponse } from "./basic_ocsp_response";
+import { PublicKeyType } from "../public_key";
+import { cryptoProvider } from "../provider";
+
+
 
 export enum OCSPResponseStatus {
   successful = 0,
@@ -47,5 +51,12 @@ export class OCSPResponse extends PemData<ocsp.OCSPResponse> {
     }
 
     this.tag = PemConverter.OCSPResponseTag;
+  }
+  public async verify(signer: PublicKeyType, crypto = cryptoProvider.get()): Promise<boolean> {
+    if (this.basicResponse) {
+      return this.basicResponse.verify(signer, crypto);
+    }
+
+    return false;
   }
 }
