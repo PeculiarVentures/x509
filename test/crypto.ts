@@ -322,6 +322,40 @@ D314IEOg4mnS8Q==
 
   context("X509 certificate generator", () => {
 
+    it("generate certificate with generalized time", async () => {
+      const alg: RsaHashedKeyGenParams = {
+        name: "RSASSA-PKCS1-v1_5",
+        hash: "SHA-256",
+        publicExponent: new Uint8Array([1, 0, 1]),
+        modulusLength: 2048,
+      };
+      const keys = await crypto.subtle.generateKey(alg, false, ["sign", "verify"]);
+      assert.ok(keys.publicKey);
+      assert.ok(keys.privateKey);
+      const cert = await x509.X509CertificateGenerator.createSelfSigned({
+        serialNumber: "01",
+        name: "CN=Test, O=Дом",
+        notBefore: new Date("2020-01-01"),
+        notAfter: new Date("2060-01-01"),
+        signingAlgorithm: alg,
+        keys: keys,
+        extensions: [
+          new x509.BasicConstraintsExtension(true, 2, true),
+          new x509.ExtendedKeyUsageExtension(["1.2.3.4.5.6.7", "2.3.4.5.6.7.8"], true),
+          new x509.KeyUsagesExtension(x509.KeyUsageFlags.keyCertSign | x509.KeyUsageFlags.cRLSign, true),
+          new x509.CertificatePolicyExtension([
+            "1.2.3.4.5",
+            "1.2.3.4.5.6",
+            "1.2.3.4.5.6.7",
+          ]),
+          await x509.SubjectKeyIdentifierExtension.create(keys.publicKey),
+        ]
+      });
+      console.log(cert.toString("pem"));
+      const ok = await cert.verify({ date: new Date("2020/01/01 12:00") });
+      assert.strictEqual(ok, true);
+    });
+
     it("generate self-signed certificate", async () => {
       const alg: RsaHashedKeyGenParams = {
         name: "RSASSA-PKCS1-v1_5",
@@ -835,6 +869,8 @@ ZYYG
         publicKey: await caCert.publicKey.export()
       });
       assert.strictEqual(ok, true);
+
+      console.log(crl.toString("text"));
     });
 
   });
