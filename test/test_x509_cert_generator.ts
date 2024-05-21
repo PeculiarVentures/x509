@@ -236,5 +236,31 @@ describe(path.basename(__filename), () => {
         }
       );
     });
+
+    it("should create RSA-PSS self-signed certificate", async () => {
+      const keys = await crypto.subtle.generateKey(
+        {
+          name: "RSA-PSS",
+          hash: "SHA-256",
+          modulusLength: 2048,
+          publicExponent: new Uint8Array([1, 0, 1]),
+          saltLength: 32,
+        } as RsaHashedKeyGenParams,
+        true,
+        ["sign", "verify"]
+      );
+      const cert = await x509.X509CertificateGenerator.createSelfSigned({
+        keys,
+        name: "CN=Test, O=Дом",
+        signingAlgorithm: {
+          name: "RSA-PSS",
+          saltLength: 32,
+        } as Algorithm,
+      });
+      assert.ok(cert);
+
+      const ok = await cert.verify();
+      assert.strictEqual(ok, true);
+    });
   });
 });
