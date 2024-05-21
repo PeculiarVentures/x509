@@ -133,8 +133,13 @@ export class X509CertificateGenerator {
     const serialNumber = params.serialNumber
       ? BufferSourceConverter.toUint8Array(Convert.FromHex(params.serialNumber))
       : crypto.getRandomValues(new Uint8Array(16));
+    // Ensure the first bit less than 0x7F
     if (serialNumber[0] > 0x7F) {
       serialNumber[0] &= 0x7F;
+    }
+    // Ensure the second is more than 0x7F
+    if (serialNumber.length > 1 && serialNumber[0] === 0) {
+      serialNumber[1] |= 0x80;
     }
 
     const notBefore = params.notBefore || new Date();
