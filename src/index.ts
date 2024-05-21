@@ -7,6 +7,7 @@ export * from "./asn_signature_formatter";
 export * from "./algorithm";
 export * from "./rsa_algorithm";
 export * from "./ec_algorithm";
+export * from "./sha_algorithm";
 export * from "./ec_signature_formatter";
 export * from "./ed_algorithm";
 export * from "./asn_data";
