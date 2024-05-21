@@ -28,6 +28,9 @@ export class CryptoProvider implements Map<string, Crypto> {
     if (typeof self !== "undefined" && typeof crypto !== "undefined") { // if Browser
       // Use global crypto as default
       this.set(CryptoProvider.DEFAULT, crypto);
+    } else if (typeof global !== "undefined" && global.crypto && global.crypto.subtle) { // if Node
+      // Use global crypto as default
+      this.set(CryptoProvider.DEFAULT, global.crypto);
     }
   }
   clear(): void {
