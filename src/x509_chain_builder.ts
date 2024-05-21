@@ -83,7 +83,8 @@ export class X509ChainBuilder {
         try {
           const algorithm = { ...item.publicKey.algorithm, ...cert.signatureAlgorithm };
           const publicKey = await item.publicKey.export(algorithm, ["verify"], crypto);
-          if (!await cert.verify({ publicKey, signatureOnly: true }, crypto)) {
+          const ok = await cert.verify({ publicKey, signatureOnly: true }, crypto);
+          if (!ok) {
             continue;
           }
         } catch (e) {
