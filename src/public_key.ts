@@ -1,7 +1,7 @@
 import { id_ecPublicKey } from "@peculiar/asn1-ecc";
-import { id_rsaEncryption, RSAPublicKey } from "@peculiar/asn1-rsa";
+import { id_rsaEncryption, id_RSASSA_PSS, RSAPublicKey } from "@peculiar/asn1-rsa";
 import { AsnConvert } from "@peculiar/asn1-schema";
-import { SubjectPublicKeyInfo } from "@peculiar/asn1-x509";
+import { AlgorithmIdentifier, SubjectPublicKeyInfo } from "@peculiar/asn1-x509";
 import { BufferSource, BufferSourceConverter } from "pvtsutils";
 import { container } from "tsyringe";
 import { AlgorithmProvider, diAlgorithmProvider } from "./algorithm";
@@ -19,7 +19,7 @@ export type PublicKeyType = PublicKey | CryptoKey | IPublicKeyContainer | Buffer
 /**
  * Representation of Subject Public Key Info
  */
-export class PublicKey extends PemData<SubjectPublicKeyInfo>{
+export class PublicKey extends PemData<SubjectPublicKeyInfo> {
 
   protected readonly tag: string;
 
@@ -75,8 +75,16 @@ export class PublicKey extends PemData<SubjectPublicKeyInfo>{
       crypto = args[0] || cryptoProvider.get();
     }
 
+    let raw = this.rawData;
+    const asnSpki = AsnConvert.parse(this.rawData, SubjectPublicKeyInfo);
+    if (asnSpki.algorithm.algorithm === id_RSASSA_PSS) {
+      // WebCrypto in browsers does not support RSA-PSS algorithm for public keys
+      // So, we need to convert it to RSA-PKCS1
+      raw = convertSpkiToRsaPkcs1(asnSpki, raw);
+    }
+
     // create a public key
-    return crypto.subtle.importKey("spki", this.rawData, algorithm, true, keyUsages);
+    return crypto.subtle.importKey("spki", raw, algorithm, true, keyUsages);
   }
 
   protected onInit(asn: SubjectPublicKeyInfo) {
@@ -157,4 +165,14 @@ export class PublicKey extends PemData<SubjectPublicKeyInfo>{
     return obj;
   }
 
+}
+
+function convertSpkiToRsaPkcs1(asnSpki: SubjectPublicKeyInfo, raw: ArrayBuffer) {
+  asnSpki.algorithm = new AlgorithmIdentifier({
+    algorithm: id_rsaEncryption,
+    parameters: null,
+  });
+  raw = AsnConvert.serialize(asnSpki);
+
+  return raw;
 }
