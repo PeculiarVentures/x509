@@ -361,7 +361,7 @@ D314IEOg4mnS8Q==
           await x509.SubjectKeyIdentifierExtension.create(keys.publicKey),
         ]
       });
-      console.log(cert.toString("pem"));
+      // console.log(cert.toString("pem"));
       const ok = await cert.verify({ date: new Date("2020/01/01 12:00") });
       assert.strictEqual(ok, true);
     });
@@ -880,7 +880,7 @@ ZYYG
       });
       assert.strictEqual(ok, true);
 
-      console.log(crl.toString("text"));
+      // console.log(crl.toString("text"));
     });
 
   });
