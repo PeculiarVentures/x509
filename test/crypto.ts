@@ -762,7 +762,7 @@ ZYYG
     const ok = await cert.verify({
       signatureOnly: true,
     });
-    assert.deepStrictEqual(cert.signatureAlgorithm, { name: "EdDSA", namedCurve: "Ed25519" });
+    assert.deepStrictEqual(cert.signatureAlgorithm, { name: "Ed25519" });
     assert.strictEqual(ok, true);
   });
 
