@@ -3,10 +3,9 @@ import * as asn1X509 from "@peculiar/asn1-x509";
 import { BufferSourceConverter, Convert } from "pvtsutils";
 import { Extension } from "../extension";
 import { GeneralNames } from "../general_name";
-import { CryptoProvider, cryptoProvider } from "../provider";
-import { PublicKey } from "../public_key";
+import { cryptoProvider } from "../provider";
+import { PublicKey, PublicKeyType } from "../public_key";
 import { TextObject } from "../text_converter";
-import { X509Certificate } from "../x509_cert";
 
 export interface CertificateIdentifier {
   /**
@@ -27,13 +26,6 @@ export class AuthorityKeyIdentifierExtension extends Extension {
   public static override NAME = "Authority Key Identifier";
 
   /**
-   * Creates authority key identifier extension from certificate
-   * @param cert Certificate
-   * @param critical Indicates where extension is critical. Default is `false`
-   * @param crypto WebCrypto provider. Default is from CryptoProvider
-   */
-  public static async create(cert: X509Certificate, critical?: boolean, crypto?: Crypto): Promise<AuthorityKeyIdentifierExtension>;
-  /**
    * Creates authority key identifier extension from certificate identifier
    * @param certId Certificate identifier
    * @param critical Indicates where extension is critical. Default is `false`
@@ -41,23 +33,20 @@ export class AuthorityKeyIdentifierExtension extends Extension {
    */
   public static async create(certId: CertificateIdentifier, critical?: boolean, crypto?: Crypto): Promise<AuthorityKeyIdentifierExtension>;
   /**
-   * Creates authority key identifier extension from CryptoKey
-   * @param publicKey Public CryptoKey
+   * Creates authority key identifier extension from public key data
+   * @param publicKey Public key data
    * @param critical Indicates where extension is critical. Default is `false`
    * @param crypto WebCrypto provider. Default is from CryptoProvider
    */
-  public static async create(publicKey: CryptoKey, critical?: boolean, crypto?: Crypto): Promise<AuthorityKeyIdentifierExtension>;
-  public static async create(param: CryptoKey | CertificateIdentifier | X509Certificate, critical = false, crypto = cryptoProvider.get()) {
-    if (param instanceof X509Certificate || CryptoProvider.isCryptoKey(param)) {
-      const publicKey = param instanceof X509Certificate ? await param.publicKey.export(crypto) : param;
-      const spki = await crypto.subtle.exportKey("spki", publicKey);
-      const key = new PublicKey(spki);
-      const id = await key.getKeyIdentifier(crypto);
-
-      return new AuthorityKeyIdentifierExtension(Convert.ToHex(id), critical);
-    } else {
+  public static async create(publicKey: PublicKeyType, critical?: boolean, crypto?: Crypto): Promise<AuthorityKeyIdentifierExtension>;
+  public static async create(param: PublicKeyType | CertificateIdentifier, critical = false, crypto = cryptoProvider.get()) {
+    if ("name" in param && "serialNumber" in param) {
       return new AuthorityKeyIdentifierExtension(param, critical);
     }
+    const key = await PublicKey.create(param, crypto);
+    const id = await key.getKeyIdentifier(crypto);
+
+    return new AuthorityKeyIdentifierExtension(Convert.ToHex(id), critical);
   }
 
   /**
@@ -115,10 +104,10 @@ export class AuthorityKeyIdentifierExtension extends Extension {
       this.keyId = Convert.ToHex(aki.keyIdentifier);
     }
 
-    if (aki.authorityCertIssuer && aki.authorityCertSerialNumber) {
+    if (aki.authorityCertIssuer || aki.authorityCertSerialNumber) {
       this.certId = {
-        name: aki.authorityCertIssuer,
-        serialNumber: Convert.ToHex(aki.authorityCertSerialNumber),
+        name: aki.authorityCertIssuer || [],
+        serialNumber: aki.authorityCertSerialNumber ? Convert.ToHex(aki.authorityCertSerialNumber) : "",
       };
     }
   }

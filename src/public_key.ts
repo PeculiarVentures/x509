@@ -7,19 +7,46 @@ import { container } from "tsyringe";
 import { AlgorithmProvider, diAlgorithmProvider } from "./algorithm";
 import { PemConverter } from "./pem_converter";
 import { AsnEncodedType, PemData } from "./pem_data";
-import { cryptoProvider } from "./provider";
+import { CryptoProvider, cryptoProvider } from "./provider";
 import { TextConverter, TextObject } from "./text_converter";
 
 export interface IPublicKeyContainer {
   publicKey: PublicKey;
 }
 
+/**
+ * Public key type. Represents a public key in different formats.
+ */
 export type PublicKeyType = PublicKey | CryptoKey | IPublicKeyContainer | BufferSource;
 
 /**
  * Representation of Subject Public Key Info
  */
 export class PublicKey extends PemData<SubjectPublicKeyInfo> {
+
+  /**
+   * Creates a new instance from a public key data
+   * @param data Public key data
+   * @param crypto Crypto provider. Default is from CryptoProvider
+   */
+  public static async create(data: PublicKeyType, crypto = cryptoProvider.get()): Promise<PublicKey> {
+    if (data instanceof PublicKey) {
+      return data;
+    } else if (CryptoProvider.isCryptoKey(data)) {
+      if (data.type !== "public") {
+        throw new TypeError("Public key is required");
+      }
+      const spki = await crypto.subtle.exportKey("spki", data);
+
+      return new PublicKey(spki);
+    } else if ((data as IPublicKeyContainer).publicKey) {
+      return (data as IPublicKeyContainer).publicKey;
+    } else if (BufferSourceConverter.isBufferSource(data)) {
+      return new PublicKey(data);
+    } else {
+      throw new TypeError("Unsupported PublicKeyType");
+    }
+  }
 
   protected readonly tag: string;
 
@@ -132,9 +159,26 @@ export class PublicKey extends PemData<SubjectPublicKeyInfo> {
    * Returns Subject Key Identifier as specified in {@link https://datatracker.ietf.org/doc/html/rfc5280#section-4.2.1.2 RFC5280}
    * @param crypto Crypto provider. Default is from CryptoProvider
    */
-  public async getKeyIdentifier(crypto?: Crypto) {
-    if (!crypto) {
-      crypto = cryptoProvider.get();
+  public async getKeyIdentifier(crypto?: Crypto): Promise<ArrayBuffer>;
+  /**
+   * Returns Subject Key Identifier for specified algorithm
+   * @param algorithm Hash algorithm
+   * @param crypto Crypto provider. Default is from CryptoProvider
+   */
+  public async getKeyIdentifier(algorithm: globalThis.AlgorithmIdentifier, crypto?: Crypto): Promise<ArrayBuffer>;
+  public async getKeyIdentifier(...args: any[]) {
+    let crypto: Crypto = cryptoProvider.get();
+    let algorithm = "SHA-1";
+
+    if (args.length === 1) {
+      if (typeof args[0] === "string") {
+        algorithm = args[0];
+      } else {
+        crypto = args[0];
+      }
+    } else if (args.length === 2) {
+      algorithm = args[0];
+      crypto = args[1];
     }
 
     // The keyIdentifier is composed of the 160-bit SHA-1 hash of the
@@ -143,7 +187,7 @@ export class PublicKey extends PemData<SubjectPublicKeyInfo> {
 
     const asn = AsnConvert.parse(this.rawData, SubjectPublicKeyInfo);
 
-    return await crypto.subtle.digest("SHA-1", asn.subjectPublicKey);
+    return await crypto.subtle.digest(algorithm, asn.subjectPublicKey);
   }
 
   public override toTextObject(): TextObject {
