@@ -68,5 +68,28 @@ describe("Extensions", () => {
       });
       assert.strictEqual(ext.toString("hex"), "30818706082b06010505070101047b3079302406082b060105050730018618687474703a2f2f6f6373702e64696769636572742e636f6d305106082b060105050730028645687474703a2f2f636163657274732e64696769636572742e636f6d2f47656f5472757374476c6f62616c544c5352534134303936534841323536323032324341312e637274");
     });
+
+    it("should create with multiple values and check text", () => {
+      const ext = new AuthorityInfoAccessExtension({
+        ocsp: ["http://ocsp.digicert.com", "http://ocsp2.digicert.com"],
+        caIssuers: [
+          "http://cacerts.digicert.com/GeoTrustGlobalTLSRSA4096SHA2562022CA1.crt",
+          "http://cacerts2.digicert.com/GeoTrustGlobalTLSRSA4096SHA2562022CA2.crt"
+        ],
+        caRepository: ["http://crls.digicert.com/GeoTrustGlobalTLSRSA4096SHA2562022CA1.crl"],
+        timeStamping: ["http://tsa.digicert.com/GeoTrustGlobalTLSRSA4096SHA2562022CA1"],
+      });
+      assert.strictEqual(ext.toString("text"), [
+        "Authority Info Access:",
+        "  OCSP:",
+        "    URL 1: http://ocsp.digicert.com",
+        "    URL 2: http://ocsp2.digicert.com",
+        "  CA Issuers:",
+        "    URL 1: http://cacerts.digicert.com/GeoTrustGlobalTLSRSA4096SHA2562022CA1.crt",
+        "    URL 2: http://cacerts2.digicert.com/GeoTrustGlobalTLSRSA4096SHA2562022CA2.crt",
+        "  Time Stamping: http://tsa.digicert.com/GeoTrustGlobalTLSRSA4096SHA2562022CA1",
+        "  CA Repository: http://crls.digicert.com/GeoTrustGlobalTLSRSA4096SHA2562022CA1.crl",
+      ].join("\n"));
+    });
   });
 });
