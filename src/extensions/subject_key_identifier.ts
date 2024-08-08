@@ -14,24 +14,13 @@ export class SubjectKeyIdentifierExtension extends Extension {
   public static override NAME = "Subject Key Identifier";
 
   /**
-   * Creates subject key identifier extension from CryptoKey
-   * @param publicKey Public CryptoKey
+   * Creates subject key identifier extension from public key data
+   * @param publicKey Public key data
    * @param critical Indicates where extension is critical. Default is `false`
    * @param crypto WebCrypto provider. Default is from CryptoProvider
    */
   public static async create(publicKey: PublicKeyType, critical = false, crypto = cryptoProvider.get()) {
-    let spki: BufferSource;
-    if (publicKey instanceof PublicKey) {
-      spki = publicKey.rawData;
-    } else if ("publicKey" in publicKey) {
-      spki = publicKey.publicKey.rawData;
-    } else if (BufferSourceConverter.isBufferSource(publicKey)) {
-      spki = publicKey;
-    } else {
-      spki = await crypto.subtle.exportKey("spki", publicKey);
-    }
-
-    const key = new PublicKey(spki);
+    const key = await PublicKey.create(publicKey, crypto);
     const id = await key.getKeyIdentifier(crypto);
 
     return new SubjectKeyIdentifierExtension(Convert.ToHex(id), critical);
