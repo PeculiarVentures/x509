@@ -1,6 +1,6 @@
 import * as assert from "node:assert";
 import { Crypto } from "@peculiar/webcrypto";
-import { AuthorityKeyIdentifierExtension, CRLDistributionPointsExtension, CertificateIdentifier } from "../src";
+import { AuthorityInfoAccessExtension, AuthorityKeyIdentifierExtension, CRLDistributionPointsExtension, CertificateIdentifier } from "../src";
 import { PublicKey } from "../src/public_key";
 
 
@@ -50,4 +50,23 @@ describe("Extensions", () => {
     });
   });
 
+  describe("AuthorityInfoAccessExtension", () => {
+    const raw = Buffer.from("30818706082B06010505070101047B3079302406082B060105050730018618687474703A2F2F6F6373702E64696769636572742E636F6D305106082B060105050730028645687474703A2F2F636163657274732E64696769636572742E636F6D2F47656F5472757374476C6F62616C544C5352534134303936534841323536323032324341312E637274", "hex");
+    it("should parse", () => {
+      const ext = new AuthorityInfoAccessExtension(raw);
+      assert.strictEqual(ext.toString("text"), [
+        "Authority Info Access:",
+        "  OCSP: http://ocsp.digicert.com",
+        "  CA Issuers: http://cacerts.digicert.com/GeoTrustGlobalTLSRSA4096SHA2562022CA1.crt",
+      ].join("\n"));
+    });
+
+    it("should create", () => {
+      const ext = new AuthorityInfoAccessExtension({
+        ocsp: ["http://ocsp.digicert.com"],
+        caIssuers: ["http://cacerts.digicert.com/GeoTrustGlobalTLSRSA4096SHA2562022CA1.crt"],
+      });
+      assert.strictEqual(ext.toString("hex"), "30818706082b06010505070101047b3079302406082b060105050730018618687474703a2f2f6f6373702e64696769636572742e636f6d305106082b060105050730028645687474703a2f2f636163657274732e64696769636572742e636f6d2f47656f5472757374476c6f62616c544c5352534134303936534841323536323032324341312e637274");
+    });
+  });
 });
