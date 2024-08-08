@@ -67,7 +67,7 @@ export interface X509CertificateCreateWithSignatureParams extends X509Certificat
   /**
    * Manual signing requires CryptoKey that includes signature algorithm
    */
-  publicKey: CryptoKey;
+  publicKey: PublicKeyType;
 }
 
 export type X509CertificateCreateParams = X509CertificateCreateWithKeyParams | X509CertificateCreateWithSignatureParams;
@@ -176,7 +176,7 @@ export class X509CertificateGenerator {
     };
     const signatureAlgorithm = ("signingKey" in params)
       ? { ...defaultSigningAlgorithm, ...params.signingAlgorithm, ...params.signingKey.algorithm } as HashedAlgorithm
-      : params.publicKey.algorithm as HashedAlgorithm;
+      : { ...defaultSigningAlgorithm, ...params.signingAlgorithm } as HashedAlgorithm;
 
     const algProv = container.resolve<AlgorithmProvider>(diAlgorithmProvider);
     asnX509.tbsCertificate.signature = asnX509.signatureAlgorithm = algProv.toAsnAlgorithm(signatureAlgorithm);
