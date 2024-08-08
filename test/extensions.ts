@@ -9,7 +9,7 @@ describe("Extensions", () => {
     context("create", () => {
       it("should create an instance from an array of URLs", () => {
         const urls = ["http://example.com"];
-        const ext = CRLDistributionPointsExtension.create(urls);
+        const ext = new CRLDistributionPointsExtension(urls);
         assert.strictEqual(ext.toString("text"), [
           "CRL Distribution Points:",
           "  Distribution Point:",

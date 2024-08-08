@@ -11,25 +11,6 @@ import { GeneralName } from "../general_name";
 export class CRLDistributionPointsExtension extends Extension {
   public static override NAME = "CRL Distribution Points";
 
-  /**
-   * Creates a new CRLDistributionPointsExtension from an array of URLs.
-   * @param urls An array of URLs to be used as distribution points.
-   * @returns A new instance of CRLDistributionPointsExtension.
-   */
-  public static create(urls: string[]): CRLDistributionPointsExtension {
-    const dps = urls.map(url => {
-      const dp = new asn1X509.DistributionPoint({
-        distributionPoint: new asn1X509.DistributionPointName({
-          fullName: [new asn1X509.GeneralName({ uniformResourceIdentifier: url })],
-        }),
-      });
-
-      return dp;
-    });
-
-    return new CRLDistributionPointsExtension(dps);
-  }
-
   public distributionPoints: asn1X509.DistributionPoint[];
 
   /**
@@ -43,9 +24,26 @@ export class CRLDistributionPointsExtension extends Extension {
    * @param critical Indicates whether the extension is critical. Default is `false`
    */
   public constructor(value: asn1X509.DistributionPoint[], critical?: boolean);
+  /**
+   * Creates a new instance from an array of URLs
+   * @param urls An array of URLs to be used as distribution points.
+   * @param critical Indicates whether the extension is critical. Default is `false`
+   */
+  public constructor(urls: string[], critical?: boolean);
   public constructor(...args: any[]) {
     if (BufferSourceConverter.isBufferSource(args[0])) {
       super(args[0]);
+    } else if (Array.isArray(args[0]) && typeof args[0][0] === "string") {
+      const urls = args[0] as string[];
+      const dps = urls.map(url => {
+        return new asn1X509.DistributionPoint({
+          distributionPoint: new asn1X509.DistributionPointName({
+            fullName: [new asn1X509.GeneralName({ uniformResourceIdentifier: url })],
+          }),
+        });
+      });
+      const value = new asn1X509.CRLDistributionPoints(dps);
+      super(asn1X509.id_ce_cRLDistributionPoints, args[1], AsnConvert.serialize(value));
     } else {
       const value = new asn1X509.CRLDistributionPoints(args[0]);
       super(asn1X509.id_ce_cRLDistributionPoints, args[1], AsnConvert.serialize(value));
@@ -63,7 +61,6 @@ export class CRLDistributionPointsExtension extends Extension {
 
   public override toTextObject(): TextObject {
     const obj = this.toTextObjectWithoutValue();
-
 
     obj["Distribution Point"] = this.distributionPoints.map(dp => {
       const dpObj: any = {};
