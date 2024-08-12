@@ -167,18 +167,21 @@ export class PublicKey extends PemData<SubjectPublicKeyInfo> {
    */
   public async getKeyIdentifier(algorithm: globalThis.AlgorithmIdentifier, crypto?: Crypto): Promise<ArrayBuffer>;
   public async getKeyIdentifier(...args: any[]) {
-    let crypto: Crypto = cryptoProvider.get();
+    let crypto: Crypto;
     let algorithm = "SHA-1";
 
     if (args.length === 1) {
       if (typeof args[0] === "string") {
         algorithm = args[0];
+        crypto = cryptoProvider.get();
       } else {
         crypto = args[0];
       }
     } else if (args.length === 2) {
       algorithm = args[0];
       crypto = args[1];
+    } else {
+      crypto = cryptoProvider.get();
     }
 
     // The keyIdentifier is composed of the 160-bit SHA-1 hash of the
