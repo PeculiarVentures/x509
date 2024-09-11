@@ -1,0 +1,3 @@
+# @peculiar/x509 - TypeScript/Javascript library for generating X.509 Certificates, Certificate Requests and validating certificate chains.
+
+@peculiar/x509 is a comprehensive TypeScript/JavaScript library designed to simplify the handling of X.509 Certificates and Certificate Requests. It provides a user-friendly interface for tasks such as generating certificates, validating certificate chains, parsing certificate information, and creating certificate signing requests. The library is built on top of @peculiar/asn1-schema, offering a robust and efficient foundation for cryptographic operations involving X.509 certificates.

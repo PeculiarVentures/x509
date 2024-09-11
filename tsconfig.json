@@ -9,5 +9,9 @@
     "importHelpers": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
-  }
+  },
+  "exclude": [
+    "website",
+    "build/*.ts"
+  ]
 }

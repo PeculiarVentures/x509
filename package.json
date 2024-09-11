@@ -8,7 +8,6 @@
   "types": "build/index.d.ts",
   "scripts": {
     "test": "mocha",
-    "clear": "rimraf build/* docs",
     "lint": "eslint --ext .ts src/ test/",
     "lint:fix": "eslint --fix --ext .ts src/ test/",
     "build": "npm run build:module",
@@ -16,7 +15,6 @@
     "rebuild": "npm run clear && npm run build",
     "coverage": "nyc npm test",
     "coveralls": "nyc report --reporter=text-lcov | coveralls",
-    "docs": "typedoc",
     "pub": "npm run pub:patch",
     "pub:patch": "npm version patch && npm run git:push",
     "pub:minor": "npm version minor && npm run git:push",
@@ -88,7 +86,6 @@
     "rollup-plugin-dts": "^6.1.1",
     "rollup-plugin-typescript2": "^0.36.0",
     "ts-node": "^10.9.2",
-    "typedoc": "^0.25.13",
     "typescript": "^5.4.5"
   },
   "dependencies": {
