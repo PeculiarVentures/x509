@@ -72,7 +72,7 @@ const config: Config = {
       logo: {
         alt: "x509",
         src: "/img/logo.svg",
-        width: 120,
+        width: 80,
       },
       items: [
         {
