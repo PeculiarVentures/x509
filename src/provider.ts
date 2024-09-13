@@ -53,17 +53,17 @@ export class CryptoProvider implements Map<string, Crypto> {
     return this.items.size;
   }
 
-  entries(): IterableIterator<[string, Crypto]> {
+  entries(): MapIterator<[string, Crypto]> {
     return this.items.entries();
   }
 
-  keys(): IterableIterator<string> {
+  keys(): MapIterator<string> {
     return this.items.keys();
   }
-  values(): IterableIterator<Crypto> {
+  values(): MapIterator<Crypto> {
     return this.items.values();
   }
-  [Symbol.iterator](): IterableIterator<[string, Crypto]> {
+  [Symbol.iterator](): MapIterator<[string, Crypto]> {
     return this.items[Symbol.iterator]();
   }
   [Symbol.toStringTag] = "CryptoProvider";

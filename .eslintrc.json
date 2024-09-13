@@ -2,7 +2,8 @@
   "root": true,
   "parser": "@typescript-eslint/parser",
   "plugins": [
-    "@typescript-eslint"
+    "@typescript-eslint",
+    "@stylistic/ts"
   ],
   "extends": [
     "eslint:recommended",
@@ -12,8 +13,8 @@
     "@typescript-eslint/explicit-module-boundary-types": 0,
     "@typescript-eslint/no-explicit-any": 0,
     "newline-before-return": 1,
-    "@typescript-eslint/semi": 1,
-    "@typescript-eslint/quotes": [
+    "@stylistic/ts/semi": 1,
+    "@stylistic/ts/quotes": [
       "warn",
       "double"
     ]
