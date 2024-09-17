@@ -8,7 +8,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [18.x, 20.x]
+        node-version: [20.x, 22.x]
 
     steps:
       - uses: actions/checkout@v3
@@ -40,7 +40,7 @@ jobs:
         run: yarn coverage
 
       - name: Coveralls
-        uses: coverallsapp/github-action@v1
+        uses: coverallsapp/github-action@v2
         with:
           parallel: true
           flag-name: run-${{ matrix.node-version }}
