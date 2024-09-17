@@ -3,7 +3,7 @@ export type MapForEachCallback = (value: Crypto, key: string, map: Map<string, C
 /**
  * Crypto provider
  */
-export class CryptoProvider implements Map<string, Crypto> {
+export class CryptoProvider {
 
   public static DEFAULT = "default";
 
