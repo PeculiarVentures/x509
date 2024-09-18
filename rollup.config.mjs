@@ -36,6 +36,7 @@ const main = {
         },
         exclude: [
           "test",
+          "website",
         ],
       },
     }),
@@ -73,6 +74,7 @@ const browser = [
           },
           exclude: [
             "test",
+            "website",
           ],
         }
       }),

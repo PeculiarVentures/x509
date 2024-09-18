@@ -106,5 +106,4 @@ dist
 # MacOS
 .DS_Store
 
-build
-docs
+/build
