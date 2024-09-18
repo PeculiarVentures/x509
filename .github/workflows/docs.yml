@@ -19,8 +19,8 @@ jobs:
           node-version: 20
           cache: "yarn"
 
-      - name: Install dependencies
-        run: yarn
+      - name: Install website dependencies
+        run: yarn --cwd website install
 
       - name: Build docs
         run: yarn --cwd website build
