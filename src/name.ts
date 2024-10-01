@@ -242,10 +242,10 @@ export class Name {
    */
   private fromString(data: string) {
     const asn = new AsnName();
-
     const regex = /(\d\.[\d.]*\d|[A-Za-z]+)=((?:"")|(?:".*?[^\\]")|(?:[^,+].*?(?:[^\\][,+]))|(?:))([,+])?/g;
     let matches: RegExpExecArray | null = null;
     let level = ",";
+
     // eslint-disable-next-line no-cond-assign
     while (matches = regex.exec(`${data},`)) {
       let [, type, value] = matches;
@@ -256,45 +256,9 @@ export class Name {
       }
       const next = matches[3];
 
-      // type
-      if (!/[\d.]+/.test(type)) {
-        type = this.getName(type) || "";
-      }
-      if (!type) {
-        throw new Error(`Cannot get OID for name type '${type}'`);
-      }
+      type = this.getTypeOid(type);
+      const attr = this.createAttribute(type, value);
 
-      // value
-      const attr = new AttributeTypeAndValue({ type });
-
-      if (value.charAt(0) === "#") {
-        // hexadecimal
-        attr.value.anyValue = Convert.FromHex(value.slice(1));
-      } else {
-        // simple
-        const quotedMatches = /"(.*?[^\\])?"/.exec(value);
-        if (quotedMatches) {
-          // quoted
-          value = quotedMatches[1];
-        }
-        value = value
-          .replace(/\\0a/ig, "\n")  // \n
-          .replace(/\\0d/ig, "\r")  // \r
-          .replace(/\\0g/ig, "\t")  // \t
-          .replace(/\\(.)/g, "$1"); // unescape
-
-        if (type === this.getName("E") || type === this.getName("DC")) {
-          attr.value.ia5String = value;
-        } else {
-          if (Name.isPrintableString(value)) {
-            // PrintableString
-            attr.value.printableString = value;
-          } else {
-            // UTF8String
-            attr.value.utf8String = value;
-          }
-        }
-      }
       if (level === "+") {
         asn[asn.length - 1].push(attr);
       } else {
@@ -317,44 +281,88 @@ export class Name {
     for (const item of data) {
       const asnRdn = new RelativeDistinguishedName();
       for (const type in item) {
-        let typeId = type;
-        if (!/[\d.]+/.test(type)) {
-          typeId = this.getName(type) || "";
-        }
-        if (!typeId) {
-          throw new Error(`Cannot get OID for name type '${type}'`);
-        }
-
+        const typeId = this.getTypeOid(type);
         const values = item[type];
         for (const value of values) {
-          const asnAttr = new AttributeTypeAndValue({ type: typeId });
-          if (typeof value === "object") {
-            for (const key in value) {
-              switch (key) {
-                case "ia5String": asnAttr.value.ia5String = value[key]; break;
-                case "utf8String": asnAttr.value.utf8String = value[key]; break;
-                case "universalString": asnAttr.value.universalString = value[key]; break;
-                case "bmpString": asnAttr.value.bmpString = value[key]; break;
-                case "printableString": asnAttr.value.printableString = value[key]; break;
-              }
-            }
-          } else if (value[0] === "#") {
-            asnAttr.value.anyValue = Convert.FromHex(value.slice(1));
-          } else {
-            if (typeId === this.getName("E") || typeId === this.getName("DC")) {
-              asnAttr.value.ia5String = value;
-            } else {
-              asnAttr.value.printableString = value;
-            }
-          }
+          const asnAttr = this.createAttribute(typeId, value);
           asnRdn.push(asnAttr);
         }
       }
-
       asn.push(asnRdn);
     }
 
     return asn;
+  }
+
+  /**
+   * Gets the OID for a given type name
+   * @param type The type name
+   * @returns The OID string
+   */
+  private getTypeOid(type: string): string {
+    if (!/[\d.]+/.test(type)) {
+      type = this.getName(type) || "";
+    }
+    if (!type) {
+      throw new Error(`Cannot get OID for name type '${type}'`);
+    }
+
+    return type;
+  }
+
+  /**
+   * Creates an AttributeTypeAndValue object
+   * @param type The type OID
+   * @param value The value
+   * @returns The AttributeTypeAndValue object
+   */
+  private createAttribute(type: string, value: string | JsonAttributeObject): AttributeTypeAndValue {
+    const attr = new AttributeTypeAndValue({ type });
+
+    if (typeof value === "object") {
+      for (const key in value) {
+        switch (key) {
+          case "ia5String": attr.value.ia5String = value[key]; break;
+          case "utf8String": attr.value.utf8String = value[key]; break;
+          case "universalString": attr.value.universalString = value[key]; break;
+          case "bmpString": attr.value.bmpString = value[key]; break;
+          case "printableString": attr.value.printableString = value[key]; break;
+        }
+      }
+    } else if (value[0] === "#") {
+      attr.value.anyValue = Convert.FromHex(value.slice(1));
+    } else {
+      const processedValue = this.processStringValue(value);
+      if (type === this.getName("E") || type === this.getName("DC")) {
+        attr.value.ia5String = processedValue;
+      } else {
+        if (Name.isPrintableString(processedValue)) {
+          attr.value.printableString = processedValue;
+        } else {
+          attr.value.utf8String = processedValue;
+        }
+      }
+    }
+
+    return attr;
+  }
+
+  /**
+   * Processes a string value by unescaping and replacing special characters
+   * @param value The string value
+   * @returns The processed string value
+   */
+  private processStringValue(value: string): string {
+    const quotedMatches = /"(.*?[^\\])?"/.exec(value);
+    if (quotedMatches) {
+      value = quotedMatches[1];
+    }
+
+    return value
+      .replace(/\\0a/ig, "\n")  // \n
+      .replace(/\\0d/ig, "\r")  // \r
+      .replace(/\\0g/ig, "\t")  // \t
+      .replace(/\\(.)/g, "$1"); // unescape
   }
 
   /**
