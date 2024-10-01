@@ -207,6 +207,36 @@ context("Name", () => {
 
   });
 
+  context("from string", () => {
+    it("CN is ASCII", () => {
+      const name = new x509.Name("CN=Some");
+      assert.strictEqual(name.toString(), "CN=Some");
+      assert.strictEqual(Buffer.from(name.toArrayBuffer()).toString("hex"), "300f310d300b06035504031304536f6d65");
+    });
+    it("CN is UTF8", () => {
+      const name = new x509.Name("CN=Привет");
+      assert.strictEqual(name.toString(), "CN=Привет");
+      assert.strictEqual(Buffer.from(name.toArrayBuffer()).toString("hex"), "30173115301306035504030c0cd09fd180d0b8d0b2d0b5d182");
+    });
+  });
+
+  context("from JSON", () => {
+    it("CN is ASCII", () => {
+      const name = new x509.Name([
+        { CN: ["Some"] },
+      ]);
+      assert.strictEqual(name.toString(), "CN=Some");
+      assert.strictEqual(Buffer.from(name.toArrayBuffer()).toString("hex"), "300f310d300b06035504031304536f6d65");
+    });
+    it("CN is UTF8", () => {
+      const name = new x509.Name([
+        { CN: ["Привет"] },
+      ]);
+      assert.strictEqual(name.toString(), "CN=Привет");
+      assert.strictEqual(Buffer.from(name.toArrayBuffer()).toString("hex"), "30173115301306035504030c0cd09fd180d0b8d0b2d0b5d182");
+    });
+  });
+
 });
 
 context("NameIdentifier", () => {
