@@ -1,19 +1,19 @@
-import * as assert from "assert";
+import { describe, it, expect, beforeAll, beforeEach, afterAll, afterEach } from "vitest";
 import * as asn1Schema from "@peculiar/asn1-schema";
 import * as asn1X509 from "@peculiar/asn1-x509";
 import * as x509 from "../src";
 import { Convert } from "pvtsutils";
 
-context("Name", () => {
+describe("Name", () => {
 
   function assertName(name: asn1X509.Name, text: string) {
     // serialize
     const value = new x509.Name(name).toString();
-    assert.strictEqual(value, text);
+    expect(value).toBe(text);
 
     // parse
     const name2 = new x509.Name(text);
-    assert.strictEqual(name2.toString(), text);
+    expect(name2.toString()).toBe(text);
   }
 
   it("Simple list of RDNs (joined by comma)", () => {
@@ -43,7 +43,7 @@ context("Name", () => {
     assertName(name, "1.2.3.4.5=#04024869");
   });
 
-  context("Escaped chars", () => {
+  describe("Escaped chars", () => {
 
     it("# character at the beginning", () => {
       const name = new asn1X509.Name([
@@ -88,7 +88,7 @@ context("Name", () => {
     it("parse quoted value", () => {
       const text = "CN=\"here is a test message with \\\",\\\" character\"+CN=It includes \\< \\> \\+ escaped characters\\ ";
       const name = new x509.Name(text);
-      assert.strictEqual(name.toString(), "CN=here is a test message with \\\"\\,\\\" character+CN=It includes \\< \\> \\+ escaped characters\\ ");
+      expect(name.toString()).toBe("CN=here is a test message with \\\"\\,\\\" character+CN=It includes \\< \\> \\+ escaped characters\\ ");
     });
 
   });
@@ -102,19 +102,19 @@ context("Name", () => {
       { CN: ["name2", "name3"], E: ["some@email.com"] },
       { "1.2.3.4.5": ["#04020102"], DC: ["some.com"] },
     ];
-    assert.deepStrictEqual(name.toJSON(), json);
+    expect(name.toJSON()).toEqual(json);
 
     const name2 = new x509.Name(json);
-    assert.strictEqual(name2.toString(), text);
+    expect(name2.toString()).toBe(text);
 
-    assert.strictEqual(Convert.ToHex(name.toArrayBuffer()), "3071310e300c060355040313056e616d65313139300c060355040313056e616d6532300c060355040313056e616d6533301b06092a864886f70d010901160e736f6d6540656d61696c2e636f6d3124300a06042a030405040201023016060a0992268993f22c6401191608736f6d652e636f6d");
+    expect(Convert.ToHex(name.toArrayBuffer())).toBe("3071310e300c060355040313056e616d65313139300c060355040313056e616d6532300c060355040313056e616d6533301b06092a864886f70d010901160e736f6d6540656d61696c2e636f6d3124300a06042a030405040201023016060a0992268993f22c6401191608736f6d652e636f6d");
   });
 
   it("parse with odd , marks", () => {
     const text = "  ,  , ,  CN=Some Name, O=Peculiar Ventures\\, LLC, O=\"Peculiar Ventures, LLC\", CN=name2+O=Test+CN=name3+E=some@email.com, 1.2.3.4.5=#04020102+DC=some.com,, , ";
     const name = new x509.Name(text);
 
-    assert.strictEqual(name.toString(), "CN=Some Name, O=Peculiar Ventures\\, LLC, O=Peculiar Ventures\\, LLC, CN=name2+O=Test+CN=name3+E=some@email.com, 1.2.3.4.5=#04020102+DC=some.com");
+    expect(name.toString()).toBe("CN=Some Name, O=Peculiar Ventures\\, LLC, O=Peculiar Ventures\\, LLC, CN=name2+O=Test+CN=name3+E=some@email.com, 1.2.3.4.5=#04020102+DC=some.com");
   });
 
   it("extra names", () => {
@@ -125,11 +125,11 @@ context("Name", () => {
       "GUID": "1.2.3.4.5.3",
     });
 
-    assert.strictEqual(Convert.ToHex(name.toArrayBuffer()), "30663119301706052a030405010c0e736f6d6540656d61696c2e636f6d3116301406052a03040502130b3139322e3136382e302e313131302f06052a030405030c267b38656531336535332d326331632d343262622d386466372d3339393237633062646262367d");
-    assert.deepStrictEqual(name.toJSON(), [
+    expect(Convert.ToHex(name.toArrayBuffer())).toBe("30663119301706052a030405010c0e736f6d6540656d61696c2e636f6d3116301406052a03040502130b3139322e3136382e302e313131302f06052a030405030c267b38656531336535332d326331632d343262622d386466372d3339393237633062646262367d");
+    expect(name.toJSON()).toEqual([
       { "Email": ["some@email.com"] },
       { "IP": ["192.168.0.1"] },
-      { "GUID": ["{8ee13e53-2c1c-42bb-8df7-39927c0bdbb6}"] },
+      { "GUID": ["{8ee13e53-2c1c-42bb-8df7-39927c0bdbb6}"] }
     ]);
   });
 
@@ -146,28 +146,28 @@ context("Name", () => {
     ]);
 
     const name = new x509.Name(asn1Schema.AsnConvert.serialize(asnName));
-    assert.strictEqual(name.toString(), "CN=Some name");
+    expect(name.toString()).toBe("CN=Some name");
 
-    assert.strictEqual(Convert.ToHex(name.toArrayBuffer()), "30143112301006035504030c09536f6d65206e616d65");
+    expect(Convert.ToHex(name.toArrayBuffer())).toBe("30143112301006035504030c09536f6d65206e616d65");
   });
 
-  context("get thumbprint", () => {
+  describe("get thumbprint", () => {
 
     it("default", async () => {
       const name = new x509.Name("CN=Some");
       const hash = await name.getThumbprint();
-      assert.strictEqual(Convert.ToHex(hash), "4c19048809647a5cd443000c4b1b9d174164bf03");
+      expect(Convert.ToHex(hash)).toBe("4c19048809647a5cd443000c4b1b9d174164bf03");
     });
 
     it("SHA-256", async () => {
       const name = new x509.Name("CN=Some");
       const hash = await name.getThumbprint("SHA-256");
-      assert.strictEqual(Convert.ToHex(hash), "38e29244d77fb9f2735d034aba8a6ecaf5070f5fe18efb050424f96cecb0db03");
+      expect(Convert.ToHex(hash)).toBe("38e29244d77fb9f2735d034aba8a6ecaf5070f5fe18efb050424f96cecb0db03");
     });
 
   });
 
-  context("getField", () => {
+  describe("getField", () => {
 
     const dn = "CN=n1+CN=n2, CN=n3+O=o1, O=o2";
 
@@ -201,47 +201,47 @@ context("Name", () => {
       it(t.name, () => {
         const name = new x509.Name(dn);
         const res = name.getField(t.args);
-        assert.deepStrictEqual(res, t.want);
+        expect(res).toEqual(t.want);
       });
     }
 
   });
 
-  context("from string", () => {
+  describe("from string", () => {
     it("CN is ASCII", () => {
       const name = new x509.Name("CN=Some");
-      assert.strictEqual(name.toString(), "CN=Some");
-      assert.strictEqual(Buffer.from(name.toArrayBuffer()).toString("hex"), "300f310d300b06035504031304536f6d65");
+      expect(name.toString()).toBe("CN=Some");
+      expect(Buffer.from(name.toArrayBuffer()).toString("hex")).toBe("300f310d300b06035504031304536f6d65");
     });
     it("CN is UTF8", () => {
       const name = new x509.Name("CN=Привет");
-      assert.strictEqual(name.toString(), "CN=Привет");
-      assert.strictEqual(Buffer.from(name.toArrayBuffer()).toString("hex"), "30173115301306035504030c0cd09fd180d0b8d0b2d0b5d182");
+      expect(name.toString()).toBe("CN=Привет");
+      expect(Buffer.from(name.toArrayBuffer()).toString("hex")).toBe("30173115301306035504030c0cd09fd180d0b8d0b2d0b5d182");
     });
   });
 
-  context("from JSON", () => {
+  describe("from JSON", () => {
     it("CN is ASCII", () => {
       const name = new x509.Name([
         { CN: ["Some"] },
       ]);
-      assert.strictEqual(name.toString(), "CN=Some");
-      assert.strictEqual(Buffer.from(name.toArrayBuffer()).toString("hex"), "300f310d300b06035504031304536f6d65");
+      expect(name.toString()).toBe("CN=Some");
+      expect(Buffer.from(name.toArrayBuffer()).toString("hex")).toBe("300f310d300b06035504031304536f6d65");
     });
     it("CN is UTF8", () => {
       const name = new x509.Name([
         { CN: ["Привет"] },
       ]);
-      assert.strictEqual(name.toString(), "CN=Привет");
-      assert.strictEqual(Buffer.from(name.toArrayBuffer()).toString("hex"), "30173115301306035504030c0cd09fd180d0b8d0b2d0b5d182");
+      expect(name.toString()).toBe("CN=Привет");
+      expect(Buffer.from(name.toArrayBuffer()).toString("hex")).toBe("30173115301306035504030c0cd09fd180d0b8d0b2d0b5d182");
     });
   });
 
 });
 
-context("NameIdentifier", () => {
+describe("NameIdentifier", () => {
 
-  context("findId", () => {
+  describe("findId", () => {
 
     const names = new x509.NameIdentifier({
       "2.5.4.3": "CN",
@@ -271,21 +271,21 @@ context("NameIdentifier", () => {
     for (const t of tests) {
       it(t.name, () => {
         const name = names.findId(t.args);
-        assert.strictEqual(name, t.want);
+        expect(name).toBe(t.want);
       });
     }
 
   });
 
-  context("isASCII", () => {
+  describe("isASCII", () => {
     it("should return true for ASCII text", () => {
       const result = x509.Name.isASCII("Hello, World!");
-      assert.strictEqual(result, true);
+      expect(result).toBe(true);
     });
 
     it("should return false for non-ASCII text", () => {
       const result = x509.Name.isASCII("Привет, мир!");
-      assert.strictEqual(result, false);
+      expect(result).toBe(false);
     });
   });
 

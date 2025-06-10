@@ -1,11 +1,11 @@
-import * as assert from "assert";
+import { describe, it, expect, beforeAll, beforeEach, afterAll, afterEach } from "vitest";
 import * as asn1X509 from "@peculiar/asn1-x509";
 import * as x509 from "../src";
 import * as asn1Schema from "@peculiar/asn1-schema";
 
-context("GeneralName", () => {
+describe("GeneralName", () => {
 
-  context("constructor", () => {
+  describe("constructor", () => {
 
     const tests: {
       name: string;
@@ -82,17 +82,17 @@ context("GeneralName", () => {
 
         if (t.wantError) {
 
-          assert.throws(create, t.wantError);
+          expect(create).toThrow(t.wantError);
         } else {
           const obj = create().toJSON();
-          assert.deepStrictEqual(obj, t.want);
+          expect(obj).toEqual(t.want);
         }
       });
     }
 
   });
 
-  context("toString", () => {
+  describe("toString", () => {
     const tests: {
       name: string;
       args: { type: x509.GeneralNameType; value: string; };
@@ -143,16 +143,16 @@ context("GeneralName", () => {
       it(t.name, () => {
         const name = new x509.GeneralName(t.args.type, t.args.value);
         const text = name.toString("text");
-        assert.strictEqual(text, t.want);
+        expect(text).toBe(t.want);
       });
     }
   });
 
 });
 
-context("GeneralNames", () => {
+describe("GeneralNames", () => {
 
-  context("constructor", () => {
+  describe("constructor", () => {
     const raw = Buffer.from("302ba41f301d310d300b060355040313046e616d65310c300a060355040a13036f72678208736f6d652e636f6d", "hex");
 
     const tests: {
@@ -202,13 +202,13 @@ context("GeneralNames", () => {
     for (const t of tests) {
       it(t.name, () => {
         const obj = new x509.GeneralNames(t.args as any);
-        assert.deepStrictEqual(obj.toJSON(), t.want);
+        expect(obj.toJSON()).toEqual(t.want);
       });
     }
 
   });
 
-  context("toString", () => {
+  describe("toString", () => {
     const tests: {
       name: string;
       args: x509.JsonGeneralNames;
@@ -229,7 +229,7 @@ context("GeneralNames", () => {
       it(t.name, () => {
         const name = new x509.GeneralNames(t.args);
         const text = name.toString("text");
-        assert.strictEqual(text, t.want);
+        expect(text).toBe(t.want);
       });
     }
   });

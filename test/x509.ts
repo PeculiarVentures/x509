@@ -1,7 +1,7 @@
-import * as assert from "node:assert";
+import { describe, it, expect, beforeAll, beforeEach, afterAll, afterEach } from "vitest";
 import { X509Certificate } from "../src";
 
-context("X509Certificate", () => {
+describe("X509Certificate", () => {
 
   const certWithSpecialEcParam = [
     "-----BEGIN CERTIFICATE-----",
@@ -29,7 +29,7 @@ context("X509Certificate", () => {
   it("decode certificate with special EC parameters", () => {
     // Reference: https://github.com/PeculiarVentures/x509/issues/88
     const cert = new X509Certificate(certWithSpecialEcParam);
-    assert.strictEqual(cert.publicKey.algorithm.name, "1.2.840.10045.2.1");
+    expect(cert.publicKey.algorithm.name).toBe("1.2.840.10045.2.1");
   });
 
 });

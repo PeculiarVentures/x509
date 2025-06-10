@@ -7,14 +7,15 @@
   "unpkg": "build/x509.js",
   "types": "build/index.d.ts",
   "scripts": {
-    "test": "mocha",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "lint": "eslint --ext .ts src/ test/",
     "lint:fix": "eslint --fix --ext .ts src/ test/",
     "build": "npm run build:module",
     "build:module": "rollup -c",
     "rebuild": "npm run clear && npm run build",
-    "coverage": "nyc npm test",
-    "coveralls": "nyc report --reporter=text-lcov | coveralls",
+    "coverage": "vitest run --coverage",
+    "coveralls": "vitest run --coverage && cat coverage/lcov.info | coveralls",
     "pub": "npm run pub:patch",
     "pub:patch": "npm version patch && npm run git:push",
     "pub:minor": "npm version minor && npm run git:push",
@@ -49,22 +50,6 @@
     "README.md",
     "LICENSE"
   ],
-  "nyc": {
-    "extension": [
-      ".ts",
-      ".tsx"
-    ],
-    "include": [
-      "src/**/*.ts"
-    ],
-    "exclude": [
-      "**/*.d.ts"
-    ],
-    "reporter": [
-      "lcov",
-      "text-summary"
-    ]
-  },
   "devDependencies": {
     "@babel/core": "^7.27.4",
     "@babel/preset-env": "^7.27.2",
@@ -73,19 +58,18 @@
     "@rollup/plugin-commonjs": "^28.0.3",
     "@rollup/plugin-node-resolve": "^16.0.1",
     "@rollup/plugin-terser": "^0.4.4",
-    "@types/mocha": "^10.0.10",
     "@types/node": "^24.0.0",
     "@typescript-eslint/eslint-plugin": "^8.34.0",
     "@typescript-eslint/parser": "^8.34.0",
+    "@vitest/coverage-v8": "^3.2.3",
     "eslint": "9.28.0",
-    "mocha": "^11.6.0",
-    "nyc": "^17.1.0",
     "rimraf": "^6.0.1",
     "rollup": "^4.42.0",
     "rollup-plugin-dts": "^6.2.1",
     "rollup-plugin-typescript2": "^0.36.0",
     "ts-node": "^10.9.2",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.3"
   },
   "dependencies": {
     "@peculiar/asn1-cms": "^2.3.15",

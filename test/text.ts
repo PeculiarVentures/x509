@@ -1,12 +1,12 @@
-import * as assert from "assert";
+import { describe, it, expect, beforeAll, beforeEach, afterAll, afterEach } from "vitest";
 import { Crypto } from "@peculiar/webcrypto";
 import * as x509 from "../src";
 
 const crypto = new Crypto();
 
-context("text", () => {
+describe("text", () => {
 
-  context("extensions", async () => {
+  describe("extensions", async () => {
     const keyRaw = Buffer.from("MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEh2Mkxa-PIkhoE_fo2RdBs1X5L8i6xkTEVSgiuLJILJG617ZgGfnKV_eHhEBPcoMk5KlqlSp7tlFyjnjYbl2pog", "base64url");
 
     const tests: {
@@ -150,15 +150,15 @@ context("text", () => {
       it(t.name, async () => {
         const ext = await t.factory();
         const text = ext.toString("text");
-        assert.strictEqual(text, t.want);
+        expect(text).toBe(t.want);
       });
     }
 
   });
 
-  context("TextConverter", () => {
+  describe("TextConverter", () => {
 
-    context("serialize", () => {
+    describe("serialize", () => {
       const tests: {
         name: string;
         args: x509.TextObject;
@@ -238,7 +238,7 @@ context("text", () => {
       for (const t of tests) {
         it(t.name, () => {
           const text = x509.TextConverter.serialize(t.args);
-          assert.strictEqual(text, t.want);
+          expect(text).toBe(t.want);
         });
       }
 
@@ -246,7 +246,7 @@ context("text", () => {
 
   });
 
-  context("pki objects", async () => {
+  describe("pki objects", async () => {
 
     const tests: {
       name: string;
@@ -404,13 +404,13 @@ context("text", () => {
       it(t.name, async () => {
         const obj = await t.factory();
         const text = obj.toString("text");
-        assert.strictEqual(text, t.want);
+        expect(text).toBe(t.want);
       });
     }
 
   });
 
-  context("attributes", async () => {
+  describe("attributes", async () => {
     const tests: {
       name: string;
       factory: () => Promise<x509.Attribute>;
@@ -443,7 +443,7 @@ context("text", () => {
       it(t.name, async () => {
         const ext = await t.factory();
         const text = ext.toString("text");
-        assert.strictEqual(text, t.want);
+        expect(text).toBe(t.want);
       });
     }
 

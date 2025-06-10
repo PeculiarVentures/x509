@@ -1,26 +1,28 @@
-import * as assert from "node:assert";
+import { describe, it, expect, beforeAll, beforeEach, afterAll, afterEach } from "vitest";
 import { Attribute, TextObject } from "../src";
 
-context("Attribute", function () {
-  context("#toTextObject()", function () {
+describe("Attribute", function () {
+  describe("#toTextObject()", function () {
     it("should return a TextObject with correct values", function () {
       const attribute = new Attribute("1.2.3", [new ArrayBuffer(8)]);
       const textObject = attribute.toTextObject();
 
-      assert.strictEqual(textObject[TextObject.NAME], "1.2.3");
-      assert.ok(Array.isArray(textObject.Value));
-      assert.strictEqual(textObject.Value.length, 1);
-      assert(textObject.Value[0] instanceof TextObject);
+      expect(textObject[TextObject.NAME]).toBe("1.2.3");
+      expect(Array.isArray(textObject.Value)).toBeTruthy();
+      if (Array.isArray(textObject.Value)) {
+        expect(textObject.Value.length).toBe(1);
+        expect(textObject.Value[0] instanceof TextObject).toBeTruthy();
+      }
     });
   });
 
-  context("#toTextObjectWithoutValue()", function () {
+  describe("#toTextObjectWithoutValue()", function () {
     it("should return a TextObject without the Value property", function () {
       const attribute = new Attribute("1.2.3", [new ArrayBuffer(8)]);
       const textObject = attribute.toTextObjectWithoutValue();
 
-      assert.strictEqual(textObject[TextObject.NAME], "1.2.3");
-      assert.strictEqual(textObject.Value, undefined);
+      expect(textObject[TextObject.NAME]).toBe("1.2.3");
+      expect(textObject.Value).toBe(undefined);
     });
   });
 });

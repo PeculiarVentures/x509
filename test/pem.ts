@@ -1,14 +1,14 @@
-import * as assert from "assert";
+import { describe, it, expect, beforeAll, beforeEach, afterAll, afterEach } from "vitest";
 import { Convert } from "pvtsutils";
 import * as src from "../src";
 
-context("PEM", () => {
+describe("PEM", () => {
 
   const base64_splitted = "LLrHB0eJzyhP+/fSStdW8okeEnv47jxe7SJ/iN72ohNcUk2jHEUSoH1nvNSIWL9M\n8tEjmF/zxB+bATMtPjCUWbz8Lr9wloXIkjHUlBLpvXR0UrUzYbkNpk0agV2IzUpk\nJ6UiRRGcDSvzrsoK+oNvqu6z7Xs5Xfz5rDqUcMlK1Z6720dcBWGGsDLpTpSCnpot\ndXd/H5LMDWnonNvPCwQUHg==";
   const base64 = base64_splitted.replace(/\n/g, "");
   const rawData = Convert.FromBase64(base64);
 
-  context("decodeWithHeaders", () => {
+  describe("decodeWithHeaders", () => {
 
     interface PemTest {
       type: string;
@@ -170,20 +170,20 @@ context("PEM", () => {
     tests.forEach(t => {
       it(t.name, () => {
         if (t.want instanceof Error) {
-          assert.throws(() => {
+          expect(() => {
             src.PemConverter.decodeWithHeaders(t.pem);
-          }, t.want);
+          }).toThrow(t.want);
         } else {
           const res = src.PemConverter.decodeWithHeaders(t.pem);
 
-          assert.deepEqual(res.map(mapPemStruct), t.want);
+          expect(res.map(mapPemStruct)).toEqual(t.want);
         }
       });
     });
 
   });
 
-  context("encode", () => {
+  describe("encode", () => {
 
     const tests: {
       name: string;
@@ -291,19 +291,19 @@ context("PEM", () => {
     tests.forEach(t => {
       it(t.name, () => {
         if (t.want instanceof Error) {
-          assert.throws(() => {
+          expect(() => {
             src.PemConverter.encode.call<unknown, any[], unknown>(src.PemConverter, t.args.a, t.args.b);
-          }, t.want);
+          }).toThrow(t.want);
         } else {
           const pem = src.PemConverter.encode.call<unknown, any[], unknown>(src.PemConverter, t.args.a, t.args.b);
-          assert.strictEqual(pem, t.want);
+          expect(pem).toBe(t.want);
         }
       });
     });
 
   });
 
-  context("isPem", () => {
+  describe("isPem", () => {
     const tests: {
       name: string;
       data: any;
@@ -347,7 +347,7 @@ context("PEM", () => {
     tests.forEach(t => {
       it(t.name, () => {
         const result = src.PemConverter.isPem(t.data);
-        assert.strictEqual(result, t.want);
+        expect(result).toBe(t.want);
       });
     });
   });

@@ -1,10 +1,10 @@
-import * as assert from "assert";
+import { describe, it, expect, beforeAll, beforeEach, afterAll, afterEach } from "vitest";
 import { EcAlgorithm, HashedAlgorithm } from "../src";
 import { AlgorithmIdentifier } from "@peculiar/asn1-x509";
 import { ECParameters, id_ecPublicKey, id_secp256r1 } from "@peculiar/asn1-ecc";
 import { AsnConvert } from "@peculiar/asn1-schema";
 
-context("EcAlgorithm", () => {
+describe("EcAlgorithm", () => {
   let ecAlgorithm: EcAlgorithm;
 
   beforeEach(() => {
@@ -109,18 +109,22 @@ context("EcAlgorithm", () => {
   testVectors.forEach(({ asnAlgorithm, webAlgorithm }) => {
     const withValue = "hash" in webAlgorithm ? webAlgorithm.hash.name : webAlgorithm.namedCurve;
 
-    context(`Algorithm ${webAlgorithm.name} with ${withValue}`, () => {
+    describe(`Algorithm ${webAlgorithm.name} with ${withValue}`, () => {
 
       it("#toAsnAlgorithm()", () => {
         const result = ecAlgorithm.toAsnAlgorithm(webAlgorithm);
-        assert.ok(result);
-        if ("hash" in webAlgorithm) {
-          assert.strictEqual(result.algorithm, asnAlgorithm);
-        } else {
-          assert.strictEqual(result.algorithm, id_ecPublicKey);
-          assert.ok(result.parameters);
-          const asnParameters = AsnConvert.parse(result.parameters, ECParameters);
-          assert.strictEqual(asnParameters.namedCurve, asnAlgorithm);
+        expect(result).toBeTruthy();
+        if (result) {
+          if ("hash" in webAlgorithm) {
+            expect(result.algorithm).toBe(asnAlgorithm);
+          } else {
+            expect(result.algorithm).toBe(id_ecPublicKey);
+            expect(result.parameters).toBeTruthy();
+            if (result.parameters) {
+              const asnParameters = AsnConvert.parse(result.parameters, ECParameters);
+              expect(asnParameters.namedCurve).toBe(asnAlgorithm);
+            }
+          }
         }
       });
 
@@ -132,8 +136,8 @@ context("EcAlgorithm", () => {
             parameters: AsnConvert.serialize(new ECParameters({ namedCurve: asnAlgorithm })),
           });
         const result = ecAlgorithm.toWebAlgorithm(algIdentifier);
-        assert.ok(result);
-        assert.deepStrictEqual(result, webAlgorithm);
+        expect(result).toBeTruthy();
+        expect(result).toEqual(webAlgorithm);
       });
     });
   });

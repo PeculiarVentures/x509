@@ -1,10 +1,10 @@
-import * as assert from "node:assert";
+import { describe, it, expect } from "vitest";
 import { webcrypto } from "node:crypto";
 import * as x509 from "../src";
 
 const crypto = webcrypto as globalThis.Crypto;
 
-context("issues", () => {
+describe("issues", () => {
   it("#67", async () => {
     // https://github.com/PeculiarVentures/x509/issues/67
     const rootKeys = await crypto.subtle.generateKey({
@@ -69,7 +69,7 @@ context("issues", () => {
       certificates: [rootCert, intermediateCert],
     });
     const items = await chain.build(leafCert, crypto);
-    assert.strictEqual(items.length, 3);
+    expect(items.length).toBe(3);
   });
 
   it("#95 - X509 Subject name parsing incorrect if attribute value is a single character", () => {
@@ -82,16 +82,16 @@ context("issues", () => {
     // Test case 2: CN=t,OU=x,O=y,C=z
     const name2 = new x509.Name("CN=t,OU=x,O=y,C=z");
     const json2 = name2.toJSON();
-    assert.strictEqual(json1.length, 3, "Should have 3 RDN components");
-    assert.deepStrictEqual(json1[0], { CN: ["t"] }, "CN should be 't'");
-    assert.deepStrictEqual(json1[1], { OU: ["x"] }, "OU should be 'x'");
-    assert.deepStrictEqual(json1[2], { O: ["y"] }, "O should be 'y'");
+    expect(json1.length).toBe(3);
+    expect(json1[0]).toEqual({ CN: ["t"] });
+    expect(json1[1]).toEqual({ OU: ["x"] });
+    expect(json1[2]).toEqual({ O: ["y"] });
 
-    assert.strictEqual(json2.length, 4, "Should have 4 RDN components");
-    assert.deepStrictEqual(json2[0], { CN: ["t"] }, "CN should be 't'");
-    assert.deepStrictEqual(json2[1], { OU: ["x"] }, "OU should be 'x'");
-    assert.deepStrictEqual(json2[2], { O: ["y"] }, "O should be 'y'");
-    assert.deepStrictEqual(json2[3], { C: ["z"] }, "C should be 'z'");
+    expect(json2.length).toBe(4);
+    expect(json2[0]).toEqual({ CN: ["t"] });
+    expect(json2[1]).toEqual({ OU: ["x"] });
+    expect(json2[2]).toEqual({ O: ["y"] });
+    expect(json2[3]).toEqual({ C: ["z"] });
   });
 
   it("#74 - Intermittent ERR_OSSL_ASN1_ILLEGAL_PADDING error with serial numbers starting with 80", async () => {
@@ -126,16 +126,16 @@ context("issues", () => {
       }, crypto);
 
       // Verify the certificate was created and can be parsed
-      assert.ok(cert, `Certificate should be created with serial number ${serialNumber}`);
-      assert.strictEqual(cert.serialNumber, serialNumber, `Serial number should match ${serialNumber}`);
+      expect(cert).toBeTruthy();
+      expect(cert.serialNumber).toBe(serialNumber);
 
       // Verify certificate can be converted to PEM and back
       const pemString = cert.toString("pem");
-      assert.ok(pemString.includes("BEGIN CERTIFICATE"), "Should generate valid PEM");
+      expect(pemString.includes("BEGIN CERTIFICATE")).toBe(true);
 
       // Verify certificate can be parsed back
       const parsedCert = new x509.X509Certificate(pemString);
-      assert.strictEqual(parsedCert.serialNumber, serialNumber, `Parsed serial number should match ${serialNumber}`);
+      expect(parsedCert.serialNumber).toBe(serialNumber);
     }
   });
 });

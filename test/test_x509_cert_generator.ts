@@ -1,5 +1,5 @@
 import * as path from "path";
-import * as assert from "assert";
+import { describe, it, expect, beforeAll, beforeEach, afterAll, afterEach } from "vitest";
 import * as x509 from "../src";
 import { Crypto } from "@peculiar/webcrypto";
 
@@ -116,15 +116,15 @@ function testCertSelfSign(testEntry: any) {
   it(`Test X509CertificateGenerator.create self-signed #${testCertSelfSignCounter++}`, async () => {
 
     const keys = await crypto.subtle.generateKey(alg, true, ["sign", "verify"]);
-    assert.ok(keys.publicKey);
-    assert.ok(keys.privateKey);
+    expect(keys.publicKey).toBeTruthy();
+    expect(keys.privateKey).toBeTruthy();
     const cert = await x509.X509CertificateGenerator.createSelfSigned({
       keys: keys,
 
       ...testEntry.certContents,
     });
     const ok = await cert.verify({ date: testEntry.testDate });
-    assert.strictEqual(ok, true);
+    expect(ok).toBe(true);
   });
 }
 
@@ -143,7 +143,7 @@ function testCertPreSigned(testEntry: any) {
       extractable,
       ["verify"]
     );
-    assert.ok(publicKey);
+    expect(publicKey).toBeTruthy();
 
     const cert = await x509.X509CertificateGenerator.create({
       publicKey: publicKey,
@@ -152,17 +152,17 @@ function testCertPreSigned(testEntry: any) {
       ...testEntry.certContents,
     });
 
-    assert.equal(cert.toString("hex"), testEntry.certDer);
-    assert.equal(cert.toString("pem"), testEntry.certPem);
+    expect(cert.toString("hex")).toBe(testEntry.certDer);
+    expect(cert.toString("pem")).toBe(testEntry.certPem);
 
     const ok = await cert.verify({ date: testEntry.testDate });
-    assert.strictEqual(ok, true, "certificate is not valid");
+    expect(ok).toBe(true);
 
     const validAfter = await cert.verify({ date: testEntry.testAfter });
-    assert.strictEqual(validAfter, false, "certificate is valid after");
+    expect(validAfter).toBe(false);
 
     const validBefore = await cert.verify({ date: testEntry.testBefore });
-    assert.strictEqual(validBefore, false, "certificate is valid before");
+    expect(validBefore).toBe(false);
 
   });
 }
@@ -173,10 +173,10 @@ describe(path.basename(__filename), () => {
     testCertPreSigned(testEntry);
   });
 
-  context("create", () => {
+  describe("create", () => {
     let keys: CryptoKeyPair;
 
-    before(async () => {
+    beforeAll(async () => {
       keys = await crypto.subtle.generateKey(alg, true, ["sign", "verify"]);
     });
 
@@ -187,7 +187,7 @@ describe(path.basename(__filename), () => {
         publicKey,
         signingKey: keys.privateKey,
       });
-      assert.ok(cert);
+      expect(cert).toBeTruthy();
     });
 
     it("should handle object with publicKey property", async () => {
@@ -199,7 +199,7 @@ describe(path.basename(__filename), () => {
         publicKey: certWithPublicKey,
         signingKey: keys.privateKey,
       });
-      assert.ok(cert);
+      expect(cert).toBeTruthy();
     });
 
     it("should handle BufferSource publicKey", async () => {
@@ -208,33 +208,27 @@ describe(path.basename(__filename), () => {
         publicKey: spki,
         signingKey: keys.privateKey,
       });
-      assert.ok(cert);
+      expect(cert).toBeTruthy();
     });
   });
 
-  context("createSelfSigned", () => {
+  describe("createSelfSigned", () => {
     it("should throw an error if privateKey is empty", async () => {
-      await assert.rejects(
+      await expect(
         x509.X509CertificateGenerator.createSelfSigned({
           keys: { privateKey: null, publicKey: {} } as any,
           // other parameters...
-        }),
-        {
-          message: "Bad field 'keys' in 'params' argument. 'privateKey' is empty"
-        }
-      );
+        })
+      ).rejects.toThrow("Bad field 'keys' in 'params' argument. 'privateKey' is empty");
     });
 
     it("should throw an error if publicKey is empty", async () => {
-      await assert.rejects(
+      await expect(
         x509.X509CertificateGenerator.createSelfSigned({
           keys: { privateKey: {}, publicKey: null } as any,
           // other parameters...
-        }),
-        {
-          message: "Bad field 'keys' in 'params' argument. 'publicKey' is empty"
-        }
-      );
+        })
+      ).rejects.toThrow("Bad field 'keys' in 'params' argument. 'publicKey' is empty");
     });
 
     it("should create RSA-PSS self-signed certificate", async () => {
@@ -257,10 +251,10 @@ describe(path.basename(__filename), () => {
           saltLength: 32,
         } as Algorithm,
       });
-      assert.ok(cert);
+      expect(cert).toBeTruthy();
 
       const ok = await cert.verify();
-      assert.strictEqual(ok, true);
+      expect(ok).toBe(true);
     });
   });
 });
