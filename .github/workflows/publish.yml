@@ -3,22 +3,61 @@ on:
   push:
     tags:
       - v[0-9]+.[0-9]+.[0-9]+
+
+permissions:
+  contents: write
+  packages: write
+
 jobs:
-  build:
+  publish:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - uses: actions/setup-node@v4
         with:
           node-version: "20.x"
           cache: "yarn"
+          registry-url: "https://registry.npmjs.org"
+
       - name: Install dependencies
-        run: yarn
+        run: yarn install --frozen-lockfile
+
       - name: Build
         run: npm run build
+
+      - name: Run tests
+        run: npm test
+
       - name: Publish to NPM
-        run: |
-          npm set //registry.npmjs.org/:_authToken=$NODE_AUTH_TOKEN
-          npm publish --access public
+        run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
+
+      - name: Generate release notes
+        id: generate_notes
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: release } = await github.rest.repos.generateReleaseNotes({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag_name: context.ref.replace('refs/tags/', ''),
+              target_commitish: context.sha
+            });
+            return release.body;
+          result-encoding: string
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
+          body: ${{ steps.generate_notes.outputs.result }}
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
