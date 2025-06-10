@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/member-delimiter-style */
-
 import { AsnConvert } from "@peculiar/asn1-schema";
 import { BufferSourceConverter, Convert, isEqual } from "pvtsutils";
 import { TextConverter, TextObject, TextObjectConvertible } from "./text_converter";

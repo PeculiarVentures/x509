@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, beforeEach, afterAll, afterEach } from "vitest";
+import { describe, it, expect, beforeAll } from "vitest";
 import { Crypto } from "@peculiar/webcrypto";
 import { AuthorityInfoAccessExtension, AuthorityKeyIdentifierExtension, CRLDistributionPointsExtension, CertificateIdentifier } from "../src";
 import { PublicKey } from "../src/public_key";

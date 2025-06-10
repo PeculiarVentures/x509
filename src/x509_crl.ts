@@ -230,9 +230,9 @@ export class X509Crl extends PemData<CertificateList> {
         keyAlgorithm = { ...paramsKey.algorithm, ...this.signature };
         publicKey = paramsKey;
       }
-    } catch (e) {
+    } catch (_e) {
       // NOTE: Uncomment the next line to see more information about errors
-      // console.error(e);
+      // console.error(_e);
 
       // Application will throw exception if public key algorithm is not the same type which is needed for
       // signature validation (eg leaf certificate is signed with RSA mechanism, public key is ECDSA)

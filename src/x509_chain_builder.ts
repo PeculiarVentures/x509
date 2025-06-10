@@ -87,7 +87,7 @@ export class X509ChainBuilder {
           if (!ok) {
             continue;
           }
-        } catch (e) {
+        } catch (_e) {
           continue;
         }
 

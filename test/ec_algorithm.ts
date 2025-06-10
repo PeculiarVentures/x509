@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, beforeEach, afterAll, afterEach } from "vitest";
+import { describe, it, expect, beforeAll, beforeEach } from "vitest";
 import { EcAlgorithm, HashedAlgorithm } from "../src";
 import { AlgorithmIdentifier } from "@peculiar/asn1-x509";
 import { ECParameters, id_ecPublicKey, id_secp256r1 } from "@peculiar/asn1-ecc";
