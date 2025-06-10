@@ -130,16 +130,18 @@ export class X509CertificateGenerator {
     }
 
     // SerialNumber must be positive integer
-    const serialNumber = params.serialNumber
+    let serialNumber = params.serialNumber
       ? BufferSourceConverter.toUint8Array(Convert.FromHex(params.serialNumber))
       : crypto.getRandomValues(new Uint8Array(16));
-    // Ensure the first bit less than 0x7F
+
+    // Ensure the serial number is treated as positive by adding leading zero if needed
+    // According to ASN.1 DER rules, if the first bit is 1, it's interpreted as negative
     if (serialNumber[0] > 0x7F) {
-      serialNumber[0] &= 0x7F;
-    }
-    // Ensure the second is more than 0x7F
-    if (serialNumber.length > 1 && serialNumber[0] === 0) {
-      serialNumber[1] |= 0x80;
+      // Prepend a zero byte to make it positive
+      const newSerialNumber = new Uint8Array(serialNumber.length + 1);
+      newSerialNumber[0] = 0x00;
+      newSerialNumber.set(serialNumber, 1);
+      serialNumber = newSerialNumber;
     }
 
     const notBefore = params.notBefore || new Date();

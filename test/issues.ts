@@ -93,4 +93,49 @@ context("issues", () => {
     assert.deepStrictEqual(json2[2], { O: ["y"] }, "O should be 'y'");
     assert.deepStrictEqual(json2[3], { C: ["z"] }, "C should be 'z'");
   });
+
+  it("#74 - Intermittent ERR_OSSL_ASN1_ILLEGAL_PADDING error with serial numbers starting with 80", async () => {
+    // https://github.com/PeculiarVentures/x509/issues/74
+
+    const keys = await crypto.subtle.generateKey({
+      name: "ECDSA",
+      namedCurve: "P-256",
+    }, true, ["sign", "verify"]);
+
+    // Test problematic serial numbers from the issue
+    const problematicSerialNumbers = [
+      "80048117884272",
+      "80284629184668",
+      "80290967596123",
+      "8070459553297620",
+      "801234"
+    ];
+
+    for (const serialNumber of problematicSerialNumbers) {
+      // This should not throw an error during certificate generation
+      const cert = await x509.X509CertificateGenerator.createSelfSigned({
+        serialNumber,
+        name: "CN=Test, O=Test Org",
+        notBefore: new Date("2020/01/01"),
+        notAfter: new Date("2020/01/02"),
+        signingAlgorithm: {
+          name: "ECDSA",
+          hash: "SHA-256",
+        },
+        keys: keys
+      }, crypto);
+
+      // Verify the certificate was created and can be parsed
+      assert.ok(cert, `Certificate should be created with serial number ${serialNumber}`);
+      assert.strictEqual(cert.serialNumber, serialNumber, `Serial number should match ${serialNumber}`);
+
+      // Verify certificate can be converted to PEM and back
+      const pemString = cert.toString("pem");
+      assert.ok(pemString.includes("BEGIN CERTIFICATE"), "Should generate valid PEM");
+
+      // Verify certificate can be parsed back
+      const parsedCert = new x509.X509Certificate(pemString);
+      assert.strictEqual(parsedCert.serialNumber, serialNumber, `Parsed serial number should match ${serialNumber}`);
+    }
+  });
 });

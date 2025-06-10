@@ -120,7 +120,15 @@ export class X509Certificate extends PemData<Certificate> implements IPublicKeyC
   protected onInit(asn: Certificate) {
     const tbs = asn.tbsCertificate;
     this.tbs = AsnConvert.serialize(tbs);
-    this.serialNumber = Convert.ToHex(tbs.serialNumber);
+
+    // Handle serial number: remove leading zero if it was added for ASN.1 DER compliance
+    let serialNumberBytes = new Uint8Array(tbs.serialNumber);
+    if (serialNumberBytes.length > 1 && serialNumberBytes[0] === 0x00 && serialNumberBytes[1] > 0x7F) {
+      // Remove the leading zero that was added to make negative numbers positive
+      serialNumberBytes = serialNumberBytes.slice(1);
+    }
+    this.serialNumber = Convert.ToHex(serialNumberBytes);
+
     this.subjectName = new Name(tbs.subject);
     this.subject = new Name(tbs.subject).toString();
     this.issuerName = new Name(tbs.issuer);
