@@ -303,4 +303,53 @@ context("PEM", () => {
 
   });
 
+  context("isPem", () => {
+    const tests: {
+      name: string;
+      data: any;
+      want: boolean;
+    }[] = [
+      {
+        name: "valid PEM with Unix line endings",
+        data: [
+          "-----BEGIN SOME-----",
+          base64_splitted,
+          "-----END SOME-----"
+        ].join("\n"),
+        want: true,
+      },
+      {
+        name: "valid PEM with DOS line endings",
+        data: [
+          "-----BEGIN SOME-----",
+          base64_splitted.replace(/\n/g, "\r\n"),
+          "-----END SOME-----"
+        ].join("\r\n"),
+        want: true,
+      },
+      {
+        name: "invalid PEM - not a string",
+        data: 123,
+        want: false,
+      },
+      {
+        name: "invalid PEM - wrong format",
+        data: "This is not a PEM",
+        want: false,
+      },
+      {
+        name: "empty string",
+        data: "",
+        want: false,
+      },
+    ];
+
+    tests.forEach(t => {
+      it(t.name, () => {
+        const result = src.PemConverter.isPem(t.data);
+        assert.strictEqual(result, t.want);
+      });
+    });
+  });
+
 });
