@@ -46,6 +46,7 @@ extensions.ExtensionFactory.register(asnX509.id_ce_keyUsage, extensions.KeyUsage
 extensions.ExtensionFactory.register(asnX509.id_ce_subjectKeyIdentifier, extensions.SubjectKeyIdentifierExtension);
 extensions.ExtensionFactory.register(asnX509.id_ce_authorityKeyIdentifier, extensions.AuthorityKeyIdentifierExtension);
 extensions.ExtensionFactory.register(asnX509.id_ce_subjectAltName, extensions.SubjectAlternativeNameExtension);
+extensions.ExtensionFactory.register(asnX509.id_ce_issuerAltName, extensions.IssuerAlternativeNameExtension);
 extensions.ExtensionFactory.register(asnX509.id_ce_cRLDistributionPoints, extensions.CRLDistributionPointsExtension);
 extensions.ExtensionFactory.register(asnX509.id_pe_authorityInfoAccess, extensions.AuthorityInfoAccessExtension);
 

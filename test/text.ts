@@ -136,6 +136,18 @@ describe("text", () => {
           ].join("\n"),
         },
         {
+          name: "Issuer Alternative Name",
+          factory: async () => {
+            return new x509.IssuerAlternativeNameExtension([
+              { type: "dns", value: "some.com" },
+            ]);
+          },
+          want: [
+            "Issuer Alternative Name:",
+            "  DNS: some.com",
+          ].join("\n"),
+        },
+        {
           name: "Unknown Extension",
           factory: async () => {
             return new x509.Extension("1.2.3.4.5", false, new Uint8Array([2, 3, 1, 0, 1]));
