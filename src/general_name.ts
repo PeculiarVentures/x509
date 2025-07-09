@@ -19,14 +19,14 @@ export interface JsonGeneralName {
   value: string;
 }
 
-const DNS = "dns";
-const DN = "dn";
-const EMAIL = "email";
-const IP = "ip";
-const URL = "url";
-const GUID = "guid";
-const UPN = "upn";
-const REGISTERED_ID = "id";
+export const DNS = "dns";
+export const DN = "dn";
+export const EMAIL = "email";
+export const IP = "ip";
+export const URL = "url";
+export const GUID = "guid";
+export const UPN = "upn";
+export const REGISTERED_ID = "id";
 
 export type GeneralNameType = typeof DNS | typeof DN | typeof EMAIL | typeof GUID | typeof IP | typeof URL | typeof UPN | typeof REGISTERED_ID;
 

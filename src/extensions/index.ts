@@ -7,5 +7,6 @@ export * from "./subject_alt_name";
 export * from "./certificate_policy";
 export * from "./crl_distribution_points";
 export * from "./authority_info_access";
+export * from "./issuer_alt_name";
 
 export * from "./extension_factory";
