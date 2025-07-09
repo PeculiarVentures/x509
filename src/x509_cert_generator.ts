@@ -129,20 +129,11 @@ export class X509CertificateGenerator {
       spki = await crypto.subtle.exportKey("spki", params.publicKey);
     }
 
-    // SerialNumber must be positive integer
+    // SerialNumber must be positive integer, minimal length per DER
     let serialNumber = params.serialNumber
       ? BufferSourceConverter.toUint8Array(Convert.FromHex(params.serialNumber))
-      : crypto.getRandomValues(new Uint8Array(16));
-
-    // Ensure the serial number is treated as positive by adding leading zero if needed
-    // According to ASN.1 DER rules, if the first bit is 1, it's interpreted as negative
-    if (serialNumber[0] > 0x7F) {
-      // Prepend a zero byte to make it positive
-      const newSerialNumber = new Uint8Array(serialNumber.length + 1);
-      newSerialNumber[0] = 0x00;
-      newSerialNumber.set(serialNumber, 1);
-      serialNumber = newSerialNumber;
-    }
+      : undefined;
+    serialNumber = this.generateSerialNumber(serialNumber, crypto);
 
     const notBefore = params.notBefore || new Date();
     const notAfter = params.notAfter || new Date(notBefore.getTime() + 31536000000); // 1 year
@@ -207,6 +198,37 @@ export class X509CertificateGenerator {
     asnX509.signatureValue = asnSignature;
 
     return new X509Certificate(AsnConvert.serialize(asnX509));
+  }
+
+  /**
+   * Normalize and generate a valid serial number according to RFC 5280 (positive, minimal, non-zero)
+   * @param input Optional input serial number as Uint8Array
+   * @param crypto Crypto provider
+   */
+  private static generateSerialNumber(input: Uint8Array | undefined, crypto: Crypto): Uint8Array {
+    let serialNumber = input && input.length && input.some(o => o > 0)
+      ? new Uint8Array(input)
+      : undefined;
+    if (!serialNumber) {
+      serialNumber = crypto.getRandomValues(new Uint8Array(16));
+    }
+
+    // Remove unnecessary leading zeros
+    let firstNonZero = 0;
+    while (firstNonZero < serialNumber.length - 1 && serialNumber[firstNonZero] === 0) {
+      firstNonZero++;
+    }
+    serialNumber = serialNumber.slice(firstNonZero);
+
+    // If the first bit is 1, prepend a zero byte to ensure positive integer
+    if (serialNumber[0] > 0x7F) {
+      const newSerialNumber = new Uint8Array(serialNumber.length + 1);
+      newSerialNumber[0] = 0x00;
+      newSerialNumber.set(serialNumber, 1);
+      serialNumber = newSerialNumber;
+    }
+
+    return serialNumber;
   }
 
 }

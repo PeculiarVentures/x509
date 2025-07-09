@@ -257,4 +257,29 @@ describe(path.basename(__filename), () => {
       expect(ok).toBe(true);
     });
   });
+
+  describe("serial number normalization", () => {
+    it("should remove leading zeros from serial number", async () => {
+      // Serial: 00 00 01 (should become 01)
+      const keys = await crypto.subtle.generateKey(alg, true, ["sign", "verify"]);
+      const cert = await x509.X509CertificateGenerator.createSelfSigned({
+        serialNumber: "000001",
+        name: "CN=ZeroTest",
+        keys,
+      });
+      expect(cert.serialNumber.toLowerCase()).toBe("01");
+    });
+
+    it("should generate random serial if all zeros provided", async () => {
+      const keys = await crypto.subtle.generateKey(alg, true, ["sign", "verify"]);
+      const cert = await x509.X509CertificateGenerator.createSelfSigned({
+        serialNumber: "000000",
+        name: "CN=ZeroTest2",
+        keys,
+      });
+      // Серийный номер не должен быть "00"
+      expect(cert.serialNumber).not.toBe("00");
+      expect(cert.serialNumber).not.toBe("000000");
+    });
+  });
 });
