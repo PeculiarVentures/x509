@@ -1,13 +1,16 @@
 import fs from "fs";
 import path from "path";
 import url from "url";
+import { createRequire } from "module";
 import resolve from "@rollup/plugin-node-resolve";
 import { getBabelOutputPlugin } from "@rollup/plugin-babel";
 import commonjs from "@rollup/plugin-commonjs";
 import dts from "rollup-plugin-dts";
 import typescript from "rollup-plugin-typescript2";
 import terser from "@rollup/plugin-terser";
-import pkg from "./package.json" assert { type: "json" };
+
+const require = createRequire(import.meta.url);
+const pkg = require("./package.json");
 
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -108,7 +111,6 @@ const types = {
   external: [...external],
   plugins: [
     dts({
-      // eslint-disable-next-line no-undef
       tsconfig: path.resolve(__dirname, "./tsconfig.json"),
       compilerOptions: {
         removeComments: false,
