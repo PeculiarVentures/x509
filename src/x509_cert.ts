@@ -35,57 +35,201 @@ export class X509Certificate extends PemData<Certificate> implements IPublicKeyC
   /**
    * ToBeSigned block of certificate
    */
-  private tbs!: ArrayBuffer;
+  #tbs?: ArrayBuffer;
+
+  /**
+   * Serial number
+   */
+  #serialNumber?: string;
+
+  /**
+   * Subject name
+   */
+  #subjectName?: Name;
+
+  /**
+   * Subject string
+   */
+  #subject?: string;
+
+  /**
+   * Issuer name
+   */
+  #issuerName?: Name;
+
+  /**
+   * Issuer string
+   */
+  #issuer?: string;
+
+  /**
+   * Not before date
+   */
+  #notBefore?: Date;
+
+  /**
+   * Not after date
+   */
+  #notAfter?: Date;
+
+  /**
+   * Signature algorithm
+   */
+  #signatureAlgorithm?: HashedAlgorithm;
+
+  /**
+   * Signature
+   */
+  #signature?: ArrayBuffer;
+
+  /**
+   * Certificate extensions
+   */
+  #extensions?: Extension[];
+
+  /**
+   * Public key
+   */
+  #publicKey?: PublicKey;
+
+  /**
+   * Gets a public key of the certificate
+   */
+  public get publicKey(): PublicKey {
+    if (!this.#publicKey) {
+      this.#publicKey = new PublicKey(this.asn.tbsCertificate.subjectPublicKeyInfo);
+    }
+
+    return this.#publicKey;
+  }
 
   /**
    * Gets a hexadecimal string of the serial number
    */
-  public serialNumber!: string;
+  public get serialNumber(): string {
+    if (!this.#serialNumber) {
+      const tbs = this.asn.tbsCertificate;
+      let serialNumberBytes = new Uint8Array(tbs.serialNumber);
+      if (serialNumberBytes.length > 1 && serialNumberBytes[0] === 0x00 && serialNumberBytes[1] > 0x7F) {
+        // Remove the leading zero that was added to make negative numbers positive
+        serialNumberBytes = serialNumberBytes.slice(1);
+      }
+      this.#serialNumber = Convert.ToHex(serialNumberBytes);
+    }
+
+    return this.#serialNumber;
+  }
 
   /**
    * Gets the subject value from the certificate as an Name
    */
-  public subjectName!: Name;
+  public get subjectName(): Name {
+    if (!this.#subjectName) {
+      this.#subjectName = new Name(this.asn.tbsCertificate.subject);
+    }
+
+    return this.#subjectName;
+  }
 
   /**
    * Gets a string subject name
    */
-  public subject!: string;
+  public get subject(): string {
+    if (!this.#subject) {
+      this.#subject = this.subjectName.toString();
+    }
+
+    return this.#subject;
+  }
 
   /**
    * Gets the issuer value from the certificate as an Name
    */
-  public issuerName!: Name;
+  public get issuerName(): Name {
+    if (!this.#issuerName) {
+      this.#issuerName = new Name(this.asn.tbsCertificate.issuer);
+    }
+
+    return this.#issuerName;
+  }
 
   /**
    * Gets a string issuer name
    */
-  public issuer!: string;
+  public get issuer(): string {
+    if (!this.#issuer) {
+      this.#issuer = this.issuerName.toString();
+    }
+
+    return this.#issuer;
+  }
 
   /**
    * Gets a date before which certificate can't be used
    */
-  public notBefore!: Date;
+  public get notBefore(): Date {
+    if (!this.#notBefore) {
+      const notBefore = this.asn.tbsCertificate.validity.notBefore.utcTime || this.asn.tbsCertificate.validity.notBefore.generalTime;
+      if (!notBefore) {
+        throw new Error("Cannot get 'notBefore' value");
+      }
+      this.#notBefore = notBefore;
+    }
+
+    return this.#notBefore;
+  }
 
   /**
    * Gets a date after which certificate can't be used
    */
-  public notAfter!: Date;
+  public get notAfter(): Date {
+    if (!this.#notAfter) {
+      const notAfter = this.asn.tbsCertificate.validity.notAfter.utcTime || this.asn.tbsCertificate.validity.notAfter.generalTime;
+      if (!notAfter) {
+        throw new Error("Cannot get 'notAfter' value");
+      }
+      this.#notAfter = notAfter;
+    }
+
+    return this.#notAfter;
+  }
 
   /**
    * Gets a signature algorithm
    */
-  public signatureAlgorithm!: HashedAlgorithm;
+  public get signatureAlgorithm(): HashedAlgorithm {
+    if (!this.#signatureAlgorithm) {
+      const algProv = container.resolve<AlgorithmProvider>(diAlgorithmProvider);
+      this.#signatureAlgorithm = algProv.toWebAlgorithm(this.asn.signatureAlgorithm) as HashedAlgorithm;
+    }
+
+    return this.#signatureAlgorithm;
+  }
 
   /**
    * Gets a signature
    */
-  public signature!: ArrayBuffer;
+  public get signature(): ArrayBuffer {
+    if (!this.#signature) {
+      this.#signature = this.asn.signatureValue;
+    }
+
+    return this.#signature;
+  }
 
   /**
-   * Gts a list of certificate extensions
+   * Gets a list of certificate extensions
    */
-  public extensions!: Extension[];
+  public get extensions(): Extension[] {
+    if (!this.#extensions) {
+      this.#extensions = [];
+      if (this.asn.tbsCertificate.extensions) {
+        this.#extensions = this.asn.tbsCertificate.extensions.map(o => ExtensionFactory.create(AsnConvert.serialize(o)));
+      }
+    }
+
+    return this.#extensions;
+  }
 
   /**
    * Gets a private key of the certificate
@@ -93,9 +237,15 @@ export class X509Certificate extends PemData<Certificate> implements IPublicKeyC
   public privateKey?: CryptoKey;
 
   /**
-   * Gets a public key of the certificate
+   * Gets the ToBeSigned block
    */
-  public publicKey!: PublicKey;
+  private get tbs(): ArrayBuffer {
+    if (!this.#tbs) {
+      this.#tbs = this.asn.tbsCertificateRaw || AsnConvert.serialize(this.asn.tbsCertificate);
+    }
+
+    return this.#tbs;
+  }
 
   /**
    * Creates a new instance from ASN.1 Certificate object
@@ -108,49 +258,14 @@ export class X509Certificate extends PemData<Certificate> implements IPublicKeyC
    */
   public constructor(raw: AsnEncodedType);
   public constructor(param: AsnEncodedType | Certificate) {
-    if (PemData.isAsnEncoded(param)) {
-      super(param, Certificate);
-    } else {
-      super(param);
-    }
+    const args = PemData.isAsnEncoded(param) ? [param, Certificate] : [param];
+    super(args[0] as any, args[1] as any);
 
     this.tag = PemConverter.CertificateTag;
   }
 
-  protected onInit(asn: Certificate) {
-    const tbs = asn.tbsCertificate;
-    this.tbs = AsnConvert.serialize(tbs);
-
-    // Handle serial number: remove leading zero if it was added for ASN.1 DER compliance
-    let serialNumberBytes = new Uint8Array(tbs.serialNumber);
-    if (serialNumberBytes.length > 1 && serialNumberBytes[0] === 0x00 && serialNumberBytes[1] > 0x7F) {
-      // Remove the leading zero that was added to make negative numbers positive
-      serialNumberBytes = serialNumberBytes.slice(1);
-    }
-    this.serialNumber = Convert.ToHex(serialNumberBytes);
-
-    this.subjectName = new Name(tbs.subject);
-    this.subject = new Name(tbs.subject).toString();
-    this.issuerName = new Name(tbs.issuer);
-    this.issuer = this.issuerName.toString();
-    const algProv = container.resolve<AlgorithmProvider>(diAlgorithmProvider);
-    this.signatureAlgorithm = algProv.toWebAlgorithm(asn.signatureAlgorithm) as HashedAlgorithm;
-    this.signature = asn.signatureValue;
-    const notBefore = tbs.validity.notBefore.utcTime || tbs.validity.notBefore.generalTime;
-    if (!notBefore) {
-      throw new Error("Cannot get 'notBefore' value");
-    }
-    this.notBefore = notBefore;
-    const notAfter = tbs.validity.notAfter.utcTime || tbs.validity.notAfter.generalTime;
-    if (!notAfter) {
-      throw new Error("Cannot get 'notAfter' value");
-    }
-    this.notAfter = notAfter;
-    this.extensions = [];
-    if (tbs.extensions) {
-      this.extensions = tbs.extensions.map(o => ExtensionFactory.create(AsnConvert.serialize(o)));
-    }
-    this.publicKey = new PublicKey(tbs.subjectPublicKeyInfo);
+  protected onInit(_asn: Certificate) {
+    // Initialization is now lazy
   }
 
   /**

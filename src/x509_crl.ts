@@ -1,5 +1,6 @@
 import { AsnConvert } from "@peculiar/asn1-schema";
 import { CertificateList, Version, AlgorithmIdentifier } from "@peculiar/asn1-x509";
+import { BufferSourceConverter } from "pvtsutils";
 import { container } from "tsyringe";
 import { HashedAlgorithm } from "./types";
 import { cryptoProvider } from "./provider";
@@ -16,6 +17,7 @@ import {
 import { X509Certificate } from "./x509_cert";
 import { X509CrlEntry } from "./x509_crl_entry";
 import { PemConverter } from "./pem_converter";
+import { generateCertificateSerialNumber } from "./utils";
 
 export interface X509CrlVerifyParams {
   publicKey: CryptoKey | PublicKey | X509Certificate;
@@ -25,67 +27,168 @@ export interface X509CrlVerifyParams {
  * Representation of X.509 Certificate Revocation List (CRL)
  */
 export class X509Crl extends PemData<CertificateList> {
-  protected readonly tag;
+  protected readonly tag = PemConverter.CrlTag;
 
   /**
    * ToBeSigned block of crl
    */
-  private tbs!: ArrayBuffer;
+  #tbs?: ArrayBuffer;
 
   /**
-   * Signature field in the sequence tbsCertList
+   * Signature algorithm
    */
-  private tbsCertListSignatureAlgorithm!: AlgorithmIdentifier;
+  #signatureAlgorithm?: HashedAlgorithm;
 
   /**
-   * Signature algorithm field in the sequence CertificateList
+   * Issuer name
    */
-  private certListSignatureAlgorithm!: AlgorithmIdentifier;
+  #issuerName?: Name;
+
+  /**
+   * This update date
+   */
+  #thisUpdate?: Date;
+
+  /**
+   * Next update date
+   */
+  #nextUpdate?: Date;
+
+  /**
+   * CRL entries
+   */
+  #entries?: ReadonlyArray<X509CrlEntry>;
+
+  /**
+   * CRL extensions
+   */
+  #extensions?: Extension[];
 
   /**
    * Gets a version
    */
-  public version?: Version;
+  public get version(): Version | undefined {
+    return this.asn.tbsCertList.version;
+  }
 
   /**
    * Gets a signature algorithm
    */
-  public signatureAlgorithm!: HashedAlgorithm;
+  public get signatureAlgorithm(): HashedAlgorithm {
+    if (!this.#signatureAlgorithm) {
+      const algProv = container.resolve<AlgorithmProvider>(diAlgorithmProvider);
+      this.#signatureAlgorithm = algProv.toWebAlgorithm(this.asn.signatureAlgorithm) as HashedAlgorithm;
+    }
+
+    return this.#signatureAlgorithm;
+  }
 
   /**
    * Gets a signature
    */
-  public signature!: ArrayBuffer;
+  public get signature(): ArrayBuffer {
+    return this.asn.signature;
+  }
 
   /**
    * Gets a string issuer name
    */
-  public issuer!: string;
+  public get issuer(): string {
+    return this.issuerName!.toString();
+  }
 
   /**
    * Gets the issuer value from the crl as an Name
    */
-  public issuerName!: Name;
+  public get issuerName(): Name {
+    if (!this.#issuerName) {
+      this.#issuerName = new Name(this.asn.tbsCertList.issuer);
+    }
+
+    return this.#issuerName;
+  }
 
   /**
    * Gets a thisUpdate date from the CRL
    */
-  public thisUpdate!: Date;
+  public get thisUpdate(): Date {
+    if (!this.#thisUpdate) {
+      const thisUpdate = this.asn.tbsCertList.thisUpdate.getTime();
+      if (!thisUpdate) {
+        throw new Error("Cannot get 'thisUpdate' value");
+      }
+      this.#thisUpdate = thisUpdate;
+    }
+
+    return this.#thisUpdate;
+  }
 
   /**
    * Gets a nextUpdate date from the CRL
    */
-  public nextUpdate?: Date;
+  public get nextUpdate(): Date | undefined {
+    if (this.#nextUpdate === undefined) {
+      this.#nextUpdate = this.asn.tbsCertList.nextUpdate?.getTime() || undefined;
+    }
+
+    return this.#nextUpdate;
+  }
 
   /**
    * Gets a crlEntries from the CRL
+   *
+   * @remarks
+   * Reading this property parses all revoked certificates, which can be slow for large CRLs.
+   * Use findRevoked() for efficient searching of specific certificates.
    */
-  public entries!: ReadonlyArray<X509CrlEntry>;
+  public get entries(): ReadonlyArray<X509CrlEntry> {
+    if (!this.#entries) {
+      this.#entries = this.asn.tbsCertList.revokedCertificates?.map(o => new X509CrlEntry(o)) || [];
+    }
+
+    return this.#entries;
+  }
 
   /**
-   * Gts a list of crl extensions
+   * Gets a list of crl extensions
    */
-  public extensions!: Extension[];
+  public get extensions(): Extension[] {
+    if (!this.#extensions) {
+      this.#extensions = [];
+      if (this.asn.tbsCertList.crlExtensions) {
+        this.#extensions = this.asn.tbsCertList.crlExtensions.map((o) =>
+          ExtensionFactory.create(AsnConvert.serialize(o))
+        );
+      }
+    }
+
+    return this.#extensions;
+  }
+
+  /**
+   * Gets the ToBeSigned block
+   */
+  private get tbs(): ArrayBuffer {
+    if (!this.#tbs) {
+      this.#tbs = this.asn.tbsCertListRaw || AsnConvert.serialize(this.asn.tbsCertList);
+    }
+
+    return this.#tbs;
+  }
+
+  /**
+   * Gets the signature algorithm from tbsCertList
+   */
+  private get tbsCertListSignatureAlgorithm(): AlgorithmIdentifier {
+    return this.asn.tbsCertList.signature;
+  }
+
+  /**
+   * Gets the signature algorithm from CertificateList
+   */
+  private get certListSignatureAlgorithm(): AlgorithmIdentifier {
+    return this.asn.signatureAlgorithm;
+  }
 
   /**
    * Creates a new instance from ASN.1 CertificateList object
@@ -98,41 +201,12 @@ export class X509Crl extends PemData<CertificateList> {
    */
   public constructor(raw: AsnEncodedType);
   public constructor(param: AsnEncodedType | CertificateList) {
-    if (PemData.isAsnEncoded(param)) {
-      super(param, CertificateList);
-    } else {
-      super(param);
-    }
-
-    this.tag = PemConverter.CrlTag;
+    // @ts-expect-error: super call with private fields
+    super(param, PemData.isAsnEncoded(param) ? CertificateList : undefined);
   }
 
-  protected onInit(asn: CertificateList) {
-    const tbs = asn.tbsCertList;
-    this.tbs = AsnConvert.serialize(tbs);
-    this.version = tbs.version;
-    const algProv = container.resolve<AlgorithmProvider>(diAlgorithmProvider);
-    this.signatureAlgorithm = algProv.toWebAlgorithm(asn.signatureAlgorithm) as HashedAlgorithm;
-    this.tbsCertListSignatureAlgorithm = tbs.signature;
-    this.certListSignatureAlgorithm = asn.signatureAlgorithm;
-    this.signature = asn.signature;
-    this.issuerName = new Name(tbs.issuer);
-    this.issuer = this.issuerName.toString();
-    const thisUpdate = tbs.thisUpdate.getTime();
-    if (!thisUpdate) {
-      throw new Error("Cannot get 'thisUpdate' value");
-    }
-    this.thisUpdate = thisUpdate;
-    const nextUpdate = tbs.nextUpdate?.getTime();
-    this.nextUpdate = nextUpdate;
-    this.entries = tbs.revokedCertificates?.map(o => new X509CrlEntry(AsnConvert.serialize(o))) || [];
-
-    this.extensions = [];
-    if (tbs.crlExtensions) {
-      this.extensions = tbs.crlExtensions.map((o) =>
-        ExtensionFactory.create(AsnConvert.serialize(o))
-      );
-    }
+  protected onInit(_asn: CertificateList) {
+    // Initialization is now lazy
   }
 
   /**
@@ -223,11 +297,11 @@ export class X509Crl extends PemData<CertificateList> {
         publicKey = await paramsKey.publicKey.export(keyAlgorithm, ["verify"]);
       } else if (paramsKey instanceof PublicKey) {
         // PublicKey
-        keyAlgorithm = { ...paramsKey.algorithm, ...this.signature };
+        keyAlgorithm = { ...paramsKey.algorithm, ...this.signatureAlgorithm };
         publicKey = await paramsKey.export(keyAlgorithm, ["verify"]);
       } else {
         // CryptoKey
-        keyAlgorithm = { ...paramsKey.algorithm, ...this.signature };
+        keyAlgorithm = { ...paramsKey.algorithm, ...this.signatureAlgorithm };
         publicKey = paramsKey;
       }
     } catch (_e) {
@@ -293,9 +367,10 @@ export class X509Crl extends PemData<CertificateList> {
    */
   public findRevoked(certOrSerialNumber: X509Certificate | string): X509CrlEntry | null {
     const serialNumber = typeof certOrSerialNumber === "string" ? certOrSerialNumber : certOrSerialNumber.serialNumber;
-    for (const entry of this.entries) {
-      if (entry.serialNumber === serialNumber) {
-        return entry;
+    const serialBuffer = generateCertificateSerialNumber(serialNumber);
+    for (const revoked of this.asn.tbsCertList.revokedCertificates || []) {
+      if (BufferSourceConverter.isEqual(revoked.userCertificate, serialBuffer)) {
+        return new X509CrlEntry(AsnConvert.serialize(revoked));
       }
     }
 
