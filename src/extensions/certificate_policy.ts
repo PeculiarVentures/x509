@@ -1,6 +1,6 @@
 import * as asnX509 from "@peculiar/asn1-x509";
 import { AsnConvert } from "@peculiar/asn1-schema";
-import { BufferSource, BufferSourceConverter } from "pvtsutils";
+import { BufferSourceConverter } from "pvtsutils";
 import { Extension } from "../extension";
 import { ExtensionFactory } from "./extension_factory";
 import { OidSerializer, TextObject } from "../text_converter";
@@ -30,7 +30,7 @@ export class CertificatePolicyExtension extends Extension {
   constructor(policies: string[], critical?: boolean);
   constructor(...args: any[]) {
     if (BufferSourceConverter.isBufferSource(args[0])) {
-      super(args[0]);
+      super(args[0] as BufferSource);
 
       const asnPolicies = AsnConvert.parse(this.value, asnX509.CertificatePolicies);
       this.policies = asnPolicies.map(o => o.policyIdentifier);

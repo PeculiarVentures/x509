@@ -44,7 +44,7 @@ export class KeyUsagesExtension extends Extension {
   public constructor(usages: KeyUsageFlags, critical?: boolean);
   public constructor(...args: any[]) {
     if (BufferSourceConverter.isBufferSource(args[0])) {
-      super(args[0]);
+      super(args[0] as BufferSource);
 
       const value = AsnConvert.parse(this.value, KeyUsage);
       this.usages = value.toNumber();

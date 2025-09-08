@@ -78,7 +78,7 @@ export class AuthorityKeyIdentifierExtension extends Extension {
   public constructor(id: CertificateIdentifier, critical?: boolean);
   public constructor(...args: any[]) {
     if (BufferSourceConverter.isBufferSource(args[0])) {
-      super(args[0]);
+      super(args[0] as BufferSource);
     } else if (typeof args[0] === "string") {
       const value = new asn1X509.AuthorityKeyIdentifier({ keyIdentifier: new asn1X509.KeyIdentifier(Convert.FromHex(args[0])) });
       super(asn1X509.id_ce_authorityKeyIdentifier, args[1], AsnConvert.serialize(value));

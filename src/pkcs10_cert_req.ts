@@ -23,47 +23,141 @@ export class Pkcs10CertificateRequest extends PemData<CertificationRequest> impl
 
   public static override NAME = "PKCS#10 Certificate Request";
 
-  protected readonly tag: string;
+  protected readonly tag;
 
   /**
    * ToBeSigned block of CSR
    */
-  private tbs!: ArrayBuffer;
+  #tbs?: ArrayBuffer;
+
+  /**
+   * Subject name
+   */
+  #subjectName?: Name;
+
+  /**
+   * Subject string
+   */
+  #subject?: string;
+
+  /**
+   * Signature algorithm
+   */
+  #signatureAlgorithm?: HashedAlgorithm;
+
+  /**
+   * Signature
+   */
+  #signature?: ArrayBuffer;
+
+  /**
+   * Public key
+   */
+  #publicKey?: PublicKey;
+
+  /**
+   * Attributes
+   */
+  #attributes?: Attribute[];
+
+  /**
+   * Extensions
+   */
+  #extensions?: Extension[];
 
   /**
    * Gets the subject value from the certificate as an Name
    */
-  public subjectName!: Name;
+  public get subjectName(): Name {
+    if (!this.#subjectName) {
+      this.#subjectName = new Name(this.asn.certificationRequestInfo.subject);
+    }
+
+    return this.#subjectName;
+  }
 
   /**
    * Gets a string subject name
    */
-  public subject!: string;
+  public get subject(): string {
+    if (!this.#subject) {
+      this.#subject = this.subjectName.toString();
+    }
+
+    return this.#subject;
+  }
 
   /**
    * Gets a signature algorithm
    */
-  public signatureAlgorithm!: HashedAlgorithm;
+  public get signatureAlgorithm(): HashedAlgorithm {
+    if (!this.#signatureAlgorithm) {
+      const algProv = container.resolve<AlgorithmProvider>(diAlgorithmProvider);
+      this.#signatureAlgorithm = algProv.toWebAlgorithm(this.asn.signatureAlgorithm) as HashedAlgorithm;
+    }
+
+    return this.#signatureAlgorithm;
+  }
 
   /**
    * Gets a signature
    */
-  public signature!: ArrayBuffer;
+  public get signature(): ArrayBuffer {
+    if (!this.#signature) {
+      this.#signature = this.asn.signature;
+    }
+
+    return this.#signature;
+  }
 
   /**
    * Gets a public key of CSR
    */
-  public publicKey!: PublicKey;
+  public get publicKey(): PublicKey {
+    if (!this.#publicKey) {
+      this.#publicKey = new PublicKey(this.asn.certificationRequestInfo.subjectPKInfo);
+    }
+
+    return this.#publicKey;
+  }
 
   /**
    * Gets a list fo CSR attributes
    */
-  public attributes!: Attribute[];
+  public get attributes(): Attribute[] {
+    if (!this.#attributes) {
+      this.#attributes = this.asn.certificationRequestInfo.attributes
+        .map(o => AttributeFactory.create(AsnConvert.serialize(o)));
+    }
+
+    return this.#attributes;
+  }
 
   /**
    * Gets a list of CSR extensions
    */
-  public extensions!: Extension[];
+  public get extensions(): Extension[] {
+    if (!this.#extensions) {
+      this.#extensions = [];
+      const extensions = this.getAttribute(id_pkcs9_at_extensionRequest);
+      if (extensions instanceof ExtensionsAttribute) {
+        this.#extensions = extensions.items;
+      }
+    }
+
+    return this.#extensions;
+  }
+
+  /**
+   * Gets the ToBeSigned block
+   */
+  private get tbs(): ArrayBuffer {
+    if (!this.#tbs) {
+      this.#tbs = this.asn.certificationRequestInfoRaw || AsnConvert.serialize(this.asn.certificationRequestInfo);
+    }
+
+    return this.#tbs;
+  }
 
   /**
    * Creates a new instance fromDER encoded buffer
@@ -76,30 +170,13 @@ export class Pkcs10CertificateRequest extends PemData<CertificationRequest> impl
    */
   public constructor(asn: CertificationRequest);
   public constructor(param: AsnEncodedType | CertificationRequest) {
-    if (PemData.isAsnEncoded(param)) {
-      super(param, CertificationRequest);
-    } else {
-      super(param);
-    }
+    const args = PemData.isAsnEncoded(param) ? [param, CertificationRequest] : [param];
+    super(args[0] as any, args[1] as any);
     this.tag = PemConverter.CertificateRequestTag;
   }
 
-  protected onInit(asn: CertificationRequest): void {
-    this.tbs = AsnConvert.serialize(asn.certificationRequestInfo);
-    this.publicKey = new PublicKey(asn.certificationRequestInfo.subjectPKInfo);
-    const algProv = container.resolve<AlgorithmProvider>(diAlgorithmProvider);
-    this.signatureAlgorithm = algProv.toWebAlgorithm(asn.signatureAlgorithm) as HashedAlgorithm;
-    this.signature = asn.signature;
-
-    this.attributes = asn.certificationRequestInfo.attributes
-      .map(o => AttributeFactory.create(AsnConvert.serialize(o)));
-    const extensions = this.getAttribute(id_pkcs9_at_extensionRequest);
-    this.extensions = [];
-    if (extensions instanceof ExtensionsAttribute) {
-      this.extensions = extensions.items;
-    }
-    this.subjectName = new Name(asn.certificationRequestInfo.subject);
-    this.subject = this.subjectName.toString();
+  protected onInit(_asn: CertificationRequest): void {
+    // Initialization is now lazy
   }
 
   /**

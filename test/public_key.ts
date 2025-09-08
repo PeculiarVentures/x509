@@ -3,7 +3,7 @@ import { Crypto } from "@peculiar/webcrypto";
 import { CryptoProvider, IPublicKeyContainer, PublicKey, cryptoProvider } from "../src";
 
 describe("PublicKey", () => {
-  let crypto: Crypto;
+  let crypto: globalThis.Crypto;
   let cryptoKey: CryptoKey;
   let spki: BufferSource;
 

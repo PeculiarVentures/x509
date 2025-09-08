@@ -8,15 +8,15 @@ export class AsnEcSignatureFormatter implements IAsnSignatureFormatter {
   public static namedCurveSize = new Map<string, number>();
   public static defaultNamedCurveSize = 32;
 
-  private addPadding(pointSize: number, data: BufferSource) {
+  private addPadding(pointSize: number, data: BufferSource): ArrayBuffer {
     const bytes = BufferSourceConverter.toUint8Array(data);
     const res = new Uint8Array(pointSize);
     res.set(bytes, pointSize - bytes.length);
 
-    return res;
+    return res.buffer as ArrayBuffer;
   }
 
-  private removePadding(data: BufferSource, positive = false) {
+  private removePadding(data: BufferSource, positive = false): ArrayBuffer {
     let bytes = BufferSourceConverter.toUint8Array(data);
 
     for (let i = 0; i < bytes.length; i++) {
@@ -35,7 +35,7 @@ export class AsnEcSignatureFormatter implements IAsnSignatureFormatter {
       return result.buffer;
     }
 
-    return bytes.buffer;
+    return bytes.buffer as ArrayBuffer;
   }
 
 
@@ -65,7 +65,7 @@ export class AsnEcSignatureFormatter implements IAsnSignatureFormatter {
       const r = this.addPadding(pointSize, this.removePadding(ecSigValue.r));
       const s = this.addPadding(pointSize, this.removePadding(ecSigValue.s));
 
-      return combine(r, s);
+      return combine(r, s) as ArrayBuffer;
     }
 
     return null;

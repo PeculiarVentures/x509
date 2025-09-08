@@ -27,7 +27,7 @@ export class SubjectAlternativeNameExtension extends Extension {
   public constructor(data?: JsonGeneralNames, critical?: boolean);
   public constructor(...args: any[]) {
     if (BufferSourceConverter.isBufferSource(args[0])) {
-      super(args[0]);
+      super(args[0] as BufferSource);
     } else {
       super(asn1X509.id_ce_subjectAltName, args[1], new GeneralNames(args[0] || []).rawData);
     }

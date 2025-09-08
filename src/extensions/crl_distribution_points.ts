@@ -32,7 +32,7 @@ export class CRLDistributionPointsExtension extends Extension {
   public constructor(urls: string[], critical?: boolean);
   public constructor(...args: any[]) {
     if (BufferSourceConverter.isBufferSource(args[0])) {
-      super(args[0]);
+      super(args[0] as BufferSource);
     } else if (Array.isArray(args[0]) && typeof args[0][0] === "string") {
       const urls = args[0] as string[];
       const dps = urls.map(url => {

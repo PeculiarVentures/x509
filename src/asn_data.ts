@@ -10,10 +10,23 @@ export type AsnDataStringFormat = "asn" | "text" | "hex" | "base64" | "base64url
 export abstract class AsnData<T> implements TextObjectConvertible {
   public static NAME = "ASN";
 
+  #rawData!: ArrayBuffer;
+
   /**
    * Gets a DER encoded buffer
    */
-  public readonly rawData: ArrayBuffer;
+  public get rawData(): ArrayBuffer {
+    if (!this.#rawData) {
+      this.#rawData = AsnConvert.serialize(this.asn);
+    }
+
+    return this.#rawData;
+  }
+
+  /**
+   * ASN.1 object
+   */
+  protected readonly asn: T;
 
   /**
    * Creates a new instance
@@ -27,16 +40,15 @@ export abstract class AsnData<T> implements TextObjectConvertible {
    */
   public constructor(asn: T);
   public constructor(...args: any[]) {
-    if (args.length === 1) {
-      // asn
-      const asn: T = args[0];
-      this.rawData = AsnConvert.serialize(asn);
-      this.onInit(asn);
-    } else {
+    if (BufferSourceConverter.isBufferSource(args[0])) {
       // raw, type
-      const asn = AsnConvert.parse<T>(args[0], args[1]);
-      this.rawData = BufferSourceConverter.toArrayBuffer(args[0]);
-      this.onInit(asn);
+      this.asn = AsnConvert.parse<T>(args[0], args[1]);
+      this.#rawData = BufferSourceConverter.toArrayBuffer(args[0]);
+      this.onInit(this.asn);
+    } else {
+      // asn
+      this.asn = args[0];
+      this.onInit(this.asn);
     }
   }
 

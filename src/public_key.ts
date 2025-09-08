@@ -2,7 +2,7 @@ import { id_ecPublicKey } from "@peculiar/asn1-ecc";
 import { id_rsaEncryption, id_RSASSA_PSS, RSAPublicKey } from "@peculiar/asn1-rsa";
 import { AsnConvert } from "@peculiar/asn1-schema";
 import { AlgorithmIdentifier, SubjectPublicKeyInfo } from "@peculiar/asn1-x509";
-import { BufferSource, BufferSourceConverter } from "pvtsutils";
+import { BufferSourceConverter } from "pvtsutils";
 import { container } from "tsyringe";
 import { AlgorithmProvider, diAlgorithmProvider } from "./algorithm";
 import { PemConverter } from "./pem_converter";
@@ -42,7 +42,7 @@ export class PublicKey extends PemData<SubjectPublicKeyInfo> {
     } else if ((data as IPublicKeyContainer).publicKey) {
       return (data as IPublicKeyContainer).publicKey;
     } else if (BufferSourceConverter.isBufferSource(data)) {
-      return new PublicKey(data);
+      return new PublicKey(data as BufferSource);
     } else {
       throw new TypeError("Unsupported PublicKeyType");
     }

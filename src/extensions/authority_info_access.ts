@@ -43,7 +43,7 @@ export class AuthorityInfoAccessExtension extends Extension {
   public constructor(params: AuthorityInfoAccessParams, critical?: boolean);
   public constructor(...args: any[]) {
     if (BufferSourceConverter.isBufferSource(args[0])) {
-      super(args[0]);
+      super(args[0] as BufferSource);
     } else if (args[0] instanceof asn1X509.AuthorityInfoAccessSyntax) {
       const value = new asn1X509.AuthorityInfoAccessSyntax(args[0]);
       super(asn1X509.id_pe_authorityInfoAccess, args[1], AsnConvert.serialize(value));

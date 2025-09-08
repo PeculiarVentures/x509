@@ -25,7 +25,7 @@ export class ExtensionsAttribute extends Attribute {
   public constructor(extensions: Extension[]);
   public constructor(...args: any[]) {
     if (BufferSourceConverter.isBufferSource(args[0])) {
-      super(args[0]);
+      super(args[0] as BufferSource);
     } else {
       const extensions = args[0] as Extension[];
       const value = new asnX509.Extensions();

@@ -1,6 +1,6 @@
 import { AsnConvert } from "@peculiar/asn1-schema";
 import * as asn1X509 from "@peculiar/asn1-x509";
-import { BufferSource, BufferSourceConverter, Convert } from "pvtsutils";
+import { BufferSource, BufferSourceConverter } from "pvtsutils";
 import { container } from "tsyringe";
 import { cryptoProvider } from "./provider";
 import { AlgorithmProvider, diAlgorithmProvider } from "./algorithm";
@@ -10,6 +10,7 @@ import { HashedAlgorithm } from "./types";
 import { X509Certificate } from "./x509_cert";
 import { diAsnSignatureFormatter, IAsnSignatureFormatter } from "./asn_signature_formatter";
 import { PublicKey, PublicKeyType } from "./public_key";
+import { generateCertificateSerialNumber } from "./utils";
 
 export type X509CertificateCreateParamsName = string | JsonName | Name;
 
@@ -129,19 +130,14 @@ export class X509CertificateGenerator {
       spki = await crypto.subtle.exportKey("spki", params.publicKey);
     }
 
-    // SerialNumber must be positive integer, minimal length per DER
-    let serialNumber = params.serialNumber
-      ? BufferSourceConverter.toUint8Array(Convert.FromHex(params.serialNumber))
-      : undefined;
-    serialNumber = this.generateSerialNumber(serialNumber, crypto);
-
+    const serialNumber = generateCertificateSerialNumber(params.serialNumber);
     const notBefore = params.notBefore || new Date();
     const notAfter = params.notAfter || new Date(notBefore.getTime() + 31536000000); // 1 year
 
     const asnX509 = new asn1X509.Certificate({
       tbsCertificate: new asn1X509.TBSCertificate({
         version: asn1X509.Version.v3,
-        serialNumber: serialNumber,
+        serialNumber,
         validity: new asn1X509.Validity({
           notBefore,
           notAfter,
@@ -186,7 +182,7 @@ export class X509CertificateGenerator {
     const signatureFormatters = container.resolveAll<IAsnSignatureFormatter>(diAsnSignatureFormatter).reverse();
     let asnSignature: ArrayBuffer | null = null;
     for (const signatureFormatter of signatureFormatters) {
-      asnSignature = signatureFormatter.toAsnSignature(signatureAlgorithm, signatureValue);
+      asnSignature = signatureFormatter.toAsnSignature(signatureAlgorithm, signatureValue as ArrayBuffer);
       if (asnSignature) {
         break;
       }
@@ -199,36 +195,4 @@ export class X509CertificateGenerator {
 
     return new X509Certificate(AsnConvert.serialize(asnX509));
   }
-
-  /**
-   * Normalize and generate a valid serial number according to RFC 5280 (positive, minimal, non-zero)
-   * @param input Optional input serial number as Uint8Array
-   * @param crypto Crypto provider
-   */
-  private static generateSerialNumber(input: Uint8Array | undefined, crypto: Crypto): Uint8Array {
-    let serialNumber = input && input.length && input.some(o => o > 0)
-      ? new Uint8Array(input)
-      : undefined;
-    if (!serialNumber) {
-      serialNumber = crypto.getRandomValues(new Uint8Array(16));
-    }
-
-    // Remove unnecessary leading zeros
-    let firstNonZero = 0;
-    while (firstNonZero < serialNumber.length - 1 && serialNumber[firstNonZero] === 0) {
-      firstNonZero++;
-    }
-    serialNumber = serialNumber.slice(firstNonZero);
-
-    // If the first bit is 1, prepend a zero byte to ensure positive integer
-    if (serialNumber[0] > 0x7F) {
-      const newSerialNumber = new Uint8Array(serialNumber.length + 1);
-      newSerialNumber[0] = 0x00;
-      newSerialNumber.set(serialNumber, 1);
-      serialNumber = newSerialNumber;
-    }
-
-    return serialNumber;
-  }
-
 }
