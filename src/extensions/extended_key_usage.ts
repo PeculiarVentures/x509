@@ -40,7 +40,7 @@ export class ExtendedKeyUsageExtension extends Extension {
   public constructor(usages: ExtendedKeyUsageType[], critical?: boolean);
   public constructor(...args: any[]) {
     if (BufferSourceConverter.isBufferSource(args[0])) {
-      super(args[0]);
+      super(args[0] as BufferSource);
 
       const value = AsnConvert.parse(this.value, asn1X509.ExtendedKeyUsage);
       this.usages = value.map(o => o);

@@ -44,7 +44,7 @@ export class SubjectKeyIdentifierExtension extends Extension {
   public constructor(keyId: string, critical?: boolean);
   public constructor(...args: any[]) {
     if (BufferSourceConverter.isBufferSource(args[0])) {
-      super(args[0]);
+      super(args[0] as BufferSource);
 
       const value = AsnConvert.parse(this.value, asn1X509.SubjectKeyIdentifier);
       this.keyId = Convert.ToHex(value);

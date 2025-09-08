@@ -141,7 +141,7 @@ export class X509CertificateGenerator {
     const asnX509 = new asn1X509.Certificate({
       tbsCertificate: new asn1X509.TBSCertificate({
         version: asn1X509.Version.v3,
-        serialNumber: serialNumber,
+        serialNumber: BufferSourceConverter.toArrayBuffer(serialNumber),
         validity: new asn1X509.Validity({
           notBefore,
           notAfter,
@@ -186,7 +186,7 @@ export class X509CertificateGenerator {
     const signatureFormatters = container.resolveAll<IAsnSignatureFormatter>(diAsnSignatureFormatter).reverse();
     let asnSignature: ArrayBuffer | null = null;
     for (const signatureFormatter of signatureFormatters) {
-      asnSignature = signatureFormatter.toAsnSignature(signatureAlgorithm, signatureValue);
+      asnSignature = signatureFormatter.toAsnSignature(signatureAlgorithm, signatureValue as ArrayBuffer);
       if (asnSignature) {
         break;
       }

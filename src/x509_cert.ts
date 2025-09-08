@@ -230,7 +230,7 @@ export class X509Certificate extends PemData<Certificate> implements IPublicKeyC
         keyAlgorithm = { ...paramsKey.algorithm, ...this.signatureAlgorithm };
         publicKey = await paramsKey.export(keyAlgorithm, ["verify"], crypto);
       } else if (BufferSourceConverter.isBufferSource(paramsKey)) {
-        const key = new PublicKey(paramsKey);
+        const key = new PublicKey(paramsKey as BufferSource);
         keyAlgorithm = { ...key.algorithm, ...this.signatureAlgorithm };
         publicKey = await key.export(keyAlgorithm, ["verify"], crypto);
       } else {

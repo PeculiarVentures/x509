@@ -23,7 +23,7 @@ export class ChallengePasswordAttribute extends Attribute {
   public constructor(value: string);
   public constructor(...args: any[]) {
     if (BufferSourceConverter.isBufferSource(args[0])) {
-      super(args[0]);
+      super(args[0] as BufferSource);
     } else {
       const value = new asnPkcs9.ChallengePassword({
         printableString: args[0],

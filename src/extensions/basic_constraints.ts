@@ -37,7 +37,7 @@ export class BasicConstraintsExtension extends Extension {
   public constructor(ca: boolean, pathLength?: number, critical?: boolean);
   public constructor(...args: any[]) {
     if (BufferSourceConverter.isBufferSource(args[0])) {
-      super(args[0]);
+      super(args[0] as BufferSource);
 
       const value = AsnConvert.parse(this.value, AsnBasicConstraints);
       this.ca = value.cA;
