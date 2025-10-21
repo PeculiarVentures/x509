@@ -40,7 +40,6 @@ export class NameIdentifier {
 }
 
 const names = new NameIdentifier();
-
 names.register("CN", "2.5.4.3"); // commonName
 names.register("L", "2.5.4.7"); // localityName
 names.register("ST", "2.5.4.8"); // stateOrProvinceName
@@ -107,7 +106,6 @@ export class Name {
   public static isASCII(text: string) {
     for (let i = 0; i < text.length; i++) {
       const code = text.charCodeAt(i);
-
       if (code > 0xFF) {
         return false;
       }
@@ -151,7 +149,6 @@ export class Name {
     for (const key in extraNames) {
       if (Object.prototype.hasOwnProperty.call(extraNames, key)) {
         const value = extraNames[key];
-
         this.extraNames.register(key, value);
       }
     }
@@ -170,8 +167,8 @@ export class Name {
   /**
    * Returns a list of string values filtered by specified id or name
    * @param idOrName ObjectIdentifier or string name
-   * @returns Returns a list of strings. Returns an empty
-   * list if there are not any values for specified id/name.
+   * @returns Returns a list of strings. Returns an empty list if there are not any
+   * values for specified id/name.
    */
   public getField(idOrName: string): string[] {
     const id = this.extraNames.findId(idOrName) || names.findId(idOrName);
@@ -225,14 +222,11 @@ export class Name {
 
     for (const rdn of this.asn) {
       const jsonItem: JsonAttributeAndStringValue = {};
-
       for (const attr of rdn) {
         const type = this.getName(attr.type) || attr.type;
-
         jsonItem[type] ??= [];
         jsonItem[type].push(attr.value.anyValue ? `#${Convert.ToHex(attr.value.anyValue)}` : attr.value.toString());
       }
-
       json.push(jsonItem);
     }
 
@@ -253,12 +247,10 @@ export class Name {
     while (matches = regex.exec(`${data},`)) {
       let [, type, value] = matches;
       const lastChar = value[value.length - 1];
-
       if (lastChar === "," || lastChar === "+") {
         value = value.slice(0, value.length - 1);
         matches[3] = lastChar;
       }
-
       const next = matches[3];
 
       type = this.getTypeOid(type);
@@ -285,18 +277,14 @@ export class Name {
 
     for (const item of data) {
       const asnRdn = new RelativeDistinguishedName();
-
       for (const type in item) {
         const typeId = this.getTypeOid(type);
         const values = item[type];
-
         for (const value of values) {
           const asnAttr = this.createAttribute(typeId, value);
-
           asnRdn.push(asnAttr);
         }
       }
-
       asn.push(asnRdn);
     }
 
@@ -312,7 +300,6 @@ export class Name {
     if (!/[\d.]+/.test(type)) {
       type = this.getName(type) || "";
     }
-
     if (!type) {
       throw new Error(`Cannot get OID for name type '${type}'`);
     }
@@ -335,20 +322,20 @@ export class Name {
     if (typeof value === "object") {
       for (const key in value) {
         switch (key) {
-          case "ia5String": attr.value.ia5String = value[key];
-
+          case "ia5String":
+            attr.value.ia5String = value[key];
             break;
-          case "utf8String": attr.value.utf8String = value[key];
-
+          case "utf8String":
+            attr.value.utf8String = value[key];
             break;
-          case "universalString": attr.value.universalString = value[key];
-
+          case "universalString":
+            attr.value.universalString = value[key];
             break;
-          case "bmpString": attr.value.bmpString = value[key];
-
+          case "bmpString":
+            attr.value.bmpString = value[key];
             break;
-          case "printableString": attr.value.printableString = value[key];
-
+          case "printableString":
+            attr.value.printableString = value[key];
             break;
         }
       }
@@ -356,7 +343,6 @@ export class Name {
       attr.value.anyValue = Convert.FromHex(value.slice(1));
     } else {
       const processedValue = this.processStringValue(value);
-
       if (type === this.getName("E") || type === this.getName("DC")) {
         attr.value.ia5String = processedValue;
       } else {
@@ -378,7 +364,6 @@ export class Name {
    */
   private processStringValue(value: string): string {
     const quotedMatches = /"(.*?[^\\])?"/.exec(value);
-
     if (quotedMatches) {
       value = quotedMatches[1];
     }
@@ -409,7 +394,7 @@ export class Name {
    */
   public async getThumbprint(
     algorithm: globalThis.AlgorithmIdentifier,
-    crypto?: Crypto,
+    crypto?: Crypto
   ): Promise<ArrayBuffer>;
   public async getThumbprint(...args: any[]) {
     let crypto: Crypto;

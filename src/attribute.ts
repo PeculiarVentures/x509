@@ -33,7 +33,6 @@ export class Attribute extends AsnData<AsnAttribute> {
   public constructor(raw: BufferSource);
   public constructor(...args: any[]) {
     let raw: ArrayBuffer;
-
     if (BufferSourceConverter.isBufferSource(args[0])) {
       raw = BufferSourceConverter.toArrayBuffer(args[0]);
     } else {
@@ -41,7 +40,6 @@ export class Attribute extends AsnData<AsnAttribute> {
       const values = Array.isArray(args[1])
         ? args[1].map((o) => BufferSourceConverter.toArrayBuffer(o))
         : [];
-
       raw = AsnConvert.serialize(new AsnAttribute({
         type, values,
       }));

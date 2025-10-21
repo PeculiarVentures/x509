@@ -2,10 +2,7 @@ import { CertificationRequest, CertificationRequestInfo } from "@peculiar/asn1-c
 import { id_pkcs9_at_extensionRequest } from "@peculiar/asn1-pkcs9";
 import { AsnConvert } from "@peculiar/asn1-schema";
 import {
-  Name as AsnName,
-  Extension as AsnExtension,
-  SubjectPublicKeyInfo,
-  Extensions,
+  Name as AsnName, Extension as AsnExtension, SubjectPublicKeyInfo, Extensions,
   Attribute as AsnAttribute,
 } from "@peculiar/asn1-x509";
 import { container } from "tsyringe";
@@ -62,7 +59,6 @@ export class Pkcs10CertificateRequestGenerator {
     if (!params.keys.privateKey) {
       throw new Error("Bad field 'keys' in 'params' argument. 'privateKey' is empty");
     }
-
     if (!params.keys.publicKey) {
       throw new Error("Bad field 'keys' in 'params' argument. 'publicKey' is empty");
     }
@@ -73,12 +69,10 @@ export class Pkcs10CertificateRequestGenerator {
         { subjectPKInfo: AsnConvert.parse(spki, SubjectPublicKeyInfo) },
       ),
     });
-
     if (params.name) {
       const name = params.name instanceof Name
         ? params.name
         : new Name(params.name);
-
       asnReq.certificationRequestInfo.subject = AsnConvert.parse(name.toArrayBuffer(), AsnName);
     }
 
@@ -93,11 +87,9 @@ export class Pkcs10CertificateRequestGenerator {
       // Add extensions
       const attr = new AsnAttribute({ type: id_pkcs9_at_extensionRequest });
       const extensions = new Extensions();
-
       for (const o of params.extensions) {
         extensions.push(AsnConvert.parse(o.rawData, AsnExtension));
       }
-
       attr.values.push(AsnConvert.serialize(extensions));
       asnReq.certificationRequestInfo.attributes.push(attr);
     }
@@ -107,7 +99,6 @@ export class Pkcs10CertificateRequestGenerator {
       ...params.signingAlgorithm, ...params.keys.privateKey.algorithm,
     } as HashedAlgorithm;
     const algProv = container.resolve<AlgorithmProvider>(diAlgorithmProvider);
-
     asnReq.signatureAlgorithm = algProv.toAsnAlgorithm(signingAlgorithm);
 
     // Sign
@@ -115,18 +106,16 @@ export class Pkcs10CertificateRequestGenerator {
     const signature = await crypto.subtle.sign(signingAlgorithm, params.keys.privateKey, tbs);
 
     // Convert WebCrypto signature to ASN.1 format
-    const signatureFormatters = container.resolveAll<IAsnSignatureFormatter>(
-      diAsnSignatureFormatter,
-    ).reverse();
+    const signatureFormatters = container
+      .resolveAll<IAsnSignatureFormatter>(diAsnSignatureFormatter)
+      .reverse();
     let asnSignature: ArrayBuffer | null = null;
-
     for (const signatureFormatter of signatureFormatters) {
       asnSignature = signatureFormatter.toAsnSignature(signingAlgorithm, signature);
       if (asnSignature) {
         break;
       }
     }
-
     if (!asnSignature) {
       throw Error("Cannot convert WebCrypto signature value to ASN.1 format");
     }

@@ -32,14 +32,13 @@ export class CertificatePolicyExtension extends Extension {
       super(args[0] as BufferSource);
 
       const asnPolicies = AsnConvert.parse(this.value, asnX509.CertificatePolicies);
-
       this.policies = asnPolicies.map((o) => o.policyIdentifier);
     } else {
       const policies = args[0] as string[];
       const critical = args[1] ?? false;
 
       const value = new asnX509.CertificatePolicies(
-        policies.map((o) => new asnX509.PolicyInformation({ policyIdentifier: o })),
+        policies.map((o) => (new asnX509.PolicyInformation({ policyIdentifier: o }))),
       );
 
       super(asnX509.id_ce_certificatePolicies, critical, AsnConvert.serialize(value));

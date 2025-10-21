@@ -79,7 +79,6 @@ export class X509Crl extends PemData<CertificateList> {
   public get signatureAlgorithm(): HashedAlgorithm {
     if (!this.#signatureAlgorithm) {
       const algProv = container.resolve<AlgorithmProvider>(diAlgorithmProvider);
-
       this.#signatureAlgorithm = algProv
         .toWebAlgorithm(this.asn.signatureAlgorithm) as HashedAlgorithm;
     }
@@ -118,11 +117,9 @@ export class X509Crl extends PemData<CertificateList> {
   public get thisUpdate(): Date {
     if (!this.#thisUpdate) {
       const thisUpdate = this.asn.tbsCertList.thisUpdate.getTime();
-
       if (!thisUpdate) {
         throw new Error("Cannot get 'thisUpdate' value");
       }
-
       this.#thisUpdate = thisUpdate;
     }
 
@@ -290,7 +287,6 @@ export class X509Crl extends PemData<CertificateList> {
     // Convert public key to CryptoKey
     let publicKey: CryptoKey;
     const paramsKey = params.publicKey;
-
     try {
       if (paramsKey instanceof X509Certificate) {
         // X509Certificate
@@ -316,9 +312,10 @@ export class X509Crl extends PemData<CertificateList> {
       // NOTE: Uncomment the next line to see more information about errors
       // console.error(_e);
 
-      // Application will throw exception if public key algorithm
-      // is not the same type which is needed for signature
-      // validation (eg leaf certificate is signed with RSA mechanism, public key is ECDSA)
+      // Application will throw exception if public key
+      // algorithm is not the same type which is needed
+      // for signature validation
+      // (eg leaf certificate is signed with RSA mechanism, public key is ECDSA)
       return false;
     }
 
@@ -327,14 +324,12 @@ export class X509Crl extends PemData<CertificateList> {
       .resolveAll<IAsnSignatureFormatter>(diAsnSignatureFormatter)
       .reverse();
     let signature: ArrayBuffer | null = null;
-
     for (const signatureFormatter of signatureFormatters) {
       signature = signatureFormatter.toWebSignature(keyAlgorithm, this.signature);
       if (signature) {
         break;
       }
     }
-
     if (!signature) {
       throw Error("Cannot convert ASN.1 signature value to WebCrypto format");
     }
@@ -359,7 +354,6 @@ export class X509Crl extends PemData<CertificateList> {
   public async getThumbprint(...args: any[]) {
     let crypto: Crypto;
     let algorithm = "SHA-1";
-
     if (args[0]) {
       if (!args[0].subtle) {
         // crypto?
@@ -369,7 +363,6 @@ export class X509Crl extends PemData<CertificateList> {
         crypto = args[0];
       }
     }
-
     crypto ??= cryptoProvider.get();
 
     return await crypto.subtle.digest(algorithm, this.rawData);
@@ -383,7 +376,6 @@ export class X509Crl extends PemData<CertificateList> {
   public findRevoked(certOrSerialNumber: X509Certificate | string): X509CrlEntry | null {
     const serialNumber = typeof certOrSerialNumber === "string" ? certOrSerialNumber : certOrSerialNumber.serialNumber;
     const serialBuffer = generateCertificateSerialNumber(serialNumber);
-
     for (const revoked of this.asn.tbsCertList.revokedCertificates || []) {
       if (BufferSourceConverter.isEqual(revoked.userCertificate, serialBuffer)) {
         return new X509CrlEntry(AsnConvert.serialize(revoked));

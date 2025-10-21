@@ -32,7 +32,6 @@ export class AttributeFactory {
   public static create(data: BufferSource) {
     const attribute = new Attribute(data);
     const Type = this.items.get(attribute.type);
-
     if (Type) {
       return new Type(data);
     }

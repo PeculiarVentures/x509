@@ -45,7 +45,6 @@ export class SubjectAlternativeNameExtension extends Extension {
     const obj = this.toTextObjectWithoutValue();
 
     const namesObj = this.names.toTextObject();
-
     for (const key in namesObj) {
       obj[key] = namesObj[key];
     }

@@ -62,7 +62,6 @@ export class PemConverter {
     const res: PemStruct[] = [];
 
     let matches: RegExpExecArray | null = null;
-
     // eslint-disable-next-line no-cond-assign
     while (matches = pattern.exec(pem)) {
       // prepare pem encoded message
@@ -77,33 +76,27 @@ export class PemConverter {
 
       // read headers
       const headersString = matches[2];
-
       if (headersString) {
         const headers = headersString.split(new RegExp(rEolGroup, "g"));
         let lastHeader: PemHeader | null = null;
-
         for (const header of headers) {
           const [key, value] = header.split(/:(.*)/);
-
           if (value === undefined) {
             // value
             if (!lastHeader) {
               throw new Error("Cannot parse PEM string. Incorrect header value");
             }
-
             lastHeader.value += key.trim();
           } else {
             // key and value
             if (lastHeader) {
               pemStruct.headers.push(lastHeader);
             }
-
             lastHeader = {
               key, value: value.trim(),
             };
           }
         }
-
         // add last header
         if (lastHeader) {
           pemStruct.headers.push(lastHeader);
@@ -133,7 +126,6 @@ export class PemConverter {
    */
   public static decodeFirst(pem: string): ArrayBuffer {
     const items = this.decode(pem);
-
     if (!items.length) {
       throw new RangeError("PEM string doesn't contain any objects");
     }
@@ -165,14 +157,12 @@ export class PemConverter {
   ) {
     if (Array.isArray(rawData)) {
       const raws = new Array<string>();
-
       if (tag) {
         // encode BufferSource[]
         rawData.forEach((element) => {
           if (!BufferSourceConverter.isBufferSource(element)) {
             throw new TypeError("Cannot encode array of BufferSource in PEM format. Not all items of the array are BufferSource");
           }
-
           raws.push(this.encodeStruct({
             type: tag,
             rawData: BufferSourceConverter.toArrayBuffer(element),
@@ -184,7 +174,6 @@ export class PemConverter {
           if (!("type" in element)) {
             throw new TypeError("Cannot encode array of PemStruct in PEM format. Not all items of the array are PemStrut");
           }
-
           raws.push(this.encodeStruct(element));
         });
       }
@@ -211,7 +200,6 @@ export class PemConverter {
     const upperCaseType = pem.type.toLocaleUpperCase();
 
     const res: string[] = [];
-
     res.push(`-----BEGIN ${upperCaseType}-----`);
 
     if (pem.headers?.length) {
@@ -226,7 +214,6 @@ export class PemConverter {
     let sliced: string;
     let offset = 0;
     const rows = Array<string>();
-
     while (offset < base64.length) {
       if (base64.length - offset < 64) {
         sliced = base64.substring(offset);
@@ -234,7 +221,6 @@ export class PemConverter {
         sliced = base64.substring(offset, offset + 64);
         offset += 64;
       }
-
       if (sliced.length !== 0) {
         rows.push(sliced);
         if (sliced.length < 64) {
@@ -244,7 +230,6 @@ export class PemConverter {
         break;
       }
     }
-
     res.push(...rows);
 
     res.push(`-----END ${upperCaseType}-----`);

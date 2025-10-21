@@ -42,8 +42,8 @@ export type GeneralNameType = typeof DNS
 /**
  * Represents ASN.1 type of GeneralName.
  *
- * This class doesn't support no standard string format is defined for
- * otherName, X.400 name, EDI party name, or any other type of names.
+ * This class doesn't support no standard string format is
+ * defined for otherName, X.400 name, EDI party name, or any other type of names.
  */
 export class GeneralName extends AsnData<asn1X509.GeneralName> {
   /**
@@ -60,34 +60,26 @@ export class GeneralName extends AsnData<asn1X509.GeneralName> {
   public constructor(raw: BufferSource);
   public constructor(...args: any[]) {
     let name: asn1X509.GeneralName;
-
     if (args.length === 2) {
       // type: GeneralNameType, value: string
       switch (args[0] as GeneralNameType) {
         case DN: {
           const derName = new Name(args[1]).toArrayBuffer();
           const asnName = AsnConvert.parse(derName, asn1X509.Name);
-
           name = new asn1X509.GeneralName({ directoryName: asnName });
-
           break;
         }
-
         case DNS:
           name = new asn1X509.GeneralName({ dNSName: args[1] });
-
           break;
         case EMAIL:
           name = new asn1X509.GeneralName({ rfc822Name: args[1] });
-
           break;
         case GUID: {
           const matches = new RegExp(GUID_REGEX, "i").exec(args[1]);
-
           if (!matches) {
             throw new Error("Cannot parse GUID value. Value doesn't match to regular expression");
           }
-
           const hex = matches
             .slice(1)
             .map((o, i) => {
@@ -105,17 +97,13 @@ export class GeneralName extends AsnData<asn1X509.GeneralName> {
               value: AsnConvert.serialize(new OctetString(Convert.FromHex(hex))),
             }),
           });
-
           break;
         }
-
         case IP:
           name = new asn1X509.GeneralName({ iPAddress: args[1] });
-
           break;
         case REGISTERED_ID:
           name = new asn1X509.GeneralName({ registeredID: args[1] });
-
           break;
         case UPN: {
           name = new asn1X509.GeneralName({
@@ -124,13 +112,10 @@ export class GeneralName extends AsnData<asn1X509.GeneralName> {
               value: AsnConvert.serialize(AsnUtf8StringConverter.toASN(args[1])),
             }),
           });
-
           break;
         }
-
         case URL:
           name = new asn1X509.GeneralName({ uniformResourceIdentifier: args[1] });
-
           break;
         default:
           throw new Error("Cannot create GeneralName. Unsupported type of the name");
@@ -142,7 +127,6 @@ export class GeneralName extends AsnData<asn1X509.GeneralName> {
       // asn: asn1X509.GeneralName
       name = args[0];
     }
-
     super(name);
   }
 
@@ -150,8 +134,8 @@ export class GeneralName extends AsnData<asn1X509.GeneralName> {
    * Occurs on instance initialization
    * @param asn
    *
-   * @throws Throws error if ASN.1 GeneralName contains unsupported value
-   * (eg otherName, X400 address, EDI party name)
+   * @throws Throws error if ASN.1 GeneralName contains
+   * unsupported value (eg otherName, X400 address, EDI party name)
    */
   protected onInit(asn: asn1X509.GeneralName): void {
     if (asn.dNSName != undefined) {
@@ -177,11 +161,9 @@ export class GeneralName extends AsnData<asn1X509.GeneralName> {
         this.type = GUID;
         const guid = AsnConvert.parse(asn.otherName.value, OctetString);
         const matches = new RegExp(GUID_REGEX, "i").exec(Convert.ToHex(guid));
-
         if (!matches) {
           throw new Error(ERR_GUID);
         }
-
         this.value = matches
           .slice(1)
           .map((o, i) => {
@@ -212,7 +194,6 @@ export class GeneralName extends AsnData<asn1X509.GeneralName> {
 
   public override toTextObject(): TextObject {
     let type: string;
-
     switch (this.type) {
       case DN:
       case DNS:
@@ -222,18 +203,15 @@ export class GeneralName extends AsnData<asn1X509.GeneralName> {
       case UPN:
       case URL:
         type = this.type.toUpperCase();
-
         break;
       case EMAIL:
         type = "Email";
-
         break;
       default:
         throw new Error("Unsupported GeneralName type");
     }
 
     let value = this.value;
-
     if (this.type === REGISTERED_ID) {
       value = OidSerializer.toString(value);
     }
@@ -253,10 +231,12 @@ export class GeneralNames extends AsnData<asn1X509.GeneralNames> {
   constructor(asn: asn1X509.GeneralNames | asn1X509.GeneralName[]);
   constructor(raw: BufferSource);
   constructor(
-    params: JsonGeneralNames | asn1X509.GeneralNames | asn1X509.GeneralName[] | BufferSource,
+    params: JsonGeneralNames
+      | asn1X509.GeneralNames
+      | asn1X509.GeneralName[]
+      | BufferSource,
   ) {
     let names: asn1X509.GeneralNames;
-
     if (params instanceof asn1X509.GeneralNames) {
       // asn1X509.GeneralNames
       names = params;
@@ -272,7 +252,6 @@ export class GeneralNames extends AsnData<asn1X509.GeneralNames> {
             new GeneralName(name.type, name.value).rawData,
             asn1X509.GeneralName,
           );
-
           items.push(asnName);
         }
       }
@@ -289,17 +268,14 @@ export class GeneralNames extends AsnData<asn1X509.GeneralNames> {
 
   protected onInit(asn: asn1X509.GeneralNames): void {
     const items: GeneralName[] = [];
-
     for (const asnName of asn) {
       let name: GeneralName | null = null;
-
       try {
         name = new GeneralName(asnName);
       } catch {
         // skip unsupported ASN.1 GeneralName
         continue;
       }
-
       items.push(name);
     }
 
@@ -316,7 +292,6 @@ export class GeneralNames extends AsnData<asn1X509.GeneralNames> {
     for (const name of this.items) {
       const nameObj = name.toTextObject();
       let field = res[nameObj[TextObject.NAME]];
-
       if (!Array.isArray(field)) {
         field = [];
         res[nameObj[TextObject.NAME]] = field;

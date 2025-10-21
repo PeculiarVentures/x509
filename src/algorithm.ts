@@ -46,14 +46,12 @@ export class AlgorithmProvider {
   public toAsnAlgorithm(alg: Algorithm): AlgorithmIdentifier {
     // prepare hashed algorithm
     const algCopy: any = { ...alg };
-
     if (algCopy.hash && typeof algCopy.hash === "string") {
       algCopy.hash = { name: algCopy.hash };
     }
 
     for (const algorithm of this.getAlgorithms()) {
       const res = algorithm.toAsnAlgorithm(alg);
-
       if (res) {
         return res;
       }
@@ -64,7 +62,6 @@ export class AlgorithmProvider {
 
       if ("parameters" in alg) {
         const unknown = alg as UnknownAlgorithm;
-
         res.parameters = unknown.parameters;
       }
 
@@ -82,7 +79,6 @@ export class AlgorithmProvider {
   public toWebAlgorithm(alg: AlgorithmIdentifier): Algorithm {
     for (const algorithm of this.getAlgorithms()) {
       const res = algorithm.toWebAlgorithm(alg);
-
       if (res) {
         return res;
       }

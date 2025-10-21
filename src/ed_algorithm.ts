@@ -19,46 +19,37 @@ export const idEd448 = "1.3.101.113";
 export class EdAlgorithm implements IAlgorithm {
   public toAsnAlgorithm(alg: EcKeyGenParams): AlgorithmIdentifier | null {
     let algorithm: string | null = null;
-
     switch (alg.name.toLowerCase()) {
       case "ed25519":
         // This algorithm is supported by WebCrypto API
         algorithm = idEd25519;
-
         break;
       case "x25519":
         // This algorithm is supported by WebCrypto API
         algorithm = idX25519;
-
         break;
       case "eddsa":
         // This algorithm works with @peculiar/webcrypto only
         switch (alg.namedCurve.toLowerCase()) {
           case "ed25519":
             algorithm = idEd25519;
-
             break;
           case "ed448":
             algorithm = idEd448;
-
             break;
         }
-
         break;
       case "ecdh-es":
         // This algorithm works with @peculiar/webcrypto only
         switch (alg.namedCurve.toLowerCase()) {
           case "x25519":
             algorithm = idX25519;
-
             break;
           case "x448":
             algorithm = idX448;
-
             break;
         }
     }
-
     if (algorithm) {
       return new AlgorithmIdentifier({ algorithm });
     }

@@ -43,11 +43,9 @@ export class CRLDistributionPointsExtension extends Extension {
         });
       });
       const value = new asn1X509.CRLDistributionPoints(dps);
-
       super(asn1X509.id_ce_cRLDistributionPoints, args[1], AsnConvert.serialize(value));
     } else {
       const value = new asn1X509.CRLDistributionPoints(args[0]);
-
       super(asn1X509.id_ce_cRLDistributionPoints, args[1], AsnConvert.serialize(value));
     }
 
@@ -58,7 +56,6 @@ export class CRLDistributionPointsExtension extends Extension {
     super.onInit(asn);
 
     const crlExt = AsnConvert.parse(asn.extnValue, asn1X509.CRLDistributionPoints);
-
     this.distributionPoints = crlExt;
   }
 
@@ -67,15 +64,12 @@ export class CRLDistributionPointsExtension extends Extension {
 
     obj["Distribution Point"] = this.distributionPoints.map((dp) => {
       const dpObj: any = {};
-
       if (dp.distributionPoint) {
         dpObj[""] = dp.distributionPoint.fullName?.map((name) => new GeneralName(name).toString()).join(", ");
       }
-
       if (dp.reasons) {
         dpObj["Reasons"] = dp.reasons.toString();
       }
-
       if (dp.cRLIssuer) {
         dpObj["CRL Issuer"] = dp.cRLIssuer.map((issuer) => issuer.toString()).join(", ");
       }

@@ -40,7 +40,6 @@ export class PublicKey extends PemData<SubjectPublicKeyInfo> {
       if (data.type !== "public") {
         throw new TypeError("Public key is required");
       }
-
       const spki = await crypto.subtle.exportKey("spki", data);
 
       return new PublicKey(spki);
@@ -94,7 +93,7 @@ export class PublicKey extends PemData<SubjectPublicKeyInfo> {
   public async export(
     algorithm: Algorithm | EcKeyImportParams | RsaHashedImportParams,
     keyUsages: KeyUsage[],
-    crypto?: Crypto,
+    crypto?: Crypto
   ): Promise<CryptoKey>;
   public async export(...args: any[]) {
     let crypto: Crypto;
@@ -115,7 +114,6 @@ export class PublicKey extends PemData<SubjectPublicKeyInfo> {
 
     let raw = this.rawData;
     const asnSpki = AsnConvert.parse(this.rawData, SubjectPublicKeyInfo);
-
     if (asnSpki.algorithm.algorithm === id_RSASSA_PSS) {
       // WebCrypto in browsers does not support RSA-PSS algorithm for public keys
       // So, we need to convert it to RSA-PKCS1
@@ -129,16 +127,13 @@ export class PublicKey extends PemData<SubjectPublicKeyInfo> {
   protected onInit(asn: SubjectPublicKeyInfo) {
     const algProv = container.resolve<AlgorithmProvider>(diAlgorithmProvider);
     const algorithm = this.algorithm = algProv.toWebAlgorithm(asn.algorithm) as any;
-
     switch (asn.algorithm.algorithm) {
       case id_rsaEncryption:
       {
         const rsaPublicKey = AsnConvert.parse(asn.subjectPublicKey, RSAPublicKey);
         const modulus = BufferSourceConverter.toUint8Array(rsaPublicKey.modulus);
-
         algorithm.publicExponent = BufferSourceConverter.toUint8Array(rsaPublicKey.publicExponent);
         algorithm.modulusLength = (!modulus[0] ? modulus.slice(1) : modulus).byteLength << 3;
-
         break;
       }
     }
@@ -156,7 +151,7 @@ export class PublicKey extends PemData<SubjectPublicKeyInfo> {
    */
   public async getThumbprint(
     algorithm: globalThis.AlgorithmIdentifier,
-    crypto?: Crypto,
+    crypto?: Crypto
   ): Promise<ArrayBuffer>;
   public async getThumbprint(...args: any[]) {
     let crypto: Crypto;
@@ -185,7 +180,7 @@ export class PublicKey extends PemData<SubjectPublicKeyInfo> {
    */
   public async getKeyIdentifier(
     algorithm: globalThis.AlgorithmIdentifier,
-    crypto?: Crypto,
+    crypto?: Crypto
   ): Promise<ArrayBuffer>;
   public async getKeyIdentifier(...args: any[]) {
     let crypto: Crypto;
@@ -224,7 +219,6 @@ export class PublicKey extends PemData<SubjectPublicKeyInfo> {
     switch (asn.algorithm.algorithm) {
       case id_ecPublicKey:
         obj["EC Point"] = asn.subjectPublicKey;
-
         break;
       case id_rsaEncryption:
       default:

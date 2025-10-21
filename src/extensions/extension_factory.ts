@@ -35,7 +35,6 @@ export class ExtensionFactory {
   public static create(data: BufferSource) {
     const extension = new Extension(data);
     const Type = this.items.get(extension.type);
-
     if (Type) {
       return new Type(data);
     }

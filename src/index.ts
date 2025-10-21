@@ -71,6 +71,10 @@ extensions.ExtensionFactory.register(
   asnX509.id_pe_authorityInfoAccess,
   extensions.AuthorityInfoAccessExtension,
 );
+extensions.ExtensionFactory.register(
+  asnX509.id_ce_issuerAltName,
+  extensions.IssuerAlternativeNameExtension,
+);
 
 // Register x509 attributes
 attributes.AttributeFactory.register(

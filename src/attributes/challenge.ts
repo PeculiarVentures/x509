@@ -25,7 +25,6 @@ export class ChallengePasswordAttribute extends Attribute {
       super(args[0] as BufferSource);
     } else {
       const value = new asnPkcs9.ChallengePassword({ printableString: args[0] });
-
       super(asnPkcs9.id_pkcs9_at_challengePassword, [AsnConvert.serialize(value)]);
     }
 
@@ -37,7 +36,6 @@ export class ChallengePasswordAttribute extends Attribute {
 
     if (this.values[0]) {
       const value = AsnConvert.parse(this.values[0], asnPkcs9.ChallengePassword);
-
       this.password = value.toString();
     }
   }

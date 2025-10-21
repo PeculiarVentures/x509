@@ -120,13 +120,11 @@ export class X509CrlEntry extends AsnData<RevokedCertificate> {
                 this.#reason = AsnConvert
                   .parse(extension.value, CRLReason).reason as unknown as X509CrlReason;
               }
-
               break;
             case id_ce_invalidityDate:
               if (this.#invalidity === undefined) {
                 this.#invalidity = AsnConvert.parse(extension.value, InvalidityDate).value;
               }
-
               break;
           }
 
@@ -157,7 +155,6 @@ export class X509CrlEntry extends AsnData<RevokedCertificate> {
   public constructor(serialNumber: string, revocationDate: Date, extensions: Extension[]);
   public constructor(...args: any[]) {
     let raw: ArrayBuffer | RevokedCertificate | undefined;
-
     if (BufferSourceConverter.isBufferSource(args[0])) {
       raw = BufferSourceConverter.toArrayBuffer(args[0]);
     } else if (typeof args[0] === "string") {

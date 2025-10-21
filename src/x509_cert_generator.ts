@@ -99,7 +99,6 @@ export class X509CertificateGenerator {
     if (!params.keys.privateKey) {
       throw new Error("Bad field 'keys' in 'params' argument. 'privateKey' is empty");
     }
-
     if (!params.keys.publicKey) {
       throw new Error("Bad field 'keys' in 'params' argument. 'publicKey' is empty");
     }
@@ -124,7 +123,6 @@ export class X509CertificateGenerator {
    */
   public static async create(params: X509CertificateCreateParams, crypto = cryptoProvider.get()) {
     let spki: BufferSource;
-
     if (params.publicKey instanceof PublicKey) {
       spki = params.publicKey.rawData;
     } else if ("publicKey" in params.publicKey) {
@@ -147,26 +145,22 @@ export class X509CertificateGenerator {
           notBefore,
           notAfter,
         }),
-        extensions: new asn1X509.Extensions(params.extensions?.map((o) => (
-          AsnConvert.parse(o.rawData, asn1X509.Extension)
-        )) || []),
+        extensions: new asn1X509.Extensions(
+          params.extensions?.map((o) => AsnConvert.parse(o.rawData, asn1X509.Extension)) || [],
+        ),
         subjectPublicKeyInfo: AsnConvert.parse(spki, asn1X509.SubjectPublicKeyInfo),
       }),
     });
-
     if (params.subject) {
       const name = params.subject instanceof Name
         ? params.subject
         : new Name(params.subject);
-
       asnX509.tbsCertificate.subject = AsnConvert.parse(name.toArrayBuffer(), asn1X509.Name);
     }
-
     if (params.issuer) {
       const name = params.issuer instanceof Name
         ? params.issuer
         : new Name(params.issuer);
-
       asnX509.tbsCertificate.issuer = AsnConvert.parse(name.toArrayBuffer(), asn1X509.Name);
     }
 
@@ -181,10 +175,8 @@ export class X509CertificateGenerator {
         } as HashedAlgorithm;
 
     const algProv = container.resolve<AlgorithmProvider>(diAlgorithmProvider);
-
-    asnX509.tbsCertificate.signature = asnX509.signatureAlgorithm = algProv.toAsnAlgorithm(
-      signatureAlgorithm,
-    );
+    asnX509.tbsCertificate.signature = asnX509.signatureAlgorithm = algProv
+      .toAsnAlgorithm(signatureAlgorithm);
 
     // Sign
     const tbs = AsnConvert.serialize(asnX509.tbsCertificate);
@@ -195,11 +187,10 @@ export class X509CertificateGenerator {
       : params.signature;
 
     // Convert WebCrypto signature to ASN.1 format
-    const signatureFormatters = container.resolveAll<IAsnSignatureFormatter>(
-      diAsnSignatureFormatter,
-    ).reverse();
+    const signatureFormatters = container
+      .resolveAll<IAsnSignatureFormatter>(diAsnSignatureFormatter)
+      .reverse();
     let asnSignature: ArrayBuffer | null = null;
-
     for (const signatureFormatter of signatureFormatters) {
       asnSignature = signatureFormatter.toAsnSignature(
         signatureAlgorithm,
@@ -209,7 +200,6 @@ export class X509CertificateGenerator {
         break;
       }
     }
-
     if (!asnSignature) {
       throw Error("Cannot convert ASN.1 signature value to WebCrypto format");
     }

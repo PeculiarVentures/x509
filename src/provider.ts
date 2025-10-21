@@ -84,7 +84,6 @@ export class CryptoProvider {
   public get(key: string): Crypto;
   public get(key = CryptoProvider.DEFAULT) {
     const crypto = this.items.get(key.toLowerCase());
-
     if (!crypto) {
       throw new Error(`Cannot get Crypto by name '${key}'`);
     }
@@ -108,7 +107,6 @@ export class CryptoProvider {
       if (!value) {
         throw new TypeError("Argument 'value' is required");
       }
-
       this.items.set(key.toLowerCase(), value);
     } else {
       this.items.set(CryptoProvider.DEFAULT, key);

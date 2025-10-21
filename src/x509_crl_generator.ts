@@ -85,10 +85,8 @@ export class X509CrlGenerator {
       asnX509Crl.tbsCertList.revokedCertificates = [];
       for (const entry of params.entries) {
         const userCertificate = PemData.toArrayBuffer(entry.serialNumber);
-        const index = asnX509Crl.tbsCertList.revokedCertificates.findIndex(
-          (cert) => isEqual(cert.userCertificate, userCertificate),
-        );
-
+        const index = asnX509Crl.tbsCertList.revokedCertificates
+          .findIndex((cert) => isEqual(cert.userCertificate, userCertificate));
         if (index > -1) {
           throw new Error(`Certificate serial number ${entry.serialNumber} already exists in tbsCertList`);
         }
@@ -151,28 +149,24 @@ export class X509CrlGenerator {
       ...params.signingAlgorithm, ...params.signingKey.algorithm,
     } as HashedAlgorithm;
     const algProv = container.resolve<AlgorithmProvider>(diAlgorithmProvider);
-
-    asnX509Crl.tbsCertList.signature = asnX509Crl.signatureAlgorithm = algProv.toAsnAlgorithm(
-      signingAlgorithm,
-    );
+    asnX509Crl.tbsCertList.signature = asnX509Crl.signatureAlgorithm = algProv
+      .toAsnAlgorithm(signingAlgorithm);
 
     // Sign
     const tbs = AsnConvert.serialize(asnX509Crl.tbsCertList);
     const signature = await crypto.subtle.sign(signingAlgorithm, params.signingKey, tbs);
 
     // Convert WebCrypto signature to ASN.1 format
-    const signatureFormatters = container.resolveAll<IAsnSignatureFormatter>(
-      diAsnSignatureFormatter,
-    ).reverse();
+    const signatureFormatters = container
+      .resolveAll<IAsnSignatureFormatter>(diAsnSignatureFormatter)
+      .reverse();
     let asnSignature: ArrayBuffer | null = null;
-
     for (const signatureFormatter of signatureFormatters) {
       asnSignature = signatureFormatter.toAsnSignature(signingAlgorithm, signature);
       if (asnSignature) {
         break;
       }
     }
-
     if (!asnSignature) {
       throw Error("Cannot convert ASN.1 signature value to WebCrypto format");
     }

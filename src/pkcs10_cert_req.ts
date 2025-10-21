@@ -19,8 +19,8 @@ import { TextConverter, TextObject } from "./text_converter";
 /**
  * Representation of PKCS10 Certificate Request
  */
-export class Pkcs10CertificateRequest
-  extends PemData<CertificationRequest> implements IPublicKeyContainer {
+export class Pkcs10CertificateRequest extends PemData<CertificationRequest>
+  implements IPublicKeyContainer {
   public static override NAME = "PKCS#10 Certificate Request";
 
   protected readonly tag;
@@ -93,7 +93,6 @@ export class Pkcs10CertificateRequest
   public get signatureAlgorithm(): HashedAlgorithm {
     if (!this.#signatureAlgorithm) {
       const algProv = container.resolve<AlgorithmProvider>(diAlgorithmProvider);
-
       this.#signatureAlgorithm = algProv.toWebAlgorithm(
         this.asn.signatureAlgorithm,
       ) as HashedAlgorithm;
@@ -143,7 +142,6 @@ export class Pkcs10CertificateRequest
     if (!this.#extensions) {
       this.#extensions = [];
       const extensions = this.getAttribute(id_pkcs9_at_extensionRequest);
-
       if (extensions instanceof ExtensionsAttribute) {
         this.#extensions = extensions.items;
       }
@@ -176,7 +174,6 @@ export class Pkcs10CertificateRequest
   public constructor(asn: CertificationRequest);
   public constructor(param: AsnEncodedType | CertificationRequest) {
     const args = PemData.isAsnEncoded(param) ? [param, CertificationRequest] : [param];
-
     super(args[0] as any, args[1] as any);
     this.tag = PemConverter.CertificateRequestTag;
   }
@@ -246,14 +243,12 @@ export class Pkcs10CertificateRequest
       .resolveAll<IAsnSignatureFormatter>(diAsnSignatureFormatter)
       .reverse();
     let signature: ArrayBuffer | null = null;
-
     for (const signatureFormatter of signatureFormatters) {
       signature = signatureFormatter.toWebSignature(algorithm, this.signature);
       if (signature) {
         break;
       }
     }
-
     if (!signature) {
       throw Error("Cannot convert WebCrypto signature value to ASN.1 format");
     }
@@ -274,19 +269,14 @@ export class Pkcs10CertificateRequest
       Subject: this.subject,
       "Subject Public Key Info": this.publicKey,
     });
-
     if (this.attributes.length) {
       const attrs = new TextObject("");
-
       for (const ext of this.attributes) {
         const attrObj = ext.toTextObject();
-
         attrs[attrObj[TextObject.NAME]] = attrObj;
       }
-
       data["Attributes"] = attrs;
     }
-
     obj["Data"] = data;
 
     obj["Signature"] = new TextObject("", {

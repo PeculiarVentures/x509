@@ -14,7 +14,6 @@ import { HashedAlgorithm } from "./types";
 export class RsaAlgorithm implements IAlgorithm {
   public static createPssParams(hash: unknown, saltLength: number): asn1Rsa.RsaSaPssParams | null {
     const hashAlgorithm = RsaAlgorithm.getHashAlgorithm(hash);
-
     if (!hashAlgorithm) {
       return null;
     }
@@ -31,7 +30,6 @@ export class RsaAlgorithm implements IAlgorithm {
 
   public static getHashAlgorithm(alg: unknown): AlgorithmIdentifier | null {
     const algProv = container.resolve<AlgorithmProvider>(diAlgorithmProvider);
-
     if (typeof alg === "string") {
       return algProv.toAsnAlgorithm({ name: alg });
     }
@@ -48,7 +46,6 @@ export class RsaAlgorithm implements IAlgorithm {
       case "rsassa-pkcs1-v1_5":
         if ("hash" in alg) {
           let hash: string;
-
           if (typeof alg.hash === "string") {
             hash = alg.hash;
           } else if (alg.hash && typeof alg.hash === "object"
@@ -81,16 +78,13 @@ export class RsaAlgorithm implements IAlgorithm {
             algorithm: asn1Rsa.id_rsaEncryption, parameters: null,
           });
         }
-
         break;
       case "rsa-pss":
         if ("hash" in alg) {
           if (!("saltLength" in alg && typeof alg.saltLength === "number")) {
             throw new Error("Cannot get 'saltLength' from 'alg' argument");
           }
-
           const pssParams = RsaAlgorithm.createPssParams(alg.hash, alg.saltLength);
-
           if (!pssParams) {
             throw new Error("Cannot create PSS parameters");
           }
@@ -103,7 +97,6 @@ export class RsaAlgorithm implements IAlgorithm {
             algorithm: asn1Rsa.id_RSASSA_PSS, parameters: null,
           });
         }
-
         break;
     }
 

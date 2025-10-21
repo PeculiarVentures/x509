@@ -41,11 +41,9 @@ export class ExtendedKeyUsageExtension extends Extension {
       super(args[0] as BufferSource);
 
       const value = AsnConvert.parse(this.value, asn1X509.ExtendedKeyUsage);
-
       this.usages = value.map((o) => o);
     } else {
       const value = new asn1X509.ExtendedKeyUsage(args[0]);
-
       super(asn1X509.id_ce_extKeyUsage, args[1], AsnConvert.serialize(value));
 
       this.usages = args[0];

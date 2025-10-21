@@ -28,11 +28,9 @@ export class ExtensionsAttribute extends Attribute {
     } else {
       const extensions = args[0] as Extension[];
       const value = new asnX509.Extensions();
-
       for (const extension of extensions) {
         value.push(AsnConvert.parse(extension.rawData, asnX509.Extension));
       }
-
       super(asnPkcs9.id_pkcs9_at_extensionRequest, [AsnConvert.serialize(value)]);
     }
 
@@ -44,7 +42,6 @@ export class ExtensionsAttribute extends Attribute {
 
     if (this.values[0]) {
       const value = AsnConvert.parse(this.values[0], asnX509.Extensions);
-
       this.items = value.map((o) => ExtensionFactory.create(AsnConvert.serialize(o)));
     }
   }
@@ -53,7 +50,6 @@ export class ExtensionsAttribute extends Attribute {
     const obj = this.toTextObjectWithoutValue();
 
     const extensions = this.items.map((o) => o.toTextObject());
-
     for (const extension of extensions) {
       obj[extension[TextObject.NAME]] = extension;
     }

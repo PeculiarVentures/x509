@@ -12,18 +12,11 @@ export interface TextObjectConvertible {
   toTextObject(): TextObject;
 }
 
-export type TextObjectItemType = string
-  | number
-  | boolean
-  | Date
-  | BufferSource
-  | TextObject
-  | TextObject[]
-  | TextObjectConvertible;
+export type TextObjectItemType = string | number | boolean | Date | BufferSource
+  | TextObject | TextObject[] | TextObjectConvertible;
 
 const NAME = Symbol("name");
 const VALUE = Symbol("value");
-
 export class TextObject {
   public static NAME: typeof NAME = NAME;
   public static VALUE: typeof VALUE = VALUE;
@@ -54,16 +47,13 @@ export abstract class DefaultAlgorithmSerializer {
       switch (alg.algorithm) {
         case asn1Ecc.id_ecPublicKey: {
           const ecAlg = new EcAlgorithm().toWebAlgorithm(alg);
-
           if (ecAlg && "namedCurve" in ecAlg) {
             obj["Named Curve"] = ecAlg.namedCurve;
           } else {
             obj["Parameters"] = alg.parameters;
           }
-
           break;
         }
-
         default:
           obj["Parameters"] = alg.parameters;
       }
@@ -103,7 +93,6 @@ export abstract class OidSerializer {
 
   public static toString(oid: string): string {
     const name = this.items[oid];
-
     if (name) {
       return name;
     }
@@ -130,7 +119,6 @@ export abstract class TextConverter {
 
     let value = "";
     const objValue = obj[TextObject.VALUE];
-
     if (objValue) {
       value = ` ${objValue}`;
     }
@@ -145,7 +133,6 @@ export abstract class TextConverter {
 
       const value = obj[key];
       const keyValue = key ? `${key}: ` : "";
-
       if (typeof value === "string"
         || typeof value === "number"
         || typeof value === "boolean") {
@@ -169,7 +156,6 @@ export abstract class TextConverter {
         }
       } else if ("toTextObject" in value) {
         const obj = value.toTextObject();
-
         obj[TextObject.NAME] = key;
         res.push(...this.serializeObj(obj, deep));
       } else {
@@ -189,17 +175,14 @@ export abstract class TextConverter {
     // each hex raw should have 16 octets
     for (let i = 0; i < view.length;) {
       const row: string[] = [];
-
       for (let j = 0; j < 16 && i < view.length; j++) {
         if (j === 8) {
           row.push(""); // split hex columns
         }
 
         const hex = view[i++].toString(16).padStart(2, "0");
-
         row.push(hex);
       }
-
       res.push(`${pad}${row.join(" ")}`);
     }
 
