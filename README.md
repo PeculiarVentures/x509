@@ -1,9 +1,16 @@
-# @peculiar/x509
+<h1 align="center">
+  @peculiar/x509
+</h1>
 
-[![License](https://img.shields.io/badge/license-MIT-green.svg?style=flat)](https://raw.githubusercontent.com/PeculiarVentures/webcrypto/master/LICENSE.md)
-![Node.js CI](https://github.com/PeculiarVentures/x509/workflows/Node.js%20CI/badge.svg)
-[![Coverage Status](https://coveralls.io/repos/github/PeculiarVentures/x509/badge.svg?branch=master)](https://coveralls.io/github/PeculiarVentures/x509?branch=master)
-[![npm version](https://badge.fury.io/js/%40peculiar%2Fx509.svg)](https://badge.fury.io/js/%40peculiar%2Fx509)
+<div align="center">
+
+![NPM License](https://img.shields.io/npm/l/@peculiar/x509)
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/PeculiarVentures/x509/test.yml?label=test)
+[![npm version](https://img.shields.io/npm/v/@peculiar/x509.svg)](https://www.npmjs.com/package/@peculiar/x509)
+![Coveralls](https://img.shields.io/coverallsCoverage/github/PeculiarVentures/x509)
+[![npm downloads](https://img.shields.io/npm/dm/@peculiar/x509.svg)](https://www.npmjs.com/package/@peculiar/x509)
+
+</div>
 
 - [About](#about)
 - [Installation](#installation)
