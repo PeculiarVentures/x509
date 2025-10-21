@@ -1,5 +1,7 @@
 import { AsnConvert } from "@peculiar/asn1-schema";
-import { CertificateList, Version, AlgorithmIdentifier } from "@peculiar/asn1-x509";
+import {
+  CertificateList, Version, AlgorithmIdentifier,
+} from "@peculiar/asn1-x509";
 import { BufferSourceConverter } from "pvtsutils";
 import { container } from "tsyringe";
 import { HashedAlgorithm } from "./types";
@@ -57,7 +59,7 @@ export class X509Crl extends PemData<CertificateList> {
   /**
    * CRL entries
    */
-  #entries?: ReadonlyArray<X509CrlEntry>;
+  #entries?: readonly X509CrlEntry[];
 
   /**
    * CRL extensions
@@ -77,7 +79,8 @@ export class X509Crl extends PemData<CertificateList> {
   public get signatureAlgorithm(): HashedAlgorithm {
     if (!this.#signatureAlgorithm) {
       const algProv = container.resolve<AlgorithmProvider>(diAlgorithmProvider);
-      this.#signatureAlgorithm = algProv.toWebAlgorithm(this.asn.signatureAlgorithm) as HashedAlgorithm;
+      this.#signatureAlgorithm = algProv
+        .toWebAlgorithm(this.asn.signatureAlgorithm) as HashedAlgorithm;
     }
 
     return this.#signatureAlgorithm;
@@ -141,9 +144,10 @@ export class X509Crl extends PemData<CertificateList> {
    * Reading this property parses all revoked certificates, which can be slow for large CRLs.
    * Use findRevoked() for efficient searching of specific certificates.
    */
-  public get entries(): ReadonlyArray<X509CrlEntry> {
+  public get entries(): readonly X509CrlEntry[] {
     if (!this.#entries) {
-      this.#entries = this.asn.tbsCertList.revokedCertificates?.map(o => new X509CrlEntry(o)) || [];
+      this.#entries = this.asn.tbsCertList
+        .revokedCertificates?.map((o) => new X509CrlEntry(o)) || [];
     }
 
     return this.#entries;
@@ -157,7 +161,7 @@ export class X509Crl extends PemData<CertificateList> {
       this.#extensions = [];
       if (this.asn.tbsCertList.crlExtensions) {
         this.#extensions = this.asn.tbsCertList.crlExtensions.map((o) =>
-          ExtensionFactory.create(AsnConvert.serialize(o))
+          ExtensionFactory.create(AsnConvert.serialize(o)),
         );
       }
     }
@@ -220,11 +224,9 @@ export class X509Crl extends PemData<CertificateList> {
    * @param type Extension type
    * @returns Extension or null
    */
-  public getExtension<T extends Extension>(type: {
-    new(raw: BufferSource): T;
-  }): T | null;
+  public getExtension<T extends Extension>(type: new(raw: BufferSource) => T): T | null;
   public getExtension<T extends Extension>(
-    type: { new(raw: BufferSource): T; } | string
+    type: (new(raw: BufferSource) => T) | string,
   ): T | null {
     for (const ext of this.extensions) {
       if (typeof type === "string") {
@@ -250,15 +252,13 @@ export class X509Crl extends PemData<CertificateList> {
    * Returns a list of extensions of specified type
    * @param type Extension type
    */
-  public getExtensions<T extends Extension>(type: {
-    new(raw: BufferSource): T;
-  }): T[];
+  public getExtensions<T extends Extension>(type: new(raw: BufferSource) => T): T[];
   /**
    * Returns a list of extensions of specified type
    * @param type Extension identifier
    */
   public getExtensions<T extends Extension>(
-    type: string | { new(raw: BufferSource): T; }
+    type: string | (new(raw: BufferSource) => T),
   ): T[] {
     return this.extensions.filter((o) => {
       if (typeof type === "string") {
@@ -276,7 +276,7 @@ export class X509Crl extends PemData<CertificateList> {
    */
   public async verify(
     params: X509CrlVerifyParams,
-    crypto = cryptoProvider.get()
+    crypto = cryptoProvider.get(),
   ) {
     if (!this.certListSignatureAlgorithm.isEqual(this.tbsCertListSignatureAlgorithm)) {
       throw new Error("algorithm identifier in the sequence tbsCertList and CertificateList mismatch");
@@ -297,24 +297,32 @@ export class X509Crl extends PemData<CertificateList> {
         publicKey = await paramsKey.publicKey.export(keyAlgorithm, ["verify"]);
       } else if (paramsKey instanceof PublicKey) {
         // PublicKey
-        keyAlgorithm = { ...paramsKey.algorithm, ...this.signatureAlgorithm };
+        keyAlgorithm = {
+          ...paramsKey.algorithm, ...this.signatureAlgorithm,
+        };
         publicKey = await paramsKey.export(keyAlgorithm, ["verify"]);
       } else {
         // CryptoKey
-        keyAlgorithm = { ...paramsKey.algorithm, ...this.signatureAlgorithm };
+        keyAlgorithm = {
+          ...paramsKey.algorithm, ...this.signatureAlgorithm,
+        };
         publicKey = paramsKey;
       }
-    } catch (_e) {
+    } catch {
       // NOTE: Uncomment the next line to see more information about errors
       // console.error(_e);
 
-      // Application will throw exception if public key algorithm is not the same type which is needed for
-      // signature validation (eg leaf certificate is signed with RSA mechanism, public key is ECDSA)
+      // Application will throw exception if public key
+      // algorithm is not the same type which is needed
+      // for signature validation
+      // (eg leaf certificate is signed with RSA mechanism, public key is ECDSA)
       return false;
     }
 
     // Convert ASN.1 signature to WebCrypto format
-    const signatureFormatters = container.resolveAll<IAsnSignatureFormatter>(diAsnSignatureFormatter).reverse();
+    const signatureFormatters = container
+      .resolveAll<IAsnSignatureFormatter>(diAsnSignatureFormatter)
+      .reverse();
     let signature: ArrayBuffer | null = null;
     for (const signatureFormatter of signatureFormatters) {
       signature = signatureFormatter.toWebSignature(keyAlgorithm, this.signature);

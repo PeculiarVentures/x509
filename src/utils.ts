@@ -13,9 +13,12 @@ import { cryptoProvider } from "./provider";
  * @param crypto Crypto provider for random number generation
  * @returns RFC 5280 compliant serial number as ArrayBuffer
  */
-export function generateCertificateSerialNumber(input: string | undefined, crypto = cryptoProvider.get()): ArrayBuffer {
+export function generateCertificateSerialNumber(
+  input: string | undefined,
+  crypto = cryptoProvider.get(),
+): ArrayBuffer {
   const inputView = BufferSourceConverter.toUint8Array(Convert.FromHex(input || ""));
-  let serialNumber = inputView && inputView.length && inputView.some(o => o > 0)
+  let serialNumber = inputView && inputView.length && inputView.some((o) => o > 0)
     ? new Uint8Array(inputView)
     : undefined;
   if (!serialNumber) {

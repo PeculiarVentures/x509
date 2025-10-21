@@ -1,4 +1,6 @@
-import { AttributeTypeAndValue, Name as AsnName, RelativeDistinguishedName } from "@peculiar/asn1-x509";
+import {
+  AttributeTypeAndValue, Name as AsnName, RelativeDistinguishedName,
+} from "@peculiar/asn1-x509";
 import { AsnConvert } from "@peculiar/asn1-schema";
 import { BufferSourceConverter, Convert } from "pvtsutils";
 import { cryptoProvider } from "./provider";
@@ -9,12 +11,8 @@ function isOID(id: string) {
   return new RegExp(OID_REGEX).test(id);
 }
 
-
-export interface IdOrName {
-  [idOrName: string]: string;
-}
+export type IdOrName = Record<string, string>;
 export class NameIdentifier {
-
   private items: IdOrName = {};
 
   public constructor(names: Record<string, string> = {}) {
@@ -58,9 +56,7 @@ names.register("T", "2.5.4.12");
 /**
  * JSON representation of Attribute and Value
  */
-export interface JsonAttributeAndStringValue {
-  [type: string]: string[];
-}
+export type JsonAttributeAndStringValue = Record<string, string[]>;
 
 export interface JsonAttributeObject {
   ia5String?: string;
@@ -70,18 +66,16 @@ export interface JsonAttributeObject {
   printableString?: string;
 }
 
-export interface JsonAttributeAndObjectValue {
-  [type: string]: JsonAttributeObject[];
-}
+export type JsonAttributeAndObjectValue = Record<string, JsonAttributeObject[]>;
 
 export type JsonAttributeAndValue = JsonAttributeAndStringValue | JsonAttributeAndObjectValue;
 
 /**
  * JSON array of Attribute and Value
  */
-export type JsonName = Array<JsonAttributeAndStringValue>;
+export type JsonName = JsonAttributeAndStringValue[];
 
-export type JsonNameParams = Array<JsonAttributeAndValue>;
+export type JsonNameParams = JsonAttributeAndValue[];
 
 function replaceUnknownCharacter(text: string, char: string) {
   return `\\${Convert.ToHex(Convert.FromUtf8String(char)).toUpperCase()}`;
@@ -93,7 +87,7 @@ function escape(data: string) {
     .replace(/^([ #])/, "\\$1") // a space or "#" character occurring at the beginning of the string
     .replace(/([ ]$)/, "\\$1") // a space character occurring at the end of the string
     .replace(/([\r\n\t])/, replaceUnknownCharacter) // unknown character
-    ;
+  ;
 }
 
 /**
@@ -102,7 +96,6 @@ function escape(data: string) {
  * https://tools.ietf.org/html/rfc2253
  */
 export class Name {
-
   private extraNames = new NameIdentifier();
 
   /**
@@ -149,7 +142,10 @@ export class Name {
    *   "GUID": "1.2.3.4.5.3",
    * });
    */
-  public constructor(data: BufferSource | AsnName | string | JsonNameParams, extraNames: IdOrName = {}) {
+  public constructor(
+    data: BufferSource | AsnName | string | JsonNameParams,
+    extraNames: IdOrName = {},
+  ) {
     for (const key in extraNames) {
       if (Object.prototype.hasOwnProperty.call(extraNames, key)) {
         const value = extraNames[key];
@@ -171,7 +167,8 @@ export class Name {
   /**
    * Returns a list of string values filtered by specified id or name
    * @param idOrName ObjectIdentifier or string name
-   * @returns Returns a list of strings. Returns an empty list if there are not any values for specified id/name.
+   * @returns Returns a list of strings. Returns an empty list if there are not any
+   * values for specified id/name.
    */
   public getField(idOrName: string): string[] {
     const id = this.extraNames.findId(idOrName) || names.findId(idOrName);
@@ -196,8 +193,8 @@ export class Name {
    * Returns string serialized Name
    */
   public toString() {
-    return this.asn.map(rdn =>
-      rdn.map(o => {
+    return this.asn.map((rdn) =>
+      rdn.map((o) => {
         const type = this.getName(o.type) || o.type;
         const value = o.value.anyValue
           // If the AttributeValue is of a type which does not have a string
@@ -316,17 +313,30 @@ export class Name {
    * @param value The value
    * @returns The AttributeTypeAndValue object
    */
-  private createAttribute(type: string, value: string | JsonAttributeObject): AttributeTypeAndValue {
+  private createAttribute(
+    type: string,
+    value: string | JsonAttributeObject,
+  ): AttributeTypeAndValue {
     const attr = new AttributeTypeAndValue({ type });
 
     if (typeof value === "object") {
       for (const key in value) {
         switch (key) {
-          case "ia5String": attr.value.ia5String = value[key]; break;
-          case "utf8String": attr.value.utf8String = value[key]; break;
-          case "universalString": attr.value.universalString = value[key]; break;
-          case "bmpString": attr.value.bmpString = value[key]; break;
-          case "printableString": attr.value.printableString = value[key]; break;
+          case "ia5String":
+            attr.value.ia5String = value[key];
+            break;
+          case "utf8String":
+            attr.value.utf8String = value[key];
+            break;
+          case "universalString":
+            attr.value.universalString = value[key];
+            break;
+          case "bmpString":
+            attr.value.bmpString = value[key];
+            break;
+          case "printableString":
+            attr.value.printableString = value[key];
+            break;
         }
       }
     } else if (value[0] === "#") {
@@ -359,9 +369,9 @@ export class Name {
     }
 
     return value
-      .replace(/\\0a/ig, "\n")  // \n
-      .replace(/\\0d/ig, "\r")  // \r
-      .replace(/\\0g/ig, "\t")  // \t
+      .replace(/\\0a/ig, "\n") // \n
+      .replace(/\\0d/ig, "\r") // \r
+      .replace(/\\0g/ig, "\t") // \t
       .replace(/\\(.)/g, "$1"); // unescape
   }
 
@@ -382,7 +392,10 @@ export class Name {
    * @param algorithm Hash algorithm
    * @param crypto Crypto provider. Default is from CryptoProvider
    */
-  public async getThumbprint(algorithm: globalThis.AlgorithmIdentifier, crypto?: Crypto): Promise<ArrayBuffer>;
+  public async getThumbprint(
+    algorithm: globalThis.AlgorithmIdentifier,
+    crypto?: Crypto
+  ): Promise<ArrayBuffer>;
   public async getThumbprint(...args: any[]) {
     let crypto: Crypto;
     let algorithm = "SHA-1";
@@ -397,5 +410,4 @@ export class Name {
 
     return await crypto.subtle.digest(algorithm, this.toArrayBuffer());
   }
-
 }

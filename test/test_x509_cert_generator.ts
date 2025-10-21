@@ -1,7 +1,9 @@
 import * as path from "path";
-import { describe, it, expect, beforeAll } from "vitest";
-import * as x509 from "../src";
+import {
+  describe, it, expect, beforeAll,
+} from "vitest";
 import { Crypto } from "@peculiar/webcrypto";
+import * as x509 from "../src";
 
 const crypto = new Crypto();
 x509.cryptoProvider.set(crypto);
@@ -20,22 +22,25 @@ const theTestX509CertificateGeneratorVector = [
       subject: "CN=Test, O=Дом",
       issuer: "CN=Test, O=Дом",
       notBefore: new Date(Date.UTC(2020, 0, 1, 8, 0, 0)), // UTCTime 2020-01-01 08:00:00 UTC
-      notAfter: new Date(Date.UTC(2040, 0, 2, 8, 0, 0)),  // UTCTime 2040-01-02 08:00:00 UTC
+      notAfter: new Date(Date.UTC(2040, 0, 2, 8, 0, 0)), // UTCTime 2040-01-02 08:00:00 UTC
       signingAlgorithm: alg,
       extensions: [
         new x509.BasicConstraintsExtension(true, 2, true),
         new x509.ExtendedKeyUsageExtension(["1.2.3.4.5.6.7", "2.3.4.5.6.7.8"], true),
-        new x509.KeyUsagesExtension(x509.KeyUsageFlags.keyCertSign | x509.KeyUsageFlags.cRLSign, true),
+        new x509.KeyUsagesExtension(
+          x509.KeyUsageFlags.keyCertSign | x509.KeyUsageFlags.cRLSign,
+          true,
+        ),
         new x509.CertificatePolicyExtension([
           "1.2.3.4.5",
           "1.2.3.4.5.6",
           "1.2.3.4.5.6.7",
         ]),
-      ]
+      ],
     },
 
-    testDate: new Date(Date.UTC(2040, 0, 1, 8, 0, 1)),   // UTCTime 2040-01-01 08:00:01 UTC
-    testAfter: new Date(Date.UTC(2040, 0, 2, 8, 0, 1)),  // UTCTime 2040-01-02 08:00:01 UTC
+    testDate: new Date(Date.UTC(2040, 0, 1, 8, 0, 1)), // UTCTime 2040-01-01 08:00:01 UTC
+    testAfter: new Date(Date.UTC(2040, 0, 2, 8, 0, 1)), // UTCTime 2040-01-02 08:00:01 UTC
     testBefore: new Date(Date.UTC(2020, 0, 1, 0, 0, 1)), // UTCTime 2020-01-01 00:00:01 UTC
 
     certPem:
@@ -81,13 +86,13 @@ BAMCA0kAMEYCIQDskjb7BN3ppaQKIZdJJ5617PoFFfluQ3NuGPj6ljK7vAIhAKRc
         { ST: [{ bmpString: "England" }] },
       ],
       notBefore: new Date(Date.UTC(2020, 0, 1, 0, 0, 0)), // UTCTime 2020-01-01 00:00:00 UTC
-      notAfter: new Date(Date.UTC(2039, 11, 31, 23, 59, 59)),  // UTCTime 2039-12-31 23:59:59 UTC
+      notAfter: new Date(Date.UTC(2039, 11, 31, 23, 59, 59)), // UTCTime 2039-12-31 23:59:59 UTC
       signingAlgorithm: alg,
     },
 
-    testDate: new Date(Date.UTC(2020, 0, 1, 0, 0, 1)),   // UTCTime 2020-01-01 00:00:01 UTC
-    testAfter: new Date(Date.UTC(2040, 0, 1, 0, 0, 0)),  // UTCTime 2040-01-01 00:00:00 UTC
-    testBefore: new Date(Date.UTC(219, 0, 1, 0, 0, 0)),  // UTCTime 2019-01-01 00:00:00 UTC
+    testDate: new Date(Date.UTC(2020, 0, 1, 0, 0, 1)), // UTCTime 2020-01-01 00:00:01 UTC
+    testAfter: new Date(Date.UTC(2040, 0, 1, 0, 0, 0)), // UTCTime 2040-01-01 00:00:00 UTC
+    testBefore: new Date(Date.UTC(219, 0, 1, 0, 0, 0)), // UTCTime 2019-01-01 00:00:00 UTC
 
     certPem:
       `-----BEGIN CERTIFICATE-----
@@ -112,9 +117,7 @@ dbm0dg==
 
 let testCertSelfSignCounter = 1;
 function testCertSelfSign(testEntry: any) {
-
   it(`Test X509CertificateGenerator.create self-signed #${testCertSelfSignCounter++}`, async () => {
-
     const keys = await crypto.subtle.generateKey(alg, true, ["sign", "verify"]);
     expect(keys.publicKey).toBeTruthy();
     expect(keys.privateKey).toBeTruthy();
@@ -130,9 +133,7 @@ function testCertSelfSign(testEntry: any) {
 
 let testCertPreSignedCounter = 1;
 function testCertPreSigned(testEntry: any) {
-
   it(`Test X509CertificateGenerator.create pre-signed #${testCertPreSignedCounter++}`, async () => {
-
     const signature = Buffer.from(testEntry.signature, "hex");
     const extractable = true;
     const publicKeyRaw = Buffer.from(testEntry.publicKey, "hex");
@@ -141,7 +142,7 @@ function testCertPreSigned(testEntry: any) {
       publicKeyRaw,
       alg,
       extractable,
-      ["verify"]
+      ["verify"],
     );
     expect(publicKey).toBeTruthy();
 
@@ -163,12 +164,11 @@ function testCertPreSigned(testEntry: any) {
 
     const validBefore = await cert.verify({ date: testEntry.testBefore });
     expect(validBefore).toBe(false);
-
   });
 }
 
 describe(path.basename(__filename), () => {
-  theTestX509CertificateGeneratorVector.forEach(testEntry => {
+  theTestX509CertificateGeneratorVector.forEach((testEntry) => {
     testCertSelfSign(testEntry);
     testCertPreSigned(testEntry);
   });
@@ -216,18 +216,22 @@ describe(path.basename(__filename), () => {
     it("should throw an error if privateKey is empty", async () => {
       await expect(
         x509.X509CertificateGenerator.createSelfSigned({
-          keys: { privateKey: null, publicKey: {} } as any,
+          keys: {
+            privateKey: null, publicKey: {},
+          } as any,
           // other parameters...
-        })
+        }),
       ).rejects.toThrow("Bad field 'keys' in 'params' argument. 'privateKey' is empty");
     });
 
     it("should throw an error if publicKey is empty", async () => {
       await expect(
         x509.X509CertificateGenerator.createSelfSigned({
-          keys: { privateKey: {}, publicKey: null } as any,
+          keys: {
+            privateKey: {}, publicKey: null,
+          } as any,
           // other parameters...
-        })
+        }),
       ).rejects.toThrow("Bad field 'keys' in 'params' argument. 'publicKey' is empty");
     });
 
@@ -241,7 +245,7 @@ describe(path.basename(__filename), () => {
           saltLength: 32,
         } as RsaHashedKeyGenParams,
         true,
-        ["sign", "verify"]
+        ["sign", "verify"],
       );
       const cert = await x509.X509CertificateGenerator.createSelfSigned({
         keys,

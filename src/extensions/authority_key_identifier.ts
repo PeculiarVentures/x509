@@ -22,7 +22,6 @@ export interface CertificateIdentifier {
  * Represents the Authority Key Identifier certificate extension
  */
 export class AuthorityKeyIdentifierExtension extends Extension {
-
   public static override NAME = "Authority Key Identifier";
 
   /**
@@ -31,15 +30,27 @@ export class AuthorityKeyIdentifierExtension extends Extension {
    * @param critical Indicates where extension is critical. Default is `false`
    * @param crypto WebCrypto provider. Default is from CryptoProvider
    */
-  public static async create(certId: CertificateIdentifier, critical?: boolean, crypto?: Crypto): Promise<AuthorityKeyIdentifierExtension>;
+  public static async create(
+    certId: CertificateIdentifier,
+    critical?: boolean,
+    crypto?: Crypto
+  ): Promise<AuthorityKeyIdentifierExtension>;
   /**
    * Creates authority key identifier extension from public key data
    * @param publicKey Public key data
    * @param critical Indicates where extension is critical. Default is `false`
    * @param crypto WebCrypto provider. Default is from CryptoProvider
    */
-  public static async create(publicKey: PublicKeyType, critical?: boolean, crypto?: Crypto): Promise<AuthorityKeyIdentifierExtension>;
-  public static async create(param: PublicKeyType | CertificateIdentifier, critical = false, crypto = cryptoProvider.get()) {
+  public static async create(
+    publicKey: PublicKeyType,
+    critical?: boolean,
+    crypto?: Crypto
+  ): Promise<AuthorityKeyIdentifierExtension>;
+  public static async create(
+    param: PublicKeyType | CertificateIdentifier,
+    critical = false,
+    crypto = cryptoProvider.get(),
+  ) {
     if ("name" in param && "serialNumber" in param) {
       return new AuthorityKeyIdentifierExtension(param, critical);
     }
@@ -80,7 +91,9 @@ export class AuthorityKeyIdentifierExtension extends Extension {
     if (BufferSourceConverter.isBufferSource(args[0])) {
       super(args[0] as BufferSource);
     } else if (typeof args[0] === "string") {
-      const value = new asn1X509.AuthorityKeyIdentifier({ keyIdentifier: new asn1X509.KeyIdentifier(Convert.FromHex(args[0])) });
+      const value = new asn1X509.AuthorityKeyIdentifier(
+        { keyIdentifier: new asn1X509.KeyIdentifier(Convert.FromHex(args[0])) },
+      );
       super(asn1X509.id_ce_authorityKeyIdentifier, args[1], AsnConvert.serialize(value));
     } else {
       const certId = args[0] as CertificateIdentifier;
@@ -93,7 +106,6 @@ export class AuthorityKeyIdentifierExtension extends Extension {
       });
       super(asn1X509.id_ce_authorityKeyIdentifier, args[1], AsnConvert.serialize(value));
     }
-
   }
 
   protected onInit(asn: asn1X509.Extension) {
@@ -129,5 +141,4 @@ export class AuthorityKeyIdentifierExtension extends Extension {
 
     return obj;
   }
-
 }

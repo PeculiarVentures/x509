@@ -19,7 +19,7 @@ const license = fs.readFileSync("LICENSE", { encoding: "utf-8" });
 
 const banner = [
   "/*!",
-  ...license.split("\n").map(o => ` * ${o}`),
+  ...license.split("\n").map((o) => ` * ${o}`),
   " */",
 ].join("\n");
 const input = "src/index.ts";
@@ -34,9 +34,7 @@ const main = {
       check: true,
       clean: true,
       tsconfigOverride: {
-        compilerOptions: {
-          module: "ES2015",
-        },
+        compilerOptions: { module: "ES2015" },
         exclude: [
           "test",
           "website",
@@ -72,14 +70,12 @@ const browser = [
         check: true,
         clean: true,
         tsconfigOverride: {
-          compilerOptions: {
-            module: "es2015",
-          },
+          compilerOptions: { module: "es2015" },
           exclude: [
             "test",
             "website",
           ],
-        }
+        },
       }),
     ],
     output: [
@@ -91,18 +87,14 @@ const browser = [
           getBabelOutputPlugin({
             allowAllFormats: true,
             presets: [
-              ["@babel/preset-env", {
-                targets: {
-                  chrome: "60"
-                },
-              }],
+              ["@babel/preset-env", { targets: { chrome: "60" } }],
             ],
           }),
           terser(),
         ],
-        name: "x509"
-      }
-    ]
+        name: "x509",
+      },
+    ],
   },
 ];
 
@@ -112,17 +104,15 @@ const types = {
   plugins: [
     dts({
       tsconfig: path.resolve(__dirname, "./tsconfig.json"),
-      compilerOptions: {
-        removeComments: false,
-      }
-    })
+      compilerOptions: { removeComments: false },
+    }),
   ],
   output: [
     {
       banner,
       file: pkg.types,
-    }
-  ]
+    },
+  ],
 };
 
 export default [

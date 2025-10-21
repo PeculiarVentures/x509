@@ -7,8 +7,7 @@ import { OidSerializer, TextObject } from "./text_converter";
 /**
  * Represents the certificate extension
  */
-export class Extension extends AsnData<AsnExtension>{
-
+export class Extension extends AsnData<AsnExtension> {
   /**
    * Gets an extension identifier
    */

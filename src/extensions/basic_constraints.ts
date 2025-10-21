@@ -8,7 +8,6 @@ import { TextObject } from "../text_converter";
  * Represents the Basic Constraints certificate extension
  */
 export class BasicConstraintsExtension extends Extension {
-
   public static override NAME = "Basic Constraints";
 
   /**
@@ -66,5 +65,4 @@ export class BasicConstraintsExtension extends Extension {
 
     return obj;
   }
-
 }

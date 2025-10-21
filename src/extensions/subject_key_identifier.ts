@@ -10,7 +10,6 @@ import { TextObject } from "../text_converter";
  * Represents the Subject Key Identifier certificate extension
  */
 export class SubjectKeyIdentifierExtension extends Extension {
-
   public static override NAME = "Subject Key Identifier";
 
   /**
@@ -19,7 +18,11 @@ export class SubjectKeyIdentifierExtension extends Extension {
    * @param critical Indicates where extension is critical. Default is `false`
    * @param crypto WebCrypto provider. Default is from CryptoProvider
    */
-  public static async create(publicKey: PublicKeyType, critical = false, crypto = cryptoProvider.get()) {
+  public static async create(
+    publicKey: PublicKeyType,
+    critical = false,
+    crypto = cryptoProvider.get(),
+  ) {
     const key = await PublicKey.create(publicKey, crypto);
     const id = await key.getKeyIdentifier(crypto);
 
@@ -68,5 +71,4 @@ export class SubjectKeyIdentifierExtension extends Extension {
 
     return obj;
   }
-
 }

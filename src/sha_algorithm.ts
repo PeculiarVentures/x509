@@ -1,14 +1,15 @@
 import { AlgorithmIdentifier } from "@peculiar/asn1-x509";
 import { container, injectable } from "tsyringe";
+import {
+  id_sha1, id_sha256, id_sha384, id_sha512,
+} from "@peculiar/asn1-rsa";
 import { diAlgorithm, IAlgorithm } from "./algorithm";
-import { id_sha1, id_sha256, id_sha384, id_sha512 } from "@peculiar/asn1-rsa";
 
 /**
  * SHA algorithm provider
  */
 @injectable()
 export class ShaAlgorithm implements IAlgorithm {
-
   public toAsnAlgorithm(alg: Algorithm): AlgorithmIdentifier | null {
     switch (alg.name.toLowerCase()) {
       case "sha-1":
@@ -38,7 +39,6 @@ export class ShaAlgorithm implements IAlgorithm {
 
     return null;
   }
-
 }
 
 // register SHA algorithm provider as a singleton object

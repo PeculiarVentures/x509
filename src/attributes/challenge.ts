@@ -6,7 +6,6 @@ import { Attribute } from "../attribute";
 import { TextObject } from "../text_converter";
 
 export class ChallengePasswordAttribute extends Attribute {
-
   public static override NAME = "Challenge Password";
 
   public password: string;
@@ -25,9 +24,7 @@ export class ChallengePasswordAttribute extends Attribute {
     if (BufferSourceConverter.isBufferSource(args[0])) {
       super(args[0] as BufferSource);
     } else {
-      const value = new asnPkcs9.ChallengePassword({
-        printableString: args[0],
-      });
+      const value = new asnPkcs9.ChallengePassword({ printableString: args[0] });
       super(asnPkcs9.id_pkcs9_at_challengePassword, [AsnConvert.serialize(value)]);
     }
 
@@ -50,5 +47,4 @@ export class ChallengePasswordAttribute extends Attribute {
 
     return obj;
   }
-
 }

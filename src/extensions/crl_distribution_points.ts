@@ -35,11 +35,11 @@ export class CRLDistributionPointsExtension extends Extension {
       super(args[0] as BufferSource);
     } else if (Array.isArray(args[0]) && typeof args[0][0] === "string") {
       const urls = args[0] as string[];
-      const dps = urls.map(url => {
+      const dps = urls.map((url) => {
         return new asn1X509.DistributionPoint({
-          distributionPoint: new asn1X509.DistributionPointName({
-            fullName: [new asn1X509.GeneralName({ uniformResourceIdentifier: url })],
-          }),
+          distributionPoint: new asn1X509.DistributionPointName(
+            { fullName: [new asn1X509.GeneralName({ uniformResourceIdentifier: url })] },
+          ),
         });
       });
       const value = new asn1X509.CRLDistributionPoints(dps);
@@ -62,16 +62,16 @@ export class CRLDistributionPointsExtension extends Extension {
   public override toTextObject(): TextObject {
     const obj = this.toTextObjectWithoutValue();
 
-    obj["Distribution Point"] = this.distributionPoints.map(dp => {
+    obj["Distribution Point"] = this.distributionPoints.map((dp) => {
       const dpObj: any = {};
       if (dp.distributionPoint) {
-        dpObj[""] = dp.distributionPoint.fullName?.map(name => new GeneralName(name).toString()).join(", ");
+        dpObj[""] = dp.distributionPoint.fullName?.map((name) => new GeneralName(name).toString()).join(", ");
       }
       if (dp.reasons) {
         dpObj["Reasons"] = dp.reasons.toString();
       }
       if (dp.cRLIssuer) {
-        dpObj["CRL Issuer"] = dp.cRLIssuer.map(issuer => issuer.toString()).join(", ");
+        dpObj["CRL Issuer"] = dp.cRLIssuer.map((issuer) => issuer.toString()).join(", ");
       }
 
       return dpObj;

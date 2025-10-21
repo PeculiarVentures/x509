@@ -16,14 +16,13 @@ export enum KeyUsageFlags {
   keyCertSign = 32,
   cRLSign = 64,
   encipherOnly = 128,
-  decipherOnly = 256
+  decipherOnly = 256,
 }
 
 /**
  * Represents the Key Usage certificate extension
  */
 export class KeyUsagesExtension extends Extension {
-
   public static override NAME = "Key Usages";
 
   /**

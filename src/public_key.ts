@@ -1,5 +1,7 @@
 import { id_ecPublicKey } from "@peculiar/asn1-ecc";
-import { id_rsaEncryption, id_RSASSA_PSS, RSAPublicKey } from "@peculiar/asn1-rsa";
+import {
+  id_rsaEncryption, id_RSASSA_PSS, RSAPublicKey,
+} from "@peculiar/asn1-rsa";
 import { AsnConvert } from "@peculiar/asn1-schema";
 import { AlgorithmIdentifier, SubjectPublicKeyInfo } from "@peculiar/asn1-x509";
 import { BufferSourceConverter } from "pvtsutils";
@@ -23,13 +25,15 @@ export type PublicKeyType = PublicKey | CryptoKey | IPublicKeyContainer | Buffer
  * Representation of Subject Public Key Info
  */
 export class PublicKey extends PemData<SubjectPublicKeyInfo> {
-
   /**
    * Creates a new instance from a public key data
    * @param data Public key data
    * @param crypto Crypto provider. Default is from CryptoProvider
    */
-  public static async create(data: PublicKeyType, crypto = cryptoProvider.get()): Promise<PublicKey> {
+  public static async create(
+    data: PublicKeyType,
+    crypto = cryptoProvider.get(),
+  ): Promise<PublicKey> {
     if (data instanceof PublicKey) {
       return data;
     } else if (CryptoProvider.isCryptoKey(data)) {
@@ -86,11 +90,17 @@ export class PublicKey extends PemData<SubjectPublicKeyInfo> {
    * @param keyUsages A list of key usages
    * @param crypto Crypto provider. Default is from CryptoProvider
    */
-  public async export(algorithm: Algorithm | EcKeyImportParams | RsaHashedImportParams, keyUsages: KeyUsage[], crypto?: Crypto): Promise<CryptoKey>;
+  public async export(
+    algorithm: Algorithm | EcKeyImportParams | RsaHashedImportParams,
+    keyUsages: KeyUsage[],
+    crypto?: Crypto
+  ): Promise<CryptoKey>;
   public async export(...args: any[]) {
     let crypto: Crypto;
     let keyUsages: KeyUsage[] = ["verify"];
-    let algorithm = { hash: "SHA-256", ...this.algorithm };
+    let algorithm = {
+      hash: "SHA-256", ...this.algorithm,
+    };
 
     if (args.length > 1) {
       // alg, usages, crypto?
@@ -119,13 +129,13 @@ export class PublicKey extends PemData<SubjectPublicKeyInfo> {
     const algorithm = this.algorithm = algProv.toWebAlgorithm(asn.algorithm) as any;
     switch (asn.algorithm.algorithm) {
       case id_rsaEncryption:
-        {
-          const rsaPublicKey = AsnConvert.parse(asn.subjectPublicKey, RSAPublicKey);
-          const modulus = BufferSourceConverter.toUint8Array(rsaPublicKey.modulus);
-          algorithm.publicExponent = BufferSourceConverter.toUint8Array(rsaPublicKey.publicExponent);
-          algorithm.modulusLength = (!modulus[0] ? modulus.slice(1) : modulus).byteLength << 3;
-          break;
-        }
+      {
+        const rsaPublicKey = AsnConvert.parse(asn.subjectPublicKey, RSAPublicKey);
+        const modulus = BufferSourceConverter.toUint8Array(rsaPublicKey.modulus);
+        algorithm.publicExponent = BufferSourceConverter.toUint8Array(rsaPublicKey.publicExponent);
+        algorithm.modulusLength = (!modulus[0] ? modulus.slice(1) : modulus).byteLength << 3;
+        break;
+      }
     }
   }
 
@@ -139,7 +149,10 @@ export class PublicKey extends PemData<SubjectPublicKeyInfo> {
    * @param algorithm Hash algorithm
    * @param crypto Crypto provider. Default is from CryptoProvider
    */
-  public async getThumbprint(algorithm: globalThis.AlgorithmIdentifier, crypto?: Crypto): Promise<ArrayBuffer>;
+  public async getThumbprint(
+    algorithm: globalThis.AlgorithmIdentifier,
+    crypto?: Crypto
+  ): Promise<ArrayBuffer>;
   public async getThumbprint(...args: any[]) {
     let crypto: Crypto;
     let algorithm = "SHA-1";
@@ -165,7 +178,10 @@ export class PublicKey extends PemData<SubjectPublicKeyInfo> {
    * @param algorithm Hash algorithm
    * @param crypto Crypto provider. Default is from CryptoProvider
    */
-  public async getKeyIdentifier(algorithm: globalThis.AlgorithmIdentifier, crypto?: Crypto): Promise<ArrayBuffer>;
+  public async getKeyIdentifier(
+    algorithm: globalThis.AlgorithmIdentifier,
+    crypto?: Crypto
+  ): Promise<ArrayBuffer>;
   public async getKeyIdentifier(...args: any[]) {
     let crypto: Crypto;
     let algorithm = "SHA-1";
@@ -211,7 +227,6 @@ export class PublicKey extends PemData<SubjectPublicKeyInfo> {
 
     return obj;
   }
-
 }
 
 function convertSpkiToRsaPkcs1(asnSpki: SubjectPublicKeyInfo, raw: ArrayBuffer) {

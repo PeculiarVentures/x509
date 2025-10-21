@@ -30,7 +30,6 @@ export interface IAlgorithm {
 export const diAlgorithm = "crypto.algorithm";
 
 export class AlgorithmProvider {
-
   /**
    * Returns all registered algorithm providers
    */
@@ -59,9 +58,7 @@ export class AlgorithmProvider {
     }
 
     if (/^[0-9.]+$/.test(alg.name)) {
-      const res = new AlgorithmIdentifier({
-        algorithm: alg.name,
-      });
+      const res = new AlgorithmIdentifier({ algorithm: alg.name });
 
       if ("parameters" in alg) {
         const unknown = alg as UnknownAlgorithm;
@@ -94,7 +91,6 @@ export class AlgorithmProvider {
 
     return unknown;
   }
-
 }
 
 export const diAlgorithmProvider = "crypto.algorithmProvider";

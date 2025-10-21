@@ -1,8 +1,16 @@
-import { describe, it, expect, beforeAll } from "vitest";
+import {
+  describe, it, expect, beforeAll,
+} from "vitest";
 import { Crypto } from "@peculiar/webcrypto";
-import { AuthorityInfoAccessExtension, AuthorityKeyIdentifierExtension, CRLDistributionPointsExtension, CertificateIdentifier, IssuerAlternativeNameExtension, JsonGeneralNames } from "../src";
+import {
+  AuthorityInfoAccessExtension,
+  AuthorityKeyIdentifierExtension,
+  CRLDistributionPointsExtension,
+  CertificateIdentifier,
+  IssuerAlternativeNameExtension,
+  JsonGeneralNames,
+} from "../src";
 import { PublicKey } from "../src/public_key";
-
 
 describe("Extensions", () => {
   describe("CRLDistributionPointsExtension", () => {
@@ -26,7 +34,9 @@ describe("Extensions", () => {
 
     beforeAll(async () => {
       crypto = new Crypto();
-      const alg = { name: "ECDSA", namedCurve: "P-256" };
+      const alg = {
+        name: "ECDSA", namedCurve: "P-256",
+      };
       const keys = await crypto.subtle.generateKey(alg, true, ["sign", "verify"]);
       spki = await crypto.subtle.exportKey("spki", keys.publicKey);
     });
@@ -41,7 +51,7 @@ describe("Extensions", () => {
       it("should create an instance from a CertificateIdentifier", async () => {
         const certId: CertificateIdentifier = {
           name: [],
-          serialNumber: "1234567890abcdef"
+          serialNumber: "1234567890abcdef",
         };
         const ext = await AuthorityKeyIdentifierExtension.create(certId);
         expect(ext instanceof AuthorityKeyIdentifierExtension).toBeTruthy();
@@ -74,7 +84,7 @@ describe("Extensions", () => {
         ocsp: ["http://ocsp.digicert.com", "http://ocsp2.digicert.com"],
         caIssuers: [
           "http://cacerts.digicert.com/GeoTrustGlobalTLSRSA4096SHA2562022CA1.crt",
-          "http://cacerts2.digicert.com/GeoTrustGlobalTLSRSA4096SHA2562022CA2.crt"
+          "http://cacerts2.digicert.com/GeoTrustGlobalTLSRSA4096SHA2562022CA2.crt",
         ],
         caRepository: ["http://crls.digicert.com/GeoTrustGlobalTLSRSA4096SHA2562022CA1.crl"],
         timeStamping: ["http://tsa.digicert.com/GeoTrustGlobalTLSRSA4096SHA2562022CA1"],
@@ -96,9 +106,15 @@ describe("Extensions", () => {
   describe("IssuerAlternativeNameExtension", () => {
     it("should create an instance from an array of names", () => {
       const names: JsonGeneralNames = [
-        { type: "dns", value: "issuer.example.com" },
-        { type: "email", value: "issuer@example.com" },
-        { type: "ip", value: "192.168.1.1" },
+        {
+          type: "dns", value: "issuer.example.com",
+        },
+        {
+          type: "email", value: "issuer@example.com",
+        },
+        {
+          type: "ip", value: "192.168.1.1",
+        },
       ];
       const ext = new IssuerAlternativeNameExtension(names);
       expect(ext.names.items.length).toBe(3);
@@ -109,8 +125,12 @@ describe("Extensions", () => {
 
     it("should encode and decode DER correctly", () => {
       const names: JsonGeneralNames = [
-        { type: "dns", value: "issuer.example.com" },
-        { type: "email", value: "issuer@example.com" },
+        {
+          type: "dns", value: "issuer.example.com",
+        },
+        {
+          type: "email", value: "issuer@example.com",
+        },
       ];
       const ext = new IssuerAlternativeNameExtension(names);
       const der = ext.rawData;
@@ -122,7 +142,9 @@ describe("Extensions", () => {
 
     it("should output correct hex", () => {
       const names: JsonGeneralNames = [
-        { type: "dns", value: "issuer.example.com" },
+        {
+          type: "dns", value: "issuer.example.com",
+        },
       ];
       const ext = new IssuerAlternativeNameExtension(names);
       expect(ext.toString("hex")).toMatch(/^[0-9a-f]+$/i);

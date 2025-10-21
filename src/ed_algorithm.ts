@@ -17,7 +17,6 @@ export const idEd448 = "1.3.101.113";
  */
 @injectable()
 export class EdAlgorithm implements IAlgorithm {
-
   public toAsnAlgorithm(alg: EcKeyGenParams): AlgorithmIdentifier | null {
     let algorithm: string | null = null;
     switch (alg.name.toLowerCase()) {
@@ -52,29 +51,32 @@ export class EdAlgorithm implements IAlgorithm {
         }
     }
     if (algorithm) {
-      return new AlgorithmIdentifier({
-        algorithm,
-      });
+      return new AlgorithmIdentifier({ algorithm });
     }
 
     return null;
   }
 
-  public toWebAlgorithm(alg: AlgorithmIdentifier): HashedAlgorithm | EcKeyGenParams | Algorithm | null {
+  public toWebAlgorithm(
+    alg: AlgorithmIdentifier,
+  ): HashedAlgorithm | EcKeyGenParams | Algorithm | null {
     switch (alg.algorithm) {
       case idEd25519:
         return { name: "Ed25519" };
       case idEd448:
-        return { name: "EdDSA", namedCurve: "Ed448" };
+        return {
+          name: "EdDSA", namedCurve: "Ed448",
+        };
       case idX25519:
         return { name: "X25519" };
       case idX448:
-        return { name: "ECDH-ES", namedCurve: "X448" };
+        return {
+          name: "ECDH-ES", namedCurve: "X448",
+        };
     }
 
     return null;
   }
-
 }
 
 // register ED algorithm provider as a singleton object

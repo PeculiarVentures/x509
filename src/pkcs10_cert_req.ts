@@ -2,6 +2,7 @@ import { CertificationRequest } from "@peculiar/asn1-csr";
 import { AsnConvert } from "@peculiar/asn1-schema";
 import { id_pkcs9_at_extensionRequest } from "@peculiar/asn1-pkcs9";
 import { container } from "tsyringe";
+import { Version } from "@peculiar/asn1-x509";
 import { Name } from "./name";
 import { cryptoProvider } from "./provider";
 import { HashedAlgorithm } from "./types";
@@ -14,13 +15,12 @@ import { AsnEncodedType, PemData } from "./pem_data";
 import { diAsnSignatureFormatter, IAsnSignatureFormatter } from "./asn_signature_formatter";
 import { PemConverter } from "./pem_converter";
 import { TextConverter, TextObject } from "./text_converter";
-import { Version } from "@peculiar/asn1-x509";
 
 /**
  * Representation of PKCS10 Certificate Request
  */
-export class Pkcs10CertificateRequest extends PemData<CertificationRequest> implements IPublicKeyContainer {
-
+export class Pkcs10CertificateRequest extends PemData<CertificationRequest>
+  implements IPublicKeyContainer {
   public static override NAME = "PKCS#10 Certificate Request";
 
   protected readonly tag;
@@ -93,7 +93,9 @@ export class Pkcs10CertificateRequest extends PemData<CertificationRequest> impl
   public get signatureAlgorithm(): HashedAlgorithm {
     if (!this.#signatureAlgorithm) {
       const algProv = container.resolve<AlgorithmProvider>(diAlgorithmProvider);
-      this.#signatureAlgorithm = algProv.toWebAlgorithm(this.asn.signatureAlgorithm) as HashedAlgorithm;
+      this.#signatureAlgorithm = algProv.toWebAlgorithm(
+        this.asn.signatureAlgorithm,
+      ) as HashedAlgorithm;
     }
 
     return this.#signatureAlgorithm;
@@ -127,7 +129,7 @@ export class Pkcs10CertificateRequest extends PemData<CertificationRequest> impl
   public get attributes(): Attribute[] {
     if (!this.#attributes) {
       this.#attributes = this.asn.certificationRequestInfo.attributes
-        .map(o => AttributeFactory.create(AsnConvert.serialize(o)));
+        .map((o) => AttributeFactory.create(AsnConvert.serialize(o)));
     }
 
     return this.#attributes;
@@ -153,7 +155,8 @@ export class Pkcs10CertificateRequest extends PemData<CertificationRequest> impl
    */
   private get tbs(): ArrayBuffer {
     if (!this.#tbs) {
-      this.#tbs = this.asn.certificationRequestInfoRaw || AsnConvert.serialize(this.asn.certificationRequestInfo);
+      this.#tbs = this.asn.certificationRequestInfoRaw
+        || AsnConvert.serialize(this.asn.certificationRequestInfo);
     }
 
     return this.#tbs;
@@ -199,7 +202,7 @@ export class Pkcs10CertificateRequest extends PemData<CertificationRequest> impl
    * @param type Attribute identifier
    */
   public getAttributes(type: string) {
-    return this.attributes.filter(o => o.type === type);
+    return this.attributes.filter((o) => o.type === type);
   }
 
   /**
@@ -222,7 +225,7 @@ export class Pkcs10CertificateRequest extends PemData<CertificationRequest> impl
    * @param type Extension identifier
    */
   public getExtensions(type: string) {
-    return this.extensions.filter(o => o.type === type);
+    return this.extensions.filter((o) => o.type === type);
   }
 
   /**
@@ -230,11 +233,15 @@ export class Pkcs10CertificateRequest extends PemData<CertificationRequest> impl
    * @param crypto Crypto provider. Default is from CryptoProvider
    */
   public async verify(crypto = cryptoProvider.get()) {
-    const algorithm = { ...this.publicKey.algorithm, ...this.signatureAlgorithm };
+    const algorithm = {
+      ...this.publicKey.algorithm, ...this.signatureAlgorithm,
+    };
     const publicKey = await this.publicKey.export(algorithm, ["verify"], crypto);
 
     // Convert ASN.1 signature to WebCrypto format
-    const signatureFormatters = container.resolveAll<IAsnSignatureFormatter>(diAsnSignatureFormatter).reverse();
+    const signatureFormatters = container
+      .resolveAll<IAsnSignatureFormatter>(diAsnSignatureFormatter)
+      .reverse();
     let signature: ArrayBuffer | null = null;
     for (const signatureFormatter of signatureFormatters) {
       signature = signatureFormatter.toWebSignature(algorithm, this.signature);
@@ -258,8 +265,8 @@ export class Pkcs10CertificateRequest extends PemData<CertificationRequest> impl
 
     const tbs = req.certificationRequestInfo;
     const data = new TextObject("", {
-      "Version": `${Version[tbs.version]} (${tbs.version})`,
-      "Subject": this.subject,
+      Version: `${Version[tbs.version]} (${tbs.version})`,
+      Subject: this.subject,
       "Subject Public Key Info": this.publicKey,
     });
     if (this.attributes.length) {
@@ -273,11 +280,10 @@ export class Pkcs10CertificateRequest extends PemData<CertificationRequest> impl
     obj["Data"] = data;
 
     obj["Signature"] = new TextObject("", {
-      "Algorithm": TextConverter.serializeAlgorithm(req.signatureAlgorithm),
+      Algorithm: TextConverter.serializeAlgorithm(req.signatureAlgorithm),
       "": req.signature,
     });
 
     return obj;
   }
-
 }

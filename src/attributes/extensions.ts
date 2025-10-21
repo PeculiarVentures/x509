@@ -8,7 +8,6 @@ import { ExtensionFactory } from "../extensions";
 import { TextObject } from "../text_converter";
 
 export class ExtensionsAttribute extends Attribute {
-
   public static override NAME = "Extensions";
 
   public items: Extension[];
@@ -43,20 +42,18 @@ export class ExtensionsAttribute extends Attribute {
 
     if (this.values[0]) {
       const value = AsnConvert.parse(this.values[0], asnX509.Extensions);
-      this.items = value.map(o => ExtensionFactory.create(AsnConvert.serialize(o)));
+      this.items = value.map((o) => ExtensionFactory.create(AsnConvert.serialize(o)));
     }
-
   }
 
   public override toTextObject(): TextObject {
     const obj = this.toTextObjectWithoutValue();
 
-    const extensions = this.items.map(o => o.toTextObject());
+    const extensions = this.items.map((o) => o.toTextObject());
     for (const extension of extensions) {
       obj[extension[TextObject.NAME]] = extension;
     }
 
     return obj;
   }
-
 }

@@ -4,8 +4,7 @@ import { Attribute } from "../attribute";
  * Static class to manage X509 attributes
  */
 export class AttributeFactory {
-
-  private static items: Map<string, typeof Attribute> = new Map();
+  private static items = new Map<string, typeof Attribute>();
 
   /**
    * Registers a new X509 Attribute class. If id already exists replaces it

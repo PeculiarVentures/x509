@@ -1,4 +1,6 @@
-import { describe, it, expect, beforeAll } from "vitest";
+import {
+  describe, it, expect, beforeAll,
+} from "vitest";
 import { Convert } from "pvtsutils";
 import { Crypto } from "@peculiar/webcrypto";
 import * as asn1Schema from "@peculiar/asn1-schema";
@@ -6,13 +8,10 @@ import * as asn1CMS from "@peculiar/asn1-cms";
 import * as x509 from "../src";
 
 describe("crypto", () => {
-
   const crypto = new Crypto();
   x509.cryptoProvider.set(crypto);
 
   describe("PemData", () => {
-
-
     describe("from string buffer", () => {
       let hex: ArrayBuffer;
       let pem: ArrayBuffer;
@@ -47,12 +46,10 @@ describe("crypto", () => {
         const csr = new x509.Pkcs10CertificateRequest(base64url);
         expect(csr).toBeTruthy();
       });
-
     });
   });
 
   describe("Pkcs10CertificateRequest", () => {
-
     it("read", () => {
       const pem = "MIICdDCCAVwCAQAwLzEtMA8GA1UEAxMIdGVzdE5hbWUwGgYJKoZIhvcNAQkBEw10ZXN0QG1haWwubm90MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEArut7tLrb1BEHXImMTWipet+3/J2isn7mBv278oP7YyOkmX/Vzxvk9nvSc/B1wh6kSo6nfaxYacNNSP3r+WQYaTeLm5TsDbUfCJYtvvTuYH0GVTM8Qm7QhMZKnyUy/D60WNcRM4pnBDSEMpKppi7HhfL37DZpQnsQfr9r8LQPWZ9t/mf+FsSeWyQOQcz+ob6cODfNQIvbzpaXXdNpKIHLPW+/e4af5/WlZ9wL5Sy7kOf4X6nErdl74s1vSji9goANSQkd5TbswtFPRNybikrrisz0HtsIq2uTGDY6t3iOEHTe5qe/ux4anjbSqKVuIQEQWQOKb4h+mHTc+EC5yknihQIDAQABoAAwDQYJKoZIhvcNAQELBQADggEBAE7TU20ui1MLtxLM0UZMytYAjC7vtXxB5Vl6bzHUzZkVFW6oTeizqDxjeBtZ1SqErpgdyvzMvFSxF6f+679kl1/Zs2V0IPa4y58he3wTT/M1xCBN/bITY2cA4ETozbtK4cGoi6jY/0j8NcxTLfiBgwhE3ap+9GzLtWEhHWCXmpsohbvAktXSh1tLh4xmgoQoePEBSPbnaOmsonyzscKiBMASDvjrFdNbtD0uY2v/wYXwtRGvV/Q/O3lLWEosE4NdnZmgId4bm7ru48WucSnxuEJAkKUjDLrN0uqY/tKfX4Zy9w8Y/o+hk3QzNBVa3ZUvzDhVAmamQflvw3lXMm/JG4U=";
       const csr = new x509.Pkcs10CertificateRequest(Convert.FromBase64(pem));
@@ -65,73 +62,95 @@ describe("crypto", () => {
       const ok = await csr.verify();
       expect(ok).toBe(true);
     });
-
   });
 
   describe("Pkcs10CertificateRequestGenerator", () => {
-
     it("simple", async () => {
-      const keys = await crypto.subtle.generateKey({ name: "ECDSA", namedCurve: "P-256" }, false, ["sign", "verify"]);
+      const keys = await crypto.subtle.generateKey({
+        name: "ECDSA", namedCurve: "P-256",
+      }, false, ["sign", "verify"]);
       expect(keys.publicKey).toBeTruthy();
       expect(keys.privateKey).toBeTruthy();
       const csr = await x509.Pkcs10CertificateRequestGenerator.create({
         keys,
-        signingAlgorithm: { name: "ECDSA", hash: "SHA-256" },
+        signingAlgorithm: {
+          name: "ECDSA", hash: "SHA-256",
+        },
       });
 
       expect(csr).toBeTruthy();
       expect(csr.subject).toBe("");
       expect(csr.attributes.length).toEqual(0);
       expect(csr.extensions.length).toEqual(0);
-      expect(csr.signatureAlgorithm).toEqual({ name: "ECDSA", hash: { name: "SHA-256" } });
-      expect(csr.publicKey.algorithm).toEqual({ name: "ECDSA", namedCurve: "P-256" });
+      expect(csr.signatureAlgorithm).toEqual({
+        name: "ECDSA", hash: { name: "SHA-256" },
+      });
+      expect(csr.publicKey.algorithm).toEqual({
+        name: "ECDSA", namedCurve: "P-256",
+      });
     });
 
     it("with attributes and extensions", async () => {
-      const keys = await crypto.subtle.generateKey({ name: "ECDSA", namedCurve: "P-384" }, false, ["sign", "verify"]);
+      const keys = await crypto.subtle.generateKey({
+        name: "ECDSA", namedCurve: "P-384",
+      }, false, ["sign", "verify"]);
       expect(keys.publicKey).toBeTruthy();
       expect(keys.privateKey).toBeTruthy();
       const csr = await x509.Pkcs10CertificateRequestGenerator.create({
         name: "CN=Test",
         keys,
-        signingAlgorithm: { name: "ECDSA", hash: "SHA-384" },
+        signingAlgorithm: {
+          name: "ECDSA", hash: "SHA-384",
+        },
         extensions: [
-          new x509.KeyUsagesExtension(x509.KeyUsageFlags.digitalSignature | x509.KeyUsageFlags.keyEncipherment),
+          new x509.KeyUsagesExtension(
+            x509.KeyUsageFlags.digitalSignature | x509.KeyUsageFlags.keyEncipherment,
+          ),
         ],
         attributes: [
           new x509.ChallengePasswordAttribute("password"),
-        ]
+        ],
       });
 
       expect(csr).toBeTruthy();
       expect(csr.subject).toBe("CN=Test");
       expect(csr.attributes.length).toEqual(2);
       expect(csr.extensions.length).toEqual(1);
-      expect(csr.signatureAlgorithm).toEqual({ name: "ECDSA", hash: { name: "SHA-384" } });
-      expect(csr.publicKey.algorithm).toEqual({ name: "ECDSA", namedCurve: "P-384" });
+      expect(csr.signatureAlgorithm).toEqual({
+        name: "ECDSA", hash: { name: "SHA-384" },
+      });
+      expect(csr.publicKey.algorithm).toEqual({
+        name: "ECDSA", namedCurve: "P-384",
+      });
     });
 
     it("ECDSA K-256", async () => {
-      const keys = await crypto.subtle.generateKey({ name: "ECDSA", namedCurve: "K-256" }, false, ["sign", "verify"]);
+      const keys = await crypto.subtle.generateKey({
+        name: "ECDSA", namedCurve: "K-256",
+      }, false, ["sign", "verify"]);
       expect(keys.publicKey).toBeTruthy();
       expect(keys.privateKey).toBeTruthy();
       const csr = await x509.Pkcs10CertificateRequestGenerator.create({
         keys,
-        signingAlgorithm: { name: "ECDSA", hash: "SHA-256" },
+        signingAlgorithm: {
+          name: "ECDSA", hash: "SHA-256",
+        },
       });
 
       expect(csr).toBeTruthy();
       expect(csr.subject).toBe("");
       expect(csr.attributes.length).toEqual(0);
       expect(csr.extensions.length).toEqual(0);
-      expect(csr.signatureAlgorithm).toEqual({ name: "ECDSA", hash: { name: "SHA-256" } });
-      expect(csr.publicKey.algorithm).toEqual({ name: "ECDSA", namedCurve: "K-256" });
+      expect(csr.signatureAlgorithm).toEqual({
+        name: "ECDSA", hash: { name: "SHA-256" },
+      });
+      expect(csr.publicKey.algorithm).toEqual({
+        name: "ECDSA", namedCurve: "K-256",
+      });
     });
-
   });
 
   describe("x509", () => {
-
     const pem = "MIIDljCCAn6gAwIBAgIOSETcxtRwD/qzf0FjVvEwDQYJKoZIhvcNAQELBQAwZjELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExGjAYBgNVBAsTEUZvciBEZW1vIFVzZSBPbmx5MSAwHgYDVQQDExdHbG9iYWxTaWduIERlbW8gUm9vdCBDQTAeFw0xNjA3MjAwMDAwMDBaFw0zNjA3MjAwMDAwMDBaMGYxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMRowGAYDVQQLExFGb3IgRGVtbyBVc2UgT25seTEgMB4GA1UEAxMXR2xvYmFsU2lnbiBEZW1vIFJvb3QgQ0EwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQC1i9RNgrJ4YAATN0J4KVGZjFGQVGFdcbKvfxrt0Bfusq2g81iVrZZjqTJnPSx4g6TdVcsEXU9GWlkFXKEtZzYM4ycbwLAeJQxQDEqkV03GV8ks2Jq/6jIm2DbByPiS5fvRQFQJLYuQHqXpjpOpmPiostUsg9ydMEqcacYV22a6A6Nrb1c1B6OL+X0u9bo30K+YYSw2Ngp3Tuuj9PDk6JS/0CPLcLo8JIFFc8t78lPDquNAOqTDwY/HTw4751iqLVem9q3EDKEeUS+x4gqsCD2pENA7PlQBza55BGOi/A+UAsmfee1oq2Glo9buXBgX+oJ3HnyelzJU9Ej4+yfH7rcvAgMBAAGjQjBAMA4GA1UdDwEB/wQEAwIBBjAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBTqD8ID9OxgG83HZJVtOQMmftrrLzANBgkqhkiG9w0BAQsFAAOCAQEAAECKKpL0A2I+hsY881tIz7WqkLDuLh/ISzRVdsALYAxLhVDUHPckh5XyVRkpbTmirn+b5MpuwAI2R8A7Ld6aWWiibc7zGEZNvEKsUEYoJoYR0fuQs2cF7egiYjhFwFMX75w+kuI0Yelm3/3+BiJVtAXqmnQ4yRpGXqNJ4mQC8yWgQbZCLUpH/nqeQANeoaDr5Yg8IOuHRQzG6YNt/Cl9CetDd8WPrAkGm3T2iG0dXQ48VgkkXcNDtY+55nYjIO+N7i+WTh1fe3ArGxHBR3E44+WoA8ntfI1g65+GR0s6G8M7oS+kAFXIwugUGYEnTWp0m5bAn5NlD314IEOg4mnS8Q==";
 
     it("unsupported algorithm usage", () => {
@@ -172,7 +191,6 @@ W+K8+llxOFmtVzU=
     });
 
     describe("thumbprint", () => {
-
       it("default", async () => {
         const cert = new x509.X509Certificate(Convert.FromBase64(pem));
         const thumbprint = await cert.getThumbprint();
@@ -199,7 +217,6 @@ W+K8+llxOFmtVzU=
     });
 
     describe("getExtensions", () => {
-
       it("existing", async () => {
         const cert = new x509.X509Certificate(Convert.FromBase64(pem));
         const extensions = cert.getExtensions("2.5.29.15");
@@ -219,18 +236,15 @@ W+K8+llxOFmtVzU=
         const extensions = cert.getExtensions("2.5.29.16");
         expect(extensions.length).toBe(0);
       });
-
     });
 
     describe("getExtension", () => {
-
       it("class", async () => {
         const cert = new x509.X509Certificate(Convert.FromBase64(pem));
         const extension = cert.getExtension(x509.KeyUsagesExtension);
         expect(extension).toBeTruthy();
         expect(extension instanceof x509.KeyUsagesExtension).toBe(true);
       });
-
     });
 
     describe("toString", () => {
@@ -287,7 +301,6 @@ D314IEOg4mnS8Q==
   });
 
   describe("PublicKey", () => {
-
     const spki = Convert.FromHex("30820122300d06092a864886f70d01010105000382010f003082010a0282010100a4737ac5ec77f06df3486264a3a17c783143e9023073af169cc245023b4711526b4a721832943bbb59be53d241f3203c1a5eac9e1d5bb57bc0644d943dd63525090a70e1484db4b5ac03185ee897ae8ebabf255ebfc77cfebec928ac0b1fceb33b60238ac2ba3f016c035a53a3011828c2e9bafdd7e2a797d94dcbd79ec54a5ae3c92abef565b2ea6bb4af89e2f7e4dd1b52978bb828cb44843ace8c9ad7f80bef7ffedc8b73a04b6ec44cd65fc6ba8fc216c6ca4bbc99677695439391a4d17893b8f54d6755b681210660f7865748fc1126e21e4d9cdcee436c3ce5ebd91912d08713cb91613ecde2e8af694daa27110b8d588f34e82e88aa56315d15428db90203010001");
 
     describe("export", () => {
@@ -301,7 +314,6 @@ D314IEOg4mnS8Q==
       });
     });
     describe("getThumbprint", () => {
-
       it("default", async () => {
         const key = new x509.PublicKey(spki);
         const thumbprint = await key.getThumbprint();
@@ -325,13 +337,10 @@ D314IEOg4mnS8Q==
         const thumbprint = await key.getThumbprint(crypto);
         expect(Convert.ToHex(thumbprint)).toBe("dd0137099d08ab3324e183ec258413d1b79e95b0");
       });
-
     });
-
   });
 
   describe("X509 certificate generator", () => {
-
     it("generate certificate with generalized time", async () => {
       const alg: RsaHashedKeyGenParams = {
         name: "RSASSA-PKCS1-v1_5",
@@ -352,14 +361,17 @@ D314IEOg4mnS8Q==
         extensions: [
           new x509.BasicConstraintsExtension(true, 2, true),
           new x509.ExtendedKeyUsageExtension(["1.2.3.4.5.6.7", "2.3.4.5.6.7.8"], true),
-          new x509.KeyUsagesExtension(x509.KeyUsageFlags.keyCertSign | x509.KeyUsageFlags.cRLSign, true),
+          new x509.KeyUsagesExtension(
+            x509.KeyUsageFlags.keyCertSign | x509.KeyUsageFlags.cRLSign,
+            true,
+          ),
           new x509.CertificatePolicyExtension([
             "1.2.3.4.5",
             "1.2.3.4.5.6",
             "1.2.3.4.5.6.7",
           ]),
           await x509.SubjectKeyIdentifierExtension.create(keys.publicKey),
-        ]
+        ],
       });
       // console.log(cert.toString("pem"));
       const ok = await cert.verify({ date: new Date("2020/01/01 12:00") });
@@ -386,14 +398,17 @@ D314IEOg4mnS8Q==
         extensions: [
           new x509.BasicConstraintsExtension(true, 2, true),
           new x509.ExtendedKeyUsageExtension(["1.2.3.4.5.6.7", "2.3.4.5.6.7.8"], true),
-          new x509.KeyUsagesExtension(x509.KeyUsageFlags.keyCertSign | x509.KeyUsageFlags.cRLSign, true),
+          new x509.KeyUsagesExtension(
+            x509.KeyUsageFlags.keyCertSign | x509.KeyUsageFlags.cRLSign,
+            true,
+          ),
           new x509.CertificatePolicyExtension([
             "1.2.3.4.5",
             "1.2.3.4.5.6",
             "1.2.3.4.5.6.7",
           ]),
           await x509.SubjectKeyIdentifierExtension.create(keys.publicKey),
-        ]
+        ],
       });
       const ok = await cert.verify({ date: new Date("2020/01/01 12:00") });
       expect(ok).toBe(true);
@@ -420,9 +435,12 @@ D314IEOg4mnS8Q==
         extensions: [
           new x509.BasicConstraintsExtension(true, 2, true),
           new x509.ExtendedKeyUsageExtension(["1.2.3.4.5.6.7", "2.3.4.5.6.7.8"], true),
-          new x509.KeyUsagesExtension(x509.KeyUsageFlags.keyCertSign | x509.KeyUsageFlags.cRLSign, true),
+          new x509.KeyUsagesExtension(
+            x509.KeyUsageFlags.keyCertSign | x509.KeyUsageFlags.cRLSign,
+            true,
+          ),
           await x509.SubjectKeyIdentifierExtension.create(keys.publicKey),
-        ]
+        ],
       });
       const ok = await cert.verify({ date: new Date("2020/01/01 12:00") });
       expect(ok).toBe(true);
@@ -464,25 +482,25 @@ D314IEOg4mnS8Q==
         publicKey: userKeys.publicKey,
         signingKey: caKeys.privateKey,
         extensions: [
-          await x509.SubjectKeyIdentifierExtension.create(userKeys.publicKey)
-        ]
+          await x509.SubjectKeyIdentifierExtension.create(userKeys.publicKey),
+        ],
       });
 
       ok = await userCert.verify({
         date: new Date("2020/01/01 12:00"),
-        publicKey: await caCert.publicKey.export()
+        publicKey: await caCert.publicKey.export(),
       });
       expect(ok).toBe(true);
     });
-
   });
 
   describe("X509Certificates", () => {
-
     const certs: x509.X509Certificates = new x509.X509Certificates();
 
     beforeAll(async () => {
-      const alg: EcKeyGenParams & EcdsaParams = { name: "ECDSA", namedCurve: "P-256", hash: "SHA-256" };
+      const alg: EcKeyGenParams & EcdsaParams = {
+        name: "ECDSA", namedCurve: "P-256", hash: "SHA-256",
+      };
       const keys = await crypto.subtle.generateKey(alg, false, ["sign", "verify"]);
       expect(keys.publicKey).toBeTruthy();
       expect(keys.privateKey).toBeTruthy();
@@ -567,11 +585,9 @@ D314IEOg4mnS8Q==
         expect(certs2[1].subject).toBe("CN=Test #2");
       });
     });
-
   });
 
   describe("chain", () => {
-
     const alg: RsaHashedKeyGenParams = {
       name: "RSASSA-PKCS1-v1_5",
       hash: "SHA-384",
@@ -588,7 +604,9 @@ D314IEOg4mnS8Q==
       const skiExt = await x509.SubjectKeyIdentifierExtension.create(keys.publicKey);
       extensions.push(skiExt);
       if (useKeyId) {
-        const akiExt = await x509.AuthorityKeyIdentifierExtension.create(cert ? await cert.publicKey.export() : keys.publicKey);
+        const akiExt = await x509.AuthorityKeyIdentifierExtension.create(
+          cert ? await cert.publicKey.export() : keys.publicKey,
+        );
         extensions.push(akiExt);
       }
 
@@ -631,63 +649,49 @@ D314IEOg4mnS8Q==
     });
 
     it("without key identifiers", async () => {
-      const chain = new x509.X509ChainBuilder({
-        certificates: certs,
-      });
+      const chain = new x509.X509ChainBuilder({ certificates: certs });
       const items = await chain.build(certs[7]);
       expect(items.length).toBe(4);
-      expect(items.map(o => o.subject).join(",")).toBe("CN=Client #2,CN=Intermediate CA #2.1,CN=Intermediate CA #2,CN=Root CA");
+      expect(items.map((o) => o.subject).join(",")).toBe("CN=Client #2,CN=Intermediate CA #2.1,CN=Intermediate CA #2,CN=Root CA");
     });
 
     it("with key identifiers", async () => {
-      const chain = new x509.X509ChainBuilder({
-        certificates: certs,
-      });
+      const chain = new x509.X509ChainBuilder({ certificates: certs });
       const items = await chain.build(certs[6]);
       expect(items.length).toBe(5);
-      expect(items.map(o => o.subject).join(",")).toBe("CN=Client #1,CN=Intermediate CA #1.1.1,CN=Intermediate CA #1.1,CN=Intermediate CA #1,CN=Root CA");
+      expect(items.map((o) => o.subject).join(",")).toBe("CN=Client #1,CN=Intermediate CA #1.1.1,CN=Intermediate CA #1.1,CN=Intermediate CA #1,CN=Root CA");
     });
 
     it("uncompleted path", async () => {
-      const chain = new x509.X509ChainBuilder({
-        certificates: certs,
-      });
+      const chain = new x509.X509ChainBuilder({ certificates: certs });
       const items = await chain.build(certs[11]);
       expect(items.length).toBe(3);
-      expect(items.map(o => o.subject).join(",")).toBe("CN=User #3.1.1,CN=Intermediate CA #3.1,CN=Intermediate CA #3");
+      expect(items.map((o) => o.subject).join(",")).toBe("CN=User #3.1.1,CN=Intermediate CA #3.1,CN=Intermediate CA #3");
     });
 
     it("single cert", async () => {
-      const chain = new x509.X509ChainBuilder({
-        certificates: certs,
-      });
+      const chain = new x509.X509ChainBuilder({ certificates: certs });
       const items = await chain.build(certs[8]);
       expect(items.length).toBe(1);
-      expect(items.map(o => o.subject).join(", ")).toBe("CN=Odd cert");
+      expect(items.map((o) => o.subject).join(", ")).toBe("CN=Odd cert");
     });
 
     it("self-signed cert", async () => {
-      const chain = new x509.X509ChainBuilder({
-        certificates: certs,
-      });
+      const chain = new x509.X509ChainBuilder({ certificates: certs });
       const items = await chain.build(certs[0]);
       expect(items.length).toBe(1);
-      expect(items.map(o => o.subject).join(", ")).toBe("CN=Root CA");
+      expect(items.map((o) => o.subject).join(", ")).toBe("CN=Root CA");
     });
 
     it("ca with the same name and serial number (without kid)", async () => {
-      const chain = new x509.X509ChainBuilder({
-        certificates: certs,
-      });
+      const chain = new x509.X509ChainBuilder({ certificates: certs });
       const items = await chain.build(certs[15]);
       expect(items.length).toBe(3);
-      expect(items.map(o => o.subject).join(",")).toBe("CN=Client same name,CN=Intermediate CA same name,CN=Root CA #3");
+      expect(items.map((o) => o.subject).join(",")).toBe("CN=Client same name,CN=Intermediate CA same name,CN=Root CA #3");
     });
-
   });
 
   describe("Extensions", () => {
-
     it("Subject Alternative Name", () => {
       const hex = "3081a80603551d110481a030819d820d736f6d652e6e616d652e636f6d820e736f6d65322e6e616d652e636f6d81126d6963726f7368696e65406d61696c2e7275a01f06092b0601040182371901a0120410533ee18e1c2cbb428df739927c0bdbb687040a0109058613687474703a2f2f736f6d652e75726c2e636f6d861666696c653a2f2f2f736f6d652f66696c652f70617468a014060a2b060104018237140203a0060c0475736572";
       const san = new x509.SubjectAlternativeNameExtension(Convert.FromHex(hex));
@@ -695,31 +699,31 @@ D314IEOg4mnS8Q==
       expect(json).toEqual([
         {
           type: "dns",
-          value: "some.name.com"
+          value: "some.name.com",
         },
         {
           type: "dns",
-          value: "some2.name.com"
+          value: "some2.name.com",
         },
         {
           type: "email",
-          value: "microshine@mail.ru"
+          value: "microshine@mail.ru",
         },
         {
           type: "guid",
-          value: "8ee13e53-2c1c-42bb-8df7-39927c0bdbb6"
+          value: "8ee13e53-2c1c-42bb-8df7-39927c0bdbb6",
         },
         {
           type: "ip",
-          value: "10.1.9.5"
+          value: "10.1.9.5",
         },
         {
           type: "url",
-          value: "http://some.url.com"
+          value: "http://some.url.com",
         },
         {
           type: "url",
-          value: "file:///some/file/path"
+          value: "file:///some/file/path",
         },
         {
           type: "upn",
@@ -732,11 +736,9 @@ D314IEOg4mnS8Q==
 
       expect(hex2).toBe(hex);
     });
-
   });
 
   describe("issues", () => {
-
     it("#5 verification failing for x509 certificate with ECDSA", async () => {
       const ca = new x509.X509Certificate("MIICVzCCAf2gAwIBAgIUH5dl9HNmcklznEOCTZxFIN65ugYwCgYIKoZIzj0EAwIwdTELMAkGA1UEBhMCVVMxFzAVBgNVBAgTDk5vcnRoIENhcm9saW5hMRAwDgYDVQQHEwdSYWxlaWdoMQ0wCwYDVQQKEwRFREpYMRUwEwYDVQQLEwxFREpYIFJvb3QgQ0ExFTATBgNVBAMTDEVESlggUm9vdCBDQTAeFw0yMTAxMDcwNzE2MDBaFw0yNDAxMDcwNzE2MDBaMH0xCzAJBgNVBAYTAlVTMRcwFQYDVQQIEw5Ob3J0aCBDYXJvbGluYTEQMA4GA1UEBxMHUmFsZWlnaDENMAsGA1UEChMERURKWDEVMBMGA1UECxMMRURKWCBSb290IENBMR0wGwYDVQQDExRFREpYIEludGVybWVkaWF0ZSBDQTBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABCDz/PG5Nw0Q45Vafk3p3RABsaiGgv5FPFEl+jfVVxw6o084dU+GibHJqL9JOk9t7zaXdc04oQSy0dkviV40HQGjYzBhMA4GA1UdDwEB/wQEAwICBDAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBSQcYOQauj7nFQP4ZWKp59JtGVZajAfBgNVHSMEGDAWgBQU/uYHGGZLCS8dm9tCcaSBodnGnTAKBggqhkjOPQQDAgNIADBFAiEAgiDUpS14LEn9p/2u93L8+PsfvUHVD2WItO6cPfTT01cCIDr/RT6K5CmGnGgmFRrn/hZyGe3CvpzKfZqMX63UeoQQ");
       const leaf = new x509.X509Certificate("MIICgzCCAimgAwIBAgIUU3QVClDwfllZDosbQuijZEqeqN0wCgYIKoZIzj0EAwIwfTELMAkGA1UEBhMCVVMxFzAVBgNVBAgTDk5vcnRoIENhcm9saW5hMRAwDgYDVQQHEwdSYWxlaWdoMQ0wCwYDVQQKEwRFREpYMRUwEwYDVQQLEwxFREpYIFJvb3QgQ0ExHTAbBgNVBAMTFEVESlggSW50ZXJtZWRpYXRlIENBMB4XDTIxMDEwNzA3MTYwMFoXDTIyMDEwNzA3MTYwMFowaTELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAk5DMRAwDgYDVQQHEwdSZWxlaWdoMQ0wCwYDVQQKEwRFREpYMRQwEgYDVQQLEwtFbmdpbmVlcmluZzEWMBQGA1UEAxMNYXBpLmVkangudGVzdDBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABKZwl6VQ9VZHpelF+ZhBkKY3N7f7qXvvIwDBIDpV18+iYs1r01Qoo2TwJh3/j/n87sqtm4nfuOBvjL8M/RUdDRWjgZowgZcwDgYDVR0PAQH/BAQDAgWgMB0GA1UdJQQWMBQGCCsGAQUFBwMBBggrBgEFBQcDAjAMBgNVHRMBAf8EAjAAMB0GA1UdDgQWBBQjjloUw1goFcY26GEIxnJlckH+JTAfBgNVHSMEGDAWgBSQcYOQauj7nFQP4ZWKp59JtGVZajAYBgNVHREEETAPgg1hcGkuZWRqeC50ZXN0MAoGCCqGSM49BAMCA0gAMEUCIFYIeb08ZaNS6iFPrOdhCAZW10XF4C2oT9GwOMJ8tKp8AiEA25uqFuewgI0SuLTWX6MGa1pd9z0p2Ks+8/+1pY9PUGc=");
@@ -746,7 +748,6 @@ D314IEOg4mnS8Q==
       });
       expect(ok).toBe(true);
     });
-
   });
 
   it("Parse EdDSA certificate and validate it", async () => {
@@ -763,9 +764,7 @@ ZYYG
 -----END CERTIFICATE-----`;
 
     const cert = new x509.X509Certificate(pem);
-    const ok = await cert.verify({
-      signatureOnly: true,
-    });
+    const ok = await cert.verify({ signatureOnly: true });
     expect(cert.signatureAlgorithm).toEqual({ name: "Ed25519" });
     expect(ok).toBe(true);
   });
@@ -773,13 +772,15 @@ ZYYG
   it("Create X448 certificate", async () => {
     const alg: EcKeyGenParams = {
       name: "EdDSA",
-      namedCurve: "Ed448"
+      namedCurve: "Ed448",
     };
     const keys = await crypto.subtle.generateKey(alg, false, ["sign", "verify"]);
     expect(keys.publicKey).toBeTruthy();
     expect(keys.privateKey).toBeTruthy();
     const spki = await crypto.subtle.exportKey("spki", keys.publicKey);
-    const publicKey = await crypto.subtle.importKey("spki", spki, { name: "ECDH-ES", namedCurve: "X448" } as EcKeyGenParams, true, ["verify"]);
+    const publicKey = await crypto.subtle.importKey("spki", spki, {
+      name: "ECDH-ES", namedCurve: "X448",
+    } as EcKeyGenParams, true, ["verify"]);
     const cert = await x509.X509CertificateGenerator.createSelfSigned({
       serialNumber: "01",
       name: "CN=Test",
@@ -789,7 +790,7 @@ ZYYG
       keys: {
         ...keys,
         publicKey,
-      }
+      },
     });
 
     const ok = await cert.verify({ signatureOnly: true });
@@ -797,7 +798,6 @@ ZYYG
   });
 
   describe("X509Crl", () => {
-
     const pem = "MIICADCB6QIBATANBgkqhkiG9w0BAQsFADBAMQswCQYDVQQGEwJVUzEfMB0GA1UEChMWVGVzdCBDZXJ0aWZpY2F0ZXMgMjAxMTEQMA4GA1UEAxMHR29vZCBDQRcNMTAwMTAxMDgzMDAwWhcNMzAxMjMxMDgzMDAwWjBEMCACAQ4XDTEwMDEwMTA4MzAwMFowDDAKBgNVHRUEAwoBATAgAgEPFw0xMDAxMDEwODMwMDFaMAwwCgYDVR0VBAMKAQGgLzAtMB8GA1UdIwQYMBaAFFgBhCQbvCtSlEo9pRByFFH1rzrJMAoGA1UdFAQDAgEBMA0GCSqGSIb3DQEBCwUAA4IBAQA9vPMLiinD8G7FaoTsu8T2jUrTi1OLPHxKnrlBrAP/eHa+VQV1HJfY5Gjq1dpNgzZqDIgQM5QHPm0aSgMN7Ultx+XzbxRswLnwgQrZ7f76Tlky1I+jz7/p3AEynrNR72v64SZt46UhpSuWBHoF1uEVtgirTZNfOEaGUJTNOaTA5U55/iw9BKjHN0e/Vd7OGnrk5h6FsgWOiasGn6/tym9teDt/L2hlOdsZsvX1KPc0ExUHVjJIUBYTooqyy/CuTzFHla6RYVYvJuRF5qYCxa0GTZK3ImCtJ3XfsGdfLEJDZ7T17xBQHucMvIVLm6vY44WUy7PqQhZJskhJMEvj01ZE";
 
     it("read", () => {
@@ -824,7 +824,8 @@ ZYYG
     it("findRevoked", () => {
       const crl = new x509.X509Crl(Convert.FromBase64(pem));
       const entry = crl.findRevoked("0e");
-      expect(entry && entry.serialNumber).toBe("0e");        expect(entry && entry.revocationDate).toEqual(new Date("2010-01-01T08:30:00.000Z"));
+      expect(entry && entry.serialNumber).toBe("0e");
+      expect(entry && entry.revocationDate).toEqual(new Date("2010-01-01T08:30:00.000Z"));
       expect(entry && entry.extensions.length).toBe(1);
 
       const entry2 = crl.findRevoked("1");
@@ -872,19 +873,16 @@ ZYYG
             reason: x509.X509CrlReason.certificateHold,
             invalidity: new Date("2022/01/01"),
             issuer: "CN=Test, O=Дом",
-          }
+          },
         ],
         signingAlgorithm: alg,
         signingKey: caKeys.privateKey,
       });
 
-      ok = await crl.verify({
-        publicKey: await caCert.publicKey.export()
-      });
+      ok = await crl.verify({ publicKey: await caCert.publicKey.export() });
       expect(ok).toBe(true);
 
       // console.log(crl.toString("text"));
     });
-
   });
 });

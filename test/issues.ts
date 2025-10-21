@@ -1,5 +1,7 @@
-import { describe, it, expect } from "vitest";
 import { webcrypto } from "node:crypto";
+import {
+  describe, it, expect,
+} from "vitest";
 import * as x509 from "../src";
 
 const crypto = webcrypto as globalThis.Crypto;
@@ -65,9 +67,7 @@ describe("issues", () => {
     //   leafCert.toString("pem"),
     // ].join("\n"));
 
-    const chain = new x509.X509ChainBuilder({
-      certificates: [rootCert, intermediateCert],
-    });
+    const chain = new x509.X509ChainBuilder({ certificates: [rootCert, intermediateCert] });
     const items = await chain.build(leafCert, crypto);
     expect(items.length).toBe(3);
   });
@@ -108,7 +108,7 @@ describe("issues", () => {
       "80284629184668",
       "80290967596123",
       "8070459553297620",
-      "801234"
+      "801234",
     ];
 
     for (const serialNumber of problematicSerialNumbers) {
@@ -122,7 +122,7 @@ describe("issues", () => {
           name: "ECDSA",
           hash: "SHA-256",
         },
-        keys: keys
+        keys: keys,
       }, crypto);
 
       // Verify the certificate was created and can be parsed

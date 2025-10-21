@@ -74,7 +74,7 @@ export class AuthorityInfoAccessExtension extends Extension {
     this.caRepository = [];
 
     const aia = AsnConvert.parse(asn.extnValue, asn1X509.AuthorityInfoAccessSyntax);
-    aia.forEach(accessDescription => {
+    aia.forEach((accessDescription) => {
       switch (accessDescription.accessMethod) {
         case asn1X509.id_ad_ocsp:
           this.ocsp.push(new GeneralName(accessDescription.accessLocation));
@@ -138,17 +138,16 @@ function addUrlsToObject(obj: TextObject, key: string, urls: GeneralName[]) {
   }
 }
 
-
 function addAccessDescriptions(
   value: asn1X509.AuthorityInfoAccessSyntax,
   params: AuthorityInfoAccessParams,
   method: string,
-  key: keyof AuthorityInfoAccessParams
+  key: keyof AuthorityInfoAccessParams,
 ) {
   const items = params[key];
   if (items) {
     const array = Array.isArray(items) ? items : [items];
-    array.forEach(url => {
+    array.forEach((url) => {
       if (typeof url === "string") {
         url = new GeneralName("url", url);
       }

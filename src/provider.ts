@@ -4,7 +4,6 @@ export type MapForEachCallback = (value: Crypto, key: string, map: Map<string, C
  * Crypto provider
  */
 export class CryptoProvider {
-
   public static DEFAULT = "default";
 
   private items = new Map<string, Crypto>();
@@ -33,6 +32,7 @@ export class CryptoProvider {
       this.set(CryptoProvider.DEFAULT, global.crypto);
     }
   }
+
   clear(): void {
     this.items.clear();
   }
@@ -60,12 +60,15 @@ export class CryptoProvider {
   keys(): IterableIterator<string> {
     return this.items.keys();
   }
+
   values(): IterableIterator<Crypto> {
     return this.items.values();
   }
+
   [Symbol.iterator](): IterableIterator<[string, Crypto]> {
     return this.items[Symbol.iterator]();
   }
+
   [Symbol.toStringTag] = "CryptoProvider";
 
   /**
@@ -111,7 +114,6 @@ export class CryptoProvider {
 
     return this;
   }
-
 }
 
 /**

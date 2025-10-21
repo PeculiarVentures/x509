@@ -7,7 +7,6 @@ export type AsnExportType = "pem" | AsnDataStringFormat;
 export type AsnEncodedType = BufferSource | string;
 
 export abstract class PemData<T> extends AsnData<T> {
-
   public static isAsnEncoded(data: any): data is AsnEncodedType {
     return BufferSourceConverter.isBufferSource(data) || typeof data === "string";
   }
@@ -30,7 +29,8 @@ export abstract class PemData<T> extends AsnData<T> {
         throw new TypeError("Unsupported format of 'raw' argument. Must be one of DER, PEM, HEX, Base64, or Base4Url");
       }
     } else {
-      // Check if it looks like DER (starts with 0x30) to avoid slow string conversion for large buffers
+      // Check if it looks like DER (starts with 0x30) to avoid slow string conversion
+      // for large buffers
       const buffer = BufferSourceConverter.toUint8Array(raw);
       if (buffer.length > 0 && buffer[0] === 0x30) {
         return BufferSourceConverter.toArrayBuffer(raw);
@@ -61,7 +61,7 @@ export abstract class PemData<T> extends AsnData<T> {
    * @param raw Encoded buffer (DER, PEM, HEX, Base64, Base64Url)
    * @param type ASN.1 convertible class for `@peculiar/asn1-schema` schema
    */
-  public constructor(raw: AsnEncodedType, type: { new(): T; });
+  public constructor(raw: AsnEncodedType, type: new() => T);
   /**
    * Creates a new instance
    * @param asn ASN.1 object
@@ -92,5 +92,4 @@ export abstract class PemData<T> extends AsnData<T> {
         return super.toString(format);
     }
   }
-
 }

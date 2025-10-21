@@ -32,7 +32,6 @@ export interface IAsnSignatureFormatter {
 }
 
 export class AsnDefaultSignatureFormatter implements IAsnSignatureFormatter {
-
   toAsnSignature(algorithm: Algorithm, signature: BufferSource): ArrayBuffer | null {
     return BufferSourceConverter.toArrayBuffer(signature);
   }
@@ -40,5 +39,4 @@ export class AsnDefaultSignatureFormatter implements IAsnSignatureFormatter {
   toWebSignature(algorithm: Algorithm, signature: BufferSource): ArrayBuffer | null {
     return BufferSourceConverter.toArrayBuffer(signature);
   }
-
 }

@@ -1,6 +1,10 @@
 import { AsnConvert, OctetString } from "@peculiar/asn1-schema";
 import * as asn1X509 from "@peculiar/asn1-x509";
 import { container } from "tsyringe";
+import {
+  CRLReasons, RevokedCertificate, Time,
+} from "@peculiar/asn1-x509";
+import { isEqual } from "pvtsutils";
 import { cryptoProvider } from "./provider";
 import { AlgorithmProvider, diAlgorithmProvider } from "./algorithm";
 import { Extension } from "./extension";
@@ -8,11 +12,9 @@ import { Name } from "./name";
 import { HashedAlgorithm } from "./types";
 import { diAsnSignatureFormatter, IAsnSignatureFormatter } from "./asn_signature_formatter";
 import { X509CrlEntry, X509CrlReason } from "./x509_crl_entry";
-import { CRLReasons, RevokedCertificate, Time } from "@peculiar/asn1-x509";
 import { X509Crl } from "./x509_crl";
 import { X509CertificateCreateParamsName } from "./x509_cert_generator";
 import { PemData } from "./pem_data";
-import { isEqual } from "pvtsutils";
 
 export interface X509CrlEntryParams {
   /**
@@ -74,25 +76,30 @@ export class X509CrlGenerator {
     }
 
     if (params.extensions && params.extensions.length) {
-      asnX509Crl.tbsCertList.crlExtensions = new asn1X509.Extensions(params.extensions.map(o => AsnConvert.parse(o.rawData, asn1X509.Extension)) || []);
+      asnX509Crl.tbsCertList.crlExtensions = new asn1X509.Extensions(
+        params.extensions.map((o) => AsnConvert.parse(o.rawData, asn1X509.Extension)) || [],
+      );
     }
 
     if (params.entries && params.entries.length) {
       asnX509Crl.tbsCertList.revokedCertificates = [];
       for (const entry of params.entries) {
         const userCertificate = PemData.toArrayBuffer(entry.serialNumber);
-        const index = asnX509Crl.tbsCertList.revokedCertificates.findIndex(cert => isEqual(cert.userCertificate, userCertificate));
+        const index = asnX509Crl.tbsCertList.revokedCertificates
+          .findIndex((cert) => isEqual(cert.userCertificate, userCertificate));
         if (index > -1) {
           throw new Error(`Certificate serial number ${entry.serialNumber} already exists in tbsCertList`);
         }
 
         const revokedCert = new RevokedCertificate({
           userCertificate: userCertificate,
-          revocationDate: new Time(entry.revocationDate || new Date())
+          revocationDate: new Time(entry.revocationDate || new Date()),
         });
 
         if ("extensions" in entry && entry.extensions?.length) {
-          revokedCert.crlEntryExtensions = entry.extensions.map(o => AsnConvert.parse(o.rawData, asn1X509.Extension));
+          revokedCert.crlEntryExtensions = entry.extensions.map((o) => (
+            AsnConvert.parse(o.rawData, asn1X509.Extension)
+          ));
         } else {
           revokedCert.crlEntryExtensions = [];
         }
@@ -102,7 +109,9 @@ export class X509CrlGenerator {
             revokedCert.crlEntryExtensions.push(new asn1X509.Extension({
               extnID: asn1X509.id_ce_cRLReasons,
               critical: false,
-              extnValue: new OctetString(AsnConvert.serialize(new asn1X509.CRLReason(entry.reason as unknown as CRLReasons))),
+              extnValue: new OctetString(AsnConvert.serialize(
+                new asn1X509.CRLReason(entry.reason as unknown as CRLReasons),
+              )),
             }));
           }
 
@@ -110,10 +119,11 @@ export class X509CrlGenerator {
             revokedCert.crlEntryExtensions.push(new asn1X509.Extension({
               extnID: asn1X509.id_ce_invalidityDate,
               critical: false,
-              extnValue: new OctetString(AsnConvert.serialize(new asn1X509.InvalidityDate(entry.invalidity))),
+              extnValue: new OctetString(AsnConvert.serialize(
+                new asn1X509.InvalidityDate(entry.invalidity),
+              )),
             }));
           }
-
 
           if (entry.issuer) {
             const name = params.issuer instanceof Name
@@ -123,7 +133,9 @@ export class X509CrlGenerator {
             revokedCert.crlEntryExtensions.push(new asn1X509.Extension({
               extnID: asn1X509.id_ce_certificateIssuer,
               critical: false,
-              extnValue: new OctetString(AsnConvert.serialize(AsnConvert.parse(name.toArrayBuffer(), asn1X509.Name))),
+              extnValue: new OctetString(AsnConvert.serialize(
+                AsnConvert.parse(name.toArrayBuffer(), asn1X509.Name),
+              )),
             }));
           }
         }
@@ -133,16 +145,21 @@ export class X509CrlGenerator {
     }
 
     // Set signing algorithm
-    const signingAlgorithm = { ...params.signingAlgorithm, ...params.signingKey.algorithm } as HashedAlgorithm;
+    const signingAlgorithm = {
+      ...params.signingAlgorithm, ...params.signingKey.algorithm,
+    } as HashedAlgorithm;
     const algProv = container.resolve<AlgorithmProvider>(diAlgorithmProvider);
-    asnX509Crl.tbsCertList.signature = asnX509Crl.signatureAlgorithm = algProv.toAsnAlgorithm(signingAlgorithm);
+    asnX509Crl.tbsCertList.signature = asnX509Crl.signatureAlgorithm = algProv
+      .toAsnAlgorithm(signingAlgorithm);
 
     // Sign
     const tbs = AsnConvert.serialize(asnX509Crl.tbsCertList);
     const signature = await crypto.subtle.sign(signingAlgorithm, params.signingKey, tbs);
 
     // Convert WebCrypto signature to ASN.1 format
-    const signatureFormatters = container.resolveAll<IAsnSignatureFormatter>(diAsnSignatureFormatter).reverse();
+    const signatureFormatters = container
+      .resolveAll<IAsnSignatureFormatter>(diAsnSignatureFormatter)
+      .reverse();
     let asnSignature: ArrayBuffer | null = null;
     for (const signatureFormatter of signatureFormatters) {
       asnSignature = signatureFormatter.toAsnSignature(signingAlgorithm, signature);

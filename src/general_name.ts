@@ -1,4 +1,6 @@
-import { AsnConvert, AsnUtf8StringConverter, OctetString } from "@peculiar/asn1-schema";
+import {
+  AsnConvert, AsnUtf8StringConverter, OctetString,
+} from "@peculiar/asn1-schema";
 import * as asn1X509 from "@peculiar/asn1-x509";
 import { BufferSourceConverter, Convert } from "pvtsutils";
 import { AsnData } from "./asn_data";
@@ -28,15 +30,22 @@ export const GUID = "guid";
 export const UPN = "upn";
 export const REGISTERED_ID = "id";
 
-export type GeneralNameType = typeof DNS | typeof DN | typeof EMAIL | typeof GUID | typeof IP | typeof URL | typeof UPN | typeof REGISTERED_ID;
+export type GeneralNameType = typeof DNS
+  | typeof DN
+  | typeof EMAIL
+  | typeof GUID
+  | typeof IP
+  | typeof URL
+  | typeof UPN
+  | typeof REGISTERED_ID;
 
 /**
  * Represents ASN.1 type of GeneralName.
  *
- * This class doesn't support no standard string format is defined for otherName, X.400 name, EDI party name, or any other type of names.
+ * This class doesn't support no standard string format is
+ * defined for otherName, X.400 name, EDI party name, or any other type of names.
  */
 export class GeneralName extends AsnData<asn1X509.GeneralName> {
-
   /**
    * Type of the storing value
    */
@@ -101,7 +110,7 @@ export class GeneralName extends AsnData<asn1X509.GeneralName> {
             otherName: new asn1X509.OtherName({
               typeId: id_UPN,
               value: AsnConvert.serialize(AsnUtf8StringConverter.toASN(args[1])),
-            })
+            }),
           });
           break;
         }
@@ -125,7 +134,8 @@ export class GeneralName extends AsnData<asn1X509.GeneralName> {
    * Occurs on instance initialization
    * @param asn
    *
-   * @throws Throws error if ASN.1 GeneralName contains unsupported value (eg otherName, X400 address, EDI party name)
+   * @throws Throws error if ASN.1 GeneralName contains
+   * unsupported value (eg otherName, X400 address, EDI party name)
    */
   protected onInit(asn: asn1X509.GeneralName): void {
     if (asn.dNSName != undefined) {
@@ -173,7 +183,6 @@ export class GeneralName extends AsnData<asn1X509.GeneralName> {
     } else {
       throw new Error(ERR_GN_STRING_FORMAT);
     }
-
   }
 
   public toJSON(): JsonGeneralName {
@@ -209,7 +218,6 @@ export class GeneralName extends AsnData<asn1X509.GeneralName> {
 
     return new TextObject(type, undefined, value);
   }
-
 }
 
 export type JsonGeneralNames = JsonGeneralName[];
@@ -217,12 +225,17 @@ export type JsonGeneralNames = JsonGeneralName[];
 export class GeneralNames extends AsnData<asn1X509.GeneralNames> {
   public static override NAME = "GeneralNames";
 
-  public items!: ReadonlyArray<GeneralName>;
+  public items!: readonly GeneralName[];
 
   constructor(json: JsonGeneralNames);
   constructor(asn: asn1X509.GeneralNames | asn1X509.GeneralName[]);
   constructor(raw: BufferSource);
-  constructor(params: JsonGeneralNames | asn1X509.GeneralNames | asn1X509.GeneralName[] | BufferSource) {
+  constructor(
+    params: JsonGeneralNames
+      | asn1X509.GeneralNames
+      | asn1X509.GeneralName[]
+      | BufferSource,
+  ) {
     let names: asn1X509.GeneralNames;
     if (params instanceof asn1X509.GeneralNames) {
       // asn1X509.GeneralNames
@@ -235,7 +248,10 @@ export class GeneralNames extends AsnData<asn1X509.GeneralNames> {
         if (name instanceof asn1X509.GeneralName) {
           items.push(name);
         } else {
-          const asnName = AsnConvert.parse(new GeneralName(name.type, name.value).rawData, asn1X509.GeneralName);
+          const asnName = AsnConvert.parse(
+            new GeneralName(name.type, name.value).rawData,
+            asn1X509.GeneralName,
+          );
           items.push(asnName);
         }
       }
@@ -267,7 +283,7 @@ export class GeneralNames extends AsnData<asn1X509.GeneralNames> {
   }
 
   public toJSON(): JsonGeneralNames {
-    return this.items.map(o => o.toJSON());
+    return this.items.map((o) => o.toJSON());
   }
 
   public override toTextObject(): TextObject {
@@ -286,5 +302,4 @@ export class GeneralNames extends AsnData<asn1X509.GeneralNames> {
 
     return res;
   }
-
 }

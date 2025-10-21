@@ -12,12 +12,12 @@ export interface TextObjectConvertible {
   toTextObject(): TextObject;
 }
 
-export type TextObjectItemType = string | number | boolean | Date | BufferSource | TextObject | TextObject[] | TextObjectConvertible;
+export type TextObjectItemType = string | number | boolean | Date | BufferSource
+  | TextObject | TextObject[] | TextObjectConvertible;
 
 const NAME = Symbol("name");
 const VALUE = Symbol("value");
 export class TextObject {
-
   public static NAME: typeof NAME = NAME;
   public static VALUE: typeof VALUE = VALUE;
 
@@ -61,11 +61,9 @@ export abstract class DefaultAlgorithmSerializer {
 
     return obj;
   }
-
 }
 
 export abstract class OidSerializer {
-
   public static items: Record<string, string> = {
     [asn1Rsa.id_sha1]: "sha1",
     [asn1Rsa.id_sha224]: "sha224",
@@ -104,7 +102,6 @@ export abstract class OidSerializer {
 }
 
 export abstract class TextConverter {
-
   public static oidSerializer = OidSerializer;
   public static algorithmSerializer: AlgorithmSerializer = DefaultAlgorithmSerializer;
 
@@ -136,9 +133,9 @@ export abstract class TextConverter {
 
       const value = obj[key];
       const keyValue = key ? `${key}: ` : "";
-      if (typeof value === "string" ||
-        typeof value === "number" ||
-        typeof value === "boolean") {
+      if (typeof value === "string"
+        || typeof value === "number"
+        || typeof value === "boolean") {
         res.push(`${pad}${keyValue}${value}`); // key: value
       } else if (value instanceof Date) {
         res.push(`${pad}${keyValue}${value.toUTCString()}`); // key: UTC(date)
@@ -195,5 +192,4 @@ export abstract class TextConverter {
   public static serializeAlgorithm(alg: asn1X509.AlgorithmIdentifier): TextObject {
     return this.algorithmSerializer.toTextObject(alg);
   }
-
 }

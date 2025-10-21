@@ -59,7 +59,8 @@ export interface X509CertificateCreateWithKeyParams extends X509CertificateCreat
 /**
  * Parameters for X509 Certificate generation with existing signature value
  */
-export interface X509CertificateCreateWithSignatureParams extends X509CertificateCreateCommonParams {
+export interface X509CertificateCreateWithSignatureParams
+  extends X509CertificateCreateCommonParams {
   /**
    * Signature for manually initialized certificates
    */
@@ -71,8 +72,8 @@ export interface X509CertificateCreateWithSignatureParams extends X509Certificat
   publicKey: PublicKeyType;
 }
 
-export type X509CertificateCreateParams = X509CertificateCreateWithKeyParams | X509CertificateCreateWithSignatureParams;
-
+export type X509CertificateCreateParams = X509CertificateCreateWithKeyParams
+  | X509CertificateCreateWithSignatureParams;
 
 /**
  * Parameters for self-signed X509 Certificate generation
@@ -86,13 +87,15 @@ export interface X509CertificateCreateSelfSignedParams extends X509CertificateCr
  * Generator of X509 certificates
  */
 export class X509CertificateGenerator {
-
   /**
    * Creates a self-signed certificate
    * @param params Parameters
    * @param crypto Crypto provider. Default is from CryptoProvider
    */
-  public static async createSelfSigned(params: X509CertificateCreateSelfSignedParams, crypto = cryptoProvider.get()) {
+  public static async createSelfSigned(
+    params: X509CertificateCreateSelfSignedParams,
+    crypto = cryptoProvider.get(),
+  ) {
     if (!params.keys.privateKey) {
       throw new Error("Bad field 'keys' in 'params' argument. 'privateKey' is empty");
     }
@@ -142,7 +145,9 @@ export class X509CertificateGenerator {
           notBefore,
           notAfter,
         }),
-        extensions: new asn1X509.Extensions(params.extensions?.map(o => AsnConvert.parse(o.rawData, asn1X509.Extension)) || []),
+        extensions: new asn1X509.Extensions(
+          params.extensions?.map((o) => AsnConvert.parse(o.rawData, asn1X509.Extension)) || [],
+        ),
         subjectPublicKeyInfo: AsnConvert.parse(spki, asn1X509.SubjectPublicKeyInfo),
       }),
     });
@@ -160,15 +165,18 @@ export class X509CertificateGenerator {
     }
 
     // Set signing algorithm
-    const defaultSigningAlgorithm = {
-      hash: "SHA-256",
-    };
+    const defaultSigningAlgorithm = { hash: "SHA-256" };
     const signatureAlgorithm = ("signingKey" in params)
-      ? { ...defaultSigningAlgorithm, ...params.signingAlgorithm, ...params.signingKey.algorithm } as HashedAlgorithm
-      : { ...defaultSigningAlgorithm, ...params.signingAlgorithm } as HashedAlgorithm;
+      ? {
+          ...defaultSigningAlgorithm, ...params.signingAlgorithm, ...params.signingKey.algorithm,
+        } as HashedAlgorithm
+      : {
+          ...defaultSigningAlgorithm, ...params.signingAlgorithm,
+        } as HashedAlgorithm;
 
     const algProv = container.resolve<AlgorithmProvider>(diAlgorithmProvider);
-    asnX509.tbsCertificate.signature = asnX509.signatureAlgorithm = algProv.toAsnAlgorithm(signatureAlgorithm);
+    asnX509.tbsCertificate.signature = asnX509.signatureAlgorithm = algProv
+      .toAsnAlgorithm(signatureAlgorithm);
 
     // Sign
     const tbs = AsnConvert.serialize(asnX509.tbsCertificate);
@@ -179,10 +187,15 @@ export class X509CertificateGenerator {
       : params.signature;
 
     // Convert WebCrypto signature to ASN.1 format
-    const signatureFormatters = container.resolveAll<IAsnSignatureFormatter>(diAsnSignatureFormatter).reverse();
+    const signatureFormatters = container
+      .resolveAll<IAsnSignatureFormatter>(diAsnSignatureFormatter)
+      .reverse();
     let asnSignature: ArrayBuffer | null = null;
     for (const signatureFormatter of signatureFormatters) {
-      asnSignature = signatureFormatter.toAsnSignature(signatureAlgorithm, signatureValue as ArrayBuffer);
+      asnSignature = signatureFormatter.toAsnSignature(
+        signatureAlgorithm,
+        signatureValue as ArrayBuffer,
+      );
       if (asnSignature) {
         break;
       }

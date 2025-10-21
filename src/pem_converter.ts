@@ -44,7 +44,6 @@ export type PemStructEncodeParams = AtLeast<PemStruct, "type" | "rawData">;
  * Represents PEM Converter.
  */
 export class PemConverter {
-
   public static CertificateTag = "CERTIFICATE";
   public static CrlTag = "CRL";
   public static CertificateRequestTag = "CERTIFICATE REQUEST";
@@ -93,7 +92,9 @@ export class PemConverter {
             if (lastHeader) {
               pemStruct.headers.push(lastHeader);
             }
-            lastHeader = { key, value: value.trim() };
+            lastHeader = {
+              key, value: value.trim(),
+            };
           }
         }
         // add last header
@@ -115,7 +116,7 @@ export class PemConverter {
   public static decode(pem: string): ArrayBuffer[] {
     const blocks = this.decodeWithHeaders(pem);
 
-    return blocks.map(o => o.rawData);
+    return blocks.map((o) => o.rawData);
   }
 
   /**
@@ -150,12 +151,15 @@ export class PemConverter {
    * @param tag PEM tag
    */
   public static encode(rawData: BufferSource[], tag: string): string;
-  public static encode(rawData: BufferSource | BufferSource[] | PemStructEncodeParams[], tag?: string) {
+  public static encode(
+    rawData: BufferSource | BufferSource[] | PemStructEncodeParams[],
+    tag?: string,
+  ) {
     if (Array.isArray(rawData)) {
       const raws = new Array<string>();
       if (tag) {
         // encode BufferSource[]
-        rawData.forEach(element => {
+        rawData.forEach((element) => {
           if (!BufferSourceConverter.isBufferSource(element)) {
             throw new TypeError("Cannot encode array of BufferSource in PEM format. Not all items of the array are BufferSource");
           }
@@ -166,7 +170,7 @@ export class PemConverter {
         });
       } else {
         // encode PemStruct[]
-        rawData.forEach(element => {
+        rawData.forEach((element) => {
           if (!("type" in element)) {
             throw new TypeError("Cannot encode array of PemStruct in PEM format. Not all items of the array are PemStrut");
           }
@@ -213,8 +217,7 @@ export class PemConverter {
     while (offset < base64.length) {
       if (base64.length - offset < 64) {
         sliced = base64.substring(offset);
-      }
-      else {
+      } else {
         sliced = base64.substring(offset, offset + 64);
         offset += 64;
       }
@@ -223,8 +226,7 @@ export class PemConverter {
         if (sliced.length < 64) {
           break;
         }
-      }
-      else {
+      } else {
         break;
       }
     }

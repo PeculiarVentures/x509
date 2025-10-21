@@ -1,11 +1,12 @@
-import { describe, it, expect } from "vitest";
+import {
+  describe, it, expect,
+} from "vitest";
 import * as asn1Schema from "@peculiar/asn1-schema";
 import * as asn1X509 from "@peculiar/asn1-x509";
-import * as x509 from "../src";
 import { Convert } from "pvtsutils";
+import * as x509 from "../src";
 
 describe("Name", () => {
-
   function assertName(name: asn1X509.Name, text: string) {
     // serialize
     const value = new x509.Name(name).toString();
@@ -18,8 +19,12 @@ describe("Name", () => {
 
   it("Simple list of RDNs (joined by comma)", () => {
     const name = new asn1X509.Name([
-      new asn1X509.RelativeDistinguishedName([new asn1X509.AttributeTypeAndValue({ type: "2.5.4.3", value: new asn1X509.AttributeValue({ printableString: "Common Name" }) })]),
-      new asn1X509.RelativeDistinguishedName([new asn1X509.AttributeTypeAndValue({ type: "2.5.4.6", value: new asn1X509.AttributeValue({ printableString: "RU" }) })])
+      new asn1X509.RelativeDistinguishedName([new asn1X509.AttributeTypeAndValue({
+        type: "2.5.4.3", value: new asn1X509.AttributeValue({ printableString: "Common Name" }),
+      })]),
+      new asn1X509.RelativeDistinguishedName([new asn1X509.AttributeTypeAndValue({
+        type: "2.5.4.6", value: new asn1X509.AttributeValue({ printableString: "RU" }),
+      })]),
     ]);
 
     assertName(name, "CN=Common Name, C=RU");
@@ -28,8 +33,12 @@ describe("Name", () => {
   it("Simple list of DNs (joined by +)", () => {
     const name = new asn1X509.Name([
       new asn1X509.RelativeDistinguishedName([
-        new asn1X509.AttributeTypeAndValue({ type: "2.5.4.3", value: new asn1X509.AttributeValue({ printableString: "Common Name" }) }),
-        new asn1X509.AttributeTypeAndValue({ type: "2.5.4.6", value: new asn1X509.AttributeValue({ printableString: "RU" }) })]),
+        new asn1X509.AttributeTypeAndValue({
+          type: "2.5.4.3", value: new asn1X509.AttributeValue({ printableString: "Common Name" }),
+        }),
+        new asn1X509.AttributeTypeAndValue({
+          type: "2.5.4.6", value: new asn1X509.AttributeValue({ printableString: "RU" }),
+        })]),
     ]);
 
     assertName(name, "CN=Common Name+C=RU");
@@ -37,17 +46,20 @@ describe("Name", () => {
 
   it("Hexadecimal representation", () => {
     const name = new asn1X509.Name([
-      new asn1X509.RelativeDistinguishedName([new asn1X509.AttributeTypeAndValue({ type: "1.2.3.4.5", value: new asn1X509.AttributeValue({ anyValue: new Uint8Array([0x04, 0x02, 0x48, 0x69]).buffer }) })]),
+      new asn1X509.RelativeDistinguishedName([new asn1X509.AttributeTypeAndValue({
+        type: "1.2.3.4.5", value: new asn1X509.AttributeValue({ anyValue: new Uint8Array([0x04, 0x02, 0x48, 0x69]).buffer }),
+      })]),
     ]);
 
     assertName(name, "1.2.3.4.5=#04024869");
   });
 
   describe("Escaped chars", () => {
-
     it("# character at the beginning", () => {
       const name = new asn1X509.Name([
-        new asn1X509.RelativeDistinguishedName([new asn1X509.AttributeTypeAndValue({ type: "1.2.3.4.5", value: new asn1X509.AttributeValue({ printableString: "#tag" }) })]),
+        new asn1X509.RelativeDistinguishedName([new asn1X509.AttributeTypeAndValue({
+          type: "1.2.3.4.5", value: new asn1X509.AttributeValue({ printableString: "#tag" }),
+        })]),
       ]);
 
       assertName(name, "1.2.3.4.5=\\#tag");
@@ -55,7 +67,9 @@ describe("Name", () => {
 
     it("space character at the beginning", () => {
       const name = new asn1X509.Name([
-        new asn1X509.RelativeDistinguishedName([new asn1X509.AttributeTypeAndValue({ type: "1.2.3.4.5", value: new asn1X509.AttributeValue({ printableString: " tag" }) })]),
+        new asn1X509.RelativeDistinguishedName([new asn1X509.AttributeTypeAndValue({
+          type: "1.2.3.4.5", value: new asn1X509.AttributeValue({ printableString: " tag" }),
+        })]),
       ]);
 
       assertName(name, "1.2.3.4.5=\\ tag");
@@ -63,7 +77,9 @@ describe("Name", () => {
 
     it("space character at the end", () => {
       const name = new asn1X509.Name([
-        new asn1X509.RelativeDistinguishedName([new asn1X509.AttributeTypeAndValue({ type: "1.2.3.4.5", value: new asn1X509.AttributeValue({ printableString: "tag " }) })]),
+        new asn1X509.RelativeDistinguishedName([new asn1X509.AttributeTypeAndValue({
+          type: "1.2.3.4.5", value: new asn1X509.AttributeValue({ printableString: "tag " }),
+        })]),
       ]);
 
       assertName(name, "1.2.3.4.5=tag\\ ");
@@ -71,7 +87,9 @@ describe("Name", () => {
 
     it("special characters", () => {
       const name = new asn1X509.Name([
-        new asn1X509.RelativeDistinguishedName([new asn1X509.AttributeTypeAndValue({ type: "1.2.3.4.5", value: new asn1X509.AttributeValue({ printableString: ",+\"\\<>;" }) })]),
+        new asn1X509.RelativeDistinguishedName([new asn1X509.AttributeTypeAndValue({
+          type: "1.2.3.4.5", value: new asn1X509.AttributeValue({ printableString: ",+\"\\<>;" }),
+        })]),
       ]);
 
       assertName(name, "1.2.3.4.5=\\,\\+\\\"\\\\\\<\\>\\;");
@@ -79,7 +97,9 @@ describe("Name", () => {
 
     it("unknown characters", () => {
       const name = new asn1X509.Name([
-        new asn1X509.RelativeDistinguishedName([new asn1X509.AttributeTypeAndValue({ type: "1.2.3.4.5", value: new asn1X509.AttributeValue({ printableString: "Hello\nworld" }) })]),
+        new asn1X509.RelativeDistinguishedName([new asn1X509.AttributeTypeAndValue({
+          type: "1.2.3.4.5", value: new asn1X509.AttributeValue({ printableString: "Hello\nworld" }),
+        })]),
       ]);
 
       assertName(name, "1.2.3.4.5=Hello\\0Aworld");
@@ -90,7 +110,6 @@ describe("Name", () => {
       const name = new x509.Name(text);
       expect(name.toString()).toBe("CN=here is a test message with \\\"\\,\\\" character+CN=It includes \\< \\> \\+ escaped characters\\ ");
     });
-
   });
 
   it("json", () => {
@@ -99,8 +118,12 @@ describe("Name", () => {
 
     const json: x509.JsonName = [
       { CN: ["name1"] },
-      { CN: ["name2", "name3"], E: ["some@email.com"] },
-      { "1.2.3.4.5": ["#04020102"], DC: ["some.com"] },
+      {
+        CN: ["name2", "name3"], E: ["some@email.com"],
+      },
+      {
+        "1.2.3.4.5": ["#04020102"], DC: ["some.com"],
+      },
     ];
     expect(name.toJSON()).toEqual(json);
 
@@ -120,16 +143,16 @@ describe("Name", () => {
   it("extra names", () => {
     const text = "Email=some@email.com, IP=192.168.0.1, GUID={8ee13e53-2c1c-42bb-8df7-39927c0bdbb6}";
     const name = new x509.Name(text, {
-      "Email": "1.2.3.4.5.1",
-      "IP": "1.2.3.4.5.2",
-      "GUID": "1.2.3.4.5.3",
+      Email: "1.2.3.4.5.1",
+      IP: "1.2.3.4.5.2",
+      GUID: "1.2.3.4.5.3",
     });
 
     expect(Convert.ToHex(name.toArrayBuffer())).toBe("30663119301706052a030405010c0e736f6d6540656d61696c2e636f6d3116301406052a03040502130b3139322e3136382e302e313131302f06052a030405030c267b38656531336535332d326331632d343262622d386466372d3339393237633062646262367d");
     expect(name.toJSON()).toEqual([
-      { "Email": ["some@email.com"] },
-      { "IP": ["192.168.0.1"] },
-      { "GUID": ["{8ee13e53-2c1c-42bb-8df7-39927c0bdbb6}"] }
+      { Email: ["some@email.com"] },
+      { IP: ["192.168.0.1"] },
+      { GUID: ["{8ee13e53-2c1c-42bb-8df7-39927c0bdbb6}"] },
     ]);
   });
 
@@ -138,10 +161,8 @@ describe("Name", () => {
       new asn1X509.RelativeDistinguishedName([
         new asn1X509.AttributeTypeAndValue({
           type: "2.5.4.3",
-          value: new asn1X509.AttributeValue({
-            utf8String: "Some name",
-          })
-        })
+          value: new asn1X509.AttributeValue({ utf8String: "Some name" }),
+        }),
       ]),
     ]);
 
@@ -152,7 +173,6 @@ describe("Name", () => {
   });
 
   describe("get thumbprint", () => {
-
     it("default", async () => {
       const name = new x509.Name("CN=Some");
       const hash = await name.getThumbprint();
@@ -164,11 +184,9 @@ describe("Name", () => {
       const hash = await name.getThumbprint("SHA-256");
       expect(Convert.ToHex(hash)).toBe("38e29244d77fb9f2735d034aba8a6ecaf5070f5fe18efb050424f96cecb0db03");
     });
-
   });
 
   describe("getField", () => {
-
     const dn = "CN=n1+CN=n2, CN=n3+O=o1, O=o2";
 
     const tests: {
@@ -176,27 +194,27 @@ describe("Name", () => {
       args: string;
       want: string[];
     }[] = [
-        {
-          name: "use id:2.5.4.3",
-          args: "2.5.4.3",
-          want: ["n1", "n2", "n3"],
-        },
-        {
-          name: "use name:CN",
-          args: "CN",
-          want: ["n1", "n2", "n3"],
-        },
-        {
-          name: "use missed name:L",
-          args: "L",
-          want: [],
-        },
-        {
-          name: "use unknown name:UNKNOWN",
-          args: "UNKNOWN",
-          want: [],
-        },
-      ];
+      {
+        name: "use id:2.5.4.3",
+        args: "2.5.4.3",
+        want: ["n1", "n2", "n3"],
+      },
+      {
+        name: "use name:CN",
+        args: "CN",
+        want: ["n1", "n2", "n3"],
+      },
+      {
+        name: "use missed name:L",
+        args: "L",
+        want: [],
+      },
+      {
+        name: "use unknown name:UNKNOWN",
+        args: "UNKNOWN",
+        want: [],
+      },
+    ];
     for (const t of tests) {
       it(t.name, () => {
         const name = new x509.Name(dn);
@@ -204,7 +222,6 @@ describe("Name", () => {
         expect(res).toEqual(t.want);
       });
     }
-
   });
 
   describe("from string", () => {
@@ -236,45 +253,39 @@ describe("Name", () => {
       expect(Buffer.from(name.toArrayBuffer()).toString("hex")).toBe("30173115301306035504030c0cd09fd180d0b8d0b2d0b5d182");
     });
   });
-
 });
 
 describe("NameIdentifier", () => {
-
   describe("findId", () => {
-
-    const names = new x509.NameIdentifier({
-      "2.5.4.3": "CN",
-    });
+    const names = new x509.NameIdentifier({ "2.5.4.3": "CN" });
 
     const tests: {
       name: string;
       args: string;
       want: string | null;
     }[] = [
-        {
-          name: "existing name",
-          args: "CN",
-          want: "2.5.4.3",
-        },
-        {
-          name: "missed name",
-          args: "O",
-          want: null,
-        },
-        {
-          name: "id instead of name",
-          args: "2.5.4.10",
-          want: "2.5.4.10",
-        },
-      ];
+      {
+        name: "existing name",
+        args: "CN",
+        want: "2.5.4.3",
+      },
+      {
+        name: "missed name",
+        args: "O",
+        want: null,
+      },
+      {
+        name: "id instead of name",
+        args: "2.5.4.10",
+        want: "2.5.4.10",
+      },
+    ];
     for (const t of tests) {
       it(t.name, () => {
         const name = names.findId(t.args);
         expect(name).toBe(t.want);
       });
     }
-
   });
 
   describe("isASCII", () => {
@@ -288,5 +299,4 @@ describe("NameIdentifier", () => {
       expect(result).toBe(false);
     });
   });
-
 });

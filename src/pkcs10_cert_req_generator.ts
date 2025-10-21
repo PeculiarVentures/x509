@@ -1,7 +1,10 @@
 import { CertificationRequest, CertificationRequestInfo } from "@peculiar/asn1-csr";
 import { id_pkcs9_at_extensionRequest } from "@peculiar/asn1-pkcs9";
 import { AsnConvert } from "@peculiar/asn1-schema";
-import { Name as AsnName, Extension as AsnExtension, SubjectPublicKeyInfo, Extensions, Attribute as AsnAttribute } from "@peculiar/asn1-x509";
+import {
+  Name as AsnName, Extension as AsnExtension, SubjectPublicKeyInfo, Extensions,
+  Attribute as AsnAttribute,
+} from "@peculiar/asn1-x509";
 import { container } from "tsyringe";
 import { cryptoProvider } from "./provider";
 import { AlgorithmProvider, diAlgorithmProvider } from "./algorithm";
@@ -44,13 +47,15 @@ export interface Pkcs10CertificateRequestCreateParams {
  * Generator of PKCS10 certificate requests
  */
 export class Pkcs10CertificateRequestGenerator {
-
   /**
    * Creates a new PKCS10 Certificate request
    * @param params Create parameters
    * @param crypto Crypto provider. Default is from CryptoProvider
    */
-  public static async create(params: Pkcs10CertificateRequestCreateParams, crypto = cryptoProvider.get()) {
+  public static async create(
+    params: Pkcs10CertificateRequestCreateParams,
+    crypto = cryptoProvider.get(),
+  ) {
     if (!params.keys.privateKey) {
       throw new Error("Bad field 'keys' in 'params' argument. 'privateKey' is empty");
     }
@@ -60,9 +65,9 @@ export class Pkcs10CertificateRequestGenerator {
 
     const spki = await crypto.subtle.exportKey("spki", params.keys.publicKey);
     const asnReq = new CertificationRequest({
-      certificationRequestInfo: new CertificationRequestInfo({
-        subjectPKInfo: AsnConvert.parse(spki, SubjectPublicKeyInfo),
-      }),
+      certificationRequestInfo: new CertificationRequestInfo(
+        { subjectPKInfo: AsnConvert.parse(spki, SubjectPublicKeyInfo) },
+      ),
     });
     if (params.name) {
       const name = params.name instanceof Name
@@ -90,7 +95,9 @@ export class Pkcs10CertificateRequestGenerator {
     }
 
     // Set signing algorithm
-    const signingAlgorithm = { ...params.signingAlgorithm, ...params.keys.privateKey.algorithm } as HashedAlgorithm;
+    const signingAlgorithm = {
+      ...params.signingAlgorithm, ...params.keys.privateKey.algorithm,
+    } as HashedAlgorithm;
     const algProv = container.resolve<AlgorithmProvider>(diAlgorithmProvider);
     asnReq.signatureAlgorithm = algProv.toAsnAlgorithm(signingAlgorithm);
 
@@ -99,7 +106,9 @@ export class Pkcs10CertificateRequestGenerator {
     const signature = await crypto.subtle.sign(signingAlgorithm, params.keys.privateKey, tbs);
 
     // Convert WebCrypto signature to ASN.1 format
-    const signatureFormatters = container.resolveAll<IAsnSignatureFormatter>(diAsnSignatureFormatter).reverse();
+    const signatureFormatters = container
+      .resolveAll<IAsnSignatureFormatter>(diAsnSignatureFormatter)
+      .reverse();
     let asnSignature: ArrayBuffer | null = null;
     for (const signatureFormatter of signatureFormatters) {
       asnSignature = signatureFormatter.toAsnSignature(signingAlgorithm, signature);
@@ -115,5 +124,4 @@ export class Pkcs10CertificateRequestGenerator {
 
     return new Pkcs10CertificateRequest(AsnConvert.serialize(asnReq));
   }
-
 }
