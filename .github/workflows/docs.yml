@@ -1,35 +1,26 @@
-name: Build and Deploy documentation
+name: Build and publish website
+
 on:
   push:
     branches:
-      - master
+      - "master"
+
 jobs:
-  build-and-deploy:
+  pages:
     runs-on: ubuntu-latest
-    env:
-      ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+    defaults:
+      run:
+        working-directory: ./website
+
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v6
         with:
-          persist-credentials: false
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: "yarn"
-
-      - name: Install library dependencies
-        run: yarn install
-
-      - name: Install website dependencies
-        run: yarn --cwd website install
-
-      - name: Build docs
-        run: yarn --cwd website build
-
-      - name: Deploy to gh-pages
-        uses: peaceiris/actions-gh-pages@v3
+          node-version: 22
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run build
+      - uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: website/build
