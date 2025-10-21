@@ -133,7 +133,7 @@ export class X509CertificateGenerator {
       spki = await crypto.subtle.exportKey("spki", params.publicKey);
     }
 
-    const serialNumber = generateCertificateSerialNumber(params.serialNumber);
+    const serialNumber = generateCertificateSerialNumber(params.serialNumber, crypto);
     const notBefore = params.notBefore || new Date();
     const notAfter = params.notAfter || new Date(notBefore.getTime() + 31536000000); // 1 year
 
