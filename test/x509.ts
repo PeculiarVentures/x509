@@ -30,7 +30,6 @@ describe("X509Certificate", () => {
   it("decode certificate with special EC parameters", () => {
     // Reference: https://github.com/PeculiarVentures/x509/issues/88
     const cert = new X509Certificate(certWithSpecialEcParam);
-
     expect(cert.publicKey.algorithm.name).toBe("1.2.840.10045.2.1");
   });
 });

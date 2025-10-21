@@ -10,12 +10,10 @@ describe("Name", () => {
   function assertName(name: asn1X509.Name, text: string) {
     // serialize
     const value = new x509.Name(name).toString();
-
     expect(value).toBe(text);
 
     // parse
     const name2 = new x509.Name(text);
-
     expect(name2.toString()).toBe(text);
   }
 
@@ -110,7 +108,6 @@ describe("Name", () => {
     it("parse quoted value", () => {
       const text = "CN=\"here is a test message with \\\",\\\" character\"+CN=It includes \\< \\> \\+ escaped characters\\ ";
       const name = new x509.Name(text);
-
       expect(name.toString()).toBe("CN=here is a test message with \\\"\\,\\\" character+CN=It includes \\< \\> \\+ escaped characters\\ ");
     });
   });
@@ -128,11 +125,9 @@ describe("Name", () => {
         "1.2.3.4.5": ["#04020102"], DC: ["some.com"],
       },
     ];
-
     expect(name.toJSON()).toEqual(json);
 
     const name2 = new x509.Name(json);
-
     expect(name2.toString()).toBe(text);
 
     expect(Convert.ToHex(name.toArrayBuffer())).toBe("3071310e300c060355040313056e616d65313139300c060355040313056e616d6532300c060355040313056e616d6533301b06092a864886f70d010901160e736f6d6540656d61696c2e636f6d3124300a06042a030405040201023016060a0992268993f22c6401191608736f6d652e636f6d");
@@ -172,7 +167,6 @@ describe("Name", () => {
     ]);
 
     const name = new x509.Name(asn1Schema.AsnConvert.serialize(asnName));
-
     expect(name.toString()).toBe("CN=Some name");
 
     expect(Convert.ToHex(name.toArrayBuffer())).toBe("30143112301006035504030c09536f6d65206e616d65");
@@ -182,14 +176,12 @@ describe("Name", () => {
     it("default", async () => {
       const name = new x509.Name("CN=Some");
       const hash = await name.getThumbprint();
-
       expect(Convert.ToHex(hash)).toBe("4c19048809647a5cd443000c4b1b9d174164bf03");
     });
 
     it("SHA-256", async () => {
       const name = new x509.Name("CN=Some");
       const hash = await name.getThumbprint("SHA-256");
-
       expect(Convert.ToHex(hash)).toBe("38e29244d77fb9f2735d034aba8a6ecaf5070f5fe18efb050424f96cecb0db03");
     });
   });
@@ -223,12 +215,10 @@ describe("Name", () => {
         want: [],
       },
     ];
-
     for (const t of tests) {
       it(t.name, () => {
         const name = new x509.Name(dn);
         const res = name.getField(t.args);
-
         expect(res).toEqual(t.want);
       });
     }
@@ -237,13 +227,11 @@ describe("Name", () => {
   describe("from string", () => {
     it("CN is ASCII", () => {
       const name = new x509.Name("CN=Some");
-
       expect(name.toString()).toBe("CN=Some");
       expect(Buffer.from(name.toArrayBuffer()).toString("hex")).toBe("300f310d300b06035504031304536f6d65");
     });
     it("CN is UTF8", () => {
       const name = new x509.Name("CN=Привет");
-
       expect(name.toString()).toBe("CN=Привет");
       expect(Buffer.from(name.toArrayBuffer()).toString("hex")).toBe("30173115301306035504030c0cd09fd180d0b8d0b2d0b5d182");
     });
@@ -254,7 +242,6 @@ describe("Name", () => {
       const name = new x509.Name([
         { CN: ["Some"] },
       ]);
-
       expect(name.toString()).toBe("CN=Some");
       expect(Buffer.from(name.toArrayBuffer()).toString("hex")).toBe("300f310d300b06035504031304536f6d65");
     });
@@ -262,7 +249,6 @@ describe("Name", () => {
       const name = new x509.Name([
         { CN: ["Привет"] },
       ]);
-
       expect(name.toString()).toBe("CN=Привет");
       expect(Buffer.from(name.toArrayBuffer()).toString("hex")).toBe("30173115301306035504030c0cd09fd180d0b8d0b2d0b5d182");
     });
@@ -294,11 +280,9 @@ describe("NameIdentifier", () => {
         want: "2.5.4.10",
       },
     ];
-
     for (const t of tests) {
       it(t.name, () => {
         const name = names.findId(t.args);
-
         expect(name).toBe(t.want);
       });
     }
@@ -307,13 +291,11 @@ describe("NameIdentifier", () => {
   describe("isASCII", () => {
     it("should return true for ASCII text", () => {
       const result = x509.Name.isASCII("Hello, World!");
-
       expect(result).toBe(true);
     });
 
     it("should return false for non-ASCII text", () => {
       const result = x509.Name.isASCII("Привет, мир!");
-
       expect(result).toBe(false);
     });
   });

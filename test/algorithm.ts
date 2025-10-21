@@ -7,7 +7,6 @@ import { AlgorithmProvider, diAlgorithmProvider } from "../src";
 
 describe("AlgorithmProvider", () => {
   let algorithmProvider: AlgorithmProvider;
-
   beforeAll(() => {
     algorithmProvider = container.resolve<AlgorithmProvider>(diAlgorithmProvider);
     expect(algorithmProvider).toBeTruthy();
@@ -19,7 +18,6 @@ describe("AlgorithmProvider", () => {
         name: "RSASSA-PKCS1-v1_5",
         hash: "SHA-1",
       } as Algorithm);
-
       expect(alg.algorithm).toBe("1.2.840.113549.1.1.5");
       expect(alg.parameters).toBe(null);
     });
@@ -29,14 +27,12 @@ describe("AlgorithmProvider", () => {
         name: "RSASSA-PKCS1-v1_5",
         hash: { name: "SHA-1" },
       } as Algorithm);
-
       expect(alg.algorithm).toBe("1.2.840.113549.1.1.5");
       expect(alg.parameters).toBe(null);
     });
 
     it("should convert RSASSA-PKCS1-v1_5 without hash to AlgorithmIdentifier", () => {
       const alg = algorithmProvider.toAsnAlgorithm({ name: "RSASSA-PKCS1-v1_5" } as Algorithm);
-
       expect(alg.algorithm).toBe("1.2.840.113549.1.1.1");
       expect(alg.parameters).toBe(null);
     });
@@ -55,7 +51,6 @@ describe("AlgorithmProvider", () => {
         name: "ECDSA",
         hash: "SHA-1",
       } as Algorithm);
-
       expect(alg.algorithm).toBe("1.2.840.10045.4.1");
       expect(alg.parameters).toBe(undefined);
     });

@@ -122,7 +122,6 @@ describe("GeneralName", () => {
           expect(create).toThrow(t.wantError);
         } else {
           const obj = create().toJSON();
-
           expect(obj).toEqual(t.want);
         }
       });
@@ -192,12 +191,10 @@ describe("GeneralName", () => {
         want: "URL: https://some.com",
       },
     ];
-
     for (const t of tests) {
       it(t.name, () => {
         const name = new x509.GeneralName(t.args.type, t.args.value);
         const text = name.toString("text");
-
         expect(text).toBe(t.want);
       });
     }
@@ -275,7 +272,6 @@ describe("GeneralNames", () => {
     for (const t of tests) {
       it(t.name, () => {
         const obj = new x509.GeneralNames(t.args as any);
-
         expect(obj.toJSON()).toEqual(t.want);
       });
     }
@@ -306,12 +302,10 @@ describe("GeneralNames", () => {
         want: "GeneralNames:\n  DN: CN=name, O=org\n  Email: some@email.com\n  Email: some2@email.com\n  DNS: some.com",
       },
     ];
-
     for (const t of tests) {
       it(t.name, () => {
         const name = new x509.GeneralNames(t.args);
         const text = name.toString("text");
-
         expect(text).toBe(t.want);
       });
     }

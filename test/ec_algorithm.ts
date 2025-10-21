@@ -159,7 +159,6 @@ describe("EcAlgorithm", () => {
     describe(`Algorithm ${webAlgorithm.name} with ${withValue}`, () => {
       it("#toAsnAlgorithm()", () => {
         const result = ecAlgorithm.toAsnAlgorithm(webAlgorithm);
-
         expect(result).toBeTruthy();
         if (result) {
           if ("hash" in webAlgorithm) {
@@ -169,7 +168,6 @@ describe("EcAlgorithm", () => {
             expect(result.parameters).toBeTruthy();
             if (result.parameters) {
               const asnParameters = AsnConvert.parse(result.parameters, ECParameters);
-
               expect(asnParameters.namedCurve).toBe(asnAlgorithm);
             }
           }
@@ -184,7 +182,6 @@ describe("EcAlgorithm", () => {
               parameters: AsnConvert.serialize(new ECParameters({ namedCurve: asnAlgorithm })),
             });
         const result = ecAlgorithm.toWebAlgorithm(algIdentifier);
-
         expect(result).toBeTruthy();
         expect(result).toEqual(webAlgorithm);
       });

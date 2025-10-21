@@ -14,6 +14,7 @@ export default tseslint.config(
       "@typescript-eslint/unified-signatures": "off",
       "@typescript-eslint/no-extraneous-class": "off",
       "@typescript-eslint/no-non-null-assertion": "off",
+      "@stylistic/padding-line-between-statements": "off",
     },
   },
   {

@@ -186,7 +186,6 @@ describe("PEM", () => {
         ],
       },
     ];
-
     tests.forEach((t) => {
       it(t.name, () => {
         if (t.want instanceof Error) {
@@ -319,18 +318,13 @@ describe("PEM", () => {
         if (t.want instanceof Error) {
           expect(() => {
             src.PemConverter.encode.call<unknown, any[], unknown>(
-              src.PemConverter,
-              t.args.a,
-              t.args.b,
+              src.PemConverter, t.args.a, t.args.b,
             );
           }).toThrow(t.want);
         } else {
           const pem = src.PemConverter.encode.call<unknown, any[], unknown>(
-            src.PemConverter,
-            t.args.a,
-            t.args.b,
+            src.PemConverter, t.args.a, t.args.b,
           );
-
           expect(pem).toBe(t.want);
         }
       });
@@ -381,7 +375,6 @@ describe("PEM", () => {
     tests.forEach((t) => {
       it(t.name, () => {
         const result = src.PemConverter.isPem(t.data);
-
         expect(result).toBe(t.want);
       });
     });

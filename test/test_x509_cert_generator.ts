@@ -6,7 +6,6 @@ import { Crypto } from "@peculiar/webcrypto";
 import * as x509 from "../src";
 
 const crypto = new Crypto();
-
 x509.cryptoProvider.set(crypto);
 
 const alg = {
@@ -117,11 +116,9 @@ dbm0dg==
 ];
 
 let testCertSelfSignCounter = 1;
-
 function testCertSelfSign(testEntry: any) {
   it(`Test X509CertificateGenerator.create self-signed #${testCertSelfSignCounter++}`, async () => {
     const keys = await crypto.subtle.generateKey(alg, true, ["sign", "verify"]);
-
     expect(keys.publicKey).toBeTruthy();
     expect(keys.privateKey).toBeTruthy();
     const cert = await x509.X509CertificateGenerator.createSelfSigned({
@@ -130,13 +127,11 @@ function testCertSelfSign(testEntry: any) {
       ...testEntry.certContents,
     });
     const ok = await cert.verify({ date: testEntry.testDate });
-
     expect(ok).toBe(true);
   });
 }
 
 let testCertPreSignedCounter = 1;
-
 function testCertPreSigned(testEntry: any) {
   it(`Test X509CertificateGenerator.create pre-signed #${testCertPreSignedCounter++}`, async () => {
     const signature = Buffer.from(testEntry.signature, "hex");
@@ -149,7 +144,6 @@ function testCertPreSigned(testEntry: any) {
       extractable,
       ["verify"],
     );
-
     expect(publicKey).toBeTruthy();
 
     const cert = await x509.X509CertificateGenerator.create({
@@ -163,15 +157,12 @@ function testCertPreSigned(testEntry: any) {
     expect(cert.toString("pem")).toBe(testEntry.certPem);
 
     const ok = await cert.verify({ date: testEntry.testDate });
-
     expect(ok).toBe(true);
 
     const validAfter = await cert.verify({ date: testEntry.testAfter });
-
     expect(validAfter).toBe(false);
 
     const validBefore = await cert.verify({ date: testEntry.testBefore });
-
     expect(validBefore).toBe(false);
   });
 }
@@ -196,7 +187,6 @@ describe(path.basename(__filename), () => {
         publicKey,
         signingKey: keys.privateKey,
       });
-
       expect(cert).toBeTruthy();
     });
 
@@ -209,7 +199,6 @@ describe(path.basename(__filename), () => {
         publicKey: certWithPublicKey,
         signingKey: keys.privateKey,
       });
-
       expect(cert).toBeTruthy();
     });
 
@@ -219,7 +208,6 @@ describe(path.basename(__filename), () => {
         publicKey: spki,
         signingKey: keys.privateKey,
       });
-
       expect(cert).toBeTruthy();
     });
   });
@@ -267,11 +255,9 @@ describe(path.basename(__filename), () => {
           saltLength: 32,
         } as Algorithm,
       });
-
       expect(cert).toBeTruthy();
 
       const ok = await cert.verify();
-
       expect(ok).toBe(true);
     });
   });
@@ -285,7 +271,6 @@ describe(path.basename(__filename), () => {
         name: "CN=ZeroTest",
         keys,
       });
-
       expect(cert.serialNumber.toLowerCase()).toBe("01");
     });
 
@@ -296,7 +281,6 @@ describe(path.basename(__filename), () => {
         name: "CN=ZeroTest2",
         keys,
       });
-
       // Серийный номер не должен быть "00"
       expect(cert.serialNumber).not.toBe("00");
       expect(cert.serialNumber).not.toBe("000000");

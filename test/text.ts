@@ -158,12 +158,10 @@ describe("text", () => {
         ].join("\n"),
       },
     ];
-
     for (const t of tests) {
       it(t.name, async () => {
         const ext = await t.factory();
         const text = ext.toString("text");
-
         expect(text).toBe(t.want);
       });
     }
@@ -247,11 +245,9 @@ describe("text", () => {
           ].join("\n"),
         },
       ];
-
       for (const t of tests) {
         it(t.name, () => {
           const text = x509.TextConverter.serialize(t.args);
-
           expect(text).toBe(t.want);
         });
       }
@@ -411,12 +407,10 @@ describe("text", () => {
         ].join("\n"),
       },
     ];
-
     for (const t of tests) {
       it(t.name, async () => {
         const obj = await t.factory();
         const text = obj.toString("text");
-
         expect(text).toBe(t.want);
       });
     }
@@ -451,12 +445,10 @@ describe("text", () => {
         ].join("\n"),
       },
     ];
-
     for (const t of tests) {
       it(t.name, async () => {
         const ext = await t.factory();
         const text = ext.toString("text");
-
         expect(text).toBe(t.want);
       });
     }

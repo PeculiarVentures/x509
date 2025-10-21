@@ -69,7 +69,6 @@ describe("issues", () => {
 
     const chain = new x509.X509ChainBuilder({ certificates: [rootCert, intermediateCert] });
     const items = await chain.build(leafCert, crypto);
-
     expect(items.length).toBe(3);
   });
 
@@ -83,7 +82,6 @@ describe("issues", () => {
     // Test case 2: CN=t,OU=x,O=y,C=z
     const name2 = new x509.Name("CN=t,OU=x,O=y,C=z");
     const json2 = name2.toJSON();
-
     expect(json1.length).toBe(3);
     expect(json1[0]).toEqual({ CN: ["t"] });
     expect(json1[1]).toEqual({ OU: ["x"] });
@@ -133,12 +131,10 @@ describe("issues", () => {
 
       // Verify certificate can be converted to PEM and back
       const pemString = cert.toString("pem");
-
       expect(pemString.includes("BEGIN CERTIFICATE")).toBe(true);
 
       // Verify certificate can be parsed back
       const parsedCert = new x509.X509Certificate(pemString);
-
       expect(parsedCert.serialNumber).toBe(serialNumber);
     }
   });
