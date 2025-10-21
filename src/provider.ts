@@ -4,7 +4,6 @@ export type MapForEachCallback = (value: Crypto, key: string, map: Map<string, C
  * Crypto provider
  */
 export class CryptoProvider {
-
   public static DEFAULT = "default";
 
   private items = new Map<string, Crypto>();
@@ -33,6 +32,7 @@ export class CryptoProvider {
       this.set(CryptoProvider.DEFAULT, global.crypto);
     }
   }
+
   clear(): void {
     this.items.clear();
   }
@@ -60,12 +60,15 @@ export class CryptoProvider {
   keys(): IterableIterator<string> {
     return this.items.keys();
   }
+
   values(): IterableIterator<Crypto> {
     return this.items.values();
   }
+
   [Symbol.iterator](): IterableIterator<[string, Crypto]> {
     return this.items[Symbol.iterator]();
   }
+
   [Symbol.toStringTag] = "CryptoProvider";
 
   /**
@@ -81,6 +84,7 @@ export class CryptoProvider {
   public get(key: string): Crypto;
   public get(key = CryptoProvider.DEFAULT) {
     const crypto = this.items.get(key.toLowerCase());
+
     if (!crypto) {
       throw new Error(`Cannot get Crypto by name '${key}'`);
     }
@@ -104,6 +108,7 @@ export class CryptoProvider {
       if (!value) {
         throw new TypeError("Argument 'value' is required");
       }
+
       this.items.set(key.toLowerCase(), value);
     } else {
       this.items.set(CryptoProvider.DEFAULT, key);
@@ -111,7 +116,6 @@ export class CryptoProvider {
 
     return this;
   }
-
 }
 
 /**

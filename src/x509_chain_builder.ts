@@ -28,7 +28,6 @@ export interface X509ChainBuilderParams {
  * ```
  */
 export class X509ChainBuilder {
-
   public certificates: X509Certificate[] = [];
 
   public constructor(params: X509ChainBuilderParams = {}) {
@@ -41,12 +40,15 @@ export class X509ChainBuilder {
     const chain = new X509Certificates(cert);
 
     let current: X509Certificate | null = cert;
+
     // eslint-disable-next-line no-cond-assign
     while (current = await this.findIssuer(current, crypto)) {
       // check out circular dependency
       const thumbprint = await current.getThumbprint(crypto);
+
       for (const item of chain) {
         const thumbprint2 = await item.getThumbprint(crypto);
+
         if (isEqual(thumbprint, thumbprint2)) {
           throw new Error("Cannot build a certificate chain. Circular dependency.");
         }
@@ -60,7 +62,10 @@ export class X509ChainBuilder {
 
   private async findIssuer(cert: X509Certificate, crypto = cryptoProvider.get()) {
     if (!await cert.isSelfSigned(crypto)) {
-      const akiExt = cert.getExtension<AuthorityKeyIdentifierExtension>(asn1X509.id_ce_authorityKeyIdentifier);
+      const akiExt = cert.getExtension<AuthorityKeyIdentifierExtension>(
+        asn1X509.id_ce_authorityKeyIdentifier,
+      );
+
       for (const item of this.certificates) {
         if (item.subject !== cert.issuer) {
           continue;
@@ -68,26 +73,42 @@ export class X509ChainBuilder {
 
         if (akiExt) {
           if (akiExt.keyId) {
-            const skiExt = item.getExtension<SubjectKeyIdentifierExtension>(asn1X509.id_ce_subjectKeyIdentifier);
+            const skiExt = item.getExtension<SubjectKeyIdentifierExtension>(
+              asn1X509.id_ce_subjectKeyIdentifier,
+            );
+
             if (skiExt && skiExt.keyId !== akiExt.keyId) {
               continue;
             }
           } else if (akiExt.certId) {
-            const sanExt = item.getExtension<SubjectKeyIdentifierExtension>(asn1X509.id_ce_subjectAltName);
-            if (sanExt &&
-              !(akiExt.certId.serialNumber === item.serialNumber && isEqual(AsnConvert.serialize(akiExt.certId.name), AsnConvert.serialize(sanExt)))) {
+            const sanExt = item.getExtension<SubjectKeyIdentifierExtension>(
+              asn1X509.id_ce_subjectAltName,
+            );
+
+            if (sanExt
+              && !(akiExt.certId.serialNumber === item.serialNumber
+                && isEqual(
+                  AsnConvert.serialize(akiExt.certId.name),
+                  AsnConvert.serialize(sanExt),
+                ))) {
               continue;
             }
           }
         }
+
         try {
-          const algorithm = { ...item.publicKey.algorithm, ...cert.signatureAlgorithm };
+          const algorithm = {
+            ...item.publicKey.algorithm, ...cert.signatureAlgorithm,
+          };
           const publicKey = await item.publicKey.export(algorithm, ["verify"], crypto);
-          const ok = await cert.verify({ publicKey, signatureOnly: true }, crypto);
+          const ok = await cert.verify({
+            publicKey, signatureOnly: true,
+          }, crypto);
+
           if (!ok) {
             continue;
           }
-        } catch (_e) {
+        } catch {
           continue;
         }
 
@@ -97,5 +118,4 @@ export class X509ChainBuilder {
 
     return null;
   }
-
 }

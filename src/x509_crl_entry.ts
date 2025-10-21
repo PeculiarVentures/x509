@@ -1,5 +1,7 @@
 import { AsnConvert } from "@peculiar/asn1-schema";
-import { CRLReason, id_ce_cRLReasons, id_ce_invalidityDate, InvalidityDate, RevokedCertificate, Time } from "@peculiar/asn1-x509";
+import {
+  CRLReason, id_ce_cRLReasons, id_ce_invalidityDate, InvalidityDate, RevokedCertificate, Time,
+} from "@peculiar/asn1-x509";
 import { BufferSourceConverter, Convert } from "pvtsutils";
 import { Extension } from "./extension";
 import { ExtensionFactory } from "./extensions/extension_factory";
@@ -21,7 +23,7 @@ export enum X509CrlReason {
   certificateHold = 6,
   removeFromCRL = 8,
   privilegeWithdrawn = 9,
-  aACompromise = 10
+  aACompromise = 10,
 }
 
 /**
@@ -115,13 +117,16 @@ export class X509CrlEntry extends AsnData<RevokedCertificate> {
           switch (extension.type) {
             case id_ce_cRLReasons:
               if (this.#reason === undefined) {
-                this.#reason = AsnConvert.parse(extension.value, CRLReason).reason as unknown as X509CrlReason;
+                this.#reason = AsnConvert
+                  .parse(extension.value, CRLReason).reason as unknown as X509CrlReason;
               }
+
               break;
             case id_ce_invalidityDate:
               if (this.#invalidity === undefined) {
                 this.#invalidity = AsnConvert.parse(extension.value, InvalidityDate).value;
               }
+
               break;
           }
 
@@ -152,6 +157,7 @@ export class X509CrlEntry extends AsnData<RevokedCertificate> {
   public constructor(serialNumber: string, revocationDate: Date, extensions: Extension[]);
   public constructor(...args: any[]) {
     let raw: ArrayBuffer | RevokedCertificate | undefined;
+
     if (BufferSourceConverter.isBufferSource(args[0])) {
       raw = BufferSourceConverter.toArrayBuffer(args[0]);
     } else if (typeof args[0] === "string") {

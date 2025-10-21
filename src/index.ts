@@ -10,7 +10,6 @@ export * from "./ec_algorithm";
 export * from "./sha_algorithm";
 export * from "./ec_signature_formatter";
 export * from "./ed_algorithm";
-export * from "./asn_data";
 export * from "./attribute";
 export * from "./extension";
 export * from "./name";
@@ -33,26 +32,55 @@ export * from "./general_name";
 
 import * as asnX509 from "@peculiar/asn1-x509";
 import * as asnPkcs9 from "@peculiar/asn1-pkcs9";
+import { container } from "tsyringe";
 import * as attributes from "./attributes";
 import * as extensions from "./extensions";
-import { container } from "tsyringe";
 import { AsnDefaultSignatureFormatter, diAsnSignatureFormatter } from "./asn_signature_formatter";
 import { AsnEcSignatureFormatter } from "./ec_signature_formatter";
 
 // Register x509 extensions
-extensions.ExtensionFactory.register(asnX509.id_ce_basicConstraints, extensions.BasicConstraintsExtension);
-extensions.ExtensionFactory.register(asnX509.id_ce_extKeyUsage, extensions.ExtendedKeyUsageExtension);
-extensions.ExtensionFactory.register(asnX509.id_ce_keyUsage, extensions.KeyUsagesExtension);
-extensions.ExtensionFactory.register(asnX509.id_ce_subjectKeyIdentifier, extensions.SubjectKeyIdentifierExtension);
-extensions.ExtensionFactory.register(asnX509.id_ce_authorityKeyIdentifier, extensions.AuthorityKeyIdentifierExtension);
-extensions.ExtensionFactory.register(asnX509.id_ce_subjectAltName, extensions.SubjectAlternativeNameExtension);
-extensions.ExtensionFactory.register(asnX509.id_ce_cRLDistributionPoints, extensions.CRLDistributionPointsExtension);
-extensions.ExtensionFactory.register(asnX509.id_pe_authorityInfoAccess, extensions.AuthorityInfoAccessExtension);
-extensions.ExtensionFactory.register(asnX509.id_ce_issuerAltName, extensions.IssuerAlternativeNameExtension);
+extensions.ExtensionFactory.register(
+  asnX509.id_ce_basicConstraints,
+  extensions.BasicConstraintsExtension,
+);
+extensions.ExtensionFactory.register(
+  asnX509.id_ce_extKeyUsage,
+  extensions.ExtendedKeyUsageExtension,
+);
+extensions.ExtensionFactory.register(
+  asnX509.id_ce_keyUsage,
+  extensions.KeyUsagesExtension,
+);
+extensions.ExtensionFactory.register(
+  asnX509.id_ce_subjectKeyIdentifier,
+  extensions.SubjectKeyIdentifierExtension,
+);
+extensions.ExtensionFactory.register(
+  asnX509.id_ce_authorityKeyIdentifier,
+  extensions.AuthorityKeyIdentifierExtension,
+);
+extensions.ExtensionFactory.register(
+  asnX509.id_ce_subjectAltName,
+  extensions.SubjectAlternativeNameExtension,
+);
+extensions.ExtensionFactory.register(
+  asnX509.id_ce_cRLDistributionPoints,
+  extensions.CRLDistributionPointsExtension,
+);
+extensions.ExtensionFactory.register(
+  asnX509.id_pe_authorityInfoAccess,
+  extensions.AuthorityInfoAccessExtension,
+);
 
 // Register x509 attributes
-attributes.AttributeFactory.register(asnPkcs9.id_pkcs9_at_challengePassword, attributes.ChallengePasswordAttribute);
-attributes.AttributeFactory.register(asnPkcs9.id_pkcs9_at_extensionRequest, attributes.ExtensionsAttribute);
+attributes.AttributeFactory.register(
+  asnPkcs9.id_pkcs9_at_challengePassword,
+  attributes.ChallengePasswordAttribute,
+);
+attributes.AttributeFactory.register(
+  asnPkcs9.id_pkcs9_at_extensionRequest,
+  attributes.ExtensionsAttribute,
+);
 
 // Register signature formatters
 container.registerSingleton(diAsnSignatureFormatter, AsnDefaultSignatureFormatter);

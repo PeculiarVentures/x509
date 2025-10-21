@@ -7,8 +7,7 @@ import { OidSerializer, TextObject } from "./text_converter";
 /**
  * Represents the Attribute structure
  */
-export class Attribute extends AsnData<AsnAttribute>{
-
+export class Attribute extends AsnData<AsnAttribute> {
   public static override NAME = "Attribute";
 
   /**
@@ -34,12 +33,18 @@ export class Attribute extends AsnData<AsnAttribute>{
   public constructor(raw: BufferSource);
   public constructor(...args: any[]) {
     let raw: ArrayBuffer;
+
     if (BufferSourceConverter.isBufferSource(args[0])) {
       raw = BufferSourceConverter.toArrayBuffer(args[0]);
     } else {
       const type = args[0];
-      const values = Array.isArray(args[1]) ? args[1].map(o => BufferSourceConverter.toArrayBuffer(o)) : [];
-      raw = AsnConvert.serialize(new AsnAttribute({ type, values }));
+      const values = Array.isArray(args[1])
+        ? args[1].map((o) => BufferSourceConverter.toArrayBuffer(o))
+        : [];
+
+      raw = AsnConvert.serialize(new AsnAttribute({
+        type, values,
+      }));
     }
 
     super(raw, AsnAttribute);
@@ -53,7 +58,7 @@ export class Attribute extends AsnData<AsnAttribute>{
   public override toTextObject(): TextObject {
     const obj = this.toTextObjectWithoutValue();
 
-    obj["Value"] = this.values.map(o => new TextObject("", { "": o }));
+    obj["Value"] = this.values.map((o) => new TextObject("", { "": o }));
 
     return obj;
   }

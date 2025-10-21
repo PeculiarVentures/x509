@@ -8,7 +8,6 @@ import { TextObject } from "../text_converter";
  * Represents the Basic Constraints certificate extension
  */
 export class BasicConstraintsExtension extends Extension {
-
   public static override NAME = "Basic Constraints";
 
   /**
@@ -40,6 +39,7 @@ export class BasicConstraintsExtension extends Extension {
       super(args[0] as BufferSource);
 
       const value = AsnConvert.parse(this.value, AsnBasicConstraints);
+
       this.ca = value.cA;
       this.pathLength = value.pathLenConstraint;
     } else {
@@ -47,6 +47,7 @@ export class BasicConstraintsExtension extends Extension {
         cA: args[0],
         pathLenConstraint: args[1],
       });
+
       super(id_ce_basicConstraints, args[2], AsnConvert.serialize(value));
 
       this.ca = args[0];
@@ -60,11 +61,11 @@ export class BasicConstraintsExtension extends Extension {
     if (this.ca) {
       obj["CA"] = this.ca;
     }
+
     if (this.pathLength !== undefined) {
       obj["Path Length"] = this.pathLength;
     }
 
     return obj;
   }
-
 }

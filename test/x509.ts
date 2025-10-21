@@ -1,8 +1,9 @@
-import { describe, it, expect } from "vitest";
+import {
+  describe, it, expect,
+} from "vitest";
 import { X509Certificate } from "../src";
 
 describe("X509Certificate", () => {
-
   const certWithSpecialEcParam = [
     "-----BEGIN CERTIFICATE-----",
     "MIIDQzCCAuugAwIBAgICARYwCQYHKoZIzj0EATCBjjELMAkGA1UEBhMCUlUxDzAN",
@@ -29,7 +30,7 @@ describe("X509Certificate", () => {
   it("decode certificate with special EC parameters", () => {
     // Reference: https://github.com/PeculiarVentures/x509/issues/88
     const cert = new X509Certificate(certWithSpecialEcParam);
+
     expect(cert.publicKey.algorithm.name).toBe("1.2.840.10045.2.1");
   });
-
 });

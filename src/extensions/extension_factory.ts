@@ -4,8 +4,7 @@ import { Extension } from "../extension";
  * Static class to manage X509 extensions
  */
 export class ExtensionFactory {
-
-  private static items: Map<string, typeof Extension> = new Map();
+  private static items = new Map<string, typeof Extension>();
 
   /**
    * Registers a new X509 Extension class. If id already exists replaces it
@@ -14,7 +13,10 @@ export class ExtensionFactory {
    *
    * @example
    * ```js
-   * ExtensionFactory.register(asnX509.id_ce_basicConstraints, extensions.BasicConstraintsExtension);
+   * ExtensionFactory.register(
+   *   asnX509.id_ce_basicConstraints,
+   *   extensions.BasicConstraintsExtension,
+   * );
    * ```
    */
   public static register(id: string, type: any) {
@@ -33,6 +35,7 @@ export class ExtensionFactory {
   public static create(data: BufferSource) {
     const extension = new Extension(data);
     const Type = this.items.get(extension.type);
+
     if (Type) {
       return new Type(data);
     }

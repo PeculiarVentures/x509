@@ -9,7 +9,6 @@ import { TextObject } from "../text_converter";
  * Represents the Subject Alternative Name certificate extension
  */
 export class SubjectAlternativeNameExtension extends Extension {
-
   public names!: GeneralNames;
 
   public static override NAME = "Subject Alternative Name";
@@ -46,11 +45,11 @@ export class SubjectAlternativeNameExtension extends Extension {
     const obj = this.toTextObjectWithoutValue();
 
     const namesObj = this.names.toTextObject();
+
     for (const key in namesObj) {
       obj[key] = namesObj[key];
     }
 
     return obj;
   }
-
 }

@@ -2,7 +2,9 @@ import * as asn1Rsa from "@peculiar/asn1-rsa";
 import { AsnConvert } from "@peculiar/asn1-schema";
 import { AlgorithmIdentifier } from "@peculiar/asn1-x509";
 import { container, injectable } from "tsyringe";
-import { AlgorithmProvider, diAlgorithm, diAlgorithmProvider, IAlgorithm } from "./algorithm";
+import {
+  AlgorithmProvider, diAlgorithm, diAlgorithmProvider, IAlgorithm,
+} from "./algorithm";
 import { HashedAlgorithm } from "./types";
 
 /**
@@ -10,9 +12,9 @@ import { HashedAlgorithm } from "./types";
  */
 @injectable()
 export class RsaAlgorithm implements IAlgorithm {
-
   public static createPssParams(hash: unknown, saltLength: number): asn1Rsa.RsaSaPssParams | null {
     const hashAlgorithm = RsaAlgorithm.getHashAlgorithm(hash);
+
     if (!hashAlgorithm) {
       return null;
     }
@@ -29,9 +31,12 @@ export class RsaAlgorithm implements IAlgorithm {
 
   public static getHashAlgorithm(alg: unknown): AlgorithmIdentifier | null {
     const algProv = container.resolve<AlgorithmProvider>(diAlgorithmProvider);
+
     if (typeof alg === "string") {
       return algProv.toAsnAlgorithm({ name: alg });
-    } if (typeof alg === "object" && alg && "name" in alg) {
+    }
+
+    if (typeof alg === "object" && alg && "name" in alg) {
       return algProv.toAsnAlgorithm(alg as Algorithm);
     }
 
@@ -43,6 +48,7 @@ export class RsaAlgorithm implements IAlgorithm {
       case "rsassa-pkcs1-v1_5":
         if ("hash" in alg) {
           let hash: string;
+
           if (typeof alg.hash === "string") {
             hash = alg.hash;
           } else if (alg.hash && typeof alg.hash === "object"
@@ -54,32 +60,50 @@ export class RsaAlgorithm implements IAlgorithm {
 
           switch (hash.toLowerCase()) {
             case "sha-1":
-              return new AlgorithmIdentifier({ algorithm: asn1Rsa.id_sha1WithRSAEncryption, parameters: null });
+              return new AlgorithmIdentifier({
+                algorithm: asn1Rsa.id_sha1WithRSAEncryption, parameters: null,
+              });
             case "sha-256":
-              return new AlgorithmIdentifier({ algorithm: asn1Rsa.id_sha256WithRSAEncryption, parameters: null });
+              return new AlgorithmIdentifier({
+                algorithm: asn1Rsa.id_sha256WithRSAEncryption, parameters: null,
+              });
             case "sha-384":
-              return new AlgorithmIdentifier({ algorithm: asn1Rsa.id_sha384WithRSAEncryption, parameters: null });
+              return new AlgorithmIdentifier({
+                algorithm: asn1Rsa.id_sha384WithRSAEncryption, parameters: null,
+              });
             case "sha-512":
-              return new AlgorithmIdentifier({ algorithm: asn1Rsa.id_sha512WithRSAEncryption, parameters: null });
+              return new AlgorithmIdentifier({
+                algorithm: asn1Rsa.id_sha512WithRSAEncryption, parameters: null,
+              });
           }
         } else {
-          return new AlgorithmIdentifier({ algorithm: asn1Rsa.id_rsaEncryption, parameters: null });
+          return new AlgorithmIdentifier({
+            algorithm: asn1Rsa.id_rsaEncryption, parameters: null,
+          });
         }
+
         break;
       case "rsa-pss":
         if ("hash" in alg) {
           if (!("saltLength" in alg && typeof alg.saltLength === "number")) {
             throw new Error("Cannot get 'saltLength' from 'alg' argument");
           }
+
           const pssParams = RsaAlgorithm.createPssParams(alg.hash, alg.saltLength);
+
           if (!pssParams) {
             throw new Error("Cannot create PSS parameters");
           }
 
-          return new AlgorithmIdentifier({ algorithm: asn1Rsa.id_RSASSA_PSS, parameters: AsnConvert.serialize(pssParams) });
+          return new AlgorithmIdentifier({
+            algorithm: asn1Rsa.id_RSASSA_PSS, parameters: AsnConvert.serialize(pssParams),
+          });
         } else {
-          return new AlgorithmIdentifier({ algorithm: asn1Rsa.id_RSASSA_PSS, parameters: null });
+          return new AlgorithmIdentifier({
+            algorithm: asn1Rsa.id_RSASSA_PSS, parameters: null,
+          });
         }
+
         break;
     }
 
@@ -91,13 +115,21 @@ export class RsaAlgorithm implements IAlgorithm {
       case asn1Rsa.id_rsaEncryption:
         return { name: "RSASSA-PKCS1-v1_5" };
       case asn1Rsa.id_sha1WithRSAEncryption:
-        return { name: "RSASSA-PKCS1-v1_5", hash: { name: "SHA-1" } };
+        return {
+          name: "RSASSA-PKCS1-v1_5", hash: { name: "SHA-1" },
+        };
       case asn1Rsa.id_sha256WithRSAEncryption:
-        return { name: "RSASSA-PKCS1-v1_5", hash: { name: "SHA-256" } };
+        return {
+          name: "RSASSA-PKCS1-v1_5", hash: { name: "SHA-256" },
+        };
       case asn1Rsa.id_sha384WithRSAEncryption:
-        return { name: "RSASSA-PKCS1-v1_5", hash: { name: "SHA-384" } };
+        return {
+          name: "RSASSA-PKCS1-v1_5", hash: { name: "SHA-384" },
+        };
       case asn1Rsa.id_sha512WithRSAEncryption:
-        return { name: "RSASSA-PKCS1-v1_5", hash: { name: "SHA-512" } };
+        return {
+          name: "RSASSA-PKCS1-v1_5", hash: { name: "SHA-512" },
+        };
       case asn1Rsa.id_RSASSA_PSS:
         if (alg.parameters) {
           const pssParams = AsnConvert.parse(alg.parameters, asn1Rsa.RsaSaPssParams);
@@ -116,7 +148,6 @@ export class RsaAlgorithm implements IAlgorithm {
 
     return null;
   }
-
 }
 
 // register RSA algorithm provider as a singleton object

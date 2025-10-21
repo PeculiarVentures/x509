@@ -7,8 +7,7 @@ import { OidSerializer, TextObject } from "./text_converter";
 /**
  * Represents the certificate extension
  */
-export class Extension extends AsnData<AsnExtension>{
-
+export class Extension extends AsnData<AsnExtension> {
   /**
    * Gets an extension identifier
    */
@@ -37,6 +36,7 @@ export class Extension extends AsnData<AsnExtension>{
   public constructor(type: string, critical: boolean, value: BufferSource);
   public constructor(...args: any[]) {
     let raw: ArrayBuffer;
+
     if (BufferSourceConverter.isBufferSource(args[0])) {
       raw = BufferSourceConverter.toArrayBuffer(args[0]);
     } else {

@@ -36,12 +36,14 @@ export class IssuerAlternativeNameExtension extends Extension {
     super.onInit(asn);
     // value
     const value = AsnConvert.parse(asn.extnValue, asn1X509.GeneralNames);
+
     this.names = new GeneralNames(value);
   }
 
   public override toTextObject(): TextObject {
     const obj = this.toTextObjectWithoutValue();
     const namesObj = this.names.toTextObject();
+
     for (const key in namesObj) {
       obj[key] = namesObj[key];
     }

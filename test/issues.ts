@@ -1,5 +1,7 @@
-import { describe, it, expect } from "vitest";
 import { webcrypto } from "node:crypto";
+import {
+  describe, it, expect,
+} from "vitest";
 import * as x509 from "../src";
 
 const crypto = webcrypto as globalThis.Crypto;
@@ -65,10 +67,9 @@ describe("issues", () => {
     //   leafCert.toString("pem"),
     // ].join("\n"));
 
-    const chain = new x509.X509ChainBuilder({
-      certificates: [rootCert, intermediateCert],
-    });
+    const chain = new x509.X509ChainBuilder({ certificates: [rootCert, intermediateCert] });
     const items = await chain.build(leafCert, crypto);
+
     expect(items.length).toBe(3);
   });
 
@@ -82,6 +83,7 @@ describe("issues", () => {
     // Test case 2: CN=t,OU=x,O=y,C=z
     const name2 = new x509.Name("CN=t,OU=x,O=y,C=z");
     const json2 = name2.toJSON();
+
     expect(json1.length).toBe(3);
     expect(json1[0]).toEqual({ CN: ["t"] });
     expect(json1[1]).toEqual({ OU: ["x"] });
@@ -108,7 +110,7 @@ describe("issues", () => {
       "80284629184668",
       "80290967596123",
       "8070459553297620",
-      "801234"
+      "801234",
     ];
 
     for (const serialNumber of problematicSerialNumbers) {
@@ -122,7 +124,7 @@ describe("issues", () => {
           name: "ECDSA",
           hash: "SHA-256",
         },
-        keys: keys
+        keys: keys,
       }, crypto);
 
       // Verify the certificate was created and can be parsed
@@ -131,10 +133,12 @@ describe("issues", () => {
 
       // Verify certificate can be converted to PEM and back
       const pemString = cert.toString("pem");
+
       expect(pemString.includes("BEGIN CERTIFICATE")).toBe(true);
 
       // Verify certificate can be parsed back
       const parsedCert = new x509.X509Certificate(pemString);
+
       expect(parsedCert.serialNumber).toBe(serialNumber);
     }
   });

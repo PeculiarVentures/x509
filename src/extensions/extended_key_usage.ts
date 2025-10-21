@@ -15,12 +15,10 @@ export enum ExtendedKeyUsage {
 
 export type ExtendedKeyUsageType = asn1X509.ExtendedKeyUsage | string;
 
-
 /**
  * Represents the Extended Key Usage certificate extension
  */
 export class ExtendedKeyUsageExtension extends Extension {
-
   public static override NAME = "Extended Key Usages";
   /**
    * Gets a list of purposes for which the certified public key may be used
@@ -43,9 +41,11 @@ export class ExtendedKeyUsageExtension extends Extension {
       super(args[0] as BufferSource);
 
       const value = AsnConvert.parse(this.value, asn1X509.ExtendedKeyUsage);
-      this.usages = value.map(o => o);
+
+      this.usages = value.map((o) => o);
     } else {
       const value = new asn1X509.ExtendedKeyUsage(args[0]);
+
       super(asn1X509.id_ce_extKeyUsage, args[1], AsnConvert.serialize(value));
 
       this.usages = args[0];
@@ -55,9 +55,8 @@ export class ExtendedKeyUsageExtension extends Extension {
   public override toTextObject(): TextObject {
     const obj = this.toTextObjectWithoutValue();
 
-    obj[""] = this.usages.map(o => OidSerializer.toString(o as string)).join(", ");
+    obj[""] = this.usages.map((o) => OidSerializer.toString(o as string)).join(", ");
 
     return obj;
   }
-
 }

@@ -3,8 +3,12 @@ import { AsnConvert, OctetString } from "@peculiar/asn1-schema";
 import { Certificate } from "@peculiar/asn1-x509";
 import { Convert } from "pvtsutils";
 import { PemConverter } from "./pem_converter";
-import { AsnEncodedType, AsnExportType, PemData } from "./pem_data";
-import { OidSerializer, TextConverter, TextObject, TextObjectConvertible } from "./text_converter";
+import {
+  AsnEncodedType, AsnExportType, PemData,
+} from "./pem_data";
+import {
+  OidSerializer, TextConverter, TextObject, TextObjectConvertible,
+} from "./text_converter";
 import { X509Certificate } from "./x509_cert";
 
 export type X509CertificatesExportType = AsnExportType | "pem-chain";
@@ -13,7 +17,6 @@ export type X509CertificatesExportType = AsnExportType | "pem-chain";
  * X509 Certificate collection
  */
 export class X509Certificates extends Array<X509Certificate> implements TextObjectConvertible {
-
   /**
    * Creates a new instance
    */
@@ -66,12 +69,11 @@ export class X509Certificates extends Array<X509Certificate> implements TextObje
 
     signedData.version = 1;
     signedData.encapContentInfo.eContentType = asn1Cms.id_data;
-    signedData.encapContentInfo.eContent = new asn1Cms.EncapsulatedContent({
-      single: new OctetString(),
-    });
-    signedData.certificates = new asn1Cms.CertificateSet(this.map(o => new asn1Cms.CertificateChoices({
-      certificate: AsnConvert.parse(o.rawData, Certificate)
-    })));
+    signedData.encapContentInfo.eContent = new asn1Cms
+      .EncapsulatedContent({ single: new OctetString() });
+    signedData.certificates = new asn1Cms.CertificateSet(this.map((o) => (
+      new asn1Cms.CertificateChoices({ certificate: AsnConvert.parse(o.rawData, Certificate) })
+    )));
 
     const cms = new asn1Cms.ContentInfo({
       contentType: asn1Cms.id_signedData,
@@ -79,6 +81,7 @@ export class X509Certificates extends Array<X509Certificate> implements TextObje
     });
 
     const raw = AsnConvert.serialize(cms);
+
     if (format === "raw") {
       return raw;
     }
@@ -87,17 +90,20 @@ export class X509Certificates extends Array<X509Certificate> implements TextObje
   }
 
   /**
-   * Import certificates from encoded PKCS7 data. Supported formats are HEX, DER, Base64, Base64Url, PEM
+   * Import certificates from encoded PKCS7 data.
+   * Supported formats are HEX, DER, Base64, Base64Url, PEM.
    * @param data
    */
   public import(data: AsnEncodedType) {
     const raw = PemData.toArrayBuffer(data);
     const cms = AsnConvert.parse(raw, asn1Cms.ContentInfo);
+
     if (cms.contentType !== asn1Cms.id_signedData) {
       throw new TypeError("Cannot parse CMS package. Incoming data is not a SignedData object.");
     }
 
     const signedData = AsnConvert.parse(cms.content, asn1Cms.SignedData);
+
     this.clear();
 
     for (const item of signedData.certificates || []) {
@@ -118,12 +124,13 @@ export class X509Certificates extends Array<X509Certificate> implements TextObje
 
   public toString(format: X509CertificatesExportType = "pem") {
     const raw = this.export("raw");
+
     switch (format) {
       case "pem":
         return PemConverter.encode(raw, "CMS");
       case "pem-chain":
         return this
-          .map(o => o.toString("pem"))
+          .map((o) => o.toString("pem"))
           .join("\n");
       case "asn":
         return AsnConvert.toString(raw);
@@ -146,13 +153,12 @@ export class X509Certificates extends Array<X509Certificate> implements TextObje
 
     const obj = new TextObject("X509Certificates", {
       "Content Type": OidSerializer.toString(contentInfo.contentType),
-      "Content": new TextObject("", {
-        "Version": `${asn1Cms.CMSVersion[signedData.version]} (${signedData.version})`,
-        "Certificates": new TextObject("", { "Certificate": this.map(o => o.toTextObject()) }),
+      Content: new TextObject("", {
+        Version: `${asn1Cms.CMSVersion[signedData.version]} (${signedData.version})`,
+        Certificates: new TextObject("", { Certificate: this.map((o) => o.toTextObject()) }),
       }),
     });
 
     return obj;
   }
-
 }

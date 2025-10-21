@@ -30,7 +30,6 @@ export interface IAlgorithm {
 export const diAlgorithm = "crypto.algorithm";
 
 export class AlgorithmProvider {
-
   /**
    * Returns all registered algorithm providers
    */
@@ -47,24 +46,25 @@ export class AlgorithmProvider {
   public toAsnAlgorithm(alg: Algorithm): AlgorithmIdentifier {
     // prepare hashed algorithm
     const algCopy: any = { ...alg };
+
     if (algCopy.hash && typeof algCopy.hash === "string") {
       algCopy.hash = { name: algCopy.hash };
     }
 
     for (const algorithm of this.getAlgorithms()) {
       const res = algorithm.toAsnAlgorithm(alg);
+
       if (res) {
         return res;
       }
     }
 
     if (/^[0-9.]+$/.test(alg.name)) {
-      const res = new AlgorithmIdentifier({
-        algorithm: alg.name,
-      });
+      const res = new AlgorithmIdentifier({ algorithm: alg.name });
 
       if ("parameters" in alg) {
         const unknown = alg as UnknownAlgorithm;
+
         res.parameters = unknown.parameters;
       }
 
@@ -82,6 +82,7 @@ export class AlgorithmProvider {
   public toWebAlgorithm(alg: AlgorithmIdentifier): Algorithm {
     for (const algorithm of this.getAlgorithms()) {
       const res = algorithm.toWebAlgorithm(alg);
+
       if (res) {
         return res;
       }
@@ -94,7 +95,6 @@ export class AlgorithmProvider {
 
     return unknown;
   }
-
 }
 
 export const diAlgorithmProvider = "crypto.algorithmProvider";

@@ -1,8 +1,16 @@
-import { describe, it, expect, beforeAll } from "vitest";
+import {
+  describe, it, expect, beforeAll,
+} from "vitest";
 import { Crypto } from "@peculiar/webcrypto";
-import { AuthorityInfoAccessExtension, AuthorityKeyIdentifierExtension, CRLDistributionPointsExtension, CertificateIdentifier, IssuerAlternativeNameExtension, JsonGeneralNames } from "../src";
+import {
+  AuthorityInfoAccessExtension,
+  AuthorityKeyIdentifierExtension,
+  CRLDistributionPointsExtension,
+  CertificateIdentifier,
+  IssuerAlternativeNameExtension,
+  JsonGeneralNames,
+} from "../src";
 import { PublicKey } from "../src/public_key";
-
 
 describe("Extensions", () => {
   describe("CRLDistributionPointsExtension", () => {
@@ -10,6 +18,7 @@ describe("Extensions", () => {
       it("should create an instance from an array of URLs", () => {
         const urls = ["http://example.com"];
         const ext = new CRLDistributionPointsExtension(urls);
+
         expect(ext.toString("text")).toBe([
           "CRL Distribution Points:",
           "  Distribution Point:",
@@ -26,8 +35,11 @@ describe("Extensions", () => {
 
     beforeAll(async () => {
       crypto = new Crypto();
-      const alg = { name: "ECDSA", namedCurve: "P-256" };
+      const alg = {
+        name: "ECDSA", namedCurve: "P-256",
+      };
       const keys = await crypto.subtle.generateKey(alg, true, ["sign", "verify"]);
+
       spki = await crypto.subtle.exportKey("spki", keys.publicKey);
     });
 
@@ -35,15 +47,17 @@ describe("Extensions", () => {
       it("should create an instance from a PublicKeyType", async () => {
         const publicKey = await PublicKey.create(spki);
         const ext = await AuthorityKeyIdentifierExtension.create(publicKey);
+
         expect(ext instanceof AuthorityKeyIdentifierExtension).toBeTruthy();
       });
 
       it("should create an instance from a CertificateIdentifier", async () => {
         const certId: CertificateIdentifier = {
           name: [],
-          serialNumber: "1234567890abcdef"
+          serialNumber: "1234567890abcdef",
         };
         const ext = await AuthorityKeyIdentifierExtension.create(certId);
+
         expect(ext instanceof AuthorityKeyIdentifierExtension).toBeTruthy();
         expect(ext.certId).toEqual(certId);
       });
@@ -52,8 +66,10 @@ describe("Extensions", () => {
 
   describe("AuthorityInfoAccessExtension", () => {
     const raw = Buffer.from("30818706082B06010505070101047B3079302406082B060105050730018618687474703A2F2F6F6373702E64696769636572742E636F6D305106082B060105050730028645687474703A2F2F636163657274732E64696769636572742E636F6D2F47656F5472757374476C6F62616C544C5352534134303936534841323536323032324341312E637274", "hex");
+
     it("should parse", () => {
       const ext = new AuthorityInfoAccessExtension(raw);
+
       expect(ext.toString("text")).toBe([
         "Authority Info Access:",
         "  OCSP: http://ocsp.digicert.com",
@@ -66,6 +82,7 @@ describe("Extensions", () => {
         ocsp: ["http://ocsp.digicert.com"],
         caIssuers: ["http://cacerts.digicert.com/GeoTrustGlobalTLSRSA4096SHA2562022CA1.crt"],
       });
+
       expect(ext.toString("hex")).toBe("30818706082b06010505070101047b3079302406082b060105050730018618687474703a2f2f6f6373702e64696769636572742e636f6d305106082b060105050730028645687474703a2f2f636163657274732e64696769636572742e636f6d2f47656f5472757374476c6f62616c544c5352534134303936534841323536323032324341312e637274");
     });
 
@@ -74,11 +91,12 @@ describe("Extensions", () => {
         ocsp: ["http://ocsp.digicert.com", "http://ocsp2.digicert.com"],
         caIssuers: [
           "http://cacerts.digicert.com/GeoTrustGlobalTLSRSA4096SHA2562022CA1.crt",
-          "http://cacerts2.digicert.com/GeoTrustGlobalTLSRSA4096SHA2562022CA2.crt"
+          "http://cacerts2.digicert.com/GeoTrustGlobalTLSRSA4096SHA2562022CA2.crt",
         ],
         caRepository: ["http://crls.digicert.com/GeoTrustGlobalTLSRSA4096SHA2562022CA1.crl"],
         timeStamping: ["http://tsa.digicert.com/GeoTrustGlobalTLSRSA4096SHA2562022CA1"],
       });
+
       expect(ext.toString("text")).toBe([
         "Authority Info Access:",
         "  OCSP:",
@@ -96,11 +114,18 @@ describe("Extensions", () => {
   describe("IssuerAlternativeNameExtension", () => {
     it("should create an instance from an array of names", () => {
       const names: JsonGeneralNames = [
-        { type: "dns", value: "issuer.example.com" },
-        { type: "email", value: "issuer@example.com" },
-        { type: "ip", value: "192.168.1.1" },
+        {
+          type: "dns", value: "issuer.example.com",
+        },
+        {
+          type: "email", value: "issuer@example.com",
+        },
+        {
+          type: "ip", value: "192.168.1.1",
+        },
       ];
       const ext = new IssuerAlternativeNameExtension(names);
+
       expect(ext.names.items.length).toBe(3);
       expect(ext.toString("text")).toContain("issuer.example.com");
       expect(ext.toString("text")).toContain("issuer@example.com");
@@ -109,12 +134,17 @@ describe("Extensions", () => {
 
     it("should encode and decode DER correctly", () => {
       const names: JsonGeneralNames = [
-        { type: "dns", value: "issuer.example.com" },
-        { type: "email", value: "issuer@example.com" },
+        {
+          type: "dns", value: "issuer.example.com",
+        },
+        {
+          type: "email", value: "issuer@example.com",
+        },
       ];
       const ext = new IssuerAlternativeNameExtension(names);
       const der = ext.rawData;
       const parsed = new IssuerAlternativeNameExtension(der);
+
       expect(parsed.names.items.length).toBe(2);
       expect(parsed.toString("text")).toContain("issuer.example.com");
       expect(parsed.toString("text")).toContain("issuer@example.com");
@@ -122,9 +152,12 @@ describe("Extensions", () => {
 
     it("should output correct hex", () => {
       const names: JsonGeneralNames = [
-        { type: "dns", value: "issuer.example.com" },
+        {
+          type: "dns", value: "issuer.example.com",
+        },
       ];
       const ext = new IssuerAlternativeNameExtension(names);
+
       expect(ext.toString("hex")).toMatch(/^[0-9a-f]+$/i);
     });
   });
