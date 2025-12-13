@@ -1,7 +1,7 @@
 import { CertificationRequest } from "@peculiar/asn1-csr";
 import { AsnConvert } from "@peculiar/asn1-schema";
 import { id_pkcs9_at_extensionRequest } from "@peculiar/asn1-pkcs9";
-import { container } from "tsyringe";
+import { container } from "./container";
 import { Version } from "@peculiar/asn1-x509";
 import { Name } from "./name";
 import { cryptoProvider } from "./provider";
