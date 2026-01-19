@@ -1,5 +1,5 @@
 import { AlgorithmIdentifier } from "@peculiar/asn1-x509";
-import { container } from "tsyringe";
+import { container, diAlgorithm, diAlgorithmProvider } from "./container";
 
 export interface UnknownAlgorithm extends Algorithm {
   name: string;
@@ -24,10 +24,7 @@ export interface IAlgorithm {
 
 }
 
-/**
- * Dependency Injection algorithm identifier
- */
-export const diAlgorithm = "crypto.algorithm";
+export { diAlgorithm };
 
 export class AlgorithmProvider {
   /**
@@ -93,7 +90,7 @@ export class AlgorithmProvider {
   }
 }
 
-export const diAlgorithmProvider = "crypto.algorithmProvider";
+export { diAlgorithmProvider };
 
 // register AlgorithmProvider as a singleton object
 container.registerSingleton(diAlgorithmProvider, AlgorithmProvider);

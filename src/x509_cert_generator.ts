@@ -1,7 +1,7 @@
 import { AsnConvert } from "@peculiar/asn1-schema";
 import * as asn1X509 from "@peculiar/asn1-x509";
 import { BufferSource, BufferSourceConverter } from "pvtsutils";
-import { container } from "tsyringe";
+import { container } from "./container";
 import { cryptoProvider } from "./provider";
 import { AlgorithmProvider, diAlgorithmProvider } from "./algorithm";
 import { Extension } from "./extension";

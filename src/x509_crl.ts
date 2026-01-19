@@ -3,7 +3,7 @@ import {
   CertificateList, Version, AlgorithmIdentifier,
 } from "@peculiar/asn1-x509";
 import { BufferSourceConverter } from "pvtsutils";
-import { container } from "tsyringe";
+import { container } from "./container";
 import { HashedAlgorithm } from "./types";
 import { cryptoProvider } from "./provider";
 import { Name } from "./name";
