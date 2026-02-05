@@ -5,7 +5,7 @@ import {
   Name as AsnName, Extension as AsnExtension, SubjectPublicKeyInfo, Extensions,
   Attribute as AsnAttribute,
 } from "@peculiar/asn1-x509";
-import { container } from "tsyringe";
+import { container } from "./container";
 import { cryptoProvider } from "./provider";
 import { AlgorithmProvider, diAlgorithmProvider } from "./algorithm";
 import { Attribute } from "./attribute";

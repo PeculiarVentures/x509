@@ -1,9 +1,5 @@
-import {
-  describe, it, expect, beforeAll,
-} from "vitest";
-import "reflect-metadata";
-import { container } from "tsyringe";
-import { AlgorithmProvider, diAlgorithmProvider } from "../src";
+import { describe, it, expect, beforeAll } from "vitest";
+import { AlgorithmProvider, diAlgorithmProvider, container } from "../src";
 
 describe("AlgorithmProvider", () => {
   let algorithmProvider: AlgorithmProvider;
