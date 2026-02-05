@@ -6,15 +6,20 @@
 
 type Constructor<T = unknown> = new (...args: unknown[]) => T;
 
+type Provider<T = unknown> = {
+  create: () => T;
+  instance?: T;
+};
+
 interface Registry {
-  algorithms: unknown[];
-  algorithmProvider: unknown | null;
-  signatureFormatters: unknown[];
+  singletons: Map<string, Provider>;
+  algorithms: Provider[];
+  signatureFormatters: Provider[];
 }
 
 const registry: Registry = {
+  singletons: new Map(),
   algorithms: [],
-  algorithmProvider: null,
   signatureFormatters: [],
 };
 
@@ -22,33 +27,68 @@ export const diAlgorithm = "crypto.algorithm";
 export const diAlgorithmProvider = "crypto.algorithmProvider";
 export const diAsnSignatureFormatter = "crypto.signatureFormatter";
 
+const resolveProvider = <T>(provider: Provider<T>): T => {
+  if (!("instance" in provider)) {
+    provider.instance = provider.create();
+  }
+  return provider.instance as T;
+};
+
+const resolveToken = <T>(token: string): T => {
+  const provider = registry.singletons.get(token);
+  if (provider) {
+    return resolveProvider(provider);
+  }
+  if (token === diAlgorithmProvider) {
+    throw new Error("AlgorithmProvider not registered");
+  }
+  throw new Error(`Unknown token: ${token}`);
+};
+
+const createProvider = <T>(Cls: Constructor<T>, depsTokens?: string[]): Provider<T> => ({
+  create: () => new Cls(...(depsTokens ? depsTokens.map(resolveToken) : [])),
+});
+
 export const container = {
-  registerSingleton: <T>(token: string, Cls: Constructor<T>): void => {
-    if (token === diAlgorithmProvider) {
-      registry.algorithmProvider = new Cls();
-    } else if (token === diAlgorithm) {
-      registry.algorithms.push(new Cls());
-    } else if (token === diAsnSignatureFormatter) {
-      registry.signatureFormatters.push(new Cls());
+  registerSingleton: <T>(token: string, Cls: Constructor<T>, depsTokens?: string[]): void => {
+    const provider = createProvider(Cls, depsTokens);
+    if (token === diAlgorithm) {
+      registry.algorithms.push(provider);
+      return;
     }
+    if (token === diAsnSignatureFormatter) {
+      registry.signatureFormatters.push(provider);
+      return;
+    }
+    registry.singletons.set(token, provider);
+  },
+
+  registerInstance: <T>(token: string, instance: T): void => {
+    const provider: Provider<T> = {
+      create: () => instance,
+      instance,
+    };
+    if (token === diAlgorithm) {
+      registry.algorithms.push(provider);
+      return;
+    }
+    if (token === diAsnSignatureFormatter) {
+      registry.signatureFormatters.push(provider);
+      return;
+    }
+    registry.singletons.set(token, provider);
   },
 
   resolve: <T>(token: string): T => {
-    if (token === diAlgorithmProvider) {
-      if (!registry.algorithmProvider) {
-        throw new Error("AlgorithmProvider not registered");
-      }
-      return registry.algorithmProvider as T;
-    }
-    throw new Error(`Unknown token: ${token}`);
+    return resolveToken(token);
   },
 
   resolveAll: <T>(token: string): T[] => {
     if (token === diAlgorithm) {
-      return registry.algorithms as T[];
+      return registry.algorithms.map((provider) => resolveProvider(provider));
     }
     if (token === diAsnSignatureFormatter) {
-      return registry.signatureFormatters as T[];
+      return registry.signatureFormatters.map((provider) => resolveProvider(provider));
     }
     return [];
   },
