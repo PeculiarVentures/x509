@@ -95,22 +95,27 @@ export class PublicKey extends PemData<SubjectPublicKeyInfo> {
     keyUsages: KeyUsage[],
     crypto?: Crypto
   ): Promise<CryptoKey>;
-  public async export(...args: any[]) {
-    let crypto: Crypto;
+  public async export(
+    arg1?: Crypto | Algorithm | EcKeyImportParams | RsaHashedImportParams,
+    arg2?: KeyUsage[],
+    arg3?: Crypto,
+  ) {
+    let crypto: Crypto | undefined;
     let keyUsages: KeyUsage[] = ["verify"];
-    let algorithm = {
+    let algorithm: Algorithm | EcKeyImportParams | RsaHashedImportParams = {
       hash: "SHA-256", ...this.algorithm,
     };
 
-    if (args.length > 1) {
+    if (arg2) {
       // alg, usages, crypto?
-      algorithm = args[0] || algorithm;
-      keyUsages = args[1] || keyUsages;
-      crypto = args[2] || cryptoProvider.get();
+      algorithm = arg1 as Algorithm;
+      keyUsages = arg2;
+      crypto = arg3;
     } else {
       // crypto?
-      crypto = args[0] || cryptoProvider.get();
+      crypto = arg1 as Crypto;
     }
+    crypto ??= cryptoProvider.get();
 
     let raw = this.rawData;
     const asnSpki = AsnConvert.parse(this.rawData, SubjectPublicKeyInfo);
@@ -153,17 +158,22 @@ export class PublicKey extends PemData<SubjectPublicKeyInfo> {
     algorithm: globalThis.AlgorithmIdentifier,
     crypto?: Crypto
   ): Promise<ArrayBuffer>;
-  public async getThumbprint(...args: any[]) {
-    let crypto: Crypto;
-    let algorithm = "SHA-1";
+  public async getThumbprint(
+    arg1?: Crypto | globalThis.AlgorithmIdentifier,
+    arg2?: Crypto,
+  ) {
+    let crypto: Crypto | undefined;
+    let algorithm: globalThis.AlgorithmIdentifier = "SHA-1";
 
-    if (args.length >= 1 && !args[0]?.subtle) {
-      // crypto?
-      algorithm = args[0] || algorithm;
-      crypto = args[1] || cryptoProvider.get();
-    } else {
-      crypto = args[0] || cryptoProvider.get();
+    if (arg1) {
+      if (typeof arg1 === "object" && "subtle" in arg1) {
+        crypto = arg1 as Crypto;
+      } else {
+        algorithm = arg1;
+        crypto = arg2;
+      }
     }
+    crypto ??= cryptoProvider.get();
 
     return await crypto.subtle.digest(algorithm, this.rawData);
   }
@@ -182,23 +192,22 @@ export class PublicKey extends PemData<SubjectPublicKeyInfo> {
     algorithm: globalThis.AlgorithmIdentifier,
     crypto?: Crypto
   ): Promise<ArrayBuffer>;
-  public async getKeyIdentifier(...args: any[]) {
-    let crypto: Crypto;
-    let algorithm = "SHA-1";
+  public async getKeyIdentifier(
+    arg1?: Crypto | globalThis.AlgorithmIdentifier,
+    arg2?: Crypto,
+  ) {
+    let crypto: Crypto | undefined;
+    let algorithm: globalThis.AlgorithmIdentifier = "SHA-1";
 
-    if (args.length === 1) {
-      if (typeof args[0] === "string") {
-        algorithm = args[0];
-        crypto = cryptoProvider.get();
+    if (arg1) {
+      if (typeof arg1 === "object" && "subtle" in arg1) {
+        crypto = arg1 as Crypto;
       } else {
-        crypto = args[0];
+        algorithm = arg1;
+        crypto = arg2;
       }
-    } else if (args.length === 2) {
-      algorithm = args[0];
-      crypto = args[1];
-    } else {
-      crypto = cryptoProvider.get();
     }
+    crypto ??= cryptoProvider.get();
 
     // The keyIdentifier is composed of the 160-bit SHA-1 hash of the
     // value of the BIT STRING subjectPublicKey (excluding the tag,

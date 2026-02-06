@@ -396,17 +396,22 @@ export class Name {
     algorithm: globalThis.AlgorithmIdentifier,
     crypto?: Crypto
   ): Promise<ArrayBuffer>;
-  public async getThumbprint(...args: any[]) {
-    let crypto: Crypto;
-    let algorithm = "SHA-1";
+  public async getThumbprint(
+    arg1?: Crypto | globalThis.AlgorithmIdentifier,
+    arg2?: Crypto,
+  ) {
+    let crypto: Crypto | undefined;
+    let algorithm: globalThis.AlgorithmIdentifier = "SHA-1";
 
-    if (args.length >= 1 && !args[0]?.subtle) {
-      // crypto?
-      algorithm = args[0] || algorithm;
-      crypto = args[1] || cryptoProvider.get();
-    } else {
-      crypto = args[0] || cryptoProvider.get();
+    if (arg1) {
+      if (typeof arg1 === "object" && "subtle" in arg1) {
+        crypto = arg1 as Crypto;
+      } else {
+        algorithm = arg1;
+        crypto = arg2;
+      }
     }
+    crypto ??= cryptoProvider.get();
 
     return await crypto.subtle.digest(algorithm, this.toArrayBuffer());
   }
