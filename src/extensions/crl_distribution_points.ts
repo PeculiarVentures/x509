@@ -63,9 +63,9 @@ export class CRLDistributionPointsExtension extends Extension {
     const obj = this.toTextObjectWithoutValue();
 
     obj["Distribution Point"] = this.distributionPoints.map((dp) => {
-      const dpObj: any = {};
-      if (dp.distributionPoint) {
-        dpObj[""] = dp.distributionPoint.fullName?.map((name) => new GeneralName(name).toString()).join(", ");
+      const dpObj = new TextObject("");
+      if (dp.distributionPoint?.fullName) {
+        dpObj[""] = dp.distributionPoint.fullName.map((name) => new GeneralName(name).toString()).join(", ");
       }
       if (dp.reasons) {
         dpObj["Reasons"] = dp.reasons.toString();
