@@ -11,6 +11,7 @@ const rHeaderValue = `(?:[^${rEolChars}]+${rEolGroup}(?: +[^${rEolChars}]+${rEol
 const rBase64Chars = "[a-zA-Z0-9=+/]+";
 const rBase64 = `(?:${rBase64Chars}${rEolGroup})+`;
 const rPem = `${rBeginTag}${rEolGroup}(?:((?:${rHeaderKey}: ${rHeaderValue})+))?${rEolGroup}?(${rBase64})${rEndTag}`;
+const rEolPattern = new RegExp(`[${rEolChars}]+`, "g");
 
 export interface PemHeader {
   key: string;
@@ -66,7 +67,7 @@ export class PemConverter {
     while (matches = pattern.exec(pem)) {
       // prepare pem encoded message
       const base64 = matches[3]
-        .replace(new RegExp(`[${rEolChars}]+`, "g"), "");
+        .replace(rEolPattern, "");
 
       const pemStruct: PemStruct = {
         type: matches[1],
@@ -211,26 +212,9 @@ export class PemConverter {
     }
 
     const base64 = Convert.ToBase64(pem.rawData);
-    let sliced: string;
-    let offset = 0;
-    const rows = Array<string>();
-    while (offset < base64.length) {
-      if (base64.length - offset < 64) {
-        sliced = base64.substring(offset);
-      } else {
-        sliced = base64.substring(offset, offset + 64);
-        offset += 64;
-      }
-      if (sliced.length !== 0) {
-        rows.push(sliced);
-        if (sliced.length < 64) {
-          break;
-        }
-      } else {
-        break;
-      }
+    for (let i = 0; i < base64.length; i += 64) {
+      res.push(base64.substring(i, i + 64));
     }
-    res.push(...rows);
 
     res.push(`-----END ${upperCaseType}-----`);
 
