@@ -45,13 +45,13 @@ export class AlgorithmProvider {
    */
   public toAsnAlgorithm(alg: Algorithm): AlgorithmIdentifier {
     // prepare hashed algorithm
-    const algCopy: any = { ...alg };
+    const algCopy = { ...alg } as Algorithm & { hash?: string | Algorithm };
     if (algCopy.hash && typeof algCopy.hash === "string") {
       algCopy.hash = { name: algCopy.hash };
     }
 
     for (const algorithm of this.getAlgorithms()) {
-      const res = algorithm.toAsnAlgorithm(alg);
+      const res = algorithm.toAsnAlgorithm(algCopy);
       if (res) {
         return res;
       }
