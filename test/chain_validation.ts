@@ -20,7 +20,6 @@ describe("X509ChainBuilder Security", () => {
   it("should NOT build a chain using a non-CA certificate as an issuer", async () => {
     const crypto = cryptoProvider.get();
 
-    console.log("Generating Root CA...");
     const rootAlg = {
       name: "RSASSA-PKCS1-v1_5",
       hash: "SHA-256",
@@ -41,7 +40,6 @@ describe("X509ChainBuilder Security", () => {
       ],
     });
 
-    console.log("Generating End Entity (EE) certificate (NOT a CA)...");
     const eeAlg = {
       name: "RSASSA-PKCS1-v1_5",
       hash: "SHA-256",
@@ -64,7 +62,6 @@ describe("X509ChainBuilder Security", () => {
       ],
     });
 
-    console.log("Generating Fake Certificate signed by EE (which should NOT be allowed)...");
     const fakeAlg = {
       name: "RSASSA-PKCS1-v1_5",
       hash: "SHA-256",
@@ -86,14 +83,9 @@ describe("X509ChainBuilder Security", () => {
       ],
     });
 
-    console.log("Building chain for Fake Cert...");
     const chainBuilder = new X509ChainBuilder({ certificates: [rootCert, eeCert] });
 
     const chain = await chainBuilder.build(fakeCert);
-    console.log("Chain built successfully (length):", chain.length);
-    for (const cert of chain) {
-      console.log(" - " + cert.subject);
-    }
 
     // We expect the chain building to FAIL or at least NOT include the EE cert as a CA.
     // However, since X509ChainBuilder might just follow signatures, it likely builds it.
