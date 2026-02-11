@@ -1,7 +1,13 @@
 import { AsnConvert } from "@peculiar/asn1-schema";
 import * as asn1X509 from "@peculiar/asn1-x509";
 import { isEqual } from "pvtsutils";
-import { AuthorityKeyIdentifierExtension, SubjectKeyIdentifierExtension } from "./extensions";
+import {
+  AuthorityKeyIdentifierExtension,
+  BasicConstraintsExtension,
+  KeyUsageFlags,
+  KeyUsagesExtension,
+  SubjectKeyIdentifierExtension,
+} from "./extensions";
 import { cryptoProvider } from "./provider";
 import { X509Certificate } from "./x509_cert";
 import { X509Certificates } from "./x509_certs";
@@ -88,6 +94,21 @@ export class X509ChainBuilder {
             }
           }
         }
+
+        // Check Basic Constraints
+        const basicConstraints = item.getExtension<BasicConstraintsExtension>(
+          asn1X509.id_ce_basicConstraints,
+        );
+        if (basicConstraints && !basicConstraints.ca) {
+          continue;
+        }
+
+        // Check Key Usage
+        const keyUsage = item.getExtension<KeyUsagesExtension>(asn1X509.id_ce_keyUsage);
+        if (keyUsage && !(keyUsage.usages & KeyUsageFlags.keyCertSign)) {
+          continue;
+        }
+
         try {
           const algorithm = {
             ...item.publicKey.algorithm, ...cert.signatureAlgorithm,
