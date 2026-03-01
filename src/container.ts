@@ -1,103 +1,62 @@
-/**
- * Simple dependency injection container for edge runtime compatibility.
- * Replaces tsyringe to avoid reflect-metadata dependency which doesn't work
- * on Cloudflare Workers, Vercel Edge, Deno Deploy, etc.
- */
-
 type Constructor<T = unknown> = new (...args: unknown[]) => T;
 
-type Provider<T = unknown> = {
+interface Provider<T = unknown> {
   create: () => T;
   instance?: T;
-};
-
-interface Registry {
-  singletons: Map<string, Provider>;
-  algorithms: Provider[];
-  signatureFormatters: Provider[];
 }
 
-const registry: Registry = {
-  singletons: new Map(),
-  algorithms: [],
-  signatureFormatters: [],
-};
-
-export const diAlgorithm = "crypto.algorithm";
-export const diAlgorithmProvider = "crypto.algorithmProvider";
-export const diAsnSignatureFormatter = "crypto.signatureFormatter";
+const registry = new Map<string, Provider[]>();
 
 const resolveProvider = <T>(provider: Provider<T>): T => {
-  if (!("instance" in provider)) {
+  if (!Object.prototype.hasOwnProperty.call(provider, "instance")) {
     provider.instance = provider.create();
   }
+
   return provider.instance as T;
 };
 
-const resolveToken = <T>(token: string): T => {
-  const provider = registry.singletons.get(token);
-  if (provider) {
-    return resolveProvider(provider);
-  }
-  if (token === diAlgorithmProvider) {
-    throw new Error("AlgorithmProvider not registered");
-  }
-  throw new Error(`Unknown token: ${token}`);
+const registerProvider = <T>(token: string, provider: Provider<T>): void => {
+  const providers = registry.get(token) ?? [];
+  providers.push(provider);
+  registry.set(token, providers);
 };
 
-const createProvider = <T>(Cls: Constructor<T>, depsTokens?: string[]): Provider<T> => ({
-  create: () => new Cls(...(depsTokens ? depsTokens.map(resolveToken) : [])),
-});
+const resolveToken = <T>(token: string): T => {
+  const providers = registry.get(token);
+
+  if (!providers?.length) {
+    throw new Error(`Unknown token: ${token}`);
+  }
+
+  return resolveProvider(providers[providers.length - 1] as Provider<T>);
+};
+
+const createProvider = <T>(
+  Ctor: Constructor<T>,
+  depsTokens: string[] = [],
+): Provider<T> => {
+  const dependencies = depsTokens.map((token) => resolveToken(token));
+  const create = () => new Ctor(...dependencies);
+
+  return { create };
+};
 
 export const container = {
-  registerSingleton: <T>(token: string, Cls: Constructor<T>, depsTokens?: string[]): void => {
-    const provider = createProvider(Cls, depsTokens);
-    if (token === diAlgorithm) {
-      registry.algorithms.push(provider);
-      return;
-    }
-    if (token === diAsnSignatureFormatter) {
-      registry.signatureFormatters.push(provider);
-      return;
-    }
-    registry.singletons.set(token, provider);
+  registerSingleton: <T>(token: string, Ctor: Constructor<T>, depsTokens: string[] = []): void => {
+    registerProvider(token, createProvider(Ctor, depsTokens));
   },
 
   registerInstance: <T>(token: string, instance: T): void => {
-    const provider: Provider<T> = {
+    registerProvider(token, {
       create: () => instance,
       instance,
-    };
-    if (token === diAlgorithm) {
-      registry.algorithms.push(provider);
-      return;
-    }
-    if (token === diAsnSignatureFormatter) {
-      registry.signatureFormatters.push(provider);
-      return;
-    }
-    registry.singletons.set(token, provider);
+    });
   },
 
-  resolve: <T>(token: string): T => {
-    return resolveToken(token);
-  },
+  resolve: <T>(token: string): T => resolveToken<T>(token),
 
   resolveAll: <T>(token: string): T[] => {
-    if (token === diAlgorithm) {
-      return registry.algorithms.map((provider) => resolveProvider(provider));
-    }
-    if (token === diAsnSignatureFormatter) {
-      return registry.signatureFormatters.map((provider) => resolveProvider(provider));
-    }
-    return [];
+    const providers = registry.get(token) ?? [];
+    return providers.map((provider) => resolveProvider(provider as Provider<T>));
   },
 };
-
-/**
- * No-op decorator for backwards compatibility.
- * Previously used with tsyringe's @injectable() decorator.
- */
-export function injectable(): ClassDecorator {
-  return (target) => target;
-}

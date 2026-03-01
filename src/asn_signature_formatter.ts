@@ -1,15 +1,18 @@
 import { BufferSourceConverter } from "pvtsutils";
-import { diAsnSignatureFormatter } from "./container";
 
-export { diAsnSignatureFormatter };
+/**
+ * Dependency injection identifier for `IAsnSignatureFormatter` interface
+ */
+export const diAsnSignatureFormatter = "crypto.signatureFormatter";
 
 /**
  * Provides mechanism to convert ASN.1 signature value to WebCrypto and back
  *
- * To register it's implementation in global use the `container`
+ * To register it's implementation in global container use `container`
  * @example
  * ```
- * import { container, diAsnSignatureFormatter } from "./container";
+ * import { container } from "@peculiar/x509";
+ * import { AsnDefaultSignatureFormatter, diAsnSignatureFormatter } from "@peculiar/x509";
  *
  * container.registerSingleton(diAsnSignatureFormatter, AsnDefaultSignatureFormatter);
  * ```

@@ -1,14 +1,15 @@
 import * as asn1Rsa from "@peculiar/asn1-rsa";
 import { AsnConvert } from "@peculiar/asn1-schema";
 import { AlgorithmIdentifier } from "@peculiar/asn1-x509";
-import { container, injectable, diAlgorithm, diAlgorithmProvider } from "./container";
-import { AlgorithmProvider, IAlgorithm } from "./algorithm";
+import { container } from "./container";
+import {
+  AlgorithmProvider, diAlgorithm, diAlgorithmProvider, IAlgorithm,
+} from "./algorithm";
 import { HashedAlgorithm } from "./types";
 
 /**
  * RSA algorithm provider
  */
-@injectable()
 export class RsaAlgorithm implements IAlgorithm {
   public static createPssParams(hash: unknown, saltLength: number): asn1Rsa.RsaSaPssParams | null {
     const hashAlgorithm = RsaAlgorithm.getHashAlgorithm(hash);

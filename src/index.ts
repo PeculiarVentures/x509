@@ -27,14 +27,14 @@ export * from "./x509_crl_entry";
 export * from "./x509_crl_generator";
 export * from "./text_converter";
 export * from "./general_name";
-export { container, injectable } from "./container";
+export { container } from "./container";
 
 import * as asnX509 from "@peculiar/asn1-x509";
 import * as asnPkcs9 from "@peculiar/asn1-pkcs9";
-import { container, diAsnSignatureFormatter } from "./container";
+import { container } from "./container";
 import * as attributes from "./attributes";
 import * as extensions from "./extensions";
-import { AsnDefaultSignatureFormatter } from "./asn_signature_formatter";
+import { AsnDefaultSignatureFormatter, diAsnSignatureFormatter } from "./asn_signature_formatter";
 import { AsnEcSignatureFormatter } from "./ec_signature_formatter";
 
 // Register x509 extensions

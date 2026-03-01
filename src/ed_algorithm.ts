@@ -1,6 +1,6 @@
 import { AlgorithmIdentifier } from "@peculiar/asn1-x509";
-import { container, injectable, diAlgorithm } from "./container";
-import { IAlgorithm } from "./algorithm";
+import { container } from "./container";
+import { diAlgorithm, IAlgorithm } from "./algorithm";
 import { HashedAlgorithm } from "./types";
 
 // id-X25519    OBJECT IDENTIFIER ::= { 1 3 101 110 }
@@ -15,7 +15,6 @@ export const idEd448 = "1.3.101.113";
 /**
  * ECDH-ES and EdDSA algorithm provider
  */
-@injectable()
 export class EdAlgorithm implements IAlgorithm {
   public toAsnAlgorithm(alg: EcKeyGenParams): AlgorithmIdentifier | null {
     let algorithm: string | null = null;

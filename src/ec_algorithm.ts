@@ -1,8 +1,8 @@
 import { AlgorithmIdentifier } from "@peculiar/asn1-x509";
 import * as asn1Ecc from "@peculiar/asn1-ecc";
-import { container, injectable, diAlgorithm } from "./container";
 import { AsnConvert } from "@peculiar/asn1-schema";
-import { IAlgorithm } from "./algorithm";
+import { container } from "./container";
+import { diAlgorithm, IAlgorithm } from "./algorithm";
 import { HashedAlgorithm } from "./types";
 
 const idVersionOne = "1.3.36.3.3.2.8.1.1";
@@ -110,7 +110,6 @@ const ECDSA = "ECDSA";
 /**
  * EC algorithm provider
  */
-@injectable()
 export class EcAlgorithm implements IAlgorithm {
   public static SECP256K1 = "1.3.132.0.10";
 

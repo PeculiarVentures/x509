@@ -1,4 +1,6 @@
-import { describe, it, expect } from "vitest";
+import {
+  describe, it, expect,
+} from "vitest";
 import { container } from "../src";
 
 describe("container", () => {

@@ -1,5 +1,9 @@
-import { describe, it, expect, beforeAll } from "vitest";
-import { AlgorithmProvider, diAlgorithmProvider, container } from "../src";
+import {
+  describe, it, expect, beforeAll,
+} from "vitest";
+import {
+  AlgorithmProvider, diAlgorithmProvider, container,
+} from "../src";
 
 describe("AlgorithmProvider", () => {
   let algorithmProvider: AlgorithmProvider;
