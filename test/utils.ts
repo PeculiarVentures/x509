@@ -1,9 +1,10 @@
-import { describe, it, expect } from "vitest";
+import {
+  describe, it, expect,
+} from "vitest";
 import { Convert } from "pvtsutils";
 import { generateCertificateSerialNumber } from "../src/utils";
 
 describe("generateCertificateSerialNumber", () => {
-
   it("should prepend 0x00 when MSB is set", () => {
     const input = "80010203";
     const serialNumber = generateCertificateSerialNumber(input);
@@ -34,8 +35,7 @@ describe("generateCertificateSerialNumber", () => {
   });
 
   it("should generate random serial number if input is empty", () => {
-      const serialNumber = generateCertificateSerialNumber(undefined);
-      expect(serialNumber.byteLength).toBeGreaterThan(0);
+    const serialNumber = generateCertificateSerialNumber(undefined);
+    expect(serialNumber.byteLength).toBeGreaterThan(0);
   });
-
 });
