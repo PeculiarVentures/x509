@@ -99,6 +99,12 @@ export class X509ChainBuilder {
         const basicConstraints = item.getExtension<BasicConstraintsExtension>(
           asn1X509.id_ce_basicConstraints,
         );
+        const isV3 = item.asn.tbsCertificate.version === 2;
+        if (isV3 && (!basicConstraints || !basicConstraints.ca)) {
+          // RFC 5280 4.2.1.9: The basic constraints extension MUST appear as a critical extension
+          // in all version 3 CA certificates.
+          continue;
+        }
         if (basicConstraints && !basicConstraints.ca) {
           continue;
         }
