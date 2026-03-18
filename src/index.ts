@@ -1,5 +1,3 @@
-import "reflect-metadata";
-
 export * from "./extensions";
 export * from "./attributes";
 export * from "./asn_data";
