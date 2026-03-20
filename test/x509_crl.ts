@@ -152,10 +152,9 @@ describe("X509Crl", () => {
   });
 
   it("should throw on creation with invalid args", () => {
-      // Use an invalid string that looks somewhat like a string but isn't a valid format
-      expect(() => new x509.X509Crl("invalid string")).toThrow();
+    // Use an invalid string that looks somewhat like a string but isn't a valid format
+    expect(() => new x509.X509Crl("invalid string")).toThrow();
   });
-
 });
 
 describe("X509CrlGenerator", () => {
@@ -180,8 +179,8 @@ describe("X509CrlGenerator", () => {
         {
           serialNumber: "1234",
           revocationDate: new Date(),
-        }
-      ]
+        },
+      ],
     });
 
     expect(crl).toBeDefined();
@@ -196,10 +195,13 @@ describe("X509CrlGenerator", () => {
       signingAlgorithm: alg,
       signingKey: keys.privateKey,
       entries: [
-        { serialNumber: "01", revocationDate: new Date() },
-        { serialNumber: "01", revocationDate: new Date() },
-      ]
+        {
+          serialNumber: "01", revocationDate: new Date(),
+        },
+        {
+          serialNumber: "01", revocationDate: new Date(),
+        },
+      ],
     })).rejects.toThrow("already exists");
   });
-
 });
