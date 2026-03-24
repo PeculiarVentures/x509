@@ -13,6 +13,7 @@
 </div>
 
 - [About](#about)
+- [⚠️ Reflect Polyfill Required](#-reflect-polyfill-required)
 - [Installation](#installation)
 - [Documentation](#documentation)
 - [Usage](#usage)
@@ -28,6 +29,24 @@
 ## About
 
 `@peculiar/x509` is an easy to use TypeScript/Javascript library based on `@peculiar/asn1-schema` that makes generating X.509 Certificates and Certificate Requests as well as validating certificate chains easy.
+
+## ⚠️ Reflect Polyfill Required
+
+**This library requires a Reflect API polyfill.** You must install one of the following and import it at the top of your entry point:
+
+- [reflect-metadata](https://www.npmjs.com/package/reflect-metadata)
+- [core-js](https://www.npmjs.com/package/core-js) (`core-js/full/reflect`)
+- [@abraham/reflection](https://www.npmjs.com/package/@abraham/reflection)
+
+**Example with reflect-metadata:**
+
+```js
+import "reflect-metadata";
+import * as x509 from "@peculiar/x509";
+// ...
+```
+
+If you see the error **"tsyringe requires a reflect polyfill. Please add 'import "reflect-metadata"' to the top of your entry point."** — install one of the polyfills above and add the import before any `@peculiar/x509` imports.
 
 ## Installation
 

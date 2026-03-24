@@ -1,7 +1,6 @@
 import {
   describe, it, expect, beforeAll,
 } from "vitest";
-import "reflect-metadata";
 import { container } from "tsyringe";
 import { AlgorithmProvider, diAlgorithmProvider } from "../src";
 

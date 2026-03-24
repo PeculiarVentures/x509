@@ -13,5 +13,6 @@ export default defineConfig({
       exclude: ["**/*.d.ts"],
     },
     testTimeout: 10000,
+    setupFiles: ["./vitest.setup.ts"],
   },
 });
