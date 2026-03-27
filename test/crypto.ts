@@ -305,12 +305,12 @@ D314IEOg4mnS8Q==
 
     describe("export", () => {
       it("with RSA-PSS algorithm", async () => {
-        // RSA-PSS algorithm is not supported for SPKI in browsers
-        // x509 module reconverts it to RSA-PKCS1
         const b64 = "MIIBUzA+BgkqhkiG9w0BAQowMaANMAsGCWCGSAFlAwQCAaEaMBgGCSqGSIb3DQEBCDALBglghkgBZQMEAgGiBAICAN4DggEPADCCAQoCggEBANbStMMWVHrgQgc1DZ4nr2XegPv069OhV0uiMwgM7QzvPot1TmCH4biJ/YMrBN9IY+hwGT30wSUkp0/EruMducqUQ/jy3zf/7KHqZnHOi7LDPdan3JvoJQrdY0BeMcdVFfvLP7S9Jfpd7ZM90h7oof+JcaMhoJWPNEH92a1viwFcw9t+wruK15/mftnmdgbWpFmDvK14YDz6hVWQ4lQyvS0HYHO4KCX+H7vb2gl0u1gDslrS1At5ky9OLs3l6QZ5AHP9Qxzh7HWnBaqupuD/n12umE4nlNE5GZegFWjhcwHgZ4pl7Q7QQnMRK86D6T5I88/10iFR66nMGZ+Y/lwyGM8CAwEAAQ==";
         const key = new x509.PublicKey(b64);
         const cryptoKey = await key.export();
         expect(cryptoKey.type).toBe("public");
+        expect(key.algorithm.name).toBe("RSA-PSS");
+        expect(cryptoKey.algorithm.name).toBe("RSA-PSS");
       });
     });
     describe("getThumbprint", () => {
