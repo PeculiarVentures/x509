@@ -8,6 +8,8 @@ export * from "./ec_algorithm";
 export * from "./sha_algorithm";
 export * from "./ec_signature_formatter";
 export * from "./ed_algorithm";
+export * from "./ml_dsa_algorithm";
+export * from "./slh_dsa_algorithm";
 export * from "./attribute";
 export * from "./extension";
 export * from "./name";
