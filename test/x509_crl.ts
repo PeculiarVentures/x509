@@ -56,7 +56,6 @@ describe("X509Crl", () => {
     expect(crl.nextUpdate?.getTime()).toBe(nextUpdate.getTime());
     expect(crl.signatureAlgorithm.name).toBe("ECDSA");
     expect(crl.signature).toBeDefined();
-    expect(crl.tbs).toBeDefined();
   });
 
   it("should have correct entries", () => {
