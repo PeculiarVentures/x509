@@ -1,4 +1,5 @@
-import { BufferSourceConverter, Convert } from "pvtsutils";
+import * as bytes from "@peculiar/utils/bytes";
+import { hex } from "@peculiar/utils/encoding";
 import { cryptoProvider } from "./provider";
 
 /**
@@ -17,7 +18,7 @@ export function generateCertificateSerialNumber(
   input: string | undefined,
   crypto = cryptoProvider.get(),
 ): ArrayBuffer {
-  const inputView = BufferSourceConverter.toUint8Array(Convert.FromHex(input || ""));
+  const inputView = bytes.toUint8Array(hex.decode(input || "", { allowOddLength: true }));
   let serialNumber = inputView && inputView.length && inputView.some((o) => o > 0)
     ? new Uint8Array(inputView)
     : undefined;

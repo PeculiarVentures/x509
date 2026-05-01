@@ -1,6 +1,8 @@
 import { AsnConvert } from "@peculiar/asn1-schema";
 import * as asn1X509 from "@peculiar/asn1-x509";
-import { BufferSourceConverter, Convert } from "pvtsutils";
+import * as bytes from "@peculiar/utils/bytes";
+import { hex } from "@peculiar/utils/encoding";
+
 import { Extension } from "../extension";
 import { cryptoProvider } from "../provider";
 import { PublicKey, PublicKeyType } from "../public_key";
@@ -26,7 +28,7 @@ export class SubjectKeyIdentifierExtension extends Extension {
     const key = await PublicKey.create(publicKey, crypto);
     const id = await key.getKeyIdentifier(crypto);
 
-    return new SubjectKeyIdentifierExtension(Convert.ToHex(id), critical);
+    return new SubjectKeyIdentifierExtension(hex.encode(id), critical);
   }
 
   /**
@@ -38,7 +40,7 @@ export class SubjectKeyIdentifierExtension extends Extension {
    * Creates a new instance from DER encoded buffer
    * @param raw DER encoded buffer
    */
-  public constructor(raw: BufferSource);
+  public constructor(raw: bytes.BufferSourceLike);
   /**
    * Creates a new instance
    * @param keyId Hexadecimal representation of key identifier
@@ -46,19 +48,19 @@ export class SubjectKeyIdentifierExtension extends Extension {
    */
   public constructor(keyId: string, critical?: boolean);
   public constructor(...args: any[]) {
-    if (BufferSourceConverter.isBufferSource(args[0])) {
-      super(args[0] as BufferSource);
+    if (bytes.isBufferSource(args[0])) {
+      super(args[0] as bytes.BufferSourceLike);
 
       const value = AsnConvert.parse(this.value, asn1X509.SubjectKeyIdentifier);
-      this.keyId = Convert.ToHex(value);
+      this.keyId = hex.encode(value);
     } else {
       const identifier = typeof args[0] === "string"
-        ? Convert.FromHex(args[0])
+        ? hex.decode(args[0])
         : args[0];
       const value = new asn1X509.SubjectKeyIdentifier(identifier);
       super(asn1X509.id_ce_subjectKeyIdentifier, args[1], AsnConvert.serialize(value));
 
-      this.keyId = Convert.ToHex(identifier);
+      this.keyId = hex.encode(identifier);
     }
   }
 

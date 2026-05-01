@@ -1,3 +1,4 @@
+import * as bytes from "@peculiar/utils/bytes";
 import { Extension } from "../extension";
 
 /**
@@ -32,7 +33,7 @@ export class ExtensionFactory {
    * const ext = ExtensionFactory.create(asnExtRaw);
    * ```
    */
-  public static create(data: BufferSource) {
+  public static create(data: bytes.BufferSourceLike) {
     const extension = new Extension(data);
     const Type = this.items.get(extension.type);
     if (Type) {

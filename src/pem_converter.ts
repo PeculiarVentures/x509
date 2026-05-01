@@ -1,4 +1,5 @@
-import { BufferSourceConverter, Convert } from "pvtsutils";
+import * as bytes from "@peculiar/utils/bytes";
+import { base64 } from "@peculiar/utils/encoding";
 
 const rPaddingTag = "-{5}";
 const rEolChars = "\\n";
@@ -66,13 +67,13 @@ export class PemConverter {
     // eslint-disable-next-line no-cond-assign
     while (matches = pattern.exec(pem)) {
       // prepare pem encoded message
-      const base64 = matches[3]
+      const base64String = matches[3]
         .replace(rEolPattern, "");
 
       const pemStruct: PemStruct = {
         type: matches[1],
         headers: [],
-        rawData: Convert.FromBase64(base64),
+        rawData: bytes.toArrayBuffer(base64.decode(base64String)),
       };
 
       // read headers
@@ -145,28 +146,28 @@ export class PemConverter {
    * @param rawData Raw data
    * @param tag PEM tag
    */
-  public static encode(rawData: BufferSource, tag: string): string;
+  public static encode(rawData: bytes.BufferSourceLike, tag: string): string;
   /**
    * Encodes a list of raws in PEM format
    * @param raws A list of raws
    * @param tag PEM tag
    */
-  public static encode(rawData: BufferSource[], tag: string): string;
+  public static encode(rawData: bytes.BufferSourceLike[], tag: string): string;
   public static encode(
-    rawData: BufferSource | BufferSource[] | PemStructEncodeParams[],
+    rawData: bytes.BufferSourceLike | bytes.BufferSourceLike[] | PemStructEncodeParams[],
     tag?: string,
   ) {
     if (Array.isArray(rawData)) {
       const raws = new Array<string>();
       if (tag) {
-        // encode BufferSource[]
+        // encode bytes.BufferSourceLike[]
         rawData.forEach((element) => {
-          if (!BufferSourceConverter.isBufferSource(element)) {
-            throw new TypeError("Cannot encode array of BufferSource in PEM format. Not all items of the array are BufferSource");
+          if (!bytes.isBufferSource(element)) {
+            throw new TypeError("Cannot encode array of bytes.BufferSourceLike in PEM format. Not all items of the array are bytes.BufferSourceLike");
           }
           raws.push(this.encodeStruct({
             type: tag,
-            rawData: BufferSourceConverter.toArrayBuffer(element),
+            rawData: bytes.toArrayBuffer(element),
           }));
         });
       } else {
@@ -187,7 +188,7 @@ export class PemConverter {
 
       return this.encodeStruct({
         type: tag,
-        rawData: BufferSourceConverter.toArrayBuffer(rawData),
+        rawData: bytes.toArrayBuffer(rawData),
       });
     }
   }
@@ -211,9 +212,9 @@ export class PemConverter {
       res.push(""); // blank line
     }
 
-    const base64 = Convert.ToBase64(pem.rawData);
-    for (let i = 0; i < base64.length; i += 64) {
-      res.push(base64.substring(i, i + 64));
+    const base64String = base64.encode(pem.rawData);
+    for (let i = 0; i < base64String.length; i += 64) {
+      res.push(base64String.substring(i, i + 64));
     }
 
     res.push(`-----END ${upperCaseType}-----`);

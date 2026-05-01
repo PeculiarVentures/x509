@@ -1,13 +1,14 @@
 import {
   describe, it, expect,
 } from "vitest";
-import { Convert } from "pvtsutils";
+import * as bytes from "@peculiar/utils/bytes";
+import * as encoding from "@peculiar/utils/encoding";
 import * as src from "../src";
 
 describe("PEM", () => {
   const base64_splitted = "LLrHB0eJzyhP+/fSStdW8okeEnv47jxe7SJ/iN72ohNcUk2jHEUSoH1nvNSIWL9M\n8tEjmF/zxB+bATMtPjCUWbz8Lr9wloXIkjHUlBLpvXR0UrUzYbkNpk0agV2IzUpk\nJ6UiRRGcDSvzrsoK+oNvqu6z7Xs5Xfz5rDqUcMlK1Z6720dcBWGGsDLpTpSCnpot\ndXd/H5LMDWnonNvPCwQUHg==";
   const base64 = base64_splitted.replace(/\n/g, "");
-  const rawData = Convert.FromBase64(base64);
+  const rawData = bytes.toArrayBuffer(encoding.base64.decode(base64));
 
   describe("decodeWithHeaders", () => {
     interface PemTest {
@@ -18,7 +19,7 @@ describe("PEM", () => {
 
     function mapPemStruct(pem: src.PemStruct): PemTest {
       return {
-        ...pem, rawData: Convert.ToBase64(pem.rawData),
+        ...pem, rawData: encoding.base64.encode(pem.rawData),
       };
     }
 
@@ -204,7 +205,10 @@ describe("PEM", () => {
   describe("encode", () => {
     const tests: {
       name: string;
-      args: { a: BufferSource | BufferSource[] | src.PemStructEncodeParams[]; b?: string };
+      args: {
+        a: bytes.BufferSourceLike | bytes.BufferSourceLike[] | src.PemStructEncodeParams[];
+        b?: string;
+      };
       want: string | Error;
     }[] = [
       {
@@ -285,7 +289,7 @@ describe("PEM", () => {
         ].join("\n"),
       },
       {
-        name: "PEM from BufferSource",
+        name: "PEM from bytes.BufferSourceLike",
         args: {
           a: rawData,
           b: "SOME",
@@ -297,7 +301,7 @@ describe("PEM", () => {
         ].join("\n"),
       },
       {
-        name: "PEM from BufferSource[]",
+        name: "PEM from bytes.BufferSourceLike[]",
         args: {
           a: [rawData, rawData],
           b: "SOME",

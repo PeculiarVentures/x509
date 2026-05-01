@@ -1,6 +1,7 @@
 import {
   describe, it, expect, beforeAll,
 } from "vitest";
+import * as bytes from "@peculiar/utils/bytes";
 import { Crypto } from "@peculiar/webcrypto";
 import {
   CryptoProvider, IPublicKeyContainer, PublicKey, cryptoProvider,
@@ -9,7 +10,7 @@ import {
 describe("PublicKey", () => {
   let crypto: globalThis.Crypto;
   let cryptoKey: CryptoKey;
-  let spki: BufferSource;
+  let spki: bytes.BufferSourceLike;
 
   beforeAll(async () => {
     crypto = cryptoProvider.get();
@@ -40,7 +41,7 @@ describe("PublicKey", () => {
       expect(result instanceof PublicKey).toBeTruthy();
     });
 
-    it("should create an instance from BufferSource", async () => {
+    it("should create an instance from bytes.BufferSourceLike", async () => {
       const result = await PublicKey.create(spki);
       expect(result instanceof PublicKey).toBeTruthy();
     });

@@ -2,7 +2,8 @@ import { AsnConvert } from "@peculiar/asn1-schema";
 import {
   CRLReason, id_ce_cRLReasons, id_ce_invalidityDate, InvalidityDate, RevokedCertificate, Time,
 } from "@peculiar/asn1-x509";
-import { BufferSourceConverter, Convert } from "pvtsutils";
+import * as bytes from "@peculiar/utils/bytes";
+import { hex } from "@peculiar/utils/encoding";
 import { Extension } from "./extension";
 import { ExtensionFactory } from "./extensions/extension_factory";
 import { AsnData } from "./asn_data";
@@ -60,7 +61,7 @@ export class X509CrlEntry extends AsnData<RevokedCertificate> {
    */
   public get serialNumber(): string {
     if (!this.#serialNumber) {
-      this.#serialNumber = Convert.ToHex(this.asn.userCertificate);
+      this.#serialNumber = hex.encode(this.asn.userCertificate);
     }
 
     return this.#serialNumber;
@@ -140,7 +141,7 @@ export class X509CrlEntry extends AsnData<RevokedCertificate> {
    * Creates a new instance from DER encoded Buffer
    * @param raw DER encoded buffer
    */
-  public constructor(raw: BufferSource);
+  public constructor(raw: bytes.BufferSourceLike);
   /**
    * Creates a new instance from ASN.1 object
    * @param asn ASN.1 object
@@ -155,8 +156,8 @@ export class X509CrlEntry extends AsnData<RevokedCertificate> {
   public constructor(serialNumber: string, revocationDate: Date, extensions: Extension[]);
   public constructor(...args: any[]) {
     let raw: ArrayBuffer | RevokedCertificate | undefined;
-    if (BufferSourceConverter.isBufferSource(args[0])) {
-      raw = BufferSourceConverter.toArrayBuffer(args[0]);
+    if (bytes.isBufferSource(args[0])) {
+      raw = bytes.toArrayBuffer(args[0]);
     } else if (typeof args[0] === "string") {
       raw = AsnConvert.serialize(new RevokedCertificate({
         userCertificate: generateCertificateSerialNumber(args[0]),
