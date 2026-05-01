@@ -1,6 +1,6 @@
 import { AsnConvert, OctetString } from "@peculiar/asn1-schema";
 import { Extension as AsnExtension } from "@peculiar/asn1-x509";
-import { BufferSourceConverter } from "pvtsutils";
+import * as bytes from "@peculiar/utils/bytes";
 import { AsnData } from "./asn_data";
 import { OidSerializer, TextObject } from "./text_converter";
 
@@ -11,38 +11,38 @@ export class Extension extends AsnData<AsnExtension> {
   /**
    * Gets an extension identifier
    */
-  public type!: string;
+  declare public type: string;
   /**
    * Indicates where extension is critical
    */
-  public critical!: boolean;
+  declare public critical: boolean;
 
   /**
    * Gets a DER encoded value of extension
    */
-  public value!: ArrayBuffer;
+  declare public value: ArrayBuffer;
 
   /**
    * Creates a new instance from DER encoded Buffer
    * @param raw DER encoded buffer
    */
-  public constructor(raw: BufferSource);
+  public constructor(raw: bytes.BufferSourceLike);
   /**
    * Creates a new instance
    * @param type Extension identifier
    * @param critical Indicates where extension is critical
    * @param value DER encoded value of extension
    */
-  public constructor(type: string, critical: boolean, value: BufferSource);
+  public constructor(type: string, critical: boolean, value: bytes.BufferSourceLike);
   public constructor(...args: any[]) {
     let raw: ArrayBuffer;
-    if (BufferSourceConverter.isBufferSource(args[0])) {
-      raw = BufferSourceConverter.toArrayBuffer(args[0]);
+    if (bytes.isBufferSource(args[0])) {
+      raw = bytes.toArrayBuffer(args[0]);
     } else {
       raw = AsnConvert.serialize(new AsnExtension({
         extnID: args[0],
         critical: args[1],
-        extnValue: new OctetString(BufferSourceConverter.toArrayBuffer(args[2])),
+        extnValue: new OctetString(bytes.toArrayBuffer(args[2])),
       }));
     }
 

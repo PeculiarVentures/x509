@@ -2,7 +2,7 @@ import { AsnConvert } from "@peculiar/asn1-schema";
 import {
   CertificateList, Version, AlgorithmIdentifier,
 } from "@peculiar/asn1-x509";
-import { BufferSourceConverter } from "pvtsutils";
+import * as bytes from "@peculiar/utils/bytes";
 import { container } from "tsyringe";
 import { HashedAlgorithm } from "./types";
 import { cryptoProvider } from "./provider";
@@ -224,9 +224,9 @@ export class X509Crl extends PemData<CertificateList> {
    * @param type Extension type
    * @returns Extension or null
    */
-  public getExtension<T extends Extension>(type: new(raw: BufferSource) => T): T | null;
+  public getExtension<T extends Extension>(type: new(raw: bytes.BufferSourceLike) => T): T | null;
   public getExtension<T extends Extension>(
-    type: (new(raw: BufferSource) => T) | string,
+    type: (new(raw: bytes.BufferSourceLike) => T) | string,
   ): T | null {
     for (const ext of this.extensions) {
       if (typeof type === "string") {
@@ -252,13 +252,13 @@ export class X509Crl extends PemData<CertificateList> {
    * Returns a list of extensions of specified type
    * @param type Extension type
    */
-  public getExtensions<T extends Extension>(type: new(raw: BufferSource) => T): T[];
+  public getExtensions<T extends Extension>(type: new(raw: bytes.BufferSourceLike) => T): T[];
   /**
    * Returns a list of extensions of specified type
    * @param type Extension identifier
    */
   public getExtensions<T extends Extension>(
-    type: string | (new(raw: BufferSource) => T),
+    type: string | (new(raw: bytes.BufferSourceLike) => T),
   ): T[] {
     return this.extensions.filter((o) => {
       if (typeof type === "string") {
@@ -380,7 +380,7 @@ export class X509Crl extends PemData<CertificateList> {
     const serialNumber = typeof certOrSerialNumber === "string" ? certOrSerialNumber : certOrSerialNumber.serialNumber;
     const serialBuffer = generateCertificateSerialNumber(serialNumber);
     for (const revoked of this.asn.tbsCertList.revokedCertificates || []) {
-      if (BufferSourceConverter.isEqual(revoked.userCertificate, serialBuffer)) {
+      if (bytes.equal(revoked.userCertificate, serialBuffer)) {
         return new X509CrlEntry(AsnConvert.serialize(revoked));
       }
     }

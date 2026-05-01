@@ -2,7 +2,8 @@ import {
   AsnConvert, AsnUtf8StringConverter, OctetString,
 } from "@peculiar/asn1-schema";
 import * as asn1X509 from "@peculiar/asn1-x509";
-import { BufferSourceConverter, Convert } from "pvtsutils";
+import * as bytes from "@peculiar/utils/bytes";
+import { hex } from "@peculiar/utils/encoding";
 import { AsnData } from "./asn_data";
 import { Name } from "./name";
 import { OidSerializer, TextObject } from "./text_converter";
@@ -49,15 +50,15 @@ export class GeneralName extends AsnData<asn1X509.GeneralName> {
   /**
    * Type of the storing value
    */
-  public type!: GeneralNameType;
+  declare public type: GeneralNameType;
   /**
    * Text representation of ASN.1 GeneralName
    */
-  public value!: string;
+  declare public value: string;
 
   public constructor(type: GeneralNameType, value: string);
   public constructor(asn: asn1X509.GeneralName);
-  public constructor(raw: BufferSource);
+  public constructor(raw: bytes.BufferSourceLike);
   public constructor(...args: any[]) {
     let name: asn1X509.GeneralName;
     if (args.length === 2) {
@@ -80,11 +81,11 @@ export class GeneralName extends AsnData<asn1X509.GeneralName> {
           if (!matches) {
             throw new Error("Cannot parse GUID value. Value doesn't match to regular expression");
           }
-          const hex = matches
+          const hexString = matches
             .slice(1)
             .map((o, i) => {
               if (i < 3) {
-                return Convert.ToHex(new Uint8Array(Convert.FromHex(o)).reverse());
+                return hex.encode(hex.decode(o).reverse());
               }
 
               return o;
@@ -94,7 +95,7 @@ export class GeneralName extends AsnData<asn1X509.GeneralName> {
           name = new asn1X509.GeneralName({
             otherName: new asn1X509.OtherName({
               typeId: id_GUID,
-              value: AsnConvert.serialize(new OctetString(Convert.FromHex(hex))),
+              value: AsnConvert.serialize(new OctetString(hex.decode(hexString))),
             }),
           });
           break;
@@ -120,8 +121,8 @@ export class GeneralName extends AsnData<asn1X509.GeneralName> {
         default:
           throw new Error("Cannot create GeneralName. Unsupported type of the name");
       }
-    } else if (BufferSourceConverter.isBufferSource(args[0])) {
-      // raw: BufferSource
+    } else if (bytes.isBufferSource(args[0])) {
+      // raw: bytes.BufferSourceLike
       name = AsnConvert.parse(args[0], asn1X509.GeneralName);
     } else {
       // asn: asn1X509.GeneralName
@@ -160,7 +161,7 @@ export class GeneralName extends AsnData<asn1X509.GeneralName> {
       if (asn.otherName.typeId === id_GUID) {
         this.type = GUID;
         const guid = AsnConvert.parse(asn.otherName.value, OctetString);
-        const matches = new RegExp(GUID_REGEX, "i").exec(Convert.ToHex(guid));
+        const matches = new RegExp(GUID_REGEX, "i").exec(hex.encode(guid));
         if (!matches) {
           throw new Error(ERR_GUID);
         }
@@ -168,7 +169,7 @@ export class GeneralName extends AsnData<asn1X509.GeneralName> {
           .slice(1)
           .map((o, i) => {
             if (i < 3) {
-              return Convert.ToHex(new Uint8Array(Convert.FromHex(o)).reverse());
+              return hex.encode(hex.decode(o).reverse());
             }
 
             return o;
@@ -225,16 +226,16 @@ export type JsonGeneralNames = JsonGeneralName[];
 export class GeneralNames extends AsnData<asn1X509.GeneralNames> {
   public static override NAME = "GeneralNames";
 
-  public items!: readonly GeneralName[];
+  declare public items: readonly GeneralName[];
 
   constructor(json: JsonGeneralNames);
   constructor(asn: asn1X509.GeneralNames | asn1X509.GeneralName[]);
-  constructor(raw: BufferSource);
+  constructor(raw: bytes.BufferSourceLike);
   constructor(
     params: JsonGeneralNames
       | asn1X509.GeneralNames
       | asn1X509.GeneralName[]
-      | BufferSource,
+      | bytes.BufferSourceLike,
   ) {
     let names: asn1X509.GeneralNames;
     if (params instanceof asn1X509.GeneralNames) {
@@ -257,7 +258,7 @@ export class GeneralNames extends AsnData<asn1X509.GeneralNames> {
       }
 
       names = new asn1X509.GeneralNames(items);
-    } else if (BufferSourceConverter.isBufferSource(params)) {
+    } else if (bytes.isBufferSource(params)) {
       names = AsnConvert.parse(params, asn1X509.GeneralNames);
     } else {
       throw new Error("Cannot initialize GeneralNames. Incorrect incoming arguments");

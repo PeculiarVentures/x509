@@ -1,4 +1,4 @@
-import { BufferSourceConverter } from "pvtsutils";
+import * as bytes from "@peculiar/utils/bytes";
 
 /**
  * Dependency injection identifier for `IAsnSignatureFormatter` interface
@@ -22,21 +22,21 @@ export interface IAsnSignatureFormatter {
    * @param algorithm Key and signing algorithm
    * @param signature ASN.1 signature value in DER format
    */
-  toAsnSignature(algorithm: Algorithm, signature: BufferSource): ArrayBuffer | null;
+  toAsnSignature(algorithm: Algorithm, signature: bytes.BufferSourceLike): ArrayBuffer | null;
   /**
    * Converts WebCrypto signature to ASN.1 DER encoded signature value
    * @param algorithm
    * @param signature
    */
-  toWebSignature(algorithm: Algorithm, signature: BufferSource): ArrayBuffer | null;
+  toWebSignature(algorithm: Algorithm, signature: bytes.BufferSourceLike): ArrayBuffer | null;
 }
 
 export class AsnDefaultSignatureFormatter implements IAsnSignatureFormatter {
-  toAsnSignature(algorithm: Algorithm, signature: BufferSource): ArrayBuffer | null {
-    return BufferSourceConverter.toArrayBuffer(signature);
+  toAsnSignature(algorithm: Algorithm, signature: bytes.BufferSourceLike): ArrayBuffer | null {
+    return bytes.toArrayBuffer(signature);
   }
 
-  toWebSignature(algorithm: Algorithm, signature: BufferSource): ArrayBuffer | null {
-    return BufferSourceConverter.toArrayBuffer(signature);
+  toWebSignature(algorithm: Algorithm, signature: bytes.BufferSourceLike): ArrayBuffer | null {
+    return bytes.toArrayBuffer(signature);
   }
 }

@@ -1,6 +1,6 @@
 import { AsnConvert } from "@peculiar/asn1-schema";
 import * as asn1X509 from "@peculiar/asn1-x509";
-import { BufferSource, BufferSourceConverter } from "pvtsutils";
+import * as bytes from "@peculiar/utils/bytes";
 import { container } from "tsyringe";
 import { cryptoProvider } from "./provider";
 import { AlgorithmProvider, diAlgorithmProvider } from "./algorithm";
@@ -64,7 +64,7 @@ export interface X509CertificateCreateWithSignatureParams
   /**
    * Signature for manually initialized certificates
    */
-  signature: BufferSource;
+  signature: bytes.BufferSourceLike;
 
   /**
    * Manual signing requires CryptoKey that includes signature algorithm
@@ -122,12 +122,12 @@ export class X509CertificateGenerator {
    * @param crypto Crypto provider. Default is from CryptoProvider
    */
   public static async create(params: X509CertificateCreateParams, crypto = cryptoProvider.get()) {
-    let spki: BufferSource;
+    let spki: bytes.BufferSourceLike;
     if (params.publicKey instanceof PublicKey) {
       spki = params.publicKey.rawData;
     } else if ("publicKey" in params.publicKey) {
       spki = params.publicKey.publicKey.rawData;
-    } else if (BufferSourceConverter.isBufferSource(params.publicKey)) {
+    } else if (bytes.isBufferSource(params.publicKey)) {
       spki = params.publicKey;
     } else {
       spki = await crypto.subtle.exportKey("spki", params.publicKey);

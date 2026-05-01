@@ -1,6 +1,6 @@
 import { AsnConvert } from "@peculiar/asn1-schema";
 import * as asn1X509 from "@peculiar/asn1-x509";
-import { BufferSourceConverter } from "pvtsutils";
+import * as bytes from "@peculiar/utils/bytes";
 import { Extension } from "../extension";
 import { TextObject } from "../text_converter";
 import { GeneralName } from "../general_name";
@@ -11,13 +11,13 @@ import { GeneralName } from "../general_name";
 export class CRLDistributionPointsExtension extends Extension {
   public static override NAME = "CRL Distribution Points";
 
-  public distributionPoints: asn1X509.DistributionPoint[];
+  declare public distributionPoints: asn1X509.DistributionPoint[];
 
   /**
    * Creates a new instance from DER encoded buffer
    * @param raw DER encoded buffer
    */
-  public constructor(raw: BufferSource);
+  public constructor(raw: bytes.BufferSourceLike);
   /**
    * Creates a new instance
    * @param value The value of the extension
@@ -31,8 +31,8 @@ export class CRLDistributionPointsExtension extends Extension {
    */
   public constructor(urls: string[], critical?: boolean);
   public constructor(...args: any[]) {
-    if (BufferSourceConverter.isBufferSource(args[0])) {
-      super(args[0] as BufferSource);
+    if (bytes.isBufferSource(args[0])) {
+      super(args[0] as bytes.BufferSourceLike);
     } else if (Array.isArray(args[0]) && typeof args[0][0] === "string") {
       const urls = args[0] as string[];
       const dps = urls.map((url) => {

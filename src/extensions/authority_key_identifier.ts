@@ -1,6 +1,7 @@
 import { AsnConvert } from "@peculiar/asn1-schema";
 import * as asn1X509 from "@peculiar/asn1-x509";
-import { BufferSourceConverter, Convert } from "pvtsutils";
+import * as bytes from "@peculiar/utils/bytes";
+import { hex } from "@peculiar/utils/encoding";
 import { Extension } from "../extension";
 import { GeneralNames } from "../general_name";
 import { cryptoProvider } from "../provider";
@@ -57,24 +58,24 @@ export class AuthorityKeyIdentifierExtension extends Extension {
     const key = await PublicKey.create(param, crypto);
     const id = await key.getKeyIdentifier(crypto);
 
-    return new AuthorityKeyIdentifierExtension(Convert.ToHex(id), critical);
+    return new AuthorityKeyIdentifierExtension(hex.encode(id), critical);
   }
 
   /**
    * Gets a hexadecimal representation of key identifier
    */
-  public keyId?: string;
+  declare public keyId?: string;
 
   /**
    * Gets a certificate identifier in the issuer name and serial number
    */
-  public certId?: CertificateIdentifier;
+  declare public certId?: CertificateIdentifier;
 
   /**
    * Creates a new instance from DER encoded buffer
    * @param raw DER encoded buffer
    */
-  public constructor(raw: BufferSource);
+  public constructor(raw: bytes.BufferSourceLike);
   /**
    * Creates a new instance
    * @param identifier Hexadecimal representation of key identifier
@@ -88,11 +89,11 @@ export class AuthorityKeyIdentifierExtension extends Extension {
    */
   public constructor(id: CertificateIdentifier, critical?: boolean);
   public constructor(...args: any[]) {
-    if (BufferSourceConverter.isBufferSource(args[0])) {
-      super(args[0] as BufferSource);
+    if (bytes.isBufferSource(args[0])) {
+      super(args[0] as bytes.BufferSourceLike);
     } else if (typeof args[0] === "string") {
       const value = new asn1X509.AuthorityKeyIdentifier(
-        { keyIdentifier: new asn1X509.KeyIdentifier(Convert.FromHex(args[0])) },
+        { keyIdentifier: new asn1X509.KeyIdentifier(hex.decode(args[0])) },
       );
       super(asn1X509.id_ce_authorityKeyIdentifier, args[1], AsnConvert.serialize(value));
     } else {
@@ -102,7 +103,7 @@ export class AuthorityKeyIdentifierExtension extends Extension {
         : certId.name;
       const value = new asn1X509.AuthorityKeyIdentifier({
         authorityCertIssuer: certIdName,
-        authorityCertSerialNumber: Convert.FromHex(certId.serialNumber),
+        authorityCertSerialNumber: bytes.toArrayBuffer(hex.decode(certId.serialNumber)),
       });
       super(asn1X509.id_ce_authorityKeyIdentifier, args[1], AsnConvert.serialize(value));
     }
@@ -113,13 +114,13 @@ export class AuthorityKeyIdentifierExtension extends Extension {
 
     const aki = AsnConvert.parse(asn.extnValue, asn1X509.AuthorityKeyIdentifier);
     if (aki.keyIdentifier) {
-      this.keyId = Convert.ToHex(aki.keyIdentifier);
+      this.keyId = hex.encode(aki.keyIdentifier);
     }
 
     if (aki.authorityCertIssuer || aki.authorityCertSerialNumber) {
       this.certId = {
         name: aki.authorityCertIssuer || [],
-        serialNumber: aki.authorityCertSerialNumber ? Convert.ToHex(aki.authorityCertSerialNumber) : "",
+        serialNumber: aki.authorityCertSerialNumber ? hex.encode(aki.authorityCertSerialNumber) : "",
       };
     }
   }

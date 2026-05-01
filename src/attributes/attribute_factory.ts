@@ -1,3 +1,4 @@
+import * as bytes from "@peculiar/utils/bytes";
 import { Attribute } from "../attribute";
 
 /**
@@ -29,7 +30,7 @@ export class AttributeFactory {
    * const attr = AttributeFactory.create(asnAttrRaw);
    * ```
    */
-  public static create(data: BufferSource) {
+  public static create(data: bytes.BufferSourceLike) {
     const attribute = new Attribute(data);
     const Type = this.items.get(attribute.type);
     if (Type) {

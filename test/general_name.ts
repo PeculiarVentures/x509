@@ -1,6 +1,7 @@
 import {
   describe, it, expect,
 } from "vitest";
+import * as bytes from "@peculiar/utils/bytes";
 import * as asn1X509 from "@peculiar/asn1-x509";
 import * as asn1Schema from "@peculiar/asn1-schema";
 import * as x509 from "../src";
@@ -9,7 +10,7 @@ describe("GeneralName", () => {
   describe("constructor", () => {
     const tests: {
       name: string;
-      args: x509.JsonGeneralName | asn1X509.GeneralName | BufferSource;
+      args: x509.JsonGeneralName | asn1X509.GeneralName | bytes.BufferSourceLike;
       want?: x509.JsonGeneralName;
       wantError?: Error;
     }[] = [
@@ -93,7 +94,7 @@ describe("GeneralName", () => {
         },
       },
       {
-        name: "raw:BufferSource",
+        name: "raw:bytes.BufferSourceLike",
         args: Buffer.from("8208736f6d652e636f6d", "hex"),
         want: {
           type: "dns", value: "some.com",
@@ -115,7 +116,7 @@ describe("GeneralName", () => {
             return new x509.GeneralName(t.args.type, t.args.value);
           }
 
-          return new x509.GeneralName(t.args as BufferSource);
+          return new x509.GeneralName(t.args as bytes.BufferSourceLike);
         }
 
         if (t.wantError) {
@@ -209,7 +210,7 @@ describe("GeneralNames", () => {
       name: string;
       args: x509.JsonGeneralNames
         | asn1X509.GeneralNames | asn1X509.GeneralName[]
-        | BufferSource;
+        | bytes.BufferSourceLike;
       want?: x509.JsonGeneralNames;
     }[] = [
       {
@@ -256,7 +257,7 @@ describe("GeneralNames", () => {
         ],
       },
       {
-        name: "BufferSource",
+        name: "bytes.BufferSourceLike",
         args: raw,
         want: [
           {

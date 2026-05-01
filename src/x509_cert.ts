@@ -1,6 +1,7 @@
 import { AsnConvert } from "@peculiar/asn1-schema";
 import { Certificate, Version } from "@peculiar/asn1-x509";
-import { BufferSourceConverter, Convert } from "pvtsutils";
+import * as bytes from "@peculiar/utils/bytes";
+import { hex } from "@peculiar/utils/encoding";
 import { container } from "tsyringe";
 import { HashedAlgorithm } from "./types";
 import { cryptoProvider } from "./provider";
@@ -118,7 +119,7 @@ export class X509Certificate extends PemData<Certificate> implements IPublicKeyC
         // Remove the leading zero that was added to make negative numbers positive
         serialNumberBytes = serialNumberBytes.slice(1);
       }
-      this.#serialNumber = Convert.ToHex(serialNumberBytes);
+      this.#serialNumber = hex.encode(serialNumberBytes);
     }
 
     return this.#serialNumber;
@@ -288,8 +289,10 @@ export class X509Certificate extends PemData<Certificate> implements IPublicKeyC
    * @param type Extension type
    * @returns Extension or null
    */
-  public getExtension<T extends Extension>(type: new(raw: BufferSource) => T): T | null;
-  public getExtension<T extends Extension>(type: (new(raw: BufferSource) => T) | string): T | null {
+  public getExtension<T extends Extension>(type: new (raw: bytes.BufferSourceLike) => T): T | null;
+  public getExtension<T extends Extension>(
+    type: (new (raw: bytes.BufferSourceLike,
+    ) => T) | string): T | null {
     for (const ext of this.extensions) {
       if (typeof type === "string") {
         if (ext.type === type) {
@@ -314,12 +317,14 @@ export class X509Certificate extends PemData<Certificate> implements IPublicKeyC
    * Returns a list of extensions of specified type
    * @param type Extension type
    */
-  public getExtensions<T extends Extension>(type: new(raw: BufferSource) => T): T[];
+  public getExtensions<T extends Extension>(type: new (raw: bytes.BufferSourceLike) => T): T[];
   /**
    * Returns a list of extensions of specified type
    * @param type Extension identifier
    */
-  public getExtensions<T extends Extension>(type: string | (new(raw: BufferSource) => T)): T[] {
+  public getExtensions<T extends Extension>(
+    type: string | (new (raw: bytes.BufferSourceLike) => T),
+  ): T[] {
     return this.extensions.filter((o) => {
       if (typeof type === "string") {
         return o.type === type;
@@ -359,8 +364,8 @@ export class X509Certificate extends PemData<Certificate> implements IPublicKeyC
           ...paramsKey.algorithm, ...this.signatureAlgorithm,
         };
         publicKey = await paramsKey.export(keyAlgorithm, ["verify"], crypto);
-      } else if (BufferSourceConverter.isBufferSource(paramsKey)) {
-        const key = new PublicKey(paramsKey as BufferSource);
+      } else if (bytes.isBufferSource(paramsKey)) {
+        const key = new PublicKey(paramsKey);
         keyAlgorithm = {
           ...key.algorithm, ...this.signatureAlgorithm,
         };
