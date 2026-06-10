@@ -3,7 +3,7 @@ import {
 } from "vitest";
 import * as asn1Schema from "@peculiar/asn1-schema";
 import * as asn1X509 from "@peculiar/asn1-x509";
-import { Convert } from "pvtsutils";
+import { hex } from "@peculiar/utils/encoding";
 import * as x509 from "../src";
 
 describe("Name", () => {
@@ -130,7 +130,7 @@ describe("Name", () => {
     const name2 = new x509.Name(json);
     expect(name2.toString()).toBe(text);
 
-    expect(Convert.ToHex(name.toArrayBuffer())).toBe("3071310e300c060355040313056e616d65313139300c060355040313056e616d6532300c060355040313056e616d6533301b06092a864886f70d010901160e736f6d6540656d61696c2e636f6d3124300a06042a030405040201023016060a0992268993f22c6401191608736f6d652e636f6d");
+    expect(hex.encode(name.toArrayBuffer())).toBe("3071310e300c060355040313056e616d65313139300c060355040313056e616d6532300c060355040313056e616d6533301b06092a864886f70d010901160e736f6d6540656d61696c2e636f6d3124300a06042a030405040201023016060a0992268993f22c6401191608736f6d652e636f6d");
   });
 
   it("parse with odd , marks", () => {
@@ -148,7 +148,7 @@ describe("Name", () => {
       GUID: "1.2.3.4.5.3",
     });
 
-    expect(Convert.ToHex(name.toArrayBuffer())).toBe("30663119301706052a030405010c0e736f6d6540656d61696c2e636f6d3116301406052a03040502130b3139322e3136382e302e313131302f06052a030405030c267b38656531336535332d326331632d343262622d386466372d3339393237633062646262367d");
+    expect(hex.encode(name.toArrayBuffer())).toBe("30663119301706052a030405010c0e736f6d6540656d61696c2e636f6d3116301406052a03040502130b3139322e3136382e302e313131302f06052a030405030c267b38656531336535332d326331632d343262622d386466372d3339393237633062646262367d");
     expect(name.toJSON()).toEqual([
       { Email: ["some@email.com"] },
       { IP: ["192.168.0.1"] },
@@ -169,20 +169,20 @@ describe("Name", () => {
     const name = new x509.Name(asn1Schema.AsnConvert.serialize(asnName));
     expect(name.toString()).toBe("CN=Some name");
 
-    expect(Convert.ToHex(name.toArrayBuffer())).toBe("30143112301006035504030c09536f6d65206e616d65");
+    expect(hex.encode(name.toArrayBuffer())).toBe("30143112301006035504030c09536f6d65206e616d65");
   });
 
   describe("get thumbprint", () => {
     it("default", async () => {
       const name = new x509.Name("CN=Some");
       const hash = await name.getThumbprint();
-      expect(Convert.ToHex(hash)).toBe("4c19048809647a5cd443000c4b1b9d174164bf03");
+      expect(hex.encode(hash)).toBe("4c19048809647a5cd443000c4b1b9d174164bf03");
     });
 
     it("SHA-256", async () => {
       const name = new x509.Name("CN=Some");
       const hash = await name.getThumbprint("SHA-256");
-      expect(Convert.ToHex(hash)).toBe("38e29244d77fb9f2735d034aba8a6ecaf5070f5fe18efb050424f96cecb0db03");
+      expect(hex.encode(hash)).toBe("38e29244d77fb9f2735d034aba8a6ecaf5070f5fe18efb050424f96cecb0db03");
     });
   });
 

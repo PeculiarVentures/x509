@@ -1,6 +1,7 @@
 import {
   describe, it, expect, beforeAll,
 } from "vitest";
+import * as bytes from "@peculiar/utils/bytes";
 import { Crypto } from "@peculiar/webcrypto";
 import {
   AuthorityInfoAccessExtension,
@@ -30,7 +31,7 @@ describe("Extensions", () => {
 
   describe("AuthorityKeyIdentifierExtension", () => {
     let crypto: Crypto;
-    let spki: BufferSource;
+    let spki: bytes.BufferSourceLike;
 
     beforeAll(async () => {
       crypto = new Crypto();

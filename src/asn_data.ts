@@ -1,7 +1,8 @@
 import { AsnConvert } from "@peculiar/asn1-schema";
+import * as bytes from "@peculiar/utils/bytes";
 import {
-  BufferSourceConverter, Convert, isEqual,
-} from "pvtsutils";
+  hex, base64, base64url,
+} from "@peculiar/utils/encoding";
 import {
   TextConverter, TextObject, TextObjectConvertible,
 } from "./text_converter";
@@ -37,17 +38,17 @@ export abstract class AsnData<T> implements TextObjectConvertible {
    * @param raw DER encoded buffer
    * @param type ASN.1 convertible class for `@peculiar/asn1-schema` schema
    */
-  public constructor(raw: BufferSource, type: new() => T);
+  public constructor(raw: bytes.BufferSourceLike, type: new () => T);
   /**
    * ASN.1 object
    * @param asn
    */
   public constructor(asn: T);
   public constructor(...args: any[]) {
-    if (BufferSourceConverter.isBufferSource(args[0])) {
+    if (bytes.isBufferSource(args[0])) {
       // raw, type
       this.asn = AsnConvert.parse<T>(args[0], args[1]);
-      this.#rawData = BufferSourceConverter.toArrayBuffer(args[0]);
+      this.#rawData = bytes.toArrayBuffer(args[0]);
       this.onInit(this.asn);
     } else {
       // asn
@@ -68,7 +69,7 @@ export abstract class AsnData<T> implements TextObjectConvertible {
    */
   public equal(data: any): data is this {
     if (data instanceof AsnData) {
-      return isEqual(data.rawData, this.rawData);
+      return bytes.equal(data.rawData, this.rawData);
     }
 
     return false;
@@ -81,11 +82,11 @@ export abstract class AsnData<T> implements TextObjectConvertible {
       case "text":
         return TextConverter.serialize(this.toTextObject());
       case "hex":
-        return Convert.ToHex(this.rawData);
+        return hex.encode(this.rawData);
       case "base64":
-        return Convert.ToBase64(this.rawData);
+        return base64.encode(this.rawData);
       case "base64url":
-        return Convert.ToBase64Url(this.rawData);
+        return base64url.encode(this.rawData);
       default:
         throw TypeError("Argument 'format' is unsupported value");
     }

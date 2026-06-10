@@ -1,7 +1,8 @@
 import {
   describe, it, expect, beforeAll,
 } from "vitest";
-import { Convert } from "pvtsutils";
+import { BufferSourceLike } from "@peculiar/utils/bytes";
+import * as encoding from "@peculiar/utils/encoding";
 import { Crypto } from "@peculiar/webcrypto";
 import * as asn1Schema from "@peculiar/asn1-schema";
 import * as asn1CMS from "@peculiar/asn1-cms";
@@ -13,18 +14,18 @@ describe("crypto", () => {
 
   describe("PemData", () => {
     describe("from string buffer", () => {
-      let hex: ArrayBuffer;
-      let pem: ArrayBuffer;
-      let base64: ArrayBuffer;
-      let base64url: ArrayBuffer;
+      let hex: BufferSourceLike;
+      let pem: BufferSourceLike;
+      let base64: BufferSourceLike;
+      let base64url: BufferSourceLike;
 
       beforeAll(() => {
         const pemString = "MIICdDCCAVwCAQAwLzEtMA8GA1UEAxMIdGVzdE5hbWUwGgYJKoZIhvcNAQkBEw10ZXN0QG1haWwubm90MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEArut7tLrb1BEHXImMTWipet+3/J2isn7mBv278oP7YyOkmX/Vzxvk9nvSc/B1wh6kSo6nfaxYacNNSP3r+WQYaTeLm5TsDbUfCJYtvvTuYH0GVTM8Qm7QhMZKnyUy/D60WNcRM4pnBDSEMpKppi7HhfL37DZpQnsQfr9r8LQPWZ9t/mf+FsSeWyQOQcz+ob6cODfNQIvbzpaXXdNpKIHLPW+/e4af5/WlZ9wL5Sy7kOf4X6nErdl74s1vSji9goANSQkd5TbswtFPRNybikrrisz0HtsIq2uTGDY6t3iOEHTe5qe/ux4anjbSqKVuIQEQWQOKb4h+mHTc+EC5yknihQIDAQABoAAwDQYJKoZIhvcNAQELBQADggEBAE7TU20ui1MLtxLM0UZMytYAjC7vtXxB5Vl6bzHUzZkVFW6oTeizqDxjeBtZ1SqErpgdyvzMvFSxF6f+679kl1/Zs2V0IPa4y58he3wTT/M1xCBN/bITY2cA4ETozbtK4cGoi6jY/0j8NcxTLfiBgwhE3ap+9GzLtWEhHWCXmpsohbvAktXSh1tLh4xmgoQoePEBSPbnaOmsonyzscKiBMASDvjrFdNbtD0uY2v/wYXwtRGvV/Q/O3lLWEosE4NdnZmgId4bm7ru48WucSnxuEJAkKUjDLrN0uqY/tKfX4Zy9w8Y/o+hk3QzNBVa3ZUvzDhVAmamQflvw3lXMm/JG4U=";
-        const csr = new x509.Pkcs10CertificateRequest(Convert.FromBase64(pemString));
-        pem = Convert.FromBinary(csr.toString("pem"));
-        hex = Convert.FromBinary(csr.toString("hex"));
-        base64 = Convert.FromBinary(csr.toString("base64"));
-        base64url = Convert.FromBinary(csr.toString("base64url"));
+        const csr = new x509.Pkcs10CertificateRequest(encoding.base64.decode(pemString));
+        pem = encoding.binary.decode(csr.toString("pem"));
+        hex = encoding.binary.decode(csr.toString("hex"));
+        base64 = encoding.binary.decode(csr.toString("base64"));
+        base64url = encoding.binary.decode(csr.toString("base64url"));
       });
 
       it("pem", () => {
@@ -52,13 +53,13 @@ describe("crypto", () => {
   describe("Pkcs10CertificateRequest", () => {
     it("read", () => {
       const pem = "MIICdDCCAVwCAQAwLzEtMA8GA1UEAxMIdGVzdE5hbWUwGgYJKoZIhvcNAQkBEw10ZXN0QG1haWwubm90MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEArut7tLrb1BEHXImMTWipet+3/J2isn7mBv278oP7YyOkmX/Vzxvk9nvSc/B1wh6kSo6nfaxYacNNSP3r+WQYaTeLm5TsDbUfCJYtvvTuYH0GVTM8Qm7QhMZKnyUy/D60WNcRM4pnBDSEMpKppi7HhfL37DZpQnsQfr9r8LQPWZ9t/mf+FsSeWyQOQcz+ob6cODfNQIvbzpaXXdNpKIHLPW+/e4af5/WlZ9wL5Sy7kOf4X6nErdl74s1vSji9goANSQkd5TbswtFPRNybikrrisz0HtsIq2uTGDY6t3iOEHTe5qe/ux4anjbSqKVuIQEQWQOKb4h+mHTc+EC5yknihQIDAQABoAAwDQYJKoZIhvcNAQELBQADggEBAE7TU20ui1MLtxLM0UZMytYAjC7vtXxB5Vl6bzHUzZkVFW6oTeizqDxjeBtZ1SqErpgdyvzMvFSxF6f+679kl1/Zs2V0IPa4y58he3wTT/M1xCBN/bITY2cA4ETozbtK4cGoi6jY/0j8NcxTLfiBgwhE3ap+9GzLtWEhHWCXmpsohbvAktXSh1tLh4xmgoQoePEBSPbnaOmsonyzscKiBMASDvjrFdNbtD0uY2v/wYXwtRGvV/Q/O3lLWEosE4NdnZmgId4bm7ru48WucSnxuEJAkKUjDLrN0uqY/tKfX4Zy9w8Y/o+hk3QzNBVa3ZUvzDhVAmamQflvw3lXMm/JG4U=";
-      const csr = new x509.Pkcs10CertificateRequest(Convert.FromBase64(pem));
+      const csr = new x509.Pkcs10CertificateRequest(encoding.base64.decode(pem));
       expect(csr.subject).toBe("CN=testName+E=test@mail.not");
     });
 
     it("verify", async () => {
       const pem = "MIICRzCCAS8CAQAwAjEAMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEArut7tLrb1BEHXImMTWipet+3/J2isn7mBv278oP7YyOkmX/Vzxvk9nvSc/B1wh6kSo6nfaxYacNNSP3r+WQYaTeLm5TsDbUfCJYtvvTuYH0GVTM8Qm7QhMZKnyUy/D60WNcRM4pnBDSEMpKppi7HhfL37DZpQnsQfr9r8LQPWZ9t/mf+FsSeWyQOQcz+ob6cODfNQIvbzpaXXdNpKIHLPW+/e4af5/WlZ9wL5Sy7kOf4X6nErdl74s1vSji9goANSQkd5TbswtFPRNybikrrisz0HtsIq2uTGDY6t3iOEHTe5qe/ux4anjbSqKVuIQEQWQOKb4h+mHTc+EC5yknihQIDAQABoAAwDQYJKoZIhvcNAQELBQADggEBAE7TU20ui1MLtxLM0UZMytYAjC7vtXxB5Vl6bzHUzZkVFW6oTeizqDxjeBtZ1SqErpgdyvzMvFSxF6f+679kl1/Zs2V0IPa4y58he3wTT/M1xCBN/bITY2cA4ETozbtK4cGoi6jY/0j8NcxTLfiBgwhE3ap+9GzLtWEhHWCXmpsohbvAktXSh1tLh4xmgoQoePEBSPbnaOmsonyzscKiBMASDvjrFdNbtD0uY2v/wYXwtRGvV/Q/O3lLWEosE4NdnZmgId4bm7ru48WucSnxuEJAkKUjDLrN0uqY/tKfX4Zy9w8Y/o+hk3QzNBVa3ZUvzDhVAmamQflvw3lXMm/JG4U=";
-      const csr = new x509.Pkcs10CertificateRequest(Convert.FromBase64(pem));
+      const csr = new x509.Pkcs10CertificateRequest(encoding.base64.decode(pem));
       const ok = await csr.verify();
       expect(ok).toBe(true);
     });
@@ -177,7 +178,7 @@ W+K8+llxOFmtVzU=
     });
 
     it("read", () => {
-      const cert = new x509.X509Certificate(Convert.FromBase64(pem));
+      const cert = new x509.X509Certificate(encoding.base64.decode(pem));
       expect(cert.serialNumber).toBe("4844dcc6d4700ffab37f416356f1");
       expect(cert.subject).toBe("C=BE, O=GlobalSign nv-sa, OU=For Demo Use Only, CN=GlobalSign Demo Root CA");
       expect(cert.issuer).toBe("C=BE, O=GlobalSign nv-sa, OU=For Demo Use Only, CN=GlobalSign Demo Root CA");
@@ -185,54 +186,54 @@ W+K8+llxOFmtVzU=
     });
 
     it("verify", async () => {
-      const cert = new x509.X509Certificate(Convert.FromBase64(pem));
+      const cert = new x509.X509Certificate(encoding.base64.decode(pem));
       const ok = await cert.verify({ date: new Date(2020, 5, 7) });
       expect(ok).toBe(true);
     });
 
     describe("thumbprint", () => {
       it("default", async () => {
-        const cert = new x509.X509Certificate(Convert.FromBase64(pem));
+        const cert = new x509.X509Certificate(encoding.base64.decode(pem));
         const thumbprint = await cert.getThumbprint();
-        expect(Convert.ToHex(thumbprint)).toBe("0cfbca8d79cdc989e4dd64abbc2f979cc9e0ccb4");
+        expect(encoding.hex.encode(thumbprint)).toBe("0cfbca8d79cdc989e4dd64abbc2f979cc9e0ccb4");
       });
 
       it("SHA-256", async () => {
-        const cert = new x509.X509Certificate(Convert.FromBase64(pem));
+        const cert = new x509.X509Certificate(encoding.base64.decode(pem));
         const thumbprint = await cert.getThumbprint("SHA-256");
-        expect(Convert.ToHex(thumbprint)).toBe("3578985ded3c684a00d138596cadc96a37eb2dd01511b4b7b7135a55362153df");
+        expect(encoding.hex.encode(thumbprint)).toBe("3578985ded3c684a00d138596cadc96a37eb2dd01511b4b7b7135a55362153df");
       });
 
       it("SHA-256, custom crypto", async () => {
-        const cert = new x509.X509Certificate(Convert.FromBase64(pem));
+        const cert = new x509.X509Certificate(encoding.base64.decode(pem));
         const thumbprint = await cert.getThumbprint("SHA-256", crypto);
-        expect(Convert.ToHex(thumbprint)).toBe("3578985ded3c684a00d138596cadc96a37eb2dd01511b4b7b7135a55362153df");
+        expect(encoding.hex.encode(thumbprint)).toBe("3578985ded3c684a00d138596cadc96a37eb2dd01511b4b7b7135a55362153df");
       });
 
       it("default algorithm, custom crypto", async () => {
-        const cert = new x509.X509Certificate(Convert.FromBase64(pem));
+        const cert = new x509.X509Certificate(encoding.base64.decode(pem));
         const thumbprint = await cert.getThumbprint(crypto);
-        expect(Convert.ToHex(thumbprint)).toBe("0cfbca8d79cdc989e4dd64abbc2f979cc9e0ccb4");
+        expect(encoding.hex.encode(thumbprint)).toBe("0cfbca8d79cdc989e4dd64abbc2f979cc9e0ccb4");
       });
     });
 
     describe("getExtensions", () => {
       it("existing", async () => {
-        const cert = new x509.X509Certificate(Convert.FromBase64(pem));
+        const cert = new x509.X509Certificate(encoding.base64.decode(pem));
         const extensions = cert.getExtensions("2.5.29.15");
         expect(extensions.length).toBe(1);
         expect(extensions[0] instanceof x509.KeyUsagesExtension).toBe(true);
       });
 
       it("class", async () => {
-        const cert = new x509.X509Certificate(Convert.FromBase64(pem));
+        const cert = new x509.X509Certificate(encoding.base64.decode(pem));
         const extensions = cert.getExtensions(x509.KeyUsagesExtension);
         expect(extensions.length).toBe(1);
         expect(extensions[0] instanceof x509.KeyUsagesExtension).toBe(true);
       });
 
       it("null", async () => {
-        const cert = new x509.X509Certificate(Convert.FromBase64(pem));
+        const cert = new x509.X509Certificate(encoding.base64.decode(pem));
         const extensions = cert.getExtensions("2.5.29.16");
         expect(extensions.length).toBe(0);
       });
@@ -240,7 +241,7 @@ W+K8+llxOFmtVzU=
 
     describe("getExtension", () => {
       it("class", async () => {
-        const cert = new x509.X509Certificate(Convert.FromBase64(pem));
+        const cert = new x509.X509Certificate(encoding.base64.decode(pem));
         const extension = cert.getExtension(x509.KeyUsagesExtension);
         expect(extension).toBeTruthy();
         expect(extension instanceof x509.KeyUsagesExtension).toBe(true);
@@ -249,14 +250,14 @@ W+K8+llxOFmtVzU=
 
     describe("toString", () => {
       it("hex", () => {
-        const cert = new x509.X509Certificate(Convert.FromBase64(pem));
+        const cert = new x509.X509Certificate(encoding.base64.decode(pem));
         const hex = cert.toString("hex");
         expect(hex).toBe("308203963082027ea003020102020e4844dcc6d4700ffab37f416356f1300d06092a864886f70d01010b05003066310b300906035504061302424531193017060355040a1310476c6f62616c5369676e206e762d7361311a3018060355040b1311466f722044656d6f20557365204f6e6c793120301e06035504031317476c6f62616c5369676e2044656d6f20526f6f74204341301e170d3136303732303030303030305a170d3336303732303030303030305a3066310b300906035504061302424531193017060355040a1310476c6f62616c5369676e206e762d7361311a3018060355040b1311466f722044656d6f20557365204f6e6c793120301e06035504031317476c6f62616c5369676e2044656d6f20526f6f7420434130820122300d06092a864886f70d01010105000382010f003082010a0282010100b58bd44d82b2786000133742782951998c519054615d71b2af7f1aedd017eeb2ada0f35895ad9663a932673d2c7883a4dd55cb045d4f465a59055ca12d67360ce3271bc0b01e250c500c4aa4574dc657c92cd89abfea3226d836c1c8f892e5fbd14054092d8b901ea5e98e93a998f8a8b2d52c83dc9d304a9c69c615db66ba03a36b6f573507a38bf97d2ef5ba37d0af98612c36360a774eeba3f4f0e4e894bfd023cb70ba3c24814573cb7bf253c3aae3403aa4c3c18fc74f0e3be758aa2d57a6f6adc40ca11e512fb1e20aac083da910d03b3e5401cdae790463a2fc0f9402c99f79ed68ab61a5a3d6ee5c1817fa82771e7c9e973254f448f8fb27c7eeb72f0203010001a3423040300e0603551d0f0101ff040403020106300f0603551d130101ff040530030101ff301d0603551d0e04160414ea0fc203f4ec601bcdc764956d3903267edaeb2f300d06092a864886f70d01010b0500038201010000408a2a92f403623e86c63cf35b48cfb5aa90b0ee2e1fc84b345576c00b600c4b8550d41cf7248795f25519296d39a2ae7f9be4ca6ec0023647c03b2dde9a5968a26dcef318464dbc42ac504628268611d1fb90b36705ede822623845c05317ef9c3e92e23461e966dffdfe062255b405ea9a7438c91a465ea349e26402f325a041b6422d4a47fe7a9e40035ea1a0ebe5883c20eb87450cc6e9836dfc297d09eb4377c58fac09069b74f6886d1d5d0e3c5609245dc343b58fb9e6762320ef8dee2f964e1d5f7b702b1b11c1477138e3e5a803c9ed7c8d60eb9f86474b3a1bc33ba12fa40055c8c2e8141981274d6a749b96c09f93650f7d782043a0e269d2f1");
         const cert2 = new x509.X509Certificate(hex);
         expect(cert2.equal(cert)).toBe(true);
       });
       it("pem", () => {
-        const cert = new x509.X509Certificate(Convert.FromBase64(pem));
+        const cert = new x509.X509Certificate(encoding.base64.decode(pem));
         const pem2 = cert.toString("pem");
         expect(pem2).toBe(`-----BEGIN CERTIFICATE-----
 MIIDljCCAn6gAwIBAgIOSETcxtRwD/qzf0FjVvEwDQYJKoZIhvcNAQELBQAwZjEL
@@ -284,14 +285,14 @@ D314IEOg4mnS8Q==
         expect(cert2.equal(cert)).toBe(true);
       });
       it("base64", () => {
-        const cert = new x509.X509Certificate(Convert.FromBase64(pem));
+        const cert = new x509.X509Certificate(encoding.base64.decode(pem));
         const base64 = cert.toString("base64");
         expect(base64).toBe("MIIDljCCAn6gAwIBAgIOSETcxtRwD/qzf0FjVvEwDQYJKoZIhvcNAQELBQAwZjELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExGjAYBgNVBAsTEUZvciBEZW1vIFVzZSBPbmx5MSAwHgYDVQQDExdHbG9iYWxTaWduIERlbW8gUm9vdCBDQTAeFw0xNjA3MjAwMDAwMDBaFw0zNjA3MjAwMDAwMDBaMGYxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMRowGAYDVQQLExFGb3IgRGVtbyBVc2UgT25seTEgMB4GA1UEAxMXR2xvYmFsU2lnbiBEZW1vIFJvb3QgQ0EwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQC1i9RNgrJ4YAATN0J4KVGZjFGQVGFdcbKvfxrt0Bfusq2g81iVrZZjqTJnPSx4g6TdVcsEXU9GWlkFXKEtZzYM4ycbwLAeJQxQDEqkV03GV8ks2Jq/6jIm2DbByPiS5fvRQFQJLYuQHqXpjpOpmPiostUsg9ydMEqcacYV22a6A6Nrb1c1B6OL+X0u9bo30K+YYSw2Ngp3Tuuj9PDk6JS/0CPLcLo8JIFFc8t78lPDquNAOqTDwY/HTw4751iqLVem9q3EDKEeUS+x4gqsCD2pENA7PlQBza55BGOi/A+UAsmfee1oq2Glo9buXBgX+oJ3HnyelzJU9Ej4+yfH7rcvAgMBAAGjQjBAMA4GA1UdDwEB/wQEAwIBBjAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBTqD8ID9OxgG83HZJVtOQMmftrrLzANBgkqhkiG9w0BAQsFAAOCAQEAAECKKpL0A2I+hsY881tIz7WqkLDuLh/ISzRVdsALYAxLhVDUHPckh5XyVRkpbTmirn+b5MpuwAI2R8A7Ld6aWWiibc7zGEZNvEKsUEYoJoYR0fuQs2cF7egiYjhFwFMX75w+kuI0Yelm3/3+BiJVtAXqmnQ4yRpGXqNJ4mQC8yWgQbZCLUpH/nqeQANeoaDr5Yg8IOuHRQzG6YNt/Cl9CetDd8WPrAkGm3T2iG0dXQ48VgkkXcNDtY+55nYjIO+N7i+WTh1fe3ArGxHBR3E44+WoA8ntfI1g65+GR0s6G8M7oS+kAFXIwugUGYEnTWp0m5bAn5NlD314IEOg4mnS8Q==");
         const cert2 = new x509.X509Certificate(base64);
         expect(cert2.equal(cert)).toBe(true);
       });
       it("base64url", () => {
-        const cert = new x509.X509Certificate(Convert.FromBase64(pem));
+        const cert = new x509.X509Certificate(encoding.base64.decode(pem));
         const base64url = cert.toString("base64url");
         expect(base64url).toBe("MIIDljCCAn6gAwIBAgIOSETcxtRwD_qzf0FjVvEwDQYJKoZIhvcNAQELBQAwZjELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExGjAYBgNVBAsTEUZvciBEZW1vIFVzZSBPbmx5MSAwHgYDVQQDExdHbG9iYWxTaWduIERlbW8gUm9vdCBDQTAeFw0xNjA3MjAwMDAwMDBaFw0zNjA3MjAwMDAwMDBaMGYxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMRowGAYDVQQLExFGb3IgRGVtbyBVc2UgT25seTEgMB4GA1UEAxMXR2xvYmFsU2lnbiBEZW1vIFJvb3QgQ0EwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQC1i9RNgrJ4YAATN0J4KVGZjFGQVGFdcbKvfxrt0Bfusq2g81iVrZZjqTJnPSx4g6TdVcsEXU9GWlkFXKEtZzYM4ycbwLAeJQxQDEqkV03GV8ks2Jq_6jIm2DbByPiS5fvRQFQJLYuQHqXpjpOpmPiostUsg9ydMEqcacYV22a6A6Nrb1c1B6OL-X0u9bo30K-YYSw2Ngp3Tuuj9PDk6JS_0CPLcLo8JIFFc8t78lPDquNAOqTDwY_HTw4751iqLVem9q3EDKEeUS-x4gqsCD2pENA7PlQBza55BGOi_A-UAsmfee1oq2Glo9buXBgX-oJ3HnyelzJU9Ej4-yfH7rcvAgMBAAGjQjBAMA4GA1UdDwEB_wQEAwIBBjAPBgNVHRMBAf8EBTADAQH_MB0GA1UdDgQWBBTqD8ID9OxgG83HZJVtOQMmftrrLzANBgkqhkiG9w0BAQsFAAOCAQEAAECKKpL0A2I-hsY881tIz7WqkLDuLh_ISzRVdsALYAxLhVDUHPckh5XyVRkpbTmirn-b5MpuwAI2R8A7Ld6aWWiibc7zGEZNvEKsUEYoJoYR0fuQs2cF7egiYjhFwFMX75w-kuI0Yelm3_3-BiJVtAXqmnQ4yRpGXqNJ4mQC8yWgQbZCLUpH_nqeQANeoaDr5Yg8IOuHRQzG6YNt_Cl9CetDd8WPrAkGm3T2iG0dXQ48VgkkXcNDtY-55nYjIO-N7i-WTh1fe3ArGxHBR3E44-WoA8ntfI1g65-GR0s6G8M7oS-kAFXIwugUGYEnTWp0m5bAn5NlD314IEOg4mnS8Q");
         const cert2 = new x509.X509Certificate(base64url);
@@ -301,7 +302,7 @@ D314IEOg4mnS8Q==
   });
 
   describe("PublicKey", () => {
-    const spki = Convert.FromHex("30820122300d06092a864886f70d01010105000382010f003082010a0282010100a4737ac5ec77f06df3486264a3a17c783143e9023073af169cc245023b4711526b4a721832943bbb59be53d241f3203c1a5eac9e1d5bb57bc0644d943dd63525090a70e1484db4b5ac03185ee897ae8ebabf255ebfc77cfebec928ac0b1fceb33b60238ac2ba3f016c035a53a3011828c2e9bafdd7e2a797d94dcbd79ec54a5ae3c92abef565b2ea6bb4af89e2f7e4dd1b52978bb828cb44843ace8c9ad7f80bef7ffedc8b73a04b6ec44cd65fc6ba8fc216c6ca4bbc99677695439391a4d17893b8f54d6755b681210660f7865748fc1126e21e4d9cdcee436c3ce5ebd91912d08713cb91613ecde2e8af694daa27110b8d588f34e82e88aa56315d15428db90203010001");
+    const spki = encoding.hex.decode("30820122300d06092a864886f70d01010105000382010f003082010a0282010100a4737ac5ec77f06df3486264a3a17c783143e9023073af169cc245023b4711526b4a721832943bbb59be53d241f3203c1a5eac9e1d5bb57bc0644d943dd63525090a70e1484db4b5ac03185ee897ae8ebabf255ebfc77cfebec928ac0b1fceb33b60238ac2ba3f016c035a53a3011828c2e9bafdd7e2a797d94dcbd79ec54a5ae3c92abef565b2ea6bb4af89e2f7e4dd1b52978bb828cb44843ace8c9ad7f80bef7ffedc8b73a04b6ec44cd65fc6ba8fc216c6ca4bbc99677695439391a4d17893b8f54d6755b681210660f7865748fc1126e21e4d9cdcee436c3ce5ebd91912d08713cb91613ecde2e8af694daa27110b8d588f34e82e88aa56315d15428db90203010001");
 
     describe("export", () => {
       it("with RSA-PSS algorithm", async () => {
@@ -317,25 +318,25 @@ D314IEOg4mnS8Q==
       it("default", async () => {
         const key = new x509.PublicKey(spki);
         const thumbprint = await key.getThumbprint();
-        expect(Convert.ToHex(thumbprint)).toBe("dd0137099d08ab3324e183ec258413d1b79e95b0");
+        expect(encoding.hex.encode(thumbprint)).toBe("dd0137099d08ab3324e183ec258413d1b79e95b0");
       });
 
       it("SHA-256", async () => {
         const key = new x509.PublicKey(spki);
         const thumbprint = await key.getThumbprint("SHA-256");
-        expect(Convert.ToHex(thumbprint)).toBe("5bdf9c42c2d13d8edfb7733c257f49ec7d8ac20d2dbe36a693e92b84a26c845c");
+        expect(encoding.hex.encode(thumbprint)).toBe("5bdf9c42c2d13d8edfb7733c257f49ec7d8ac20d2dbe36a693e92b84a26c845c");
       });
 
       it("SHA-256, custom crypto", async () => {
         const key = new x509.PublicKey(spki);
         const thumbprint = await key.getThumbprint("SHA-256", crypto);
-        expect(Convert.ToHex(thumbprint)).toBe("5bdf9c42c2d13d8edfb7733c257f49ec7d8ac20d2dbe36a693e92b84a26c845c");
+        expect(encoding.hex.encode(thumbprint)).toBe("5bdf9c42c2d13d8edfb7733c257f49ec7d8ac20d2dbe36a693e92b84a26c845c");
       });
 
       it("default algorithm, custom crypto", async () => {
         const key = new x509.PublicKey(spki);
         const thumbprint = await key.getThumbprint(crypto);
-        expect(Convert.ToHex(thumbprint)).toBe("dd0137099d08ab3324e183ec258413d1b79e95b0");
+        expect(encoding.hex.encode(thumbprint)).toBe("dd0137099d08ab3324e183ec258413d1b79e95b0");
       });
     });
   });
@@ -550,7 +551,7 @@ D314IEOg4mnS8Q==
       });
       it("hex", async () => {
         const hex = await certs.export("hex");
-        expect(Convert.isHex(hex)).toBe(true);
+        expect(encoding.hex.is(hex)).toBe(true);
         const certs2 = new x509.X509Certificates(hex);
 
         expect(certs2.length).toBe(2);
@@ -568,7 +569,7 @@ D314IEOg4mnS8Q==
       });
       it("base64", async () => {
         const base64 = await certs.export("base64");
-        expect(Convert.isBase64(base64)).toBe(true);
+        expect(encoding.base64.is(base64)).toBe(true);
         const certs2 = new x509.X509Certificates(base64);
 
         expect(certs2.length).toBe(2);
@@ -577,7 +578,7 @@ D314IEOg4mnS8Q==
       });
       it("base64url", async () => {
         const base64url = await certs.export("base64url");
-        expect(Convert.isBase64Url(base64url)).toBe(true);
+        expect(encoding.base64url.is(base64url)).toBe(true);
         const certs2 = new x509.X509Certificates(base64url);
 
         expect(certs2.length).toBe(2);
@@ -694,7 +695,7 @@ D314IEOg4mnS8Q==
   describe("Extensions", () => {
     it("Subject Alternative Name", () => {
       const hex = "3081a80603551d110481a030819d820d736f6d652e6e616d652e636f6d820e736f6d65322e6e616d652e636f6d81126d6963726f7368696e65406d61696c2e7275a01f06092b0601040182371901a0120410533ee18e1c2cbb428df739927c0bdbb687040a0109058613687474703a2f2f736f6d652e75726c2e636f6d861666696c653a2f2f2f736f6d652f66696c652f70617468a014060a2b060104018237140203a0060c0475736572";
-      const san = new x509.SubjectAlternativeNameExtension(Convert.FromHex(hex));
+      const san = new x509.SubjectAlternativeNameExtension(encoding.hex.decode(hex));
       const json = san.names.toJSON();
       expect(json).toEqual([
         {
@@ -732,7 +733,7 @@ D314IEOg4mnS8Q==
       ]);
 
       const san2 = new x509.SubjectAlternativeNameExtension(json, san.critical);
-      const hex2 = Convert.ToHex(san2.rawData);
+      const hex2 = encoding.hex.encode(san2.rawData);
 
       expect(hex2).toBe(hex);
     });
@@ -801,7 +802,7 @@ ZYYG
     const pem = "MIICADCB6QIBATANBgkqhkiG9w0BAQsFADBAMQswCQYDVQQGEwJVUzEfMB0GA1UEChMWVGVzdCBDZXJ0aWZpY2F0ZXMgMjAxMTEQMA4GA1UEAxMHR29vZCBDQRcNMTAwMTAxMDgzMDAwWhcNMzAxMjMxMDgzMDAwWjBEMCACAQ4XDTEwMDEwMTA4MzAwMFowDDAKBgNVHRUEAwoBATAgAgEPFw0xMDAxMDEwODMwMDFaMAwwCgYDVR0VBAMKAQGgLzAtMB8GA1UdIwQYMBaAFFgBhCQbvCtSlEo9pRByFFH1rzrJMAoGA1UdFAQDAgEBMA0GCSqGSIb3DQEBCwUAA4IBAQA9vPMLiinD8G7FaoTsu8T2jUrTi1OLPHxKnrlBrAP/eHa+VQV1HJfY5Gjq1dpNgzZqDIgQM5QHPm0aSgMN7Ultx+XzbxRswLnwgQrZ7f76Tlky1I+jz7/p3AEynrNR72v64SZt46UhpSuWBHoF1uEVtgirTZNfOEaGUJTNOaTA5U55/iw9BKjHN0e/Vd7OGnrk5h6FsgWOiasGn6/tym9teDt/L2hlOdsZsvX1KPc0ExUHVjJIUBYTooqyy/CuTzFHla6RYVYvJuRF5qYCxa0GTZK3ImCtJ3XfsGdfLEJDZ7T17xBQHucMvIVLm6vY44WUy7PqQhZJskhJMEvj01ZE";
 
     it("read", () => {
-      const crl = new x509.X509Crl(Convert.FromBase64(pem));
+      const crl = new x509.X509Crl(encoding.base64.decode(pem));
       expect(crl.issuer).toBe("C=US, O=Test Certificates 2011, CN=Good CA");
       expect(crl.extensions.length).toBe(2);
     });
@@ -810,19 +811,19 @@ ZYYG
       const goodCACert = "MIIDfDCCAmSgAwIBAgIBAjANBgkqhkiG9w0BAQsFADBFMQswCQYDVQQGEwJVUzEfMB0GA1UEChMWVGVzdCBDZXJ0aWZpY2F0ZXMgMjAxMTEVMBMGA1UEAxMMVHJ1c3QgQW5jaG9yMB4XDTEwMDEwMTA4MzAwMFoXDTMwMTIzMTA4MzAwMFowQDELMAkGA1UEBhMCVVMxHzAdBgNVBAoTFlRlc3QgQ2VydGlmaWNhdGVzIDIwMTExEDAOBgNVBAMTB0dvb2QgQ0EwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCQWJpHYo37Xfb7oJSPe+WvfTlzIG21WQ7MyMbGtK/m8mejCzR6c+f/pJhEH/OcDSMsXq8h5kXaBGqWK+vSwD/Pzp5OYGptXmGPcthDtAwlrafkGOS4GqIJ8+k9XGKs+vQUXJKsOk47RuzD6PZupq4s16xaLVqYbUC26UcY08GpnoLNHJZS/EmXw1ZZ3d4YZjNlpIpWFNHnUGmdiGKXUPX/9H0fVjIAaQwjnGAbpgyCumWgzIwPpX+ElFOUr3z7BoVnFKhIXze+VmQGSWxZxvWDUN90Ul0tLEpLgk3OVxUB4VUGuf15OJOpgo1xibINPmWt14Vda2N9yrNKloJGZNqLAgMBAAGjfDB6MB8GA1UdIwQYMBaAFOR9X9FclYYILAWuvnW2ZafZXahmMB0GA1UdDgQWBBRYAYQkG7wrUpRKPaUQchRR9a86yTAOBgNVHQ8BAf8EBAMCAQYwFwYDVR0gBBAwDjAMBgpghkgBZQMCATABMA8GA1UdEwEB/wQFMAMBAf8wDQYJKoZIhvcNAQELBQADggEBADWHlxbmdTXNwBL/llwhQqwnazK7CC2WsXBBqgNPWj7mtvQ+aLG8/50Qc2Sun7o2VnwF9D18UUe8Gj3uPUYH+oSI1vDdyKcjmMbKRU4rk0eo3UHNDXwqIVc9CQS9smyV+x1HCwL4TTrq+LXLKx/qVij0Yqk+UJfAtrg2jnYKXsCuFMBQQnWCGrwa1g1TphRp/RmYHnMynYFmZrXtzFz+U9XEA7C+gPq4kqDI/iVfIT1s6lBtdB50lrDVwl2oYfAvW/6sC2se2QleZidUmrziVNP4oEeXINokU6T6p//HM1FGQYw2jOvpKcKtWCSAnegEbgsGYzATKjmPJPJ0npHFqzP=";
       const badCACert = "MIIDijCCAnKgAwIBAgIBETANBgkqhkiG9w0BAQsFADBAMQswCQYDVQQGEwJVUzEfMB0GA1UEChMWVGVzdCBDZXJ0aWZpY2F0ZXMgMjAxMTEQMA4GA1UEAxMHR29vZCBDQTAeFw0xMDAxMDEwODMwMDBaFw0zMDEyMzEwODMwMDBaMEMxCzAJBgNVBAYTAlVTMR8wHQYDVQQKExZUZXN0IENlcnRpZmljYXRlcyAyMDExMRMwEQYDVQQDEwpHb29kIHN1YkNBMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAsg6YlsgUI+JxeULQ+eIB+57x/d39rz5zlcqfjzxk95+il+BC1o3VuwtIIxYMSNmi/5GvBuGLtjA0/XLCvM9GnONzZhmBUGU6voomA7W/WFZAqi7cDNEEzT9E7oJAoiQBNXPXngmJX8OLG9yLMOTolFlLoUvmAoDGryln42gYcYXdJMoWCq+JkAaxs4tVCl+OkAfLRM7yh/IZrhjfeQpMcy01e+Oku2AqdJTQSDjDBrvI21+rB3LnjJvWbpm7NbJL35LmOc/kd2YPyFw4vJ0uFdn95lKEuM6HY/PtkJNr36/qwJ0ixntXPCyYLyDSFqaSa+9LGbcJrp6yRoCD4hcZOwIDAQABo4GLMIGIMB8GA1UdIwQYMBaAFFgBhCQbvCtSlEo9pRByFFH1rzrJMB0GA1UdDgQWBBQyByyedF0tXSm7sXqNOxVStH1CeDAOBgNVHQ8BAf8EBAMCAQYwFwYDVR0gBBAwDjAMBgpghkgBZQMCATABMA8GA1UdEwEB/wQFMAMBAf8wDAYDVR0kBAUwA4ABADANBgkqhkiG9w0BAQsFAAOCAQEAcX2vRsH1O1HQsB/7Jlf+ov4pfIwfT5PAvv+p4bo+wWcumPIC1DjUk8xnOQUz3RkhQyqTbE+1OGuA1fjO0VJZ7YevKlO6MHkMYT4N5mge2ZuxMW+35ohZ23DHEHGk174QY6V8l4ICau2s1/SRajFqfRmY3s8gZFo0UBX0KIcmXSu0YHfaHWXnq7bs8kCODW0qMQnlpsUtbwdlPn5jt1kbMnRkrKzjruehXGm7gXC2QlHgH/MfJgpawne/n0DwPBVMs/KVuR/HRadunSuGf5Vy/rm6kZ8Lnu8+sk3pfWXdwEK2tWArcVUv3wh6jROOasEQC1Ah3H0iXv/ETCv3BnBHFc==";
 
-      const cert = new x509.X509Certificate(Convert.FromBase64(goodCACert));
-      const crl = new x509.X509Crl(Convert.FromBase64(pem));
+      const cert = new x509.X509Certificate(encoding.base64.decode(goodCACert));
+      const crl = new x509.X509Crl(encoding.base64.decode(pem));
 
       const ok = await crl.verify({ publicKey: cert });
       expect(ok).toBe(true);
 
-      const cert2 = new x509.X509Certificate(Convert.FromBase64(badCACert));
+      const cert2 = new x509.X509Certificate(encoding.base64.decode(badCACert));
       const error = await crl.verify({ publicKey: cert2 });
       expect(error).toBe(false);
     });
 
     it("findRevoked", () => {
-      const crl = new x509.X509Crl(Convert.FromBase64(pem));
+      const crl = new x509.X509Crl(encoding.base64.decode(pem));
       const entry = crl.findRevoked("0e");
       expect(entry && entry.serialNumber).toBe("0e");
       expect(entry && entry.revocationDate).toEqual(new Date("2010-01-01T08:30:00.000Z"));
@@ -859,7 +860,7 @@ ZYYG
       let ok = await caCert.verify({ date: new Date("2020/01/01 12:00") });
       expect(ok).toBe(true);
 
-      const crlBase = new x509.X509Crl(Convert.FromBase64(pem));
+      const crlBase = new x509.X509Crl(encoding.base64.decode(pem));
 
       const crl = await x509.X509CrlGenerator.create({
         issuer: caCert.issuer,

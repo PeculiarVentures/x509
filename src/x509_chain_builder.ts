@@ -1,6 +1,6 @@
 import { AsnConvert } from "@peculiar/asn1-schema";
 import * as asn1X509 from "@peculiar/asn1-x509";
-import { isEqual } from "pvtsutils";
+import * as bytes from "@peculiar/utils/bytes";
 import { AuthorityKeyIdentifierExtension, SubjectKeyIdentifierExtension } from "./extensions";
 import { cryptoProvider } from "./provider";
 import { X509Certificate } from "./x509_cert";
@@ -46,7 +46,7 @@ export class X509ChainBuilder {
       const thumbprint = await current.getThumbprint(crypto);
       for (const item of chain) {
         const thumbprint2 = await item.getThumbprint(crypto);
-        if (isEqual(thumbprint, thumbprint2)) {
+        if (bytes.equal(thumbprint, thumbprint2)) {
           throw new Error("Cannot build a certificate chain. Circular dependency.");
         }
       }
@@ -80,7 +80,7 @@ export class X509ChainBuilder {
               asn1X509.id_ce_subjectAltName,
             );
             if (sanExt
-              && !(akiExt.certId.serialNumber === item.serialNumber && isEqual(
+              && !(akiExt.certId.serialNumber === item.serialNumber && bytes.equal(
                 AsnConvert.serialize(akiExt.certId.name),
                 AsnConvert.serialize(sanExt),
               ))) {

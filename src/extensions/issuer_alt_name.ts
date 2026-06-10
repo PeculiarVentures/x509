@@ -1,6 +1,6 @@
 import { AsnConvert } from "@peculiar/asn1-schema";
 import * as asn1X509 from "@peculiar/asn1-x509";
-import { BufferSourceConverter } from "pvtsutils";
+import * as bytes from "@peculiar/utils/bytes";
 import { Extension } from "../extension";
 import { GeneralNames, JsonGeneralNames } from "../general_name";
 import { TextObject } from "../text_converter";
@@ -9,7 +9,7 @@ import { TextObject } from "../text_converter";
  * Represents the Issuer Alternative Name certificate extension
  */
 export class IssuerAlternativeNameExtension extends Extension {
-  public names!: GeneralNames;
+  declare public names: GeneralNames;
 
   public static override NAME = "Issuer Alternative Name";
 
@@ -17,7 +17,7 @@ export class IssuerAlternativeNameExtension extends Extension {
    * Creates a new instance from DER encoded buffer
    * @param raw DER encoded buffer
    */
-  public constructor(raw: BufferSource);
+  public constructor(raw: bytes.BufferSourceLike);
   /**
    * Creates a new instance
    * @param data JSON representation of IAN
@@ -25,8 +25,8 @@ export class IssuerAlternativeNameExtension extends Extension {
    */
   public constructor(data?: JsonGeneralNames, critical?: boolean);
   public constructor(...args: any[]) {
-    if (BufferSourceConverter.isBufferSource(args[0])) {
-      super(args[0] as BufferSource);
+    if (bytes.isBufferSource(args[0])) {
+      super(args[0] as bytes.BufferSourceLike);
     } else {
       super(asn1X509.id_ce_issuerAltName, args[1], new GeneralNames(args[0] || []).rawData);
     }

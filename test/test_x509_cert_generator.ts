@@ -202,7 +202,7 @@ describe(path.basename(__filename), () => {
       expect(cert).toBeTruthy();
     });
 
-    it("should handle BufferSource publicKey", async () => {
+    it("should handle bytes.BufferSourceLike publicKey", async () => {
       const spki = await crypto.subtle.exportKey("spki", keys.publicKey);
       const cert = await x509.X509CertificateGenerator.create({
         publicKey: spki,

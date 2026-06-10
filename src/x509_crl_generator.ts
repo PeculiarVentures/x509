@@ -4,7 +4,7 @@ import { container } from "tsyringe";
 import {
   CRLReasons, RevokedCertificate, Time,
 } from "@peculiar/asn1-x509";
-import { isEqual } from "pvtsutils";
+import * as bytes from "@peculiar/utils/bytes";
 import { cryptoProvider } from "./provider";
 import { AlgorithmProvider, diAlgorithmProvider } from "./algorithm";
 import { Extension } from "./extension";
@@ -86,7 +86,7 @@ export class X509CrlGenerator {
       for (const entry of params.entries) {
         const userCertificate = PemData.toArrayBuffer(entry.serialNumber);
         const index = asnX509Crl.tbsCertList.revokedCertificates
-          .findIndex((cert) => isEqual(cert.userCertificate, userCertificate));
+          .findIndex((cert) => bytes.equal(cert.userCertificate, userCertificate));
         if (index > -1) {
           throw new Error(`Certificate serial number ${entry.serialNumber} already exists in tbsCertList`);
         }

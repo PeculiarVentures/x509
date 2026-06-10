@@ -4,7 +4,7 @@ import {
 } from "@peculiar/asn1-rsa";
 import { AsnConvert } from "@peculiar/asn1-schema";
 import { AlgorithmIdentifier, SubjectPublicKeyInfo } from "@peculiar/asn1-x509";
-import { BufferSourceConverter } from "pvtsutils";
+import * as bytes from "@peculiar/utils/bytes";
 import { container } from "tsyringe";
 import { AlgorithmProvider, diAlgorithmProvider } from "./algorithm";
 import { PemConverter } from "./pem_converter";
@@ -19,7 +19,7 @@ export interface IPublicKeyContainer {
 /**
  * Public key type. Represents a public key in different formats.
  */
-export type PublicKeyType = PublicKey | CryptoKey | IPublicKeyContainer | BufferSource;
+export type PublicKeyType = PublicKey | CryptoKey | IPublicKeyContainer | bytes.BufferSourceLike;
 
 /**
  * Representation of Subject Public Key Info
@@ -45,8 +45,8 @@ export class PublicKey extends PemData<SubjectPublicKeyInfo> {
       return new PublicKey(spki);
     } else if ((data as IPublicKeyContainer).publicKey) {
       return (data as IPublicKeyContainer).publicKey;
-    } else if (BufferSourceConverter.isBufferSource(data)) {
-      return new PublicKey(data as BufferSource);
+    } else if (bytes.isBufferSource(data)) {
+      return new PublicKey(data as bytes.BufferSourceLike);
     } else {
       throw new TypeError("Unsupported PublicKeyType");
     }
@@ -57,7 +57,7 @@ export class PublicKey extends PemData<SubjectPublicKeyInfo> {
   /**
    * Gets a key algorithm
    */
-  public algorithm!: Algorithm;
+  declare public algorithm: Algorithm;
 
   /**
    * Creates a new instance from ASN.1
@@ -136,8 +136,8 @@ export class PublicKey extends PemData<SubjectPublicKeyInfo> {
       case id_rsaEncryption:
       {
         const rsaPublicKey = AsnConvert.parse(asn.subjectPublicKey, RSAPublicKey);
-        const modulus = BufferSourceConverter.toUint8Array(rsaPublicKey.modulus);
-        algorithm.publicExponent = BufferSourceConverter.toUint8Array(rsaPublicKey.publicExponent);
+        const modulus = bytes.toUint8Array(rsaPublicKey.modulus);
+        algorithm.publicExponent = bytes.toUint8Array(rsaPublicKey.publicExponent);
         algorithm.modulusLength = (!modulus[0] ? modulus.slice(1) : modulus).byteLength << 3;
         break;
       }

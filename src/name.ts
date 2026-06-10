@@ -2,7 +2,8 @@ import {
   AttributeTypeAndValue, Name as AsnName, RelativeDistinguishedName,
 } from "@peculiar/asn1-x509";
 import { AsnConvert } from "@peculiar/asn1-schema";
-import { BufferSourceConverter, Convert } from "pvtsutils";
+import * as bytes from "@peculiar/utils/bytes";
+import { hex, utf8 } from "@peculiar/utils/encoding";
 import { cryptoProvider } from "./provider";
 
 const OID_REGEX = /^[0-2](?:\.[1-9][0-9]*)+$/;
@@ -78,7 +79,7 @@ export type JsonName = JsonAttributeAndStringValue[];
 export type JsonNameParams = JsonAttributeAndValue[];
 
 function replaceUnknownCharacter(text: string, char: string) {
-  return `\\${Convert.ToHex(Convert.FromUtf8String(char)).toUpperCase()}`;
+  return `\\${hex.encode(utf8.encode(char)).toUpperCase()}`;
 }
 
 function escape(data: string) {
@@ -143,7 +144,7 @@ export class Name {
    * });
    */
   public constructor(
-    data: BufferSource | AsnName | string | JsonNameParams,
+    data: bytes.BufferSourceLike | AsnName | string | JsonNameParams,
     extraNames: IdOrName = {},
   ) {
     for (const key in extraNames) {
@@ -157,7 +158,7 @@ export class Name {
       this.asn = this.fromString(data);
     } else if (data instanceof AsnName) {
       this.asn = data;
-    } else if (BufferSourceConverter.isBufferSource(data)) {
+    } else if (bytes.isBufferSource(data)) {
       this.asn = AsnConvert.parse(data, AsnName);
     } else {
       this.asn = this.fromJSON(data);
@@ -202,7 +203,7 @@ export class Name {
           // octothorpe character ('#' ASCII 35) followed by the hexadecimal
           // representation of each of the bytes of the BER encoding of the X.500
           // AttributeValue
-          ? `#${Convert.ToHex(o.value.anyValue)}`
+          ? `#${hex.encode(o.value.anyValue)}`
           // Otherwise, if the AttributeValue is of a type which has a string
           // representation, the value is converted first to a UTF-8 string
           // according to its syntax specification
@@ -225,7 +226,7 @@ export class Name {
       for (const attr of rdn) {
         const type = this.getName(attr.type) || attr.type;
         jsonItem[type] ??= [];
-        jsonItem[type].push(attr.value.anyValue ? `#${Convert.ToHex(attr.value.anyValue)}` : attr.value.toString());
+        jsonItem[type].push(attr.value.anyValue ? `#${hex.encode(attr.value.anyValue)}` : attr.value.toString());
       }
       json.push(jsonItem);
     }
@@ -340,7 +341,7 @@ export class Name {
         }
       }
     } else if (value[0] === "#") {
-      attr.value.anyValue = Convert.FromHex(value.slice(1));
+      attr.value.anyValue = bytes.toArrayBuffer(hex.decode(value.slice(1)));
     } else {
       const processedValue = this.processStringValue(value);
       if (type === this.getName("E") || type === this.getName("DC")) {
