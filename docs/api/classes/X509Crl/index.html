@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="generator" content="Docusaurus v3.9.2">
 <title data-rh="true">X509Crl | @peculiar/x509</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:image" content="https://peculiarventures.github.io/x509/img/card.png"><meta data-rh="true" name="twitter:image" content="https://peculiarventures.github.io/x509/img/card.png"><meta data-rh="true" property="og:url" content="https://peculiarventures.github.io/x509/docs/api/classes/X509Crl"><meta data-rh="true" property="og:locale" content="en"><meta data-rh="true" name="docusaurus_locale" content="en"><meta data-rh="true" name="docsearch:language" content="en"><meta data-rh="true" name="docusaurus_version" content="current"><meta data-rh="true" name="docusaurus_tag" content="docs-default-current"><meta data-rh="true" name="docsearch:version" content="current"><meta data-rh="true" name="docsearch:docusaurus_tag" content="docs-default-current"><meta data-rh="true" property="og:title" content="X509Crl | @peculiar/x509"><meta data-rh="true" name="description" content="Representation of X.509 Certificate Revocation List (CRL)"><meta data-rh="true" property="og:description" content="Representation of X.509 Certificate Revocation List (CRL)"><link data-rh="true" rel="icon" href="/x509/img/favicon.ico"><link data-rh="true" rel="canonical" href="https://peculiarventures.github.io/x509/docs/api/classes/X509Crl"><link data-rh="true" rel="alternate" href="https://peculiarventures.github.io/x509/docs/api/classes/X509Crl" hreflang="en"><link data-rh="true" rel="alternate" href="https://peculiarventures.github.io/x509/docs/api/classes/X509Crl" hreflang="x-default"><script data-rh="true" type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"X509Crl","item":"https://peculiarventures.github.io/x509/docs/api/classes/X509Crl"}]}</script><link rel="stylesheet" href="/x509/assets/css/styles.66a259c8.css">
-<script src="/x509/assets/js/runtime~main.774b9afa.js" defer="defer"></script>
+<script src="/x509/assets/js/runtime~main.804cb0b7.js" defer="defer"></script>
 <script src="/x509/assets/js/main.1aa4da58.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
@@ -179,13 +179,16 @@ Use findRevoked() for efficient searching of specific certificates.</p>
 <hr>
 <h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="findrevoked">findRevoked()<a href="#findrevoked" class="hash-link" aria-label="Direct link to findRevoked()" title="Direct link to findRevoked()" translate="no">​</a></h3>
 <blockquote>
-<p><strong>findRevoked</strong>(<code>certOrSerialNumber</code>): <a class="" href="/x509/docs/api/classes/X509CrlEntry"><code>X509CrlEntry</code></a> | <code>null</code></p>
+<p><strong>findRevoked</strong>(<code>certOrSerialNumber</code>, <code>crypto?</code>): <a class="" href="/x509/docs/api/classes/X509CrlEntry"><code>X509CrlEntry</code></a> | <code>null</code></p>
 </blockquote>
 <p>Gets the CRL entry, with the given X509Certificate or certificate serialNumber.</p>
 <h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="parameters-3">Parameters<a href="#parameters-3" class="hash-link" aria-label="Direct link to Parameters" title="Direct link to Parameters" translate="no">​</a></h4>
 <h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="certorserialnumber">certOrSerialNumber<a href="#certorserialnumber" class="hash-link" aria-label="Direct link to certOrSerialNumber" title="Direct link to certOrSerialNumber" translate="no">​</a></h5>
 <p>certificate | serialNumber</p>
 <p><code>string</code> | <a class="" href="/x509/docs/api/classes/X509Certificate"><code>X509Certificate</code></a></p>
+<h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="crypto">crypto?<a href="#crypto" class="hash-link" aria-label="Direct link to crypto?" title="Direct link to crypto?" translate="no">​</a></h5>
+<p><code>Crypto</code></p>
+<p>Crypto provider. Default is from CryptoProvider</p>
 <h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="returns-13">Returns<a href="#returns-13" class="hash-link" aria-label="Direct link to Returns" title="Direct link to Returns" translate="no">​</a></h4>
 <p><a class="" href="/x509/docs/api/classes/X509CrlEntry"><code>X509CrlEntry</code></a> | <code>null</code></p>
 <hr>
@@ -270,7 +273,7 @@ Use findRevoked() for efficient searching of specific certificates.</p>
 </blockquote>
 <p>Returns a SHA-1 certificate thumbprint</p>
 <h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="parameters-8">Parameters<a href="#parameters-8" class="hash-link" aria-label="Direct link to Parameters" title="Direct link to Parameters" translate="no">​</a></h5>
-<h6 class="anchor anchorTargetStickyNavbar_Vzrq" id="crypto">crypto?<a href="#crypto" class="hash-link" aria-label="Direct link to crypto?" title="Direct link to crypto?" translate="no">​</a></h6>
+<h6 class="anchor anchorTargetStickyNavbar_Vzrq" id="crypto-1">crypto?<a href="#crypto-1" class="hash-link" aria-label="Direct link to crypto?" title="Direct link to crypto?" translate="no">​</a></h6>
 <p><code>Crypto</code></p>
 <p>Crypto provider. Default is from CryptoProvider</p>
 <h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="returns-19">Returns<a href="#returns-19" class="hash-link" aria-label="Direct link to Returns" title="Direct link to Returns" translate="no">​</a></h5>
@@ -284,7 +287,7 @@ Use findRevoked() for efficient searching of specific certificates.</p>
 <h6 class="anchor anchorTargetStickyNavbar_Vzrq" id="algorithm">algorithm<a href="#algorithm" class="hash-link" aria-label="Direct link to algorithm" title="Direct link to algorithm" translate="no">​</a></h6>
 <p><code>AlgorithmIdentifier</code></p>
 <p>Hash algorithm</p>
-<h6 class="anchor anchorTargetStickyNavbar_Vzrq" id="crypto-1">crypto?<a href="#crypto-1" class="hash-link" aria-label="Direct link to crypto?" title="Direct link to crypto?" translate="no">​</a></h6>
+<h6 class="anchor anchorTargetStickyNavbar_Vzrq" id="crypto-2">crypto?<a href="#crypto-2" class="hash-link" aria-label="Direct link to crypto?" title="Direct link to crypto?" translate="no">​</a></h6>
 <p><code>Crypto</code></p>
 <p>Crypto provider. Default is from CryptoProvider</p>
 <h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="returns-20">Returns<a href="#returns-20" class="hash-link" aria-label="Direct link to Returns" title="Direct link to Returns" translate="no">​</a></h5>
@@ -358,7 +361,7 @@ Use findRevoked() for efficient searching of specific certificates.</p>
 <h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="params">params<a href="#params" class="hash-link" aria-label="Direct link to params" title="Direct link to params" translate="no">​</a></h5>
 <p><a class="" href="/x509/docs/api/interfaces/X509CrlVerifyParams"><code>X509CrlVerifyParams</code></a></p>
 <p>Verification parameters</p>
-<h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="crypto-2">crypto<a href="#crypto-2" class="hash-link" aria-label="Direct link to crypto" title="Direct link to crypto" translate="no">​</a></h5>
+<h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="crypto-3">crypto<a href="#crypto-3" class="hash-link" aria-label="Direct link to crypto" title="Direct link to crypto" translate="no">​</a></h5>
 <p><code>Crypto</code> = <code>...</code></p>
 <p>Crypto provider. Default is from CryptoProvider</p>
 <h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="returns-26">Returns<a href="#returns-26" class="hash-link" aria-label="Direct link to Returns" title="Direct link to Returns" translate="no">​</a></h4>
