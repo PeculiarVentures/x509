@@ -375,10 +375,14 @@ export class X509Crl extends PemData<CertificateList> {
    *  Gets the CRL entry, with the given X509Certificate or certificate serialNumber.
    *
    * @param certOrSerialNumber certificate | serialNumber
+   * @param crypto Crypto provider. Default is from CryptoProvider
    */
-  public findRevoked(certOrSerialNumber: X509Certificate | string): X509CrlEntry | null {
+  public findRevoked(
+    certOrSerialNumber: X509Certificate | string,
+    crypto?: Crypto,
+  ): X509CrlEntry | null {
     const serialNumber = typeof certOrSerialNumber === "string" ? certOrSerialNumber : certOrSerialNumber.serialNumber;
-    const serialBuffer = generateCertificateSerialNumber(serialNumber);
+    const serialBuffer = generateCertificateSerialNumber(serialNumber, crypto);
     for (const revoked of this.asn.tbsCertList.revokedCertificates || []) {
       if (BufferSourceConverter.isEqual(revoked.userCertificate, serialBuffer)) {
         return new X509CrlEntry(AsnConvert.serialize(revoked));
