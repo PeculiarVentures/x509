@@ -1,7 +1,13 @@
 import { AsnConvert } from "@peculiar/asn1-schema";
 import * as asn1X509 from "@peculiar/asn1-x509";
-import { isEqual } from "pvtsutils";
-import { AuthorityKeyIdentifierExtension, SubjectKeyIdentifierExtension } from "./extensions";
+import { Convert, isEqual } from "pvtsutils";
+import {
+  AuthorityKeyIdentifierExtension,
+  BasicConstraintsExtension,
+  KeyUsageFlags,
+  KeyUsagesExtension,
+  SubjectKeyIdentifierExtension,
+} from "./extensions";
 import { cryptoProvider } from "./provider";
 import { X509Certificate } from "./x509_cert";
 import { X509Certificates } from "./x509_certs";
@@ -38,19 +44,20 @@ export class X509ChainBuilder {
 
   public async build(cert: X509Certificate, crypto = cryptoProvider.get()) {
     const chain = new X509Certificates(cert);
+    const thumbprints = new Set<string>();
+    thumbprints.add(Convert.ToHex(await cert.getThumbprint(crypto)));
 
     let current: X509Certificate | null = cert;
     // eslint-disable-next-line no-cond-assign
     while (current = await this.findIssuer(current, crypto)) {
       // check out circular dependency
       const thumbprint = await current.getThumbprint(crypto);
-      for (const item of chain) {
-        const thumbprint2 = await item.getThumbprint(crypto);
-        if (isEqual(thumbprint, thumbprint2)) {
-          throw new Error("Cannot build a certificate chain. Circular dependency.");
-        }
+      const thumbprintHex = Convert.ToHex(thumbprint);
+      if (thumbprints.has(thumbprintHex)) {
+        throw new Error("Cannot build a certificate chain. Circular dependency.");
       }
 
+      thumbprints.add(thumbprintHex);
       chain.push(current);
     }
 
@@ -88,6 +95,27 @@ export class X509ChainBuilder {
             }
           }
         }
+
+        // Check Basic Constraints
+        const basicConstraints = item.getExtension<BasicConstraintsExtension>(
+          asn1X509.id_ce_basicConstraints,
+        );
+        const isV3 = item.asn.tbsCertificate.version === 2;
+        if (isV3 && (!basicConstraints || !basicConstraints.ca)) {
+          // RFC 5280 4.2.1.9: The basic constraints extension MUST appear as a critical extension
+          // in all version 3 CA certificates.
+          continue;
+        }
+        if (basicConstraints && !basicConstraints.ca) {
+          continue;
+        }
+
+        // Check Key Usage
+        const keyUsage = item.getExtension<KeyUsagesExtension>(asn1X509.id_ce_keyUsage);
+        if (keyUsage && !(keyUsage.usages & KeyUsageFlags.keyCertSign)) {
+          continue;
+        }
+
         try {
           const algorithm = {
             ...item.publicKey.algorithm, ...cert.signatureAlgorithm,

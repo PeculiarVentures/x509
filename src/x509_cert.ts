@@ -94,6 +94,11 @@ export class X509Certificate extends PemData<Certificate> implements IPublicKeyC
   #publicKey?: PublicKey;
 
   /**
+   * Thumbprints cache
+   */
+  #thumbprints = new Map<string, ArrayBuffer>();
+
+  /**
    * Gets a public key of the certificate
    */
   public get publicKey(): PublicKey {
@@ -439,7 +444,14 @@ export class X509Certificate extends PemData<Certificate> implements IPublicKeyC
     }
     crypto ??= cryptoProvider.get();
 
-    return await crypto.subtle.digest(algorithm, this.rawData);
+    const algorithmName = (typeof algorithm === "string" ? algorithm : algorithm.name).toUpperCase();
+    let thumbprint = this.#thumbprints.get(algorithmName);
+    if (!thumbprint) {
+      thumbprint = await crypto.subtle.digest(algorithm, this.rawData);
+      this.#thumbprints.set(algorithmName, thumbprint);
+    }
+
+    return thumbprint;
   }
 
   public async isSelfSigned(crypto = cryptoProvider.get()): Promise<boolean> {
