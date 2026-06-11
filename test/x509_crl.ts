@@ -2,6 +2,7 @@ import {
   describe, it, expect, beforeAll,
 } from "vitest";
 import { Crypto } from "@peculiar/webcrypto";
+import { Convert } from "pvtsutils";
 import * as x509 from "../src";
 
 const crypto = new Crypto();
@@ -202,5 +203,46 @@ describe("X509CrlGenerator", () => {
         },
       ],
     })).rejects.toThrow("already exists");
+  });
+
+  // First byte 0xf6 has the high bit set; without sign-padding this would be
+  // encoded as a negative DER INTEGER (RFC 5280 §5.3.1 violation).
+  const highBitSerial = "f6f3c85e97e433070c51e0527b20b7f4";
+
+  it("should encode a high-bit-set serial number as a positive INTEGER", async () => {
+    const crl = await x509.X509CrlGenerator.create({
+      issuer: "CN=Test CA",
+      thisUpdate: new Date(),
+      nextUpdate: new Date(),
+      signingAlgorithm: alg,
+      signingKey: keys.privateKey,
+      entries: [{
+        serialNumber: highBitSerial, revocationDate: new Date(),
+      }],
+    });
+
+    // Re-parse from DER to assert the encoded bytes, not the in-memory object.
+    const parsed = new x509.X509Crl(crl.rawData);
+    const encoded = new Uint8Array(Convert.FromHex(parsed.entries[0].serialNumber));
+    expect(encoded[0]).toBe(0x00); // leading sign-pad byte => positive INTEGER
+    expect(parsed.entries[0].serialNumber).toBe(`00${highBitSerial}`);
+  });
+
+  it("should find a revoked high-bit-set serial number via findRevoked", async () => {
+    const crl = await x509.X509CrlGenerator.create({
+      issuer: "CN=Test CA",
+      thisUpdate: new Date(),
+      nextUpdate: new Date(),
+      signingAlgorithm: alg,
+      signingKey: keys.privateKey,
+      entries: [{
+        serialNumber: highBitSerial, revocationDate: new Date(),
+      }],
+    });
+
+    const parsed = new x509.X509Crl(crl.rawData);
+    const entry = parsed.findRevoked(highBitSerial);
+    expect(entry).not.toBeNull();
+    expect(entry?.serialNumber).toBe(`00${highBitSerial}`);
   });
 });

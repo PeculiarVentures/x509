@@ -14,7 +14,7 @@ import { diAsnSignatureFormatter, IAsnSignatureFormatter } from "./asn_signature
 import { X509CrlEntry, X509CrlReason } from "./x509_crl_entry";
 import { X509Crl } from "./x509_crl";
 import { X509CertificateCreateParamsName } from "./x509_cert_generator";
-import { PemData } from "./pem_data";
+import { generateCertificateSerialNumber } from "./utils";
 
 export interface X509CrlEntryParams {
   /**
@@ -84,7 +84,7 @@ export class X509CrlGenerator {
     if (params.entries && params.entries.length) {
       asnX509Crl.tbsCertList.revokedCertificates = [];
       for (const entry of params.entries) {
-        const userCertificate = PemData.toArrayBuffer(entry.serialNumber);
+        const userCertificate = generateCertificateSerialNumber(entry.serialNumber, crypto);
         const index = asnX509Crl.tbsCertList.revokedCertificates
           .findIndex((cert) => isEqual(cert.userCertificate, userCertificate));
         if (index > -1) {
