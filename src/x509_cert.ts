@@ -1,6 +1,6 @@
 import { AsnConvert } from "@peculiar/asn1-schema";
 import { Certificate, Version } from "@peculiar/asn1-x509";
-import { BufferSourceConverter, Convert } from "pvtsutils";
+import { BufferSourceConverter } from "pvtsutils";
 import { container } from "tsyringe";
 import { HashedAlgorithm } from "./types";
 import { cryptoProvider } from "./provider";
@@ -15,6 +15,7 @@ import { AsnEncodedType, PemData } from "./pem_data";
 import { diAsnSignatureFormatter, IAsnSignatureFormatter } from "./asn_signature_formatter";
 import { PemConverter } from "./pem_converter";
 import { TextConverter, TextObject } from "./text_converter";
+import { getCertificateSerialNumber } from "./utils";
 
 /**
  * Verification params of X509 certificate
@@ -109,16 +110,7 @@ export class X509Certificate extends PemData<Certificate> implements IPublicKeyC
    */
   public get serialNumber(): string {
     if (!this.#serialNumber) {
-      const tbs = this.asn.tbsCertificate;
-      let serialNumberBytes = new Uint8Array(tbs.serialNumber);
-      if (serialNumberBytes.length > 1
-        && serialNumberBytes[0] === 0x00
-        && serialNumberBytes[1] > 0x7F
-      ) {
-        // Remove the leading zero that was added to make negative numbers positive
-        serialNumberBytes = serialNumberBytes.slice(1);
-      }
-      this.#serialNumber = Convert.ToHex(serialNumberBytes);
+      this.#serialNumber = getCertificateSerialNumber(this.asn.tbsCertificate.serialNumber);
     }
 
     return this.#serialNumber;

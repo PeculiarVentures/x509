@@ -42,3 +42,25 @@ export function generateCertificateSerialNumber(
 
   return serialNumber.buffer;
 }
+
+/**
+ * Reads a certificate serial number from DER INTEGER content octets and returns
+ * it as a hexadecimal string. Strips the leading sign-pad byte (`0x00`) that is
+ * prepended to keep a high-bit-set value a positive INTEGER, so the returned
+ * string matches the original (unpadded) serial number.
+ *
+ * Inverse of {@link generateCertificateSerialNumber}.
+ *
+ * @param raw DER INTEGER content octets (e.g. `tbsCertificate.serialNumber` or
+ *   a CRL entry's `userCertificate`)
+ * @returns Hexadecimal string of the serial number, without sign padding
+ */
+export function getCertificateSerialNumber(raw: BufferSource): string {
+  let serialNumber = BufferSourceConverter.toUint8Array(raw);
+  if (serialNumber.length > 1 && serialNumber[0] === 0x00 && serialNumber[1] > 0x7F) {
+    // Remove the leading zero that was added to make negative numbers positive
+    serialNumber = serialNumber.slice(1);
+  }
+
+  return Convert.ToHex(serialNumber);
+}
