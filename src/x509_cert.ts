@@ -2,7 +2,7 @@ import { AsnConvert } from "@peculiar/asn1-schema";
 import { Certificate, Version } from "@peculiar/asn1-x509";
 import { BufferSourceConverter, Convert } from "pvtsutils";
 import { container } from "tsyringe";
-import { HashedAlgorithm } from "./types";
+import { HashedAlgorithm, ParseOptions } from "./types";
 import { cryptoProvider } from "./provider";
 import { Name } from "./name";
 import { Extension } from "./extension";
@@ -264,11 +264,12 @@ export class X509Certificate extends PemData<Certificate> implements IPublicKeyC
   /**
    * Creates a new instance
    * @param raw Encoded buffer (DER, PEM, HEX, Base64, Base64Url)
+   * @param options Optional ASN.1 parse options (e.g. `asn1js.fromBER` resource limits)
    */
-  public constructor(raw: AsnEncodedType);
-  public constructor(param: AsnEncodedType | Certificate) {
-    const args = PemData.isAsnEncoded(param) ? [param, Certificate] : [param];
-    super(args[0] as any, args[1] as any);
+  public constructor(raw: AsnEncodedType, options?: ParseOptions);
+  public constructor(param: AsnEncodedType | Certificate, options?: ParseOptions) {
+    const args = PemData.isAsnEncoded(param) ? [param, Certificate, options] : [param];
+    super(args[0] as any, args[1] as any, args[2] as any);
 
     this.tag = PemConverter.CertificateTag;
   }
@@ -449,7 +450,7 @@ export class X509Certificate extends PemData<Certificate> implements IPublicKeyC
   public override toTextObject(): TextObject {
     const obj = this.toTextObjectEmpty();
 
-    const cert = AsnConvert.parse(this.rawData, Certificate);
+    const cert = AsnConvert.parse(this.rawData, Certificate, this.parseOptions);
 
     const tbs = cert.tbsCertificate;
     const data = new TextObject("", {

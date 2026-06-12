@@ -5,6 +5,7 @@ import {
 import {
   TextConverter, TextObject, TextObjectConvertible,
 } from "./text_converter";
+import { ParseOptions } from "./types";
 
 export type AsnDataStringFormat = "asn" | "text" | "hex" | "base64" | "base64url";
 
@@ -15,6 +16,18 @@ export abstract class AsnData<T> implements TextObjectConvertible {
   public static NAME = "ASN";
 
   #rawData!: ArrayBuffer;
+
+  /**
+   * ASN.1 parse options
+   */
+  #options?: ParseOptions;
+
+  /**
+   * Gets the ASN.1 parse options the instance was created with
+   */
+  protected get parseOptions(): ParseOptions | undefined {
+    return this.#options;
+  }
 
   /**
    * Gets a DER encoded buffer
@@ -37,7 +50,7 @@ export abstract class AsnData<T> implements TextObjectConvertible {
    * @param raw DER encoded buffer
    * @param type ASN.1 convertible class for `@peculiar/asn1-schema` schema
    */
-  public constructor(raw: BufferSource, type: new() => T);
+  public constructor(raw: BufferSource, type: new() => T, options?: ParseOptions);
   /**
    * ASN.1 object
    * @param asn
@@ -45,8 +58,9 @@ export abstract class AsnData<T> implements TextObjectConvertible {
   public constructor(asn: T);
   public constructor(...args: any[]) {
     if (BufferSourceConverter.isBufferSource(args[0])) {
-      // raw, type
-      this.asn = AsnConvert.parse<T>(args[0], args[1]);
+      // raw, type, options?
+      this.#options = args[2];
+      this.asn = AsnConvert.parse<T>(args[0], args[1], args[2]);
       this.#rawData = BufferSourceConverter.toArrayBuffer(args[0]);
       this.onInit(this.asn);
     } else {
@@ -77,7 +91,7 @@ export abstract class AsnData<T> implements TextObjectConvertible {
   public toString(format: AsnDataStringFormat = "text"): string {
     switch (format) {
       case "asn":
-        return AsnConvert.toString(this.rawData);
+        return AsnConvert.toString(this.rawData, this.#options);
       case "text":
         return TextConverter.serialize(this.toTextObject());
       case "hex":

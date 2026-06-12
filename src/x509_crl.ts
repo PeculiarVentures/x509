@@ -4,7 +4,7 @@ import {
 } from "@peculiar/asn1-x509";
 import { BufferSourceConverter } from "pvtsutils";
 import { container } from "tsyringe";
-import { HashedAlgorithm } from "./types";
+import { HashedAlgorithm, ParseOptions } from "./types";
 import { cryptoProvider } from "./provider";
 import { Name } from "./name";
 import { Extension } from "./extension";
@@ -202,11 +202,12 @@ export class X509Crl extends PemData<CertificateList> {
   /**
    * Creates a new instance
    * @param raw Encoded buffer (DER, PEM, HEX, Base64, Base64Url)
+   * @param options Optional ASN.1 parse options (e.g. `asn1js.fromBER` resource limits)
    */
-  public constructor(raw: AsnEncodedType);
-  public constructor(param: AsnEncodedType | CertificateList) {
+  public constructor(raw: AsnEncodedType, options?: ParseOptions);
+  public constructor(param: AsnEncodedType | CertificateList, options?: ParseOptions) {
     // @ts-expect-error: super call with private fields
-    super(param, PemData.isAsnEncoded(param) ? CertificateList : undefined);
+    super(param, PemData.isAsnEncoded(param) ? CertificateList : undefined, options);
   }
 
   protected onInit(_asn: CertificateList) {

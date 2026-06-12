@@ -1,5 +1,6 @@
 import { BufferSourceConverter, Convert } from "pvtsutils";
 import { AsnData, AsnDataStringFormat } from "./asn_data";
+import { ParseOptions } from "./types";
 import { PemConverter } from "./pem_converter";
 
 export type AsnExportType = "pem" | AsnDataStringFormat;
@@ -61,7 +62,7 @@ export abstract class PemData<T> extends AsnData<T> {
    * @param raw Encoded buffer (DER, PEM, HEX, Base64, Base64Url)
    * @param type ASN.1 convertible class for `@peculiar/asn1-schema` schema
    */
-  public constructor(raw: AsnEncodedType, type: new() => T);
+  public constructor(raw: AsnEncodedType, type: new() => T, options?: ParseOptions);
   /**
    * Creates a new instance
    * @param asn ASN.1 object
@@ -69,7 +70,7 @@ export abstract class PemData<T> extends AsnData<T> {
   public constructor(asn: T);
   public constructor(...args: any[]) {
     if (PemData.isAsnEncoded(args[0])) {
-      super(PemData.toArrayBuffer(args[0]), args[1]);
+      super(PemData.toArrayBuffer(args[0]), args[1], args[2]);
     } else {
       super(args[0]);
     }

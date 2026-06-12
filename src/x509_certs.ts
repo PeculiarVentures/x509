@@ -10,6 +10,7 @@ import {
   OidSerializer, TextConverter, TextObject, TextObjectConvertible,
 } from "./text_converter";
 import { X509Certificate } from "./x509_cert";
+import { ParseOptions } from "./types";
 
 export type X509CertificatesExportType = AsnExportType | "pem-chain";
 
@@ -18,14 +19,20 @@ export type X509CertificatesExportType = AsnExportType | "pem-chain";
  */
 export class X509Certificates extends Array<X509Certificate> implements TextObjectConvertible {
   /**
+   * ASN.1 parse options
+   */
+  #options?: ParseOptions;
+
+  /**
    * Creates a new instance
    */
   public constructor();
   /**
    * Creates a new instance from encoded PKCS7 buffer
    * @param raw Encoded PKCS7 buffer. Supported formats are DER, PEM, HEX, Base64, or Base64Url
+   * @param options Optional ASN.1 parse options (e.g. `asn1js.fromBER` resource limits)
    */
-  public constructor(raw: AsnEncodedType);
+  public constructor(raw: AsnEncodedType, options?: ParseOptions);
   /**
    * Creates a new instance form X509 certificate
    * @param cert X509 certificate
@@ -36,11 +43,14 @@ export class X509Certificates extends Array<X509Certificate> implements TextObje
    * @param certs List of x509 certificates
    */
   public constructor(certs: X509Certificate[]);
-  public constructor(param?: AsnEncodedType | X509Certificate | X509Certificate[]) {
+  public constructor(
+    param?: AsnEncodedType | X509Certificate | X509Certificate[],
+    options?: ParseOptions,
+  ) {
     super();
 
     if (PemData.isAsnEncoded(param)) {
-      this.import(param);
+      this.import(param, options);
     } else if (param instanceof X509Certificate) {
       this.push(param);
     } else if (Array.isArray(param)) {
@@ -95,15 +105,17 @@ export class X509Certificates extends Array<X509Certificate> implements TextObje
    * Import certificates from encoded PKCS7 data. Supported formats are HEX, DER,
    * Base64, Base64Url, PEM
    * @param data
+   * @param options Optional ASN.1 parse options (e.g. `asn1js.fromBER` resource limits)
    */
-  public import(data: AsnEncodedType) {
+  public import(data: AsnEncodedType, options?: ParseOptions) {
+    this.#options = options;
     const raw = PemData.toArrayBuffer(data);
-    const cms = AsnConvert.parse(raw, asn1Cms.ContentInfo);
+    const cms = AsnConvert.parse(raw, asn1Cms.ContentInfo, options);
     if (cms.contentType !== asn1Cms.id_signedData) {
       throw new TypeError("Cannot parse CMS package. Incoming data is not a SignedData object.");
     }
 
-    const signedData = AsnConvert.parse(cms.content, asn1Cms.SignedData);
+    const signedData = AsnConvert.parse(cms.content, asn1Cms.SignedData, options);
     this.clear();
 
     for (const item of signedData.certificates || []) {
@@ -132,7 +144,7 @@ export class X509Certificates extends Array<X509Certificate> implements TextObje
           .map((o) => o.toString("pem"))
           .join("\n");
       case "asn":
-        return AsnConvert.toString(raw);
+        return AsnConvert.toString(raw, this.#options);
       case "hex":
         return Convert.ToHex(raw);
       case "base64":
@@ -147,8 +159,8 @@ export class X509Certificates extends Array<X509Certificate> implements TextObje
   }
 
   public toTextObject(): TextObject {
-    const contentInfo = AsnConvert.parse(this.export("raw"), asn1Cms.ContentInfo);
-    const signedData = AsnConvert.parse(contentInfo.content, asn1Cms.SignedData);
+    const contentInfo = AsnConvert.parse(this.export("raw"), asn1Cms.ContentInfo, this.#options);
+    const signedData = AsnConvert.parse(contentInfo.content, asn1Cms.SignedData, this.#options);
 
     const obj = new TextObject("X509Certificates", {
       "Content Type": OidSerializer.toString(contentInfo.contentType),
