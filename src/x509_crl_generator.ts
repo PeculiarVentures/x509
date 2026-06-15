@@ -60,6 +60,10 @@ export class X509CrlGenerator {
    * @param crypto Crypto provider. Default is from CryptoProvider
    */
   public static async create(params: X509CrlCreateParams, crypto = cryptoProvider.get()) {
+    // RFC 5280 §5.1.2.4/§5.1.2.5: GeneralizedTime MUST NOT include fractional seconds.
+    // Truncate to whole seconds without mutating the caller's Date objects.
+    const truncate = (d: Date): Date => new Date(Math.floor(d.getTime() / 1000) * 1000);
+
     const name = params.issuer instanceof Name
       ? params.issuer
       : new Name(params.issuer);
@@ -67,12 +71,12 @@ export class X509CrlGenerator {
       tbsCertList: new asn1X509.TBSCertList({
         version: asn1X509.Version.v2,
         issuer: AsnConvert.parse(name.toArrayBuffer(), asn1X509.Name),
-        thisUpdate: new Time(params.thisUpdate || new Date()),
+        thisUpdate: new Time(truncate(params.thisUpdate || new Date())),
       }),
     });
 
     if (params.nextUpdate) {
-      asnX509Crl.tbsCertList.nextUpdate = new Time(params.nextUpdate);
+      asnX509Crl.tbsCertList.nextUpdate = new Time(truncate(params.nextUpdate));
     }
 
     if (params.extensions && params.extensions.length) {
@@ -93,7 +97,7 @@ export class X509CrlGenerator {
 
         const revokedCert = new RevokedCertificate({
           userCertificate: userCertificate,
-          revocationDate: new Time(entry.revocationDate || new Date()),
+          revocationDate: new Time(truncate(entry.revocationDate || new Date())),
         });
 
         if ("extensions" in entry && entry.extensions?.length) {

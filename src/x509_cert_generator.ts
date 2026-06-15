@@ -134,8 +134,11 @@ export class X509CertificateGenerator {
     }
 
     const serialNumber = generateCertificateSerialNumber(params.serialNumber, crypto);
-    const notBefore = params.notBefore || new Date();
-    const notAfter = params.notAfter || new Date(notBefore.getTime() + 31536000000); // 1 year
+    // RFC 5280 §4.1.2.5: GeneralizedTime MUST NOT include fractional seconds.
+    // Truncate to whole seconds without mutating the caller's Date objects.
+    const truncate = (d: Date): Date => new Date(Math.floor(d.getTime() / 1000) * 1000);
+    const notBefore = truncate(params.notBefore || new Date());
+    const notAfter = truncate(params.notAfter || new Date(notBefore.getTime() + 31536000000)); // 1 year
 
     const asnX509 = new asn1X509.Certificate({
       tbsCertificate: new asn1X509.TBSCertificate({

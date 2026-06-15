@@ -2,6 +2,8 @@ import { webcrypto } from "node:crypto";
 import {
   describe, it, expect,
 } from "vitest";
+import { AsnConvert } from "@peculiar/asn1-schema";
+import { Certificate } from "@peculiar/asn1-x509";
 import * as x509 from "../src";
 
 const crypto = webcrypto as globalThis.Crypto;
@@ -137,5 +139,58 @@ describe("issues", () => {
       const parsedCert = new x509.X509Certificate(pemString);
       expect(parsedCert.serialNumber).toBe(serialNumber);
     }
+  });
+
+  it("#122 - GeneralizedTime must not include fractional seconds (RFC 5280 §4.1.2.5.2)", async () => {
+    // https://github.com/PeculiarVentures/x509/issues/122
+    // When notAfter is beyond 2049, the encoding uses GeneralizedTime.
+    // RFC 5280 §4.1.2.5.2 states GeneralizedTime values MUST NOT include fractional seconds.
+    // Input Dates with non-zero milliseconds must be silently truncated to whole seconds.
+    const keys = await crypto.subtle.generateKey(
+      { name: "ECDSA", namedCurve: "P-256" },
+      true,
+      ["sign", "verify"],
+    );
+
+    // Deliberate ms=500 to expose the fractional-seconds bug
+    const notBefore = new Date("2026-06-15T12:00:00.500Z");
+    const notAfter = new Date("2070-01-01T00:00:00.500Z"); // year > 2049 → GeneralizedTime
+
+    const cert = await x509.X509CertificateGenerator.createSelfSigned(
+      {
+        serialNumber: "01",
+        name: "CN=Issue 122 Test",
+        notBefore,
+        notAfter,
+        signingAlgorithm: { name: "ECDSA", hash: "SHA-256" },
+        keys,
+      },
+      crypto,
+    );
+
+    // Scan raw DER for GeneralizedTime tag (0x18) and check for decimal point (fractional seconds)
+    const buf = Buffer.from(cert.rawData);
+    const fractionalGeneralizedTimes: string[] = [];
+    for (let i = 0; i < buf.length - 2; i++) {
+      if (buf[i] === 0x18) { // ASN.1 GeneralizedTime tag
+        const len = buf[i + 1];
+        const str = buf.slice(i + 2, i + 2 + len).toString("ascii");
+        if (str.includes(".")) {
+          fractionalGeneralizedTimes.push(str);
+        }
+      }
+    }
+    expect(
+      fractionalGeneralizedTimes,
+      `GeneralizedTime must not contain fractional seconds. Found: ${fractionalGeneralizedTimes}`,
+    ).toHaveLength(0);
+
+    // Also verify via decoded validity that ms were stripped
+    const asnCert = AsnConvert.parse(cert.rawData, Certificate);
+    const decodedNotAfter = asnCert.tbsCertificate.validity.notAfter.getTime();
+    expect(decodedNotAfter.getMilliseconds(), "Decoded notAfter must have ms=0").toBe(0);
+
+    // Input Date must not be mutated
+    expect(notAfter.getMilliseconds(), "Caller's notAfter Date must not be mutated").toBe(500);
   });
 });
