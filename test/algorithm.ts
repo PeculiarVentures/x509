@@ -1,7 +1,7 @@
 import {
   describe, it, expect, beforeAll,
 } from "vitest";
-import { container } from "tsyringe";
+import { container } from "../src/container";
 import { AlgorithmProvider, diAlgorithmProvider } from "../src";
 
 describe("AlgorithmProvider", () => {

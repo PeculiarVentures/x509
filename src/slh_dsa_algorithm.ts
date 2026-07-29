@@ -13,7 +13,7 @@ import {
   id_slh_dsa_shake_256s,
   id_slh_dsa_shake_256f,
 } from "@peculiar/asn1-x509-post-quantum";
-import { container, injectable } from "tsyringe";
+import { container } from "./container";
 import { diAlgorithm, IAlgorithm } from "./algorithm";
 
 /**
@@ -22,7 +22,6 @@ import { diAlgorithm, IAlgorithm } from "./algorithm";
  * and NIST CSOR the AlgorithmIdentifier carries no parameters (absent, not
  * NULL), matching the Ed25519 convention.
  */
-@injectable()
 export class SlhDsaAlgorithm implements IAlgorithm {
   public toAsnAlgorithm(alg: Algorithm): AlgorithmIdentifier | null {
     let algorithm: string | null = null;
@@ -102,4 +101,4 @@ export class SlhDsaAlgorithm implements IAlgorithm {
 }
 
 // register SLH-DSA algorithm provider as a singleton object
-container.registerSingleton(diAlgorithm, SlhDsaAlgorithm);
+container.registerMany(diAlgorithm, { useValue: new SlhDsaAlgorithm() });

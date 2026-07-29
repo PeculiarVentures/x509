@@ -4,7 +4,7 @@ import {
   id_ml_dsa_65,
   id_ml_dsa_87,
 } from "@peculiar/asn1-x509-post-quantum";
-import { container, injectable } from "tsyringe";
+import { container } from "./container";
 import { diAlgorithm, IAlgorithm } from "./algorithm";
 
 /**
@@ -12,7 +12,6 @@ import { diAlgorithm, IAlgorithm } from "./algorithm";
  * (ML-DSA-44 / -65 / -87). Per FIPS 204 §5 and NIST CSOR the AlgorithmIdentifier
  * carries no parameters (absent, not NULL), matching the Ed25519 convention.
  */
-@injectable()
 export class MlDsaAlgorithm implements IAlgorithm {
   public toAsnAlgorithm(alg: Algorithm): AlgorithmIdentifier | null {
     let algorithm: string | null = null;
@@ -47,4 +46,4 @@ export class MlDsaAlgorithm implements IAlgorithm {
 }
 
 // register ML-DSA algorithm provider as a singleton object
-container.registerSingleton(diAlgorithm, MlDsaAlgorithm);
+container.registerMany(diAlgorithm, { useValue: new MlDsaAlgorithm() });

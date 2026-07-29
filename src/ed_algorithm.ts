@@ -1,5 +1,5 @@
 import { AlgorithmIdentifier } from "@peculiar/asn1-x509";
-import { container, injectable } from "tsyringe";
+import { container } from "./container";
 import { diAlgorithm, IAlgorithm } from "./algorithm";
 import { HashedAlgorithm } from "./types";
 
@@ -15,7 +15,6 @@ export const idEd448 = "1.3.101.113";
 /**
  * ECDH-ES and EdDSA algorithm provider
  */
-@injectable()
 export class EdAlgorithm implements IAlgorithm {
   public toAsnAlgorithm(alg: EcKeyGenParams): AlgorithmIdentifier | null {
     let algorithm: string | null = null;
@@ -80,4 +79,4 @@ export class EdAlgorithm implements IAlgorithm {
 }
 
 // register ED algorithm provider as a singleton object
-container.registerSingleton(diAlgorithm, EdAlgorithm);
+container.registerMany(diAlgorithm, { useValue: new EdAlgorithm() });

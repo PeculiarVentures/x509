@@ -8,12 +8,15 @@ export const diAsnSignatureFormatter = "crypto.signatureFormatter";
 /**
  * Provides mechanism to convert ASN.1 signature value to WebCrypto and back
  *
- * To register it's implementation in global use `tsyringe` container
+ * To register an implementation, add it to the exported `container`
  * @example
  * ```
- * import { container } from "tsyringe";
+ * import { container, diAsnSignatureFormatter } from "@peculiar/x509";
+ * import { AsnDefaultSignatureFormatter } from "@peculiar/x509";
  *
- * container.registerSingleton(diAsnSignatureFormatter, AsnDefaultSignatureFormatter);
+ * container.registerMany(diAsnSignatureFormatter, {
+ *   useValue: new AsnDefaultSignatureFormatter(),
+ * });
  * ```
  */
 export interface IAsnSignatureFormatter {

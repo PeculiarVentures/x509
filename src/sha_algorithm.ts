@@ -1,14 +1,13 @@
 import { AlgorithmIdentifier } from "@peculiar/asn1-x509";
-import { container, injectable } from "tsyringe";
 import {
   id_sha1, id_sha256, id_sha384, id_sha512,
 } from "@peculiar/asn1-rsa";
+import { container } from "./container";
 import { diAlgorithm, IAlgorithm } from "./algorithm";
 
 /**
  * SHA algorithm provider
  */
-@injectable()
 export class ShaAlgorithm implements IAlgorithm {
   public toAsnAlgorithm(alg: Algorithm): AlgorithmIdentifier | null {
     switch (alg.name.toLowerCase()) {
@@ -42,4 +41,4 @@ export class ShaAlgorithm implements IAlgorithm {
 }
 
 // register SHA algorithm provider as a singleton object
-container.registerSingleton(diAlgorithm, ShaAlgorithm);
+container.registerMany(diAlgorithm, { useValue: new ShaAlgorithm() });
