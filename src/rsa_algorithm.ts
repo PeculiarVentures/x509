@@ -1,7 +1,7 @@
 import * as asn1Rsa from "@peculiar/asn1-rsa";
 import { AsnConvert } from "@peculiar/asn1-schema";
 import { AlgorithmIdentifier } from "@peculiar/asn1-x509";
-import { container, injectable } from "tsyringe";
+import { container } from "./container";
 import {
   AlgorithmProvider, diAlgorithm, diAlgorithmProvider, IAlgorithm,
 } from "./algorithm";
@@ -10,7 +10,6 @@ import { HashedAlgorithm } from "./types";
 /**
  * RSA algorithm provider
  */
-@injectable()
 export class RsaAlgorithm implements IAlgorithm {
   public static createPssParams(hash: unknown, saltLength: number): asn1Rsa.RsaSaPssParams | null {
     const hashAlgorithm = RsaAlgorithm.getHashAlgorithm(hash);
@@ -144,4 +143,4 @@ export class RsaAlgorithm implements IAlgorithm {
 }
 
 // register RSA algorithm provider as a singleton object
-container.registerSingleton(diAlgorithm, RsaAlgorithm);
+container.registerMany(diAlgorithm, { useValue: new RsaAlgorithm() });

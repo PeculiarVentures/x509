@@ -5,7 +5,7 @@ import {
 import { AsnConvert } from "@peculiar/asn1-schema";
 import { AlgorithmIdentifier, SubjectPublicKeyInfo } from "@peculiar/asn1-x509";
 import { BufferSourceConverter } from "pvtsutils";
-import { container } from "tsyringe";
+import { container } from "./container";
 import { AlgorithmProvider, diAlgorithmProvider } from "./algorithm";
 import { PemConverter } from "./pem_converter";
 import { AsnEncodedType, PemData } from "./pem_data";

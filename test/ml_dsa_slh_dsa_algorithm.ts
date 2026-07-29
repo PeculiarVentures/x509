@@ -1,7 +1,6 @@
 import {
   describe, it, expect, beforeAll,
 } from "vitest";
-import { container } from "tsyringe";
 import {
   id_ml_dsa_44,
   id_ml_dsa_65,
@@ -20,6 +19,7 @@ import {
   id_slh_dsa_shake_256f,
 } from "@peculiar/asn1-x509-post-quantum";
 import { AlgorithmIdentifier } from "@peculiar/asn1-x509";
+import { container } from "../src/container";
 import { AlgorithmProvider, diAlgorithmProvider } from "../src";
 
 describe("ML-DSA + SLH-DSA AlgorithmProvider wiring (FIPS 204 / FIPS 205)", () => {

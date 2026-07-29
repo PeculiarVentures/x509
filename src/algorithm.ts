@@ -1,5 +1,5 @@
 import { AlgorithmIdentifier } from "@peculiar/asn1-x509";
-import { container } from "tsyringe";
+import { container } from "./container";
 
 export interface UnknownAlgorithm extends Algorithm {
   name: string;
@@ -96,4 +96,4 @@ export class AlgorithmProvider {
 export const diAlgorithmProvider = "crypto.algorithmProvider";
 
 // register AlgorithmProvider as a singleton object
-container.registerSingleton(diAlgorithmProvider, AlgorithmProvider);
+container.register(diAlgorithmProvider, { useValue: new AlgorithmProvider() });

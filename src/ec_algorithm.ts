@@ -1,7 +1,7 @@
 import { AlgorithmIdentifier } from "@peculiar/asn1-x509";
 import * as asn1Ecc from "@peculiar/asn1-ecc";
-import { container, injectable } from "tsyringe";
 import { AsnConvert } from "@peculiar/asn1-schema";
+import { container } from "./container";
 import { diAlgorithm, IAlgorithm } from "./algorithm";
 import { HashedAlgorithm } from "./types";
 
@@ -110,7 +110,6 @@ const ECDSA = "ECDSA";
 /**
  * EC algorithm provider
  */
-@injectable()
 export class EcAlgorithm implements IAlgorithm {
   public static SECP256K1 = "1.3.132.0.10";
 
@@ -306,4 +305,4 @@ export class EcAlgorithm implements IAlgorithm {
 }
 
 // register EC algorithm provider as a singleton object
-container.registerSingleton(diAlgorithm, EcAlgorithm);
+container.registerMany(diAlgorithm, { useValue: new EcAlgorithm() });
