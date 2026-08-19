@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="generator" content="Docusaurus v3.9.2">
 <title data-rh="true">PemData\&lt;T\&gt; | @peculiar/x509</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:image" content="https://peculiarventures.github.io/x509/img/card.png"><meta data-rh="true" name="twitter:image" content="https://peculiarventures.github.io/x509/img/card.png"><meta data-rh="true" property="og:url" content="https://peculiarventures.github.io/x509/docs/api/classes/PemData"><meta data-rh="true" property="og:locale" content="en"><meta data-rh="true" name="docusaurus_locale" content="en"><meta data-rh="true" name="docsearch:language" content="en"><meta data-rh="true" name="docusaurus_version" content="current"><meta data-rh="true" name="docusaurus_tag" content="docs-default-current"><meta data-rh="true" name="docsearch:version" content="current"><meta data-rh="true" name="docsearch:docusaurus_tag" content="docs-default-current"><meta data-rh="true" property="og:title" content="PemData\&lt;T\&gt; | @peculiar/x509"><meta data-rh="true" name="description" content="Represents an ASN.1 data"><meta data-rh="true" property="og:description" content="Represents an ASN.1 data"><link data-rh="true" rel="icon" href="/x509/img/favicon.ico"><link data-rh="true" rel="canonical" href="https://peculiarventures.github.io/x509/docs/api/classes/PemData"><link data-rh="true" rel="alternate" href="https://peculiarventures.github.io/x509/docs/api/classes/PemData" hreflang="en"><link data-rh="true" rel="alternate" href="https://peculiarventures.github.io/x509/docs/api/classes/PemData" hreflang="x-default"><script data-rh="true" type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"PemData","item":"https://peculiarventures.github.io/x509/docs/api/classes/PemData"}]}</script><link rel="stylesheet" href="/x509/assets/css/styles.66a259c8.css">
-<script src="/x509/assets/js/runtime~main.804cb0b7.js" defer="defer"></script>
+<script src="/x509/assets/js/runtime~main.860e95d2.js" defer="defer"></script>
 <script src="/x509/assets/js/main.1aa4da58.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
@@ -30,7 +30,7 @@
 <h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="constructors">Constructors<a href="#constructors" class="hash-link" aria-label="Direct link to Constructors" title="Direct link to Constructors" translate="no">​</a></h2>
 <h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="constructor">Constructor<a href="#constructor" class="hash-link" aria-label="Direct link to Constructor" title="Direct link to Constructor" translate="no">​</a></h3>
 <blockquote>
-<p><strong>new PemData</strong>&lt;<code>T</code>&gt;(<code>raw</code>, <code>type</code>): <code>PemData</code>&lt;<code>T</code>&gt;</p>
+<p><strong>new PemData</strong>&lt;<code>T</code>&gt;(<code>raw</code>, <code>type</code>, <code>options?</code>): <code>PemData</code>&lt;<code>T</code>&gt;</p>
 </blockquote>
 <p>Creates a new instance</p>
 <h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="parameters">Parameters<a href="#parameters" class="hash-link" aria-label="Direct link to Parameters" title="Direct link to Parameters" translate="no">​</a></h4>
@@ -40,19 +40,24 @@
 <h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="type">type<a href="#type" class="hash-link" aria-label="Direct link to type" title="Direct link to type" translate="no">​</a></h5>
 <p>() =&gt; <code>T</code></p>
 <p>ASN.1 convertible class for <code>@peculiar/asn1-schema</code> schema</p>
+<h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="options">options?<a href="#options" class="hash-link" aria-label="Direct link to options?" title="Direct link to options?" translate="no">​</a></h5>
+<p><code>any</code></p>
 <h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="returns">Returns<a href="#returns" class="hash-link" aria-label="Direct link to Returns" title="Direct link to Returns" translate="no">​</a></h4>
 <p><code>PemData</code>&lt;<code>T</code>&gt;</p>
 <h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="overrides">Overrides<a href="#overrides" class="hash-link" aria-label="Direct link to Overrides" title="Direct link to Overrides" translate="no">​</a></h4>
 <p><a class="" href="/x509/docs/api/classes/AsnData"><code>AsnData</code></a>.<a class="" href="/x509/docs/api/classes/AsnData#constructor"><code>constructor</code></a></p>
 <h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="constructor-1">Constructor<a href="#constructor-1" class="hash-link" aria-label="Direct link to Constructor" title="Direct link to Constructor" translate="no">​</a></h3>
 <blockquote>
-<p><strong>new PemData</strong>&lt;<code>T</code>&gt;(<code>asn</code>): <code>PemData</code>&lt;<code>T</code>&gt;</p>
+<p><strong>new PemData</strong>&lt;<code>T</code>&gt;(<code>asn</code>, <code>options?</code>): <code>PemData</code>&lt;<code>T</code>&gt;</p>
 </blockquote>
 <p>Creates a new instance</p>
 <h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="parameters-1">Parameters<a href="#parameters-1" class="hash-link" aria-label="Direct link to Parameters" title="Direct link to Parameters" translate="no">​</a></h4>
 <h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="asn">asn<a href="#asn" class="hash-link" aria-label="Direct link to asn" title="Direct link to asn" translate="no">​</a></h5>
 <p><code>T</code></p>
 <p>ASN.1 object</p>
+<h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="options-1">options?<a href="#options-1" class="hash-link" aria-label="Direct link to options?" title="Direct link to options?" translate="no">​</a></h5>
+<p><code>any</code></p>
+<p>ASN.1 parse options used for nested ASN.1 payloads</p>
 <h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="returns-1">Returns<a href="#returns-1" class="hash-link" aria-label="Direct link to Returns" title="Direct link to Returns" translate="no">​</a></h4>
 <p><code>PemData</code>&lt;<code>T</code>&gt;</p>
 <h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="overrides-1">Overrides<a href="#overrides-1" class="hash-link" aria-label="Direct link to Overrides" title="Direct link to Overrides" translate="no">​</a></h4>
@@ -79,15 +84,26 @@
 <h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="inherited-from-1">Inherited from<a href="#inherited-from-1" class="hash-link" aria-label="Direct link to Inherited from" title="Direct link to Inherited from" translate="no">​</a></h4>
 <p><a class="" href="/x509/docs/api/classes/AsnData"><code>AsnData</code></a>.<a class="" href="/x509/docs/api/classes/AsnData#name"><code>NAME</code></a></p>
 <h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="accessors">Accessors<a href="#accessors" class="hash-link" aria-label="Direct link to Accessors" title="Direct link to Accessors" translate="no">​</a></h2>
-<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="rawdata">rawData<a href="#rawdata" class="hash-link" aria-label="Direct link to rawData" title="Direct link to rawData" translate="no">​</a></h3>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="parseoptions">parseOptions<a href="#parseoptions" class="hash-link" aria-label="Direct link to parseOptions" title="Direct link to parseOptions" translate="no">​</a></h3>
 <h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="get-signature">Get Signature<a href="#get-signature" class="hash-link" aria-label="Direct link to Get Signature" title="Direct link to Get Signature" translate="no">​</a></h4>
+<blockquote>
+<p><strong>get</strong> <code>protected</code> <strong>parseOptions</strong>(): <code>any</code></p>
+</blockquote>
+<p>Gets the ASN.1 parse options the instance was created with</p>
+<h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="returns-2">Returns<a href="#returns-2" class="hash-link" aria-label="Direct link to Returns" title="Direct link to Returns" translate="no">​</a></h5>
+<p><code>any</code></p>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="inherited-from-2">Inherited from<a href="#inherited-from-2" class="hash-link" aria-label="Direct link to Inherited from" title="Direct link to Inherited from" translate="no">​</a></h4>
+<p><a class="" href="/x509/docs/api/classes/X509CrlEntry"><code>X509CrlEntry</code></a>.<a class="" href="/x509/docs/api/classes/X509CrlEntry#parseoptions"><code>parseOptions</code></a></p>
+<hr>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="rawdata">rawData<a href="#rawdata" class="hash-link" aria-label="Direct link to rawData" title="Direct link to rawData" translate="no">​</a></h3>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="get-signature-1">Get Signature<a href="#get-signature-1" class="hash-link" aria-label="Direct link to Get Signature" title="Direct link to Get Signature" translate="no">​</a></h4>
 <blockquote>
 <p><strong>get</strong> <strong>rawData</strong>(): <code>ArrayBuffer</code></p>
 </blockquote>
 <p>Gets a DER encoded buffer</p>
-<h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="returns-2">Returns<a href="#returns-2" class="hash-link" aria-label="Direct link to Returns" title="Direct link to Returns" translate="no">​</a></h5>
+<h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="returns-3">Returns<a href="#returns-3" class="hash-link" aria-label="Direct link to Returns" title="Direct link to Returns" translate="no">​</a></h5>
 <p><code>ArrayBuffer</code></p>
-<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="inherited-from-2">Inherited from<a href="#inherited-from-2" class="hash-link" aria-label="Direct link to Inherited from" title="Direct link to Inherited from" translate="no">​</a></h4>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="inherited-from-3">Inherited from<a href="#inherited-from-3" class="hash-link" aria-label="Direct link to Inherited from" title="Direct link to Inherited from" translate="no">​</a></h4>
 <p><a class="" href="/x509/docs/api/classes/X509CrlEntry"><code>X509CrlEntry</code></a>.<a class="" href="/x509/docs/api/classes/X509CrlEntry#rawdata"><code>rawData</code></a></p>
 <h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="methods">Methods<a href="#methods" class="hash-link" aria-label="Direct link to Methods" title="Direct link to Methods" translate="no">​</a></h2>
 <h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="equal">equal()<a href="#equal" class="hash-link" aria-label="Direct link to equal()" title="Direct link to equal()" translate="no">​</a></h3>
@@ -99,18 +115,18 @@
 <h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="data">data<a href="#data" class="hash-link" aria-label="Direct link to data" title="Direct link to data" translate="no">​</a></h5>
 <p><code>any</code></p>
 <p>Any data</p>
-<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="returns-3">Returns<a href="#returns-3" class="hash-link" aria-label="Direct link to Returns" title="Direct link to Returns" translate="no">​</a></h4>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="returns-4">Returns<a href="#returns-4" class="hash-link" aria-label="Direct link to Returns" title="Direct link to Returns" translate="no">​</a></h4>
 <p><code>data is PemData&lt;T&gt;</code></p>
-<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="inherited-from-3">Inherited from<a href="#inherited-from-3" class="hash-link" aria-label="Direct link to Inherited from" title="Direct link to Inherited from" translate="no">​</a></h4>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="inherited-from-4">Inherited from<a href="#inherited-from-4" class="hash-link" aria-label="Direct link to Inherited from" title="Direct link to Inherited from" translate="no">​</a></h4>
 <p><a class="" href="/x509/docs/api/classes/AsnData"><code>AsnData</code></a>.<a class="" href="/x509/docs/api/classes/AsnData#equal"><code>equal</code></a></p>
 <hr>
 <h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="gettextname">getTextName()<a href="#gettextname" class="hash-link" aria-label="Direct link to getTextName()" title="Direct link to getTextName()" translate="no">​</a></h3>
 <blockquote>
 <p><code>protected</code> <strong>getTextName</strong>(): <code>string</code></p>
 </blockquote>
-<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="returns-4">Returns<a href="#returns-4" class="hash-link" aria-label="Direct link to Returns" title="Direct link to Returns" translate="no">​</a></h4>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="returns-5">Returns<a href="#returns-5" class="hash-link" aria-label="Direct link to Returns" title="Direct link to Returns" translate="no">​</a></h4>
 <p><code>string</code></p>
-<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="inherited-from-4">Inherited from<a href="#inherited-from-4" class="hash-link" aria-label="Direct link to Inherited from" title="Direct link to Inherited from" translate="no">​</a></h4>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="inherited-from-5">Inherited from<a href="#inherited-from-5" class="hash-link" aria-label="Direct link to Inherited from" title="Direct link to Inherited from" translate="no">​</a></h4>
 <p><a class="" href="/x509/docs/api/classes/AsnData"><code>AsnData</code></a>.<a class="" href="/x509/docs/api/classes/AsnData#gettextname"><code>getTextName</code></a></p>
 <hr>
 <h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="oninit">onInit()<a href="#oninit" class="hash-link" aria-label="Direct link to onInit()" title="Direct link to onInit()" translate="no">​</a></h3>
@@ -122,9 +138,9 @@
 <h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="asn-2">asn<a href="#asn-2" class="hash-link" aria-label="Direct link to asn" title="Direct link to asn" translate="no">​</a></h5>
 <p><code>T</code></p>
 <p>ASN.1 object</p>
-<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="returns-5">Returns<a href="#returns-5" class="hash-link" aria-label="Direct link to Returns" title="Direct link to Returns" translate="no">​</a></h4>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="returns-6">Returns<a href="#returns-6" class="hash-link" aria-label="Direct link to Returns" title="Direct link to Returns" translate="no">​</a></h4>
 <p><code>void</code></p>
-<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="inherited-from-5">Inherited from<a href="#inherited-from-5" class="hash-link" aria-label="Direct link to Inherited from" title="Direct link to Inherited from" translate="no">​</a></h4>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="inherited-from-6">Inherited from<a href="#inherited-from-6" class="hash-link" aria-label="Direct link to Inherited from" title="Direct link to Inherited from" translate="no">​</a></h4>
 <p><a class="" href="/x509/docs/api/classes/AsnData"><code>AsnData</code></a>.<a class="" href="/x509/docs/api/classes/AsnData#oninit"><code>onInit</code></a></p>
 <hr>
 <h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="tostring">toString()<a href="#tostring" class="hash-link" aria-label="Direct link to toString()" title="Direct link to toString()" translate="no">​</a></h3>
@@ -133,7 +149,7 @@
 <p><strong>toString</strong>(): <code>string</code></p>
 </blockquote>
 <p>Returns encoded object in PEM format</p>
-<h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="returns-6">Returns<a href="#returns-6" class="hash-link" aria-label="Direct link to Returns" title="Direct link to Returns" translate="no">​</a></h5>
+<h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="returns-7">Returns<a href="#returns-7" class="hash-link" aria-label="Direct link to Returns" title="Direct link to Returns" translate="no">​</a></h5>
 <p><code>string</code></p>
 <h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="overrides-2">Overrides<a href="#overrides-2" class="hash-link" aria-label="Direct link to Overrides" title="Direct link to Overrides" translate="no">​</a></h5>
 <p><a class="" href="/x509/docs/api/classes/AsnData"><code>AsnData</code></a>.<a class="" href="/x509/docs/api/classes/AsnData#tostring"><code>toString</code></a></p>
@@ -146,7 +162,7 @@
 <h6 class="anchor anchorTargetStickyNavbar_Vzrq" id="format">format<a href="#format" class="hash-link" aria-label="Direct link to format" title="Direct link to format" translate="no">​</a></h6>
 <p><a class="" href="/x509/docs/api/#asnexporttype"><code>AsnExportType</code></a></p>
 <p>hex, base64, base64url, pem, asn, text</p>
-<h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="returns-7">Returns<a href="#returns-7" class="hash-link" aria-label="Direct link to Returns" title="Direct link to Returns" translate="no">​</a></h5>
+<h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="returns-8">Returns<a href="#returns-8" class="hash-link" aria-label="Direct link to Returns" title="Direct link to Returns" translate="no">​</a></h5>
 <p><code>string</code></p>
 <h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="overrides-3">Overrides<a href="#overrides-3" class="hash-link" aria-label="Direct link to Overrides" title="Direct link to Overrides" translate="no">​</a></h5>
 <p><code>AsnData.toString</code></p>
@@ -156,9 +172,9 @@
 <p><strong>toTextObject</strong>(): <a class="" href="/x509/docs/api/classes/TextObject"><code>TextObject</code></a></p>
 </blockquote>
 <p>Returns the object in textual representation</p>
-<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="returns-8">Returns<a href="#returns-8" class="hash-link" aria-label="Direct link to Returns" title="Direct link to Returns" translate="no">​</a></h4>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="returns-9">Returns<a href="#returns-9" class="hash-link" aria-label="Direct link to Returns" title="Direct link to Returns" translate="no">​</a></h4>
 <p><a class="" href="/x509/docs/api/classes/TextObject"><code>TextObject</code></a></p>
-<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="inherited-from-6">Inherited from<a href="#inherited-from-6" class="hash-link" aria-label="Direct link to Inherited from" title="Direct link to Inherited from" translate="no">​</a></h4>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="inherited-from-7">Inherited from<a href="#inherited-from-7" class="hash-link" aria-label="Direct link to Inherited from" title="Direct link to Inherited from" translate="no">​</a></h4>
 <p><a class="" href="/x509/docs/api/classes/AsnData"><code>AsnData</code></a>.<a class="" href="/x509/docs/api/classes/AsnData#totextobject"><code>toTextObject</code></a></p>
 <hr>
 <h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="totextobjectempty">toTextObjectEmpty()<a href="#totextobjectempty" class="hash-link" aria-label="Direct link to toTextObjectEmpty()" title="Direct link to toTextObjectEmpty()" translate="no">​</a></h3>
@@ -168,9 +184,9 @@
 <h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="parameters-5">Parameters<a href="#parameters-5" class="hash-link" aria-label="Direct link to Parameters" title="Direct link to Parameters" translate="no">​</a></h4>
 <h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="value">value?<a href="#value" class="hash-link" aria-label="Direct link to value?" title="Direct link to value?" translate="no">​</a></h5>
 <p><code>string</code></p>
-<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="returns-9">Returns<a href="#returns-9" class="hash-link" aria-label="Direct link to Returns" title="Direct link to Returns" translate="no">​</a></h4>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="returns-10">Returns<a href="#returns-10" class="hash-link" aria-label="Direct link to Returns" title="Direct link to Returns" translate="no">​</a></h4>
 <p><a class="" href="/x509/docs/api/classes/TextObject"><code>TextObject</code></a></p>
-<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="inherited-from-7">Inherited from<a href="#inherited-from-7" class="hash-link" aria-label="Direct link to Inherited from" title="Direct link to Inherited from" translate="no">​</a></h4>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="inherited-from-8">Inherited from<a href="#inherited-from-8" class="hash-link" aria-label="Direct link to Inherited from" title="Direct link to Inherited from" translate="no">​</a></h4>
 <p><a class="" href="/x509/docs/api/classes/AsnData"><code>AsnData</code></a>.<a class="" href="/x509/docs/api/classes/AsnData#totextobjectempty"><code>toTextObjectEmpty</code></a></p>
 <hr>
 <h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="isasnencoded">isAsnEncoded()<a href="#isasnencoded" class="hash-link" aria-label="Direct link to isAsnEncoded()" title="Direct link to isAsnEncoded()" translate="no">​</a></h3>
@@ -180,7 +196,7 @@
 <h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="parameters-6">Parameters<a href="#parameters-6" class="hash-link" aria-label="Direct link to Parameters" title="Direct link to Parameters" translate="no">​</a></h4>
 <h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="data-1">data<a href="#data-1" class="hash-link" aria-label="Direct link to data" title="Direct link to data" translate="no">​</a></h5>
 <p><code>any</code></p>
-<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="returns-10">Returns<a href="#returns-10" class="hash-link" aria-label="Direct link to Returns" title="Direct link to Returns" translate="no">​</a></h4>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="returns-11">Returns<a href="#returns-11" class="hash-link" aria-label="Direct link to Returns" title="Direct link to Returns" translate="no">​</a></h4>
 <p><code>data is AsnEncodedType</code></p>
 <hr>
 <h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="toarraybuffer">toArrayBuffer()<a href="#toarraybuffer" class="hash-link" aria-label="Direct link to toArrayBuffer()" title="Direct link to toArrayBuffer()" translate="no">​</a></h3>
@@ -192,7 +208,7 @@
 <h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="raw-1">raw<a href="#raw-1" class="hash-link" aria-label="Direct link to raw" title="Direct link to raw" translate="no">​</a></h5>
 <p>Encoded data</p>
 <p><code>string</code> | <code>BufferSource</code></p>
-<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="returns-11">Returns<a href="#returns-11" class="hash-link" aria-label="Direct link to Returns" title="Direct link to Returns" translate="no">​</a></h4>
-<p><code>ArrayBuffer</code></p></div></article><nav class="docusaurus-mt-lg pagination-nav" aria-label="Docs pages"><a class="pagination-nav__link pagination-nav__link--prev" href="/x509/docs/api/classes/PemConverter"><div class="pagination-nav__sublabel">Previous</div><div class="pagination-nav__label">PemConverter</div></a><a class="pagination-nav__link pagination-nav__link--next" href="/x509/docs/api/classes/Pkcs10CertificateRequest"><div class="pagination-nav__sublabel">Next</div><div class="pagination-nav__label">Pkcs10CertificateRequest</div></a></nav></div></div><div class="col col--3"><div class="tableOfContents_bqdL thin-scrollbar theme-doc-toc-desktop"><ul class="table-of-contents table-of-contents__left-border"><li><a href="#extends" class="table-of-contents__link toc-highlight">Extends</a></li><li><a href="#extended-by" class="table-of-contents__link toc-highlight">Extended by</a></li><li><a href="#type-parameters" class="table-of-contents__link toc-highlight">Type Parameters</a><ul><li><a href="#t" class="table-of-contents__link toc-highlight">T</a></li></ul></li><li><a href="#constructors" class="table-of-contents__link toc-highlight">Constructors</a><ul><li><a href="#constructor" class="table-of-contents__link toc-highlight">Constructor</a></li><li><a href="#constructor-1" class="table-of-contents__link toc-highlight">Constructor</a></li></ul></li><li><a href="#properties" class="table-of-contents__link toc-highlight">Properties</a><ul><li><a href="#asn-1" class="table-of-contents__link toc-highlight">asn</a></li><li><a href="#tag" class="table-of-contents__link toc-highlight">tag</a></li><li><a href="#name" class="table-of-contents__link toc-highlight">NAME</a></li></ul></li><li><a href="#accessors" class="table-of-contents__link toc-highlight">Accessors</a><ul><li><a href="#rawdata" class="table-of-contents__link toc-highlight">rawData</a></li></ul></li><li><a href="#methods" class="table-of-contents__link toc-highlight">Methods</a><ul><li><a href="#equal" class="table-of-contents__link toc-highlight">equal()</a></li><li><a href="#gettextname" class="table-of-contents__link toc-highlight">getTextName()</a></li><li><a href="#oninit" class="table-of-contents__link toc-highlight">onInit()</a></li><li><a href="#tostring" class="table-of-contents__link toc-highlight">toString()</a></li><li><a href="#totextobject" class="table-of-contents__link toc-highlight">toTextObject()</a></li><li><a href="#totextobjectempty" class="table-of-contents__link toc-highlight">toTextObjectEmpty()</a></li><li><a href="#isasnencoded" class="table-of-contents__link toc-highlight">isAsnEncoded()</a></li><li><a href="#toarraybuffer" class="table-of-contents__link toc-highlight">toArrayBuffer()</a></li></ul></li></ul></div></div></div></div></main></div></div></div><footer class="theme-layout-footer footer footer--dark"><div class="container container-fluid"><div class="row footer__links"><div class="theme-layout-footer-column col footer__col"><div class="footer__title">Learn</div><ul class="footer__items clean-list"><li class="footer__item"><a class="footer__link-item" href="/x509/docs/installation">Installation</a></li><li class="footer__item"><a class="footer__link-item" href="/x509/docs/usage">Usage</a></li><li class="footer__item"><a class="footer__link-item" href="/x509/docs/api">API</a></li></ul></div><div class="theme-layout-footer-column col footer__col"><div class="footer__title">More</div><ul class="footer__items clean-list"><li class="footer__item"><a href="https://github.com/PeculiarVentures/x509" target="_blank" rel="noopener noreferrer" class="footer__link-item">GitHub<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li><li class="footer__item"><a href="mailto:info@peculiarventures.com" target="_blank" rel="noopener noreferrer" class="footer__link-item">Contact us<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li></ul></div><div class="theme-layout-footer-column col footer__col"><div class="footer__title">Version: 2.0.0</div><ul class="footer__items clean-list"></ul></div></div><div class="footer__bottom text--center"><div class="footer__copyright">Made with ❤️ across the globe</div></div></div></footer></div>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="returns-12">Returns<a href="#returns-12" class="hash-link" aria-label="Direct link to Returns" title="Direct link to Returns" translate="no">​</a></h4>
+<p><code>ArrayBuffer</code></p></div></article><nav class="docusaurus-mt-lg pagination-nav" aria-label="Docs pages"><a class="pagination-nav__link pagination-nav__link--prev" href="/x509/docs/api/classes/PemConverter"><div class="pagination-nav__sublabel">Previous</div><div class="pagination-nav__label">PemConverter</div></a><a class="pagination-nav__link pagination-nav__link--next" href="/x509/docs/api/classes/Pkcs10CertificateRequest"><div class="pagination-nav__sublabel">Next</div><div class="pagination-nav__label">Pkcs10CertificateRequest</div></a></nav></div></div><div class="col col--3"><div class="tableOfContents_bqdL thin-scrollbar theme-doc-toc-desktop"><ul class="table-of-contents table-of-contents__left-border"><li><a href="#extends" class="table-of-contents__link toc-highlight">Extends</a></li><li><a href="#extended-by" class="table-of-contents__link toc-highlight">Extended by</a></li><li><a href="#type-parameters" class="table-of-contents__link toc-highlight">Type Parameters</a><ul><li><a href="#t" class="table-of-contents__link toc-highlight">T</a></li></ul></li><li><a href="#constructors" class="table-of-contents__link toc-highlight">Constructors</a><ul><li><a href="#constructor" class="table-of-contents__link toc-highlight">Constructor</a></li><li><a href="#constructor-1" class="table-of-contents__link toc-highlight">Constructor</a></li></ul></li><li><a href="#properties" class="table-of-contents__link toc-highlight">Properties</a><ul><li><a href="#asn-1" class="table-of-contents__link toc-highlight">asn</a></li><li><a href="#tag" class="table-of-contents__link toc-highlight">tag</a></li><li><a href="#name" class="table-of-contents__link toc-highlight">NAME</a></li></ul></li><li><a href="#accessors" class="table-of-contents__link toc-highlight">Accessors</a><ul><li><a href="#parseoptions" class="table-of-contents__link toc-highlight">parseOptions</a></li><li><a href="#rawdata" class="table-of-contents__link toc-highlight">rawData</a></li></ul></li><li><a href="#methods" class="table-of-contents__link toc-highlight">Methods</a><ul><li><a href="#equal" class="table-of-contents__link toc-highlight">equal()</a></li><li><a href="#gettextname" class="table-of-contents__link toc-highlight">getTextName()</a></li><li><a href="#oninit" class="table-of-contents__link toc-highlight">onInit()</a></li><li><a href="#tostring" class="table-of-contents__link toc-highlight">toString()</a></li><li><a href="#totextobject" class="table-of-contents__link toc-highlight">toTextObject()</a></li><li><a href="#totextobjectempty" class="table-of-contents__link toc-highlight">toTextObjectEmpty()</a></li><li><a href="#isasnencoded" class="table-of-contents__link toc-highlight">isAsnEncoded()</a></li><li><a href="#toarraybuffer" class="table-of-contents__link toc-highlight">toArrayBuffer()</a></li></ul></li></ul></div></div></div></div></main></div></div></div><footer class="theme-layout-footer footer footer--dark"><div class="container container-fluid"><div class="row footer__links"><div class="theme-layout-footer-column col footer__col"><div class="footer__title">Learn</div><ul class="footer__items clean-list"><li class="footer__item"><a class="footer__link-item" href="/x509/docs/installation">Installation</a></li><li class="footer__item"><a class="footer__link-item" href="/x509/docs/usage">Usage</a></li><li class="footer__item"><a class="footer__link-item" href="/x509/docs/api">API</a></li></ul></div><div class="theme-layout-footer-column col footer__col"><div class="footer__title">More</div><ul class="footer__items clean-list"><li class="footer__item"><a href="https://github.com/PeculiarVentures/x509" target="_blank" rel="noopener noreferrer" class="footer__link-item">GitHub<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li><li class="footer__item"><a href="mailto:info@peculiarventures.com" target="_blank" rel="noopener noreferrer" class="footer__link-item">Contact us<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li></ul></div><div class="theme-layout-footer-column col footer__col"><div class="footer__title">Version: 2.0.0</div><ul class="footer__items clean-list"></ul></div></div><div class="footer__bottom text--center"><div class="footer__copyright">Made with ❤️ across the globe</div></div></div></footer></div>
 </body>
 </html>

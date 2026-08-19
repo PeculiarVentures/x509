@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="generator" content="Docusaurus v3.9.2">
 <title data-rh="true">X509Certificates | @peculiar/x509</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:image" content="https://peculiarventures.github.io/x509/img/card.png"><meta data-rh="true" name="twitter:image" content="https://peculiarventures.github.io/x509/img/card.png"><meta data-rh="true" property="og:url" content="https://peculiarventures.github.io/x509/docs/api/classes/X509Certificates"><meta data-rh="true" property="og:locale" content="en"><meta data-rh="true" name="docusaurus_locale" content="en"><meta data-rh="true" name="docsearch:language" content="en"><meta data-rh="true" name="docusaurus_version" content="current"><meta data-rh="true" name="docusaurus_tag" content="docs-default-current"><meta data-rh="true" name="docsearch:version" content="current"><meta data-rh="true" name="docsearch:docusaurus_tag" content="docs-default-current"><meta data-rh="true" property="og:title" content="X509Certificates | @peculiar/x509"><meta data-rh="true" name="description" content="X509 Certificate collection"><meta data-rh="true" property="og:description" content="X509 Certificate collection"><link data-rh="true" rel="icon" href="/x509/img/favicon.ico"><link data-rh="true" rel="canonical" href="https://peculiarventures.github.io/x509/docs/api/classes/X509Certificates"><link data-rh="true" rel="alternate" href="https://peculiarventures.github.io/x509/docs/api/classes/X509Certificates" hreflang="en"><link data-rh="true" rel="alternate" href="https://peculiarventures.github.io/x509/docs/api/classes/X509Certificates" hreflang="x-default"><script data-rh="true" type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"X509Certificates","item":"https://peculiarventures.github.io/x509/docs/api/classes/X509Certificates"}]}</script><link rel="stylesheet" href="/x509/assets/css/styles.66a259c8.css">
-<script src="/x509/assets/js/runtime~main.804cb0b7.js" defer="defer"></script>
+<script src="/x509/assets/js/runtime~main.860e95d2.js" defer="defer"></script>
 <script src="/x509/assets/js/main.1aa4da58.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
@@ -35,13 +35,16 @@
 <p><code>Array&lt;X509Certificate&gt;.constructor</code></p>
 <h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="constructor-1">Constructor<a href="#constructor-1" class="hash-link" aria-label="Direct link to Constructor" title="Direct link to Constructor" translate="no">​</a></h3>
 <blockquote>
-<p><strong>new X509Certificates</strong>(<code>raw</code>): <code>X509Certificates</code></p>
+<p><strong>new X509Certificates</strong>(<code>raw</code>, <code>options?</code>): <code>X509Certificates</code></p>
 </blockquote>
 <p>Creates a new instance from encoded PKCS7 buffer</p>
 <h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="parameters">Parameters<a href="#parameters" class="hash-link" aria-label="Direct link to Parameters" title="Direct link to Parameters" translate="no">​</a></h4>
 <h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="raw">raw<a href="#raw" class="hash-link" aria-label="Direct link to raw" title="Direct link to raw" translate="no">​</a></h5>
 <p><a class="" href="/x509/docs/api/#asnencodedtype"><code>AsnEncodedType</code></a></p>
 <p>Encoded PKCS7 buffer. Supported formats are DER, PEM, HEX, Base64, or Base64Url</p>
+<h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="options">options?<a href="#options" class="hash-link" aria-label="Direct link to options?" title="Direct link to options?" translate="no">​</a></h5>
+<p><code>any</code></p>
+<p>Optional ASN.1 parse options (e.g. <code>asn1js.fromBER</code> resource limits)</p>
 <h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="returns-1">Returns<a href="#returns-1" class="hash-link" aria-label="Direct link to Returns" title="Direct link to Returns" translate="no">​</a></h4>
 <p><code>X509Certificates</code></p>
 <h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="overrides-1">Overrides<a href="#overrides-1" class="hash-link" aria-label="Direct link to Overrides" title="Direct link to Overrides" translate="no">​</a></h4>
@@ -530,7 +533,7 @@ specified depth.</p>
 <p>The maximum recursion depth</p>
 <h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="returns-21">Returns<a href="#returns-21" class="hash-link" aria-label="Direct link to Returns" title="Direct link to Returns" translate="no">​</a></h4>
 <p><code>FlatArray</code>&lt;<code>A</code>, <code>D</code>&gt;[]</p>
-<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="inherited-from-16">Inherited from<a href="#inherited-from-16" class="hash-link" aria-label="Direct link to Inherited from" title="Direct link to Inherited from" translate="no">​</a></h4>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="inherited-from-16">Inherited from<a href="#inherited-from-16" class="hash-link" aria-label="Direct link to Inherited from" title="Direct link to Inherited from" translate="no">  ​</a></h4>
 <p><code>Array.flat</code></p>
 <hr>
 <h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="flatmap-1">flatMap()<a href="#flatmap-1" class="hash-link" aria-label="Direct link to flatMap()" title="Direct link to flatMap()" translate="no">​</a></h3>
@@ -578,13 +581,16 @@ thisArg is omitted, undefined is used as the this value.</p>
 <hr>
 <h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="import">import()<a href="#import" class="hash-link" aria-label="Direct link to import()" title="Direct link to import()" translate="no">​</a></h3>
 <blockquote>
-<p><strong>import</strong>(<code>data</code>): <code>void</code></p>
+<p><strong>import</strong>(<code>data</code>, <code>options?</code>): <code>void</code></p>
 </blockquote>
 <p>Import certificates from encoded PKCS7 data. Supported formats are HEX, DER,
 Base64, Base64Url, PEM</p>
 <h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="parameters-19">Parameters<a href="#parameters-19" class="hash-link" aria-label="Direct link to Parameters" title="Direct link to Parameters" translate="no">​</a></h4>
 <h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="data">data<a href="#data" class="hash-link" aria-label="Direct link to data" title="Direct link to data" translate="no">​</a></h5>
 <p><a class="" href="/x509/docs/api/#asnencodedtype"><code>AsnEncodedType</code></a></p>
+<h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="options-1">options?<a href="#options-1" class="hash-link" aria-label="Direct link to options?" title="Direct link to options?" translate="no">​</a></h5>
+<p><code>any</code></p>
+<p>Optional ASN.1 parse options (e.g. <code>asn1js.fromBER</code> resource limits)</p>
 <h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="returns-24">Returns<a href="#returns-24" class="hash-link" aria-label="Direct link to Returns" title="Direct link to Returns" translate="no">​</a></h4>
 <p><code>void</code></p>
 <hr>
@@ -939,7 +945,7 @@ value otherwise. If omitted, the elements are sorted in ascending, ASCII charact
 <h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="parameters-37">Parameters<a href="#parameters-37" class="hash-link" aria-label="Direct link to Parameters" title="Direct link to Parameters" translate="no">​</a></h5>
 <h6 class="anchor anchorTargetStickyNavbar_Vzrq" id="locales">locales<a href="#locales" class="hash-link" aria-label="Direct link to locales" title="Direct link to locales" translate="no">​</a></h6>
 <p><code>string</code> | <code>string</code>[]</p>
-<h6 class="anchor anchorTargetStickyNavbar_Vzrq" id="options">options?<a href="#options" class="hash-link" aria-label="Direct link to options?" title="Direct link to options?" translate="no">​</a></h6>
+<h6 class="anchor anchorTargetStickyNavbar_Vzrq" id="options-2">options?<a href="#options-2" class="hash-link" aria-label="Direct link to options?" title="Direct link to options?" translate="no">​</a></h6>
 <p><code>NumberFormatOptions</code> &amp; <code>DateTimeFormatOptions</code></p>
 <h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="returns-47">Returns<a href="#returns-47" class="hash-link" aria-label="Direct link to Returns" title="Direct link to Returns" translate="no">​</a></h5>
 <p><code>string</code></p>
