@@ -44,7 +44,7 @@ export class CertificatePolicyExtension extends Extension {
       const critical = args[1] ?? false;
 
       const value = new asnX509.CertificatePolicies(
-        policies.map((o) => (new asnX509.PolicyInformation({ policyIdentifier: o }))),
+        policies.map((o) => new asnX509.PolicyInformation({ policyIdentifier: o })),
       );
 
       super(asnX509.id_ce_certificatePolicies, critical, AsnConvert.serialize(value));

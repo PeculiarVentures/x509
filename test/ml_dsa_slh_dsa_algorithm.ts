@@ -1,6 +1,4 @@
-import {
-  describe, it, expect, beforeAll,
-} from "vitest";
+import { describe, it, expect, beforeAll } from "vitest";
 import { container } from "tsyringe";
 import {
   id_ml_dsa_44,

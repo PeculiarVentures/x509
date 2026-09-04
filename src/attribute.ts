@@ -44,9 +44,12 @@ export class Attribute extends AsnData<AsnAttribute> {
       const values = Array.isArray(args[1])
         ? args[1].map((o) => BufferSourceConverter.toArrayBuffer(o))
         : [];
-      raw = AsnConvert.serialize(new AsnAttribute({
-        type, values,
-      }));
+      raw = AsnConvert.serialize(
+        new AsnAttribute({
+          type,
+          values,
+        }),
+      );
     }
 
     super(raw, AsnAttribute, options);

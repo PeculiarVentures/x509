@@ -1,6 +1,11 @@
 import { AsnConvert } from "@peculiar/asn1-schema";
 import {
-  CRLReason, id_ce_cRLReasons, id_ce_invalidityDate, InvalidityDate, RevokedCertificate, Time,
+  CRLReason,
+  id_ce_cRLReasons,
+  id_ce_invalidityDate,
+  InvalidityDate,
+  RevokedCertificate,
+  Time,
 } from "@peculiar/asn1-x509";
 import { BufferSourceConverter } from "pvtsutils";
 import { Extension } from "./extension";
@@ -28,8 +33,8 @@ export enum X509CrlReason {
 }
 
 /**
-  * Representation of X509CrlEntry
-  */
+ * Representation of X509CrlEntry
+ */
 export class X509CrlEntry extends AsnData<RevokedCertificate> {
   /**
    * Serial number
@@ -118,15 +123,17 @@ export class X509CrlEntry extends AsnData<RevokedCertificate> {
           switch (extension.type) {
             case id_ce_cRLReasons:
               if (this.#reason === undefined) {
-                this.#reason = AsnConvert
-                  .parse(extension.value, CRLReason, this.parseOptions)
+                this.#reason = AsnConvert.parse(extension.value, CRLReason, this.parseOptions)
                   .reason as unknown as X509CrlReason;
               }
               break;
             case id_ce_invalidityDate:
               if (this.#invalidity === undefined) {
-                this.#invalidity = AsnConvert
-                  .parse(extension.value, InvalidityDate, this.parseOptions).value;
+                this.#invalidity = AsnConvert.parse(
+                  extension.value,
+                  InvalidityDate,
+                  this.parseOptions,
+                ).value;
               }
               break;
           }
@@ -165,11 +172,13 @@ export class X509CrlEntry extends AsnData<RevokedCertificate> {
       raw = BufferSourceConverter.toArrayBuffer(args[0]);
       options = args[1];
     } else if (typeof args[0] === "string") {
-      raw = AsnConvert.serialize(new RevokedCertificate({
-        userCertificate: normalizeCertificateSerialNumber(args[0]),
-        revocationDate: new Time(args[1]),
-        crlEntryExtensions: args[2],
-      }));
+      raw = AsnConvert.serialize(
+        new RevokedCertificate({
+          userCertificate: normalizeCertificateSerialNumber(args[0]),
+          revocationDate: new Time(args[1]),
+          crlEntryExtensions: args[2],
+        }),
+      );
     } else if (args[0] instanceof RevokedCertificate) {
       raw = args[0];
       options = args[1];
@@ -179,9 +188,8 @@ export class X509CrlEntry extends AsnData<RevokedCertificate> {
       throw new TypeError("Cannot create X509CrlEntry instance. Wrong constructor arguments.");
     }
 
-    const superArgs = raw instanceof RevokedCertificate
-      ? [raw, options]
-      : [raw, RevokedCertificate, options];
+    const superArgs =
+      raw instanceof RevokedCertificate ? [raw, options] : [raw, RevokedCertificate, options];
     super(superArgs[0] as any, superArgs[1] as any, superArgs[2] as any);
   }
 

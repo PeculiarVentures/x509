@@ -1,10 +1,6 @@
-import {
-  describe, it, expect, beforeEach,
-} from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import { AlgorithmIdentifier } from "@peculiar/asn1-x509";
-import {
-  ECParameters, id_ecPublicKey, id_secp256r1,
-} from "@peculiar/asn1-ecc";
+import { ECParameters, id_ecPublicKey, id_secp256r1 } from "@peculiar/asn1-ecc";
 import { AsnConvert } from "@peculiar/asn1-schema";
 import { EcAlgorithm, HashedAlgorithm } from "../src";
 
@@ -22,133 +18,155 @@ describe("EcAlgorithm", () => {
     {
       asnAlgorithm: "1.2.840.10045.4.1",
       webAlgorithm: {
-        name: "ECDSA", hash: { name: "SHA-1" },
+        name: "ECDSA",
+        hash: { name: "SHA-1" },
       },
     },
     {
       asnAlgorithm: "1.2.840.10045.4.3.2",
       webAlgorithm: {
-        name: "ECDSA", hash: { name: "SHA-256" },
+        name: "ECDSA",
+        hash: { name: "SHA-256" },
       },
     },
     {
       asnAlgorithm: "1.2.840.10045.4.3.3",
       webAlgorithm: {
-        name: "ECDSA", hash: { name: "SHA-384" },
+        name: "ECDSA",
+        hash: { name: "SHA-384" },
       },
     },
     {
       asnAlgorithm: "1.2.840.10045.4.3.4",
       webAlgorithm: {
-        name: "ECDSA", hash: { name: "SHA-512" },
+        name: "ECDSA",
+        hash: { name: "SHA-512" },
       },
     },
     {
       asnAlgorithm: id_secp256r1,
       webAlgorithm: {
-        name: "ECDSA", namedCurve: "P-256",
+        name: "ECDSA",
+        namedCurve: "P-256",
       },
     },
     {
       asnAlgorithm: "1.3.132.0.10",
       webAlgorithm: {
-        name: "ECDSA", namedCurve: "K-256",
+        name: "ECDSA",
+        namedCurve: "K-256",
       },
     },
     {
       asnAlgorithm: "1.3.132.0.34",
       webAlgorithm: {
-        name: "ECDSA", namedCurve: "P-384",
+        name: "ECDSA",
+        namedCurve: "P-384",
       },
     },
     {
       asnAlgorithm: "1.3.132.0.35",
       webAlgorithm: {
-        name: "ECDSA", namedCurve: "P-521",
+        name: "ECDSA",
+        namedCurve: "P-521",
       },
     },
     {
       asnAlgorithm: "1.3.36.3.3.2.8.1.1.1",
       webAlgorithm: {
-        name: "ECDSA", namedCurve: "brainpoolP160r1",
+        name: "ECDSA",
+        namedCurve: "brainpoolP160r1",
       },
     },
     {
       asnAlgorithm: "1.3.36.3.3.2.8.1.1.2",
       webAlgorithm: {
-        name: "ECDSA", namedCurve: "brainpoolP160t1",
+        name: "ECDSA",
+        namedCurve: "brainpoolP160t1",
       },
     },
     {
       asnAlgorithm: "1.3.36.3.3.2.8.1.1.3",
       webAlgorithm: {
-        name: "ECDSA", namedCurve: "brainpoolP192r1",
+        name: "ECDSA",
+        namedCurve: "brainpoolP192r1",
       },
     },
     {
       asnAlgorithm: "1.3.36.3.3.2.8.1.1.4",
       webAlgorithm: {
-        name: "ECDSA", namedCurve: "brainpoolP192t1",
+        name: "ECDSA",
+        namedCurve: "brainpoolP192t1",
       },
     },
     {
       asnAlgorithm: "1.3.36.3.3.2.8.1.1.5",
       webAlgorithm: {
-        name: "ECDSA", namedCurve: "brainpoolP224r1",
+        name: "ECDSA",
+        namedCurve: "brainpoolP224r1",
       },
     },
     {
       asnAlgorithm: "1.3.36.3.3.2.8.1.1.6",
       webAlgorithm: {
-        name: "ECDSA", namedCurve: "brainpoolP224t1",
+        name: "ECDSA",
+        namedCurve: "brainpoolP224t1",
       },
     },
     {
       asnAlgorithm: "1.3.36.3.3.2.8.1.1.7",
       webAlgorithm: {
-        name: "ECDSA", namedCurve: "brainpoolP256r1",
+        name: "ECDSA",
+        namedCurve: "brainpoolP256r1",
       },
     },
     {
       asnAlgorithm: "1.3.36.3.3.2.8.1.1.8",
       webAlgorithm: {
-        name: "ECDSA", namedCurve: "brainpoolP256t1",
+        name: "ECDSA",
+        namedCurve: "brainpoolP256t1",
       },
     },
     {
       asnAlgorithm: "1.3.36.3.3.2.8.1.1.9",
       webAlgorithm: {
-        name: "ECDSA", namedCurve: "brainpoolP320r1",
+        name: "ECDSA",
+        namedCurve: "brainpoolP320r1",
       },
     },
     {
       asnAlgorithm: "1.3.36.3.3.2.8.1.1.10",
       webAlgorithm: {
-        name: "ECDSA", namedCurve: "brainpoolP320t1",
+        name: "ECDSA",
+        namedCurve: "brainpoolP320t1",
       },
     },
     {
       asnAlgorithm: "1.3.36.3.3.2.8.1.1.11",
       webAlgorithm: {
-        name: "ECDSA", namedCurve: "brainpoolP384r1",
+        name: "ECDSA",
+        namedCurve: "brainpoolP384r1",
       },
     },
     {
       asnAlgorithm: "1.3.36.3.3.2.8.1.1.12",
       webAlgorithm: {
-        name: "ECDSA", namedCurve: "brainpoolP384t1",
+        name: "ECDSA",
+        namedCurve: "brainpoolP384t1",
       },
     },
     {
       asnAlgorithm: "1.3.36.3.3.2.8.1.1.13",
       webAlgorithm: {
-        name: "ECDSA", namedCurve: "brainpoolP512r1",
+        name: "ECDSA",
+        namedCurve: "brainpoolP512r1",
       },
     },
     {
       asnAlgorithm: "1.3.36.3.3.2.8.1.1.14",
       webAlgorithm: {
-        name: "ECDSA", namedCurve: "brainpoolP512t1",
+        name: "ECDSA",
+        namedCurve: "brainpoolP512t1",
       },
     },
   ];
@@ -175,12 +193,13 @@ describe("EcAlgorithm", () => {
       });
 
       it("#toWebAlgorithm()", () => {
-        const algIdentifier = "hash" in webAlgorithm
-          ? new AlgorithmIdentifier({ algorithm: asnAlgorithm })
-          : new AlgorithmIdentifier({
-              algorithm: id_ecPublicKey,
-              parameters: AsnConvert.serialize(new ECParameters({ namedCurve: asnAlgorithm })),
-            });
+        const algIdentifier =
+          "hash" in webAlgorithm
+            ? new AlgorithmIdentifier({ algorithm: asnAlgorithm })
+            : new AlgorithmIdentifier({
+                algorithm: id_ecPublicKey,
+                parameters: AsnConvert.serialize(new ECParameters({ namedCurve: asnAlgorithm })),
+              });
         const result = ecAlgorithm.toWebAlgorithm(algIdentifier);
         expect(result).toBeTruthy();
         expect(result).toEqual(webAlgorithm);

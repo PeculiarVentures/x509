@@ -17,14 +17,9 @@ const __dirname = path.dirname(__filename);
 
 const license = fs.readFileSync("LICENSE", { encoding: "utf-8" });
 
-const banner = [
-  "/*!",
-  ...license.split("\n").map((o) => ` * ${o}`),
-  " */",
-].join("\n");
+const banner = ["/*!", ...license.split("\n").map((o) => ` * ${o}`), " */"].join("\n");
 const input = "src/index.ts";
-const external = Object.keys(pkg.dependencies)
-  .concat(["events"]);
+const external = Object.keys(pkg.dependencies).concat(["events"]);
 
 // main
 const main = {
@@ -35,10 +30,7 @@ const main = {
       clean: true,
       tsconfigOverride: {
         compilerOptions: { module: "ES2015" },
-        exclude: [
-          "test",
-          "website",
-        ],
+        exclude: ["test", "website"],
       },
     }),
   ],
@@ -71,10 +63,7 @@ const browser = [
         clean: true,
         tsconfigOverride: {
           compilerOptions: { module: "es2015" },
-          exclude: [
-            "test",
-            "website",
-          ],
+          exclude: ["test", "website"],
         },
       }),
     ],
@@ -86,9 +75,7 @@ const browser = [
         plugins: [
           getBabelOutputPlugin({
             allowAllFormats: true,
-            presets: [
-              ["@babel/preset-env", { targets: { chrome: "60" } }],
-            ],
+            presets: [["@babel/preset-env", { targets: { chrome: "60" } }]],
           }),
           terser(),
         ],
@@ -115,8 +102,4 @@ const types = {
   ],
 };
 
-export default [
-  main,
-  ...browser,
-  types,
-];
+export default [main, ...browser, types];

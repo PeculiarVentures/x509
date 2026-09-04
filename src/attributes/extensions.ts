@@ -44,9 +44,9 @@ export class ExtensionsAttribute extends Attribute {
 
     if (this.values[0]) {
       const value = AsnConvert.parse(this.values[0], asnX509.Extensions, this.parseOptions);
-      this.items = value.map((o) => (
-        ExtensionFactory.create(AsnConvert.serialize(o), this.parseOptions)
-      ));
+      this.items = value.map((o) =>
+        ExtensionFactory.create(AsnConvert.serialize(o), this.parseOptions),
+      );
     }
   }
 

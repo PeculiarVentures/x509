@@ -157,10 +157,12 @@ function addAccessDescriptions(
       if (typeof url === "string") {
         url = new GeneralName("url", url);
       }
-      value.push(new asn1X509.AccessDescription({
-        accessMethod: method,
-        accessLocation: AsnConvert.parse(url.rawData, asn1X509.GeneralName),
-      }));
+      value.push(
+        new asn1X509.AccessDescription({
+          accessMethod: method,
+          accessLocation: AsnConvert.parse(url.rawData, asn1X509.GeneralName),
+        }),
+      );
     });
   }
 }

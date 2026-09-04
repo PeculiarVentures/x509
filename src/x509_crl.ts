@@ -1,7 +1,5 @@
 import { AsnConvert } from "@peculiar/asn1-schema";
-import {
-  CertificateList, Version, AlgorithmIdentifier,
-} from "@peculiar/asn1-x509";
+import { CertificateList, Version, AlgorithmIdentifier } from "@peculiar/asn1-x509";
 import { BufferSourceConverter } from "pvtsutils";
 import { container } from "tsyringe";
 import { HashedAlgorithm, ParseOptions } from "./types";
@@ -12,10 +10,7 @@ import { ExtensionFactory } from "./extensions/extension_factory";
 import { PublicKey } from "./public_key";
 import { AlgorithmProvider, diAlgorithmProvider } from "./algorithm";
 import { AsnEncodedType, PemData } from "./pem_data";
-import {
-  diAsnSignatureFormatter,
-  IAsnSignatureFormatter,
-} from "./asn_signature_formatter";
+import { diAsnSignatureFormatter, IAsnSignatureFormatter } from "./asn_signature_formatter";
 import { X509Certificate } from "./x509_cert";
 import { X509CrlEntry } from "./x509_crl_entry";
 import { PemConverter } from "./pem_converter";
@@ -79,8 +74,9 @@ export class X509Crl extends PemData<CertificateList> {
   public get signatureAlgorithm(): HashedAlgorithm {
     if (!this.#signatureAlgorithm) {
       const algProv = container.resolve<AlgorithmProvider>(diAlgorithmProvider);
-      this.#signatureAlgorithm = algProv
-        .toWebAlgorithm(this.asn.signatureAlgorithm) as HashedAlgorithm;
+      this.#signatureAlgorithm = algProv.toWebAlgorithm(
+        this.asn.signatureAlgorithm,
+      ) as HashedAlgorithm;
     }
 
     return this.#signatureAlgorithm;
@@ -146,8 +142,10 @@ export class X509Crl extends PemData<CertificateList> {
    */
   public get entries(): readonly X509CrlEntry[] {
     if (!this.#entries) {
-      this.#entries = this.asn.tbsCertList
-        .revokedCertificates?.map((o) => new X509CrlEntry(o, this.parseOptions)) || [];
+      this.#entries =
+        this.asn.tbsCertList.revokedCertificates?.map(
+          (o) => new X509CrlEntry(o, this.parseOptions),
+        ) || [];
     }
 
     return this.#entries;
@@ -207,9 +205,7 @@ export class X509Crl extends PemData<CertificateList> {
    */
   public constructor(raw: AsnEncodedType, options?: ParseOptions);
   public constructor(param: AsnEncodedType | CertificateList, options?: ParseOptions) {
-    const args = PemData.isAsnEncoded(param)
-      ? [param, CertificateList, options]
-      : [param, options];
+    const args = PemData.isAsnEncoded(param) ? [param, CertificateList, options] : [param, options];
     super(args[0] as any, args[1] as any, args[2] as any);
   }
 
@@ -228,9 +224,9 @@ export class X509Crl extends PemData<CertificateList> {
    * @param type Extension type
    * @returns Extension or null
    */
-  public getExtension<T extends Extension>(type: new(raw: BufferSource) => T): T | null;
+  public getExtension<T extends Extension>(type: new (raw: BufferSource) => T): T | null;
   public getExtension<T extends Extension>(
-    type: (new(raw: BufferSource) => T) | string,
+    type: (new (raw: BufferSource) => T) | string,
   ): T | null {
     for (const ext of this.extensions) {
       if (typeof type === "string") {
@@ -256,14 +252,12 @@ export class X509Crl extends PemData<CertificateList> {
    * Returns a list of extensions of specified type
    * @param type Extension type
    */
-  public getExtensions<T extends Extension>(type: new(raw: BufferSource) => T): T[];
+  public getExtensions<T extends Extension>(type: new (raw: BufferSource) => T): T[];
   /**
    * Returns a list of extensions of specified type
    * @param type Extension identifier
    */
-  public getExtensions<T extends Extension>(
-    type: string | (new(raw: BufferSource) => T),
-  ): T[] {
+  public getExtensions<T extends Extension>(type: string | (new (raw: BufferSource) => T)): T[] {
     return this.extensions.filter((o) => {
       if (typeof type === "string") {
         return o.type === type;
@@ -278,12 +272,11 @@ export class X509Crl extends PemData<CertificateList> {
    * @param params Verification parameters
    * @param crypto Crypto provider. Default is from CryptoProvider
    */
-  public async verify(
-    params: X509CrlVerifyParams,
-    crypto = cryptoProvider.get(),
-  ) {
+  public async verify(params: X509CrlVerifyParams, crypto = cryptoProvider.get()) {
     if (!this.certListSignatureAlgorithm.isEqual(this.tbsCertListSignatureAlgorithm)) {
-      throw new Error("algorithm identifier in the sequence tbsCertList and CertificateList mismatch");
+      throw new Error(
+        "algorithm identifier in the sequence tbsCertList and CertificateList mismatch",
+      );
     }
 
     let keyAlgorithm: Algorithm;
@@ -302,13 +295,15 @@ export class X509Crl extends PemData<CertificateList> {
       } else if (paramsKey instanceof PublicKey) {
         // PublicKey
         keyAlgorithm = {
-          ...paramsKey.algorithm, ...this.signatureAlgorithm,
+          ...paramsKey.algorithm,
+          ...this.signatureAlgorithm,
         };
         publicKey = await paramsKey.export(keyAlgorithm, ["verify"]);
       } else {
         // CryptoKey
         keyAlgorithm = {
-          ...paramsKey.algorithm, ...this.signatureAlgorithm,
+          ...paramsKey.algorithm,
+          ...this.signatureAlgorithm,
         };
         publicKey = paramsKey;
       }
@@ -353,12 +348,9 @@ export class X509Crl extends PemData<CertificateList> {
    */
   public async getThumbprint(
     algorithm: globalThis.AlgorithmIdentifier,
-    crypto?: Crypto
+    crypto?: Crypto,
   ): Promise<ArrayBuffer>;
-  public async getThumbprint(
-    arg1?: Crypto | globalThis.AlgorithmIdentifier,
-    arg2?: Crypto,
-  ) {
+  public async getThumbprint(arg1?: Crypto | globalThis.AlgorithmIdentifier, arg2?: Crypto) {
     let crypto: Crypto | undefined;
     let algorithm: globalThis.AlgorithmIdentifier = "SHA-1";
 
@@ -381,7 +373,8 @@ export class X509Crl extends PemData<CertificateList> {
    * @param certOrSerialNumber certificate | serialNumber
    */
   public findRevoked(certOrSerialNumber: X509Certificate | string): X509CrlEntry | null {
-    const serialNumber = typeof certOrSerialNumber === "string" ? certOrSerialNumber : certOrSerialNumber.serialNumber;
+    const serialNumber =
+      typeof certOrSerialNumber === "string" ? certOrSerialNumber : certOrSerialNumber.serialNumber;
     const serialBuffer = normalizeCertificateSerialNumber(serialNumber);
     for (const revoked of this.asn.tbsCertList.revokedCertificates || []) {
       if (BufferSourceConverter.isEqual(revoked.userCertificate, serialBuffer)) {

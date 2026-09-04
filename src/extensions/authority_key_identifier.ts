@@ -34,7 +34,7 @@ export class AuthorityKeyIdentifierExtension extends Extension {
   public static async create(
     certId: CertificateIdentifier,
     critical?: boolean,
-    crypto?: Crypto
+    crypto?: Crypto,
   ): Promise<AuthorityKeyIdentifierExtension>;
   /**
    * Creates authority key identifier extension from public key data
@@ -45,7 +45,7 @@ export class AuthorityKeyIdentifierExtension extends Extension {
   public static async create(
     publicKey: PublicKeyType,
     critical?: boolean,
-    crypto?: Crypto
+    crypto?: Crypto,
   ): Promise<AuthorityKeyIdentifierExtension>;
   public static async create(
     param: PublicKeyType | CertificateIdentifier,
@@ -93,15 +93,16 @@ export class AuthorityKeyIdentifierExtension extends Extension {
     if (BufferSourceConverter.isBufferSource(args[0])) {
       super(args[0] as BufferSource, args[1] as ParseOptions | undefined);
     } else if (typeof args[0] === "string") {
-      const value = new asn1X509.AuthorityKeyIdentifier(
-        { keyIdentifier: new asn1X509.KeyIdentifier(Convert.FromHex(args[0])) },
-      );
+      const value = new asn1X509.AuthorityKeyIdentifier({
+        keyIdentifier: new asn1X509.KeyIdentifier(Convert.FromHex(args[0])),
+      });
       super(asn1X509.id_ce_authorityKeyIdentifier, args[1], AsnConvert.serialize(value));
     } else {
       const certId = args[0] as CertificateIdentifier;
-      const certIdName = certId.name instanceof GeneralNames
-        ? AsnConvert.parse(certId.name.rawData, asn1X509.GeneralNames)
-        : certId.name;
+      const certIdName =
+        certId.name instanceof GeneralNames
+          ? AsnConvert.parse(certId.name.rawData, asn1X509.GeneralNames)
+          : certId.name;
       const value = new asn1X509.AuthorityKeyIdentifier({
         authorityCertIssuer: certIdName,
         authorityCertSerialNumber: Convert.FromHex(certId.serialNumber),
@@ -113,11 +114,7 @@ export class AuthorityKeyIdentifierExtension extends Extension {
   protected onInit(asn: asn1X509.Extension) {
     super.onInit(asn);
 
-    const aki = AsnConvert.parse(
-      asn.extnValue,
-      asn1X509.AuthorityKeyIdentifier,
-      this.parseOptions,
-    );
+    const aki = AsnConvert.parse(asn.extnValue, asn1X509.AuthorityKeyIdentifier, this.parseOptions);
     if (aki.keyIdentifier) {
       this.keyId = Convert.ToHex(aki.keyIdentifier);
     }
@@ -125,7 +122,9 @@ export class AuthorityKeyIdentifierExtension extends Extension {
     if (aki.authorityCertIssuer || aki.authorityCertSerialNumber) {
       this.certId = {
         name: aki.authorityCertIssuer || [],
-        serialNumber: aki.authorityCertSerialNumber ? Convert.ToHex(aki.authorityCertSerialNumber) : "",
+        serialNumber: aki.authorityCertSerialNumber
+          ? Convert.ToHex(aki.authorityCertSerialNumber)
+          : "",
       };
     }
   }

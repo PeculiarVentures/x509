@@ -12,8 +12,15 @@ export interface TextObjectConvertible {
   toTextObject(): TextObject;
 }
 
-export type TextObjectItemType = string | number | boolean | Date | BufferSource
-  | TextObject | TextObject[] | TextObjectConvertible;
+export type TextObjectItemType =
+  | string
+  | number
+  | boolean
+  | Date
+  | BufferSource
+  | TextObject
+  | TextObject[]
+  | TextObjectConvertible;
 
 const NAME = Symbol("name");
 const VALUE = Symbol("value");
@@ -133,9 +140,7 @@ export abstract class TextConverter {
 
       const value = obj[key];
       const keyValue = key ? `${key}: ` : "";
-      if (typeof value === "string"
-        || typeof value === "number"
-        || typeof value === "boolean") {
+      if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
         res.push(`${pad}${keyValue}${value}`); // key: value
       } else if (value instanceof Date) {
         res.push(`${pad}${keyValue}${value.toUTCString()}`); // key: UTC(date)

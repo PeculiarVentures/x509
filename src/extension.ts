@@ -43,11 +43,13 @@ export class Extension extends AsnData<AsnExtension> {
       raw = BufferSourceConverter.toArrayBuffer(args[0]);
       options = args[1];
     } else {
-      raw = AsnConvert.serialize(new AsnExtension({
-        extnID: args[0],
-        critical: args[1],
-        extnValue: new OctetString(BufferSourceConverter.toArrayBuffer(args[2])),
-      }));
+      raw = AsnConvert.serialize(
+        new AsnExtension({
+          extnID: args[0],
+          critical: args[1],
+          extnValue: new OctetString(BufferSourceConverter.toArrayBuffer(args[2])),
+        }),
+      );
     }
 
     super(raw, AsnExtension, options);

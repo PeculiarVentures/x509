@@ -19,8 +19,10 @@ import { TextConverter, TextObject } from "./text_converter";
 /**
  * Representation of PKCS10 Certificate Request
  */
-export class Pkcs10CertificateRequest extends PemData<CertificationRequest>
-  implements IPublicKeyContainer {
+export class Pkcs10CertificateRequest
+  extends PemData<CertificationRequest>
+  implements IPublicKeyContainer
+{
   public static override NAME = "PKCS#10 Certificate Request";
 
   protected readonly tag;
@@ -131,8 +133,9 @@ export class Pkcs10CertificateRequest extends PemData<CertificationRequest>
    */
   public get attributes(): Attribute[] {
     if (!this.#attributes) {
-      this.#attributes = this.asn.certificationRequestInfo.attributes
-        .map((o) => AttributeFactory.create(AsnConvert.serialize(o), this.parseOptions));
+      this.#attributes = this.asn.certificationRequestInfo.attributes.map((o) =>
+        AttributeFactory.create(AsnConvert.serialize(o), this.parseOptions),
+      );
     }
 
     return this.#attributes;
@@ -158,8 +161,9 @@ export class Pkcs10CertificateRequest extends PemData<CertificationRequest>
    */
   private get tbs(): ArrayBuffer {
     if (!this.#tbs) {
-      this.#tbs = this.asn.certificationRequestInfoRaw
-        || AsnConvert.serialize(this.asn.certificationRequestInfo);
+      this.#tbs =
+        this.asn.certificationRequestInfoRaw ||
+        AsnConvert.serialize(this.asn.certificationRequestInfo);
     }
 
     return this.#tbs;
@@ -241,7 +245,8 @@ export class Pkcs10CertificateRequest extends PemData<CertificationRequest>
    */
   public async verify(crypto = cryptoProvider.get()) {
     const algorithm = {
-      ...this.publicKey.algorithm, ...this.signatureAlgorithm,
+      ...this.publicKey.algorithm,
+      ...this.signatureAlgorithm,
     };
     const publicKey = await this.publicKey.export(algorithm, ["verify"], crypto);
 

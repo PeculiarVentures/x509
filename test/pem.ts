@@ -1,11 +1,10 @@
-import {
-  describe, it, expect,
-} from "vitest";
+import { describe, it, expect } from "vitest";
 import { Convert } from "pvtsutils";
 import * as src from "../src";
 
 describe("PEM", () => {
-  const base64_splitted = "LLrHB0eJzyhP+/fSStdW8okeEnv47jxe7SJ/iN72ohNcUk2jHEUSoH1nvNSIWL9M\n8tEjmF/zxB+bATMtPjCUWbz8Lr9wloXIkjHUlBLpvXR0UrUzYbkNpk0agV2IzUpk\nJ6UiRRGcDSvzrsoK+oNvqu6z7Xs5Xfz5rDqUcMlK1Z6720dcBWGGsDLpTpSCnpot\ndXd/H5LMDWnonNvPCwQUHg==";
+  const base64_splitted =
+    "LLrHB0eJzyhP+/fSStdW8okeEnv47jxe7SJ/iN72ohNcUk2jHEUSoH1nvNSIWL9M\n8tEjmF/zxB+bATMtPjCUWbz8Lr9wloXIkjHUlBLpvXR0UrUzYbkNpk0agV2IzUpk\nJ6UiRRGcDSvzrsoK+oNvqu6z7Xs5Xfz5rDqUcMlK1Z6720dcBWGGsDLpTpSCnpot\ndXd/H5LMDWnonNvPCwQUHg==";
   const base64 = base64_splitted.replace(/\n/g, "");
   const rawData = Convert.FromBase64(base64);
 
@@ -18,7 +17,8 @@ describe("PEM", () => {
 
     function mapPemStruct(pem: src.PemStruct): PemTest {
       return {
-        ...pem, rawData: Convert.ToBase64(pem.rawData),
+        ...pem,
+        rawData: Convert.ToBase64(pem.rawData),
       };
     }
 
@@ -29,11 +29,7 @@ describe("PEM", () => {
     }[] = [
       {
         name: "simple pem",
-        pem: [
-          "-----BEGIN SOME-----",
-          base64_splitted,
-          "-----END SOME-----",
-        ].join("\n"),
+        pem: ["-----BEGIN SOME-----", base64_splitted, "-----END SOME-----"].join("\n"),
         want: [
           {
             type: "SOME",
@@ -96,28 +92,36 @@ describe("PEM", () => {
             type: "PRIVACY-ENHANCED MESSAGE",
             headers: [
               {
-                key: "Proc-Type", value: "4,ENCRYPTED",
+                key: "Proc-Type",
+                value: "4,ENCRYPTED",
               },
               {
-                key: "Content-Domain", value: "RFC822",
+                key: "Content-Domain",
+                value: "RFC822",
               },
               {
-                key: "DEK-Info", value: "DES-CBC,F8143EDE5960C597",
+                key: "DEK-Info",
+                value: "DES-CBC,F8143EDE5960C597",
               },
               {
-                key: "Originator-ID-Symmetric", value: "linn@zendia.enet.dec.com,,",
+                key: "Originator-ID-Symmetric",
+                value: "linn@zendia.enet.dec.com,,",
               },
               {
-                key: "Recipient-ID-Symmetric", value: "linn@zendia.enet.dec.com,ptf-kmc,3",
+                key: "Recipient-ID-Symmetric",
+                value: "linn@zendia.enet.dec.com,ptf-kmc,3",
               },
               {
-                key: "Key-Info", value: "DES-ECB,RSA-MD2,9FD3AAD2F2691B9A,B70665BB9BF7CBCDA60195DB94F727D3",
+                key: "Key-Info",
+                value: "DES-ECB,RSA-MD2,9FD3AAD2F2691B9A,B70665BB9BF7CBCDA60195DB94F727D3",
               },
               {
-                key: "Recipient-ID-Symmetric", value: "pem-dev@tis.com,ptf-kmc,4",
+                key: "Recipient-ID-Symmetric",
+                value: "pem-dev@tis.com,ptf-kmc,4",
               },
               {
-                key: "Key-Info", value: "DES-ECB,RSA-MD2,161A3F75DC82EF26,E2EF532C65CBCFF79F83A2658132DB47",
+                key: "Key-Info",
+                value: "DES-ECB,RSA-MD2,161A3F75DC82EF26,E2EF532C65CBCFF79F83A2658132DB47",
               },
             ],
             rawData: base64,
@@ -153,7 +157,8 @@ describe("PEM", () => {
             type: "SOME2",
             headers: [
               {
-                key: "Key1", value: "Value1",
+                key: "Key1",
+                value: "Value1",
               },
             ],
             rawData: base64,
@@ -162,21 +167,14 @@ describe("PEM", () => {
       },
       {
         name: "BEGIN and END types are not equal",
-        pem: [
-          "-----BEGIN SOME1-----",
-          base64_splitted,
-          "-----END SOME2-----",
-        ].join("\n"),
+        pem: ["-----BEGIN SOME1-----", base64_splitted, "-----END SOME2-----"].join("\n"),
         want: [],
       },
       {
         name: "odd text before BEGIN",
-        pem: [
-          "Some: value",
-          "-----BEGIN SOME-----",
-          base64_splitted,
-          "-----END SOME-----",
-        ].join("\n"),
+        pem: ["Some: value", "-----BEGIN SOME-----", base64_splitted, "-----END SOME-----"].join(
+          "\n",
+        ),
         want: [
           {
             type: "SOME",
@@ -217,11 +215,7 @@ describe("PEM", () => {
             },
           ],
         },
-        want: [
-          "-----BEGIN SOME-----",
-          base64_splitted,
-          "-----END SOME-----",
-        ].join("\n"),
+        want: ["-----BEGIN SOME-----", base64_splitted, "-----END SOME-----"].join("\n"),
       },
       {
         name: "PEM with headers from PemStruct",
@@ -231,13 +225,16 @@ describe("PEM", () => {
               type: "SOME",
               headers: [
                 {
-                  key: "Key1", value: "Value1",
+                  key: "Key1",
+                  value: "Value1",
                 },
                 {
-                  key: "Key2", value: "Value2",
+                  key: "Key2",
+                  value: "Value2",
                 },
                 {
-                  key: "Key1", value: "Value3",
+                  key: "Key1",
+                  value: "Value3",
                 }, // repeated key
               ],
               rawData,
@@ -266,7 +263,8 @@ describe("PEM", () => {
               type: "SOME2",
               headers: [
                 {
-                  key: "Key1", value: "Value1",
+                  key: "Key1",
+                  value: "Value1",
                 },
               ],
               rawData,
@@ -290,11 +288,7 @@ describe("PEM", () => {
           a: rawData,
           b: "SOME",
         },
-        want: [
-          "-----BEGIN SOME-----",
-          base64_splitted,
-          "-----END SOME-----",
-        ].join("\n"),
+        want: ["-----BEGIN SOME-----", base64_splitted, "-----END SOME-----"].join("\n"),
       },
       {
         name: "PEM from BufferSource[]",
@@ -318,12 +312,16 @@ describe("PEM", () => {
         if (t.want instanceof Error) {
           expect(() => {
             src.PemConverter.encode.call<unknown, any[], unknown>(
-              src.PemConverter, t.args.a, t.args.b,
+              src.PemConverter,
+              t.args.a,
+              t.args.b,
             );
           }).toThrow(t.want);
         } else {
           const pem = src.PemConverter.encode.call<unknown, any[], unknown>(
-            src.PemConverter, t.args.a, t.args.b,
+            src.PemConverter,
+            t.args.a,
+            t.args.b,
           );
           expect(pem).toBe(t.want);
         }
@@ -339,11 +337,7 @@ describe("PEM", () => {
     }[] = [
       {
         name: "valid PEM with Unix line endings",
-        data: [
-          "-----BEGIN SOME-----",
-          base64_splitted,
-          "-----END SOME-----",
-        ].join("\n"),
+        data: ["-----BEGIN SOME-----", base64_splitted, "-----END SOME-----"].join("\n"),
         want: true,
       },
       {

@@ -37,11 +37,7 @@ export class ChallengePasswordAttribute extends Attribute {
     super.onInit(asn);
 
     if (this.values[0]) {
-      const value = AsnConvert.parse(
-        this.values[0],
-        asnPkcs9.ChallengePassword,
-        this.parseOptions,
-      );
+      const value = AsnConvert.parse(this.values[0], asnPkcs9.ChallengePassword, this.parseOptions);
       this.password = value.toString();
     }
   }

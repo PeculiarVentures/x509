@@ -11,8 +11,9 @@ Every release of `@peculiar/x509` will have new build of `./build/x509.js` for u
 ```
 
 A simple web application examples
-  - [Generate X509 certificate](https://codesandbox.io/s/generate-cert-fjwfh)
-  - [Generate PKCS#10 certificate request](https://codesandbox.io/s/generate-csr-0qhed)
+
+- [Generate X509 certificate](https://codesandbox.io/s/generate-cert-fjwfh)
+- [Generate PKCS#10 certificate request](https://codesandbox.io/s/generate-csr-0qhed)
 
 ### Set crypto provider for Node.js
 
@@ -29,6 +30,7 @@ x509.cryptoProvider.set(crypto);
 ```
 
 ### Create a self-signed certificate
+
 ```js
 const alg = {
   name: "RSASSA-PKCS1-v1_5",
@@ -49,13 +51,14 @@ const cert = await x509.X509CertificateGenerator.createSelfSigned({
     new x509.ExtendedKeyUsageExtension(["1.2.3.4.5.6.7", "2.3.4.5.6.7.8"], true),
     new x509.KeyUsagesExtension(x509.KeyUsageFlags.keyCertSign | x509.KeyUsageFlags.cRLSign, true),
     await x509.SubjectKeyIdentifierExtension.create(keys.publicKey),
-  ]
+  ],
 });
 
 console.log(cert.toString("pem")); // Certificate in PEM format
 ```
 
 ### Parse a x509 certificate
+
 ```js
 const base64 = "MIIDljCCAn6gAwIBAgIOSETcxtRwD...S+kAFXIwugUGYEnTWp0m5bAn5NlD314IEOg4mnS8Q==";
 
@@ -64,29 +67,31 @@ console.log(cert.subject); // CN=Test, O=PeculiarVentures LLC
 ```
 
 ### Create a PKCS#10 certificate request
+
 ```js
 const alg = {
   name: "ECDSA",
   namedCurve: "P-384",
   hash: "SHA-384",
-}
+};
 const keys = await crypto.subtle.generateKey(alg, false, ["sign", "verify"]);
 const csr = await x509.Pkcs10CertificateRequestGenerator.create({
   name: "CN=Test",
   keys,
   signingAlgorithm: alg,
   extensions: [
-    new x509.KeyUsagesExtension(x509.KeyUsageFlags.digitalSignature | x509.KeyUsageFlags.keyEncipherment),
+    new x509.KeyUsagesExtension(
+      x509.KeyUsageFlags.digitalSignature | x509.KeyUsageFlags.keyEncipherment,
+    ),
   ],
-  attributes: [
-    new x509.ChallengePasswordAttribute("password"),
-  ]
+  attributes: [new x509.ChallengePasswordAttribute("password")],
 });
 
 console.log(csr.toString("base64")); // Certificate request in Base64 format
 ```
 
 ### Decoded X509 certificate
+
 ```js
 X509Certificate {
   rawData: ArrayBuffer {
@@ -153,6 +158,7 @@ X509Certificate {
 ```
 
 ### Build a certificate chain
+
 ```js
 const chain = new x509.X509ChainBuilder({
   certificates: [
@@ -169,10 +175,15 @@ console.log(items); // [ X509Certificate, X509Certificate, X509Certificate ]
 ```
 
 ### Export a list of X509 certificates to PKCS#7 format
+
 ```js
 const certs = new x509.X509Certificates([
-  new x509.X509Certificate("MIIDljCCAn6gAwIBAgIOSETcxtRwD...S+kAFXIwugUGYEnTWp0m5bAn5NlD314IEOg4mnS8Q=="),
-  new x509.X509Certificate("MIIDljCCAn6gAwIBAgIOSETcxtRwD...w8Y/o+hk3QzNBVa3ZUvzDhVAmamQflvw3lXMm/JG4U="),
+  new x509.X509Certificate(
+    "MIIDljCCAn6gAwIBAgIOSETcxtRwD...S+kAFXIwugUGYEnTWp0m5bAn5NlD314IEOg4mnS8Q==",
+  ),
+  new x509.X509Certificate(
+    "MIIDljCCAn6gAwIBAgIOSETcxtRwD...w8Y/o+hk3QzNBVa3ZUvzDhVAmamQflvw3lXMm/JG4U=",
+  ),
 ]);
 
 console.log(certs.export("base64")); // "MIICTAYJKoZIhvcNAQcCoIICPTCCAjkCAQAxADACBgCgggIq...F7EZPNo3pjbfznpIilRMRrmwf5dkgCdSKDdE94xAA==");

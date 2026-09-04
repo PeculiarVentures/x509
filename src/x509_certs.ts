@@ -3,12 +3,8 @@ import { AsnConvert, OctetString } from "@peculiar/asn1-schema";
 import { Certificate } from "@peculiar/asn1-x509";
 import { Convert } from "pvtsutils";
 import { PemConverter } from "./pem_converter";
-import {
-  AsnEncodedType, AsnExportType, PemData,
-} from "./pem_data";
-import {
-  OidSerializer, TextConverter, TextObject, TextObjectConvertible,
-} from "./text_converter";
+import { AsnEncodedType, AsnExportType, PemData } from "./pem_data";
+import { OidSerializer, TextConverter, TextObject, TextObjectConvertible } from "./text_converter";
 import { X509Certificate } from "./x509_cert";
 import { ParseOptions } from "./types";
 
@@ -79,12 +75,15 @@ export class X509Certificates extends Array<X509Certificate> implements TextObje
 
     signedData.version = 1;
     signedData.encapContentInfo.eContentType = asn1Cms.id_data;
-    signedData.encapContentInfo.eContent = new asn1Cms.EncapsulatedContent(
-      { single: new OctetString() },
-    );
+    signedData.encapContentInfo.eContent = new asn1Cms.EncapsulatedContent({
+      single: new OctetString(),
+    });
     signedData.certificates = new asn1Cms.CertificateSet(
-      this.map((o) => new asn1Cms.CertificateChoices(
-        { certificate: AsnConvert.parse(o.rawData, Certificate, this.#options) }),
+      this.map(
+        (o) =>
+          new asn1Cms.CertificateChoices({
+            certificate: AsnConvert.parse(o.rawData, Certificate, this.#options),
+          }),
       ),
     );
 
@@ -146,9 +145,7 @@ export class X509Certificates extends Array<X509Certificate> implements TextObje
       case "pem":
         return PemConverter.encode(raw, "CMS");
       case "pem-chain":
-        return this
-          .map((o) => o.toString("pem"))
-          .join("\n");
+        return this.map((o) => o.toString("pem")).join("\n");
       case "asn":
         return AsnConvert.toString(raw, this.#options);
       case "hex":

@@ -1,10 +1,6 @@
-import {
-  describe, it, expect, beforeAll,
-} from "vitest";
+import { describe, it, expect, beforeAll } from "vitest";
 import { Crypto } from "@peculiar/webcrypto";
-import {
-  CryptoProvider, IPublicKeyContainer, PublicKey, cryptoProvider,
-} from "../src";
+import { CryptoProvider, IPublicKeyContainer, PublicKey, cryptoProvider } from "../src";
 
 describe("PublicKey", () => {
   let crypto: globalThis.Crypto;
@@ -14,7 +10,8 @@ describe("PublicKey", () => {
   beforeAll(async () => {
     crypto = cryptoProvider.get();
     const alg = {
-      name: "ECDSA", namedCurve: "P-256",
+      name: "ECDSA",
+      namedCurve: "P-256",
     };
     const keys = await crypto.subtle.generateKey(alg, true, ["sign", "verify"]);
     cryptoKey = keys.publicKey;

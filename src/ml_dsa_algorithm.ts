@@ -1,9 +1,5 @@
 import { AlgorithmIdentifier } from "@peculiar/asn1-x509";
-import {
-  id_ml_dsa_44,
-  id_ml_dsa_65,
-  id_ml_dsa_87,
-} from "@peculiar/asn1-x509-post-quantum";
+import { id_ml_dsa_44, id_ml_dsa_65, id_ml_dsa_87 } from "@peculiar/asn1-x509-post-quantum";
 import { container, injectable } from "tsyringe";
 import { diAlgorithm, IAlgorithm } from "./algorithm";
 

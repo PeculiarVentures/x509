@@ -1,8 +1,6 @@
 import { AlgorithmIdentifier } from "@peculiar/asn1-x509";
 import { container, injectable } from "tsyringe";
-import {
-  id_sha1, id_sha256, id_sha384, id_sha512,
-} from "@peculiar/asn1-rsa";
+import { id_sha1, id_sha256, id_sha384, id_sha512 } from "@peculiar/asn1-rsa";
 import { diAlgorithm, IAlgorithm } from "./algorithm";
 
 /**

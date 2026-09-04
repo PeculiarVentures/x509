@@ -1,6 +1,4 @@
-import {
-  AsnConvert, AsnUtf8StringConverter, OctetString,
-} from "@peculiar/asn1-schema";
+import { AsnConvert, AsnUtf8StringConverter, OctetString } from "@peculiar/asn1-schema";
 import * as asn1X509 from "@peculiar/asn1-x509";
 import { BufferSourceConverter, Convert } from "pvtsutils";
 import { AsnData } from "./asn_data";
@@ -30,7 +28,8 @@ export const GUID = "guid";
 export const UPN = "upn";
 export const REGISTERED_ID = "id";
 
-export type GeneralNameType = typeof DNS
+export type GeneralNameType =
+  | typeof DNS
   | typeof DN
   | typeof EMAIL
   | typeof GUID
@@ -231,10 +230,7 @@ export class GeneralNames extends AsnData<asn1X509.GeneralNames> {
   constructor(asn: asn1X509.GeneralNames | asn1X509.GeneralName[]);
   constructor(raw: BufferSource);
   constructor(
-    params: JsonGeneralNames
-      | asn1X509.GeneralNames
-      | asn1X509.GeneralName[]
-      | BufferSource,
+    params: JsonGeneralNames | asn1X509.GeneralNames | asn1X509.GeneralName[] | BufferSource,
   ) {
     let names: asn1X509.GeneralNames;
     if (params instanceof asn1X509.GeneralNames) {

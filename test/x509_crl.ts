@@ -1,6 +1,4 @@
-import {
-  describe, it, expect, beforeAll,
-} from "vitest";
+import { describe, it, expect, beforeAll } from "vitest";
 import { Crypto } from "@peculiar/webcrypto";
 import { AsnConvert } from "@peculiar/asn1-schema";
 import { CertificateList } from "@peculiar/asn1-x509";
@@ -191,19 +189,23 @@ describe("X509CrlGenerator", () => {
   });
 
   it("should throw if duplicate entries", async () => {
-    await expect(x509.X509CrlGenerator.create({
-      issuer: "CN=Test",
-      signingAlgorithm: alg,
-      signingKey: keys.privateKey,
-      entries: [
-        {
-          serialNumber: "01", revocationDate: new Date(),
-        },
-        {
-          serialNumber: "01", revocationDate: new Date(),
-        },
-      ],
-    })).rejects.toThrow("already exists");
+    await expect(
+      x509.X509CrlGenerator.create({
+        issuer: "CN=Test",
+        signingAlgorithm: alg,
+        signingKey: keys.privateKey,
+        entries: [
+          {
+            serialNumber: "01",
+            revocationDate: new Date(),
+          },
+          {
+            serialNumber: "01",
+            revocationDate: new Date(),
+          },
+        ],
+      }),
+    ).rejects.toThrow("already exists");
   });
 
   // First byte 0xf6 has the high bit set; without sign-padding this would be
@@ -217,9 +219,12 @@ describe("X509CrlGenerator", () => {
       nextUpdate: new Date(),
       signingAlgorithm: alg,
       signingKey: keys.privateKey,
-      entries: [{
-        serialNumber: highBitSerial, revocationDate: new Date(),
-      }],
+      entries: [
+        {
+          serialNumber: highBitSerial,
+          revocationDate: new Date(),
+        },
+      ],
     });
 
     // Inspect the raw DER INTEGER content octets directly: the getter strips
@@ -237,9 +242,12 @@ describe("X509CrlGenerator", () => {
       nextUpdate: new Date(),
       signingAlgorithm: alg,
       signingKey: keys.privateKey,
-      entries: [{
-        serialNumber: highBitSerial, revocationDate: new Date(),
-      }],
+      entries: [
+        {
+          serialNumber: highBitSerial,
+          revocationDate: new Date(),
+        },
+      ],
     });
 
     const cert = await x509.X509CertificateGenerator.createSelfSigned({
@@ -259,41 +267,51 @@ describe("X509CrlGenerator", () => {
     expect(entry?.serialNumber).toBe(cert.serialNumber);
   });
 
-  it.each(["", "00", "0000"])("should keep the zero serial number %j as given", async (serialNumber) => {
-    const crl = await x509.X509CrlGenerator.create({
-      issuer: "CN=Test CA",
-      thisUpdate: new Date(),
-      nextUpdate: new Date(),
-      signingAlgorithm: alg,
-      signingKey: keys.privateKey,
-      entries: [{
-        serialNumber, revocationDate: new Date(),
-      }],
-    });
+  it.each(["", "00", "0000"])(
+    "should keep the zero serial number %j as given",
+    async (serialNumber) => {
+      const crl = await x509.X509CrlGenerator.create({
+        issuer: "CN=Test CA",
+        thisUpdate: new Date(),
+        nextUpdate: new Date(),
+        signingAlgorithm: alg,
+        signingKey: keys.privateKey,
+        entries: [
+          {
+            serialNumber,
+            revocationDate: new Date(),
+          },
+        ],
+      });
 
-    // The serial number must be normalized, not replaced by a random one.
-    const parsed = new x509.X509Crl(crl.rawData);
-    expect(parsed.entries.length).toBe(1);
-    expect(parsed.entries[0].serialNumber).toBe("00");
-    expect(parsed.findRevoked(serialNumber)?.serialNumber).toBe("00");
-  });
+      // The serial number must be normalized, not replaced by a random one.
+      const parsed = new x509.X509Crl(crl.rawData);
+      expect(parsed.entries.length).toBe(1);
+      expect(parsed.entries[0].serialNumber).toBe("00");
+      expect(parsed.findRevoked(serialNumber)?.serialNumber).toBe("00");
+    },
+  );
 
   it("should throw if duplicate entries with zero serial numbers", async () => {
-    await expect(x509.X509CrlGenerator.create({
-      issuer: "CN=Test CA",
-      thisUpdate: new Date(),
-      nextUpdate: new Date(),
-      signingAlgorithm: alg,
-      signingKey: keys.privateKey,
-      entries: [
-        {
-          serialNumber: "00", revocationDate: new Date(),
-        },
-        {
-          serialNumber: "0000", revocationDate: new Date(),
-        },
-      ],
-    })).rejects.toThrow("already exists");
+    await expect(
+      x509.X509CrlGenerator.create({
+        issuer: "CN=Test CA",
+        thisUpdate: new Date(),
+        nextUpdate: new Date(),
+        signingAlgorithm: alg,
+        signingKey: keys.privateKey,
+        entries: [
+          {
+            serialNumber: "00",
+            revocationDate: new Date(),
+          },
+          {
+            serialNumber: "0000",
+            revocationDate: new Date(),
+          },
+        ],
+      }),
+    ).rejects.toThrow("already exists");
   });
 });
 

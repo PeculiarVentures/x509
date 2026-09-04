@@ -12,7 +12,7 @@
     "**/.DS_Store": true,
     "**/node_modules": true,
     "build": true,
-    ".nyc_output": true,
+    ".nyc_output": true
   },
   "typescript.tsdk": "node_modules/typescript/lib",
   "vitest.watch": false

@@ -10,8 +10,5 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
   },
-  "exclude": [
-    "website",
-    "build/*.ts"
-  ]
+  "exclude": ["website", "build/*.ts"]
 }

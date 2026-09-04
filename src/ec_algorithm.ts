@@ -205,19 +205,23 @@ export class EcAlgorithm implements IAlgorithm {
     switch (alg.algorithm) {
       case asn1Ecc.id_ecdsaWithSHA1:
         return {
-          name: ECDSA, hash: { name: "SHA-1" },
+          name: ECDSA,
+          hash: { name: "SHA-1" },
         };
       case asn1Ecc.id_ecdsaWithSHA256:
         return {
-          name: ECDSA, hash: { name: "SHA-256" },
+          name: ECDSA,
+          hash: { name: "SHA-256" },
         };
       case asn1Ecc.id_ecdsaWithSHA384:
         return {
-          name: ECDSA, hash: { name: "SHA-384" },
+          name: ECDSA,
+          hash: { name: "SHA-384" },
         };
       case asn1Ecc.id_ecdsaWithSHA512:
         return {
-          name: ECDSA, hash: { name: "SHA-512" },
+          name: ECDSA,
+          hash: { name: "SHA-512" },
         };
       case asn1Ecc.id_ecPublicKey: {
         if (!alg.parameters) {
@@ -227,75 +231,93 @@ export class EcAlgorithm implements IAlgorithm {
         switch (parameters.namedCurve) {
           case asn1Ecc.id_secp256r1:
             return {
-              name: ECDSA, namedCurve: "P-256",
+              name: ECDSA,
+              namedCurve: "P-256",
             };
           case EcAlgorithm.SECP256K1:
             return {
-              name: ECDSA, namedCurve: "K-256",
+              name: ECDSA,
+              namedCurve: "K-256",
             };
           case asn1Ecc.id_secp384r1:
             return {
-              name: ECDSA, namedCurve: "P-384",
+              name: ECDSA,
+              namedCurve: "P-384",
             };
           case asn1Ecc.id_secp521r1:
             return {
-              name: ECDSA, namedCurve: "P-521",
+              name: ECDSA,
+              namedCurve: "P-521",
             };
           case idBrainpoolP160r1:
             return {
-              name: ECDSA, namedCurve: brainpoolP160r1,
+              name: ECDSA,
+              namedCurve: brainpoolP160r1,
             };
           case idBrainpoolP160t1:
             return {
-              name: ECDSA, namedCurve: brainpoolP160t1,
+              name: ECDSA,
+              namedCurve: brainpoolP160t1,
             };
           case idBrainpoolP192r1:
             return {
-              name: ECDSA, namedCurve: brainpoolP192r1,
+              name: ECDSA,
+              namedCurve: brainpoolP192r1,
             };
           case idBrainpoolP192t1:
             return {
-              name: ECDSA, namedCurve: brainpoolP192t1,
+              name: ECDSA,
+              namedCurve: brainpoolP192t1,
             };
           case idBrainpoolP224r1:
             return {
-              name: ECDSA, namedCurve: brainpoolP224r1,
+              name: ECDSA,
+              namedCurve: brainpoolP224r1,
             };
           case idBrainpoolP224t1:
             return {
-              name: ECDSA, namedCurve: brainpoolP224t1,
+              name: ECDSA,
+              namedCurve: brainpoolP224t1,
             };
           case idBrainpoolP256r1:
             return {
-              name: ECDSA, namedCurve: brainpoolP256r1,
+              name: ECDSA,
+              namedCurve: brainpoolP256r1,
             };
           case idBrainpoolP256t1:
             return {
-              name: ECDSA, namedCurve: brainpoolP256t1,
+              name: ECDSA,
+              namedCurve: brainpoolP256t1,
             };
           case idBrainpoolP320r1:
             return {
-              name: ECDSA, namedCurve: brainpoolP320r1,
+              name: ECDSA,
+              namedCurve: brainpoolP320r1,
             };
           case idBrainpoolP320t1:
             return {
-              name: ECDSA, namedCurve: brainpoolP320t1,
+              name: ECDSA,
+              namedCurve: brainpoolP320t1,
             };
           case idBrainpoolP384r1:
             return {
-              name: ECDSA, namedCurve: brainpoolP384r1,
+              name: ECDSA,
+              namedCurve: brainpoolP384r1,
             };
           case idBrainpoolP384t1:
             return {
-              name: ECDSA, namedCurve: brainpoolP384t1,
+              name: ECDSA,
+              namedCurve: brainpoolP384t1,
             };
           case idBrainpoolP512r1:
             return {
-              name: ECDSA, namedCurve: brainpoolP512r1,
+              name: ECDSA,
+              namedCurve: brainpoolP512r1,
             };
           case idBrainpoolP512t1:
             return {
-              name: ECDSA, namedCurve: brainpoolP512t1,
+              name: ECDSA,
+              namedCurve: brainpoolP512t1,
             };
         }
       }

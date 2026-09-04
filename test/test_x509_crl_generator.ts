@@ -1,7 +1,5 @@
 import * as path from "path";
-import {
-  describe, it, expect, beforeAll,
-} from "vitest";
+import { describe, it, expect, beforeAll } from "vitest";
 import { Crypto } from "@peculiar/webcrypto";
 import * as x509 from "../src";
 

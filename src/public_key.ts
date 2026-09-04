@@ -1,7 +1,5 @@
 import { id_ecPublicKey } from "@peculiar/asn1-ecc";
-import {
-  id_rsaEncryption, id_RSASSA_PSS, RSAPublicKey,
-} from "@peculiar/asn1-rsa";
+import { id_rsaEncryption, id_RSASSA_PSS, RSAPublicKey } from "@peculiar/asn1-rsa";
 import { AsnConvert } from "@peculiar/asn1-schema";
 import { AlgorithmIdentifier, SubjectPublicKeyInfo } from "@peculiar/asn1-x509";
 import { BufferSourceConverter } from "pvtsutils";
@@ -72,10 +70,7 @@ export class PublicKey extends PemData<SubjectPublicKeyInfo> {
    * @param options Optional ASN.1 parse options (e.g. `asn1js.fromBER` resource limits)
    */
   public constructor(raw: AsnEncodedType, options?: ParseOptions);
-  public constructor(
-    param: AsnEncodedType | SubjectPublicKeyInfo,
-    options?: ParseOptions,
-  ) {
+  public constructor(param: AsnEncodedType | SubjectPublicKeyInfo, options?: ParseOptions) {
     if (PemData.isAsnEncoded(param)) {
       super(param, SubjectPublicKeyInfo, options);
     } else {
@@ -99,7 +94,7 @@ export class PublicKey extends PemData<SubjectPublicKeyInfo> {
   public async export(
     algorithm: Algorithm | EcKeyImportParams | RsaHashedImportParams,
     keyUsages: KeyUsage[],
-    crypto?: Crypto
+    crypto?: Crypto,
   ): Promise<CryptoKey>;
   public async export(
     arg1?: Crypto | Algorithm | EcKeyImportParams | RsaHashedImportParams,
@@ -109,7 +104,8 @@ export class PublicKey extends PemData<SubjectPublicKeyInfo> {
     let crypto: Crypto | undefined;
     let keyUsages: KeyUsage[] = ["verify"];
     let algorithm: Algorithm | EcKeyImportParams | RsaHashedImportParams = {
-      hash: "SHA-256", ...this.algorithm,
+      hash: "SHA-256",
+      ...this.algorithm,
     };
 
     if (arg2) {
@@ -137,10 +133,9 @@ export class PublicKey extends PemData<SubjectPublicKeyInfo> {
 
   protected onInit(asn: SubjectPublicKeyInfo) {
     const algProv = container.resolve<AlgorithmProvider>(diAlgorithmProvider);
-    const algorithm = this.algorithm = algProv.toWebAlgorithm(asn.algorithm) as any;
+    const algorithm = (this.algorithm = algProv.toWebAlgorithm(asn.algorithm) as any);
     switch (asn.algorithm.algorithm) {
-      case id_rsaEncryption:
-      {
+      case id_rsaEncryption: {
         const rsaPublicKey = AsnConvert.parse(
           asn.subjectPublicKey,
           RSAPublicKey,
@@ -166,12 +161,9 @@ export class PublicKey extends PemData<SubjectPublicKeyInfo> {
    */
   public async getThumbprint(
     algorithm: globalThis.AlgorithmIdentifier,
-    crypto?: Crypto
+    crypto?: Crypto,
   ): Promise<ArrayBuffer>;
-  public async getThumbprint(
-    arg1?: Crypto | globalThis.AlgorithmIdentifier,
-    arg2?: Crypto,
-  ) {
+  public async getThumbprint(arg1?: Crypto | globalThis.AlgorithmIdentifier, arg2?: Crypto) {
     let crypto: Crypto | undefined;
     let algorithm: globalThis.AlgorithmIdentifier = "SHA-1";
 
@@ -200,12 +192,9 @@ export class PublicKey extends PemData<SubjectPublicKeyInfo> {
    */
   public async getKeyIdentifier(
     algorithm: globalThis.AlgorithmIdentifier,
-    crypto?: Crypto
+    crypto?: Crypto,
   ): Promise<ArrayBuffer>;
-  public async getKeyIdentifier(
-    arg1?: Crypto | globalThis.AlgorithmIdentifier,
-    arg2?: Crypto,
-  ) {
+  public async getKeyIdentifier(arg1?: Crypto | globalThis.AlgorithmIdentifier, arg2?: Crypto) {
     let crypto: Crypto | undefined;
     let algorithm: globalThis.AlgorithmIdentifier = "SHA-1";
 

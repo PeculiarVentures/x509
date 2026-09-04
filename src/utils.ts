@@ -22,7 +22,7 @@ function toPositiveIntegerOctets(input: Uint8Array): ArrayBuffer {
   }
 
   // If the first bit is 1, prepend a zero byte to ensure positive integer
-  if (serialNumber[0] > 0x7F) {
+  if (serialNumber[0] > 0x7f) {
     const newSerialNumber = new Uint8Array(serialNumber.length + 1);
     newSerialNumber[0] = 0x00;
     newSerialNumber.set(serialNumber, 1);
@@ -63,9 +63,10 @@ export function generateCertificateSerialNumber(
   crypto = cryptoProvider.get(),
 ): ArrayBuffer {
   const inputView = BufferSourceConverter.toUint8Array(Convert.FromHex(input || ""));
-  const serialNumber = inputView.length && inputView.some((o) => o > 0)
-    ? inputView
-    : crypto.getRandomValues(new Uint8Array(16));
+  const serialNumber =
+    inputView.length && inputView.some((o) => o > 0)
+      ? inputView
+      : crypto.getRandomValues(new Uint8Array(16));
 
   return toPositiveIntegerOctets(serialNumber);
 }
@@ -82,7 +83,7 @@ export function generateCertificateSerialNumber(
  */
 export function getCertificateSerialNumber(raw: BufferSource): string {
   let serialNumber = BufferSourceConverter.toUint8Array(raw);
-  if (serialNumber.length > 1 && serialNumber[0] === 0x00 && serialNumber[1] > 0x7F) {
+  if (serialNumber.length > 1 && serialNumber[0] === 0x00 && serialNumber[1] > 0x7f) {
     // Remove the leading zero that was added to make negative numbers positive
     serialNumber = serialNumber.slice(1);
   }

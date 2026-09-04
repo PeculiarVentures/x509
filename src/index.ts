@@ -47,10 +47,7 @@ extensions.ExtensionFactory.register(
   asnX509.id_ce_extKeyUsage,
   extensions.ExtendedKeyUsageExtension,
 );
-extensions.ExtensionFactory.register(
-  asnX509.id_ce_keyUsage,
-  extensions.KeyUsagesExtension,
-);
+extensions.ExtensionFactory.register(asnX509.id_ce_keyUsage, extensions.KeyUsagesExtension);
 extensions.ExtensionFactory.register(
   asnX509.id_ce_subjectKeyIdentifier,
   extensions.SubjectKeyIdentifierExtension,

@@ -39,9 +39,9 @@ export class CRLDistributionPointsExtension extends Extension {
       const urls = args[0] as string[];
       const dps = urls.map((url) => {
         return new asn1X509.DistributionPoint({
-          distributionPoint: new asn1X509.DistributionPointName(
-            { fullName: [new asn1X509.GeneralName({ uniformResourceIdentifier: url })] },
-          ),
+          distributionPoint: new asn1X509.DistributionPointName({
+            fullName: [new asn1X509.GeneralName({ uniformResourceIdentifier: url })],
+          }),
         });
       });
       const value = new asn1X509.CRLDistributionPoints(dps);
@@ -71,7 +71,9 @@ export class CRLDistributionPointsExtension extends Extension {
     obj["Distribution Point"] = this.distributionPoints.map((dp) => {
       const dpObj = new TextObject("");
       if (dp.distributionPoint?.fullName) {
-        dpObj[""] = dp.distributionPoint.fullName.map((name) => new GeneralName(name).toString()).join(", ");
+        dpObj[""] = dp.distributionPoint.fullName
+          .map((name) => new GeneralName(name).toString())
+          .join(", ");
       }
       if (dp.reasons) {
         dpObj["Reasons"] = dp.reasons.toString();

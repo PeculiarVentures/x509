@@ -1,6 +1,4 @@
-import {
-  describe, it, expect, beforeAll,
-} from "vitest";
+import { describe, it, expect, beforeAll } from "vitest";
 import { container } from "tsyringe";
 import { AlgorithmProvider, diAlgorithmProvider } from "../src";
 
@@ -55,10 +53,12 @@ describe("AlgorithmProvider", () => {
     });
 
     it("should throw error if hash algorithm is not supported", async () => {
-      expect(() => algorithmProvider.toAsnAlgorithm({
-        name: "RSASSA-PKCS1-v1_5",
-        hash: "SHA-2",
-      } as Algorithm)).toThrow(/Cannot convert WebCrypto algorithm to ASN.1 algorithm/);
+      expect(() =>
+        algorithmProvider.toAsnAlgorithm({
+          name: "RSASSA-PKCS1-v1_5",
+          hash: "SHA-2",
+        } as Algorithm),
+      ).toThrow(/Cannot convert WebCrypto algorithm to ASN.1 algorithm/);
     });
   });
 });

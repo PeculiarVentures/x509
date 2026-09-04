@@ -7,9 +7,7 @@ import { cryptoProvider } from "./provider";
 import { Name } from "./name";
 import { Extension } from "./extension";
 import { ExtensionFactory } from "./extensions/extension_factory";
-import {
-  IPublicKeyContainer, PublicKey, PublicKeyType,
-} from "./public_key";
+import { IPublicKeyContainer, PublicKey, PublicKeyType } from "./public_key";
 import { AlgorithmProvider, diAlgorithmProvider } from "./algorithm";
 import { AsnEncodedType, PemData } from "./pem_data";
 import { diAsnSignatureFormatter, IAsnSignatureFormatter } from "./asn_signature_formatter";
@@ -168,8 +166,9 @@ export class X509Certificate extends PemData<Certificate> implements IPublicKeyC
    */
   public get notBefore(): Date {
     if (!this.#notBefore) {
-      const notBefore = this.asn.tbsCertificate.validity.notBefore.utcTime
-        || this.asn.tbsCertificate.validity.notBefore.generalTime;
+      const notBefore =
+        this.asn.tbsCertificate.validity.notBefore.utcTime ||
+        this.asn.tbsCertificate.validity.notBefore.generalTime;
       if (!notBefore) {
         throw new Error("Cannot get 'notBefore' value");
       }
@@ -184,8 +183,9 @@ export class X509Certificate extends PemData<Certificate> implements IPublicKeyC
    */
   public get notAfter(): Date {
     if (!this.#notAfter) {
-      const notAfter = this.asn.tbsCertificate.validity.notAfter.utcTime
-        || this.asn.tbsCertificate.validity.notAfter.generalTime;
+      const notAfter =
+        this.asn.tbsCertificate.validity.notAfter.utcTime ||
+        this.asn.tbsCertificate.validity.notAfter.generalTime;
       if (!notAfter) {
         throw new Error("Cannot get 'notAfter' value");
       }
@@ -201,8 +201,9 @@ export class X509Certificate extends PemData<Certificate> implements IPublicKeyC
   public get signatureAlgorithm(): HashedAlgorithm {
     if (!this.#signatureAlgorithm) {
       const algProv = container.resolve<AlgorithmProvider>(diAlgorithmProvider);
-      this.#signatureAlgorithm = algProv
-        .toWebAlgorithm(this.asn.signatureAlgorithm) as HashedAlgorithm;
+      this.#signatureAlgorithm = algProv.toWebAlgorithm(
+        this.asn.signatureAlgorithm,
+      ) as HashedAlgorithm;
     }
 
     return this.#signatureAlgorithm;
@@ -226,9 +227,9 @@ export class X509Certificate extends PemData<Certificate> implements IPublicKeyC
     if (!this.#extensions) {
       this.#extensions = [];
       if (this.asn.tbsCertificate.extensions) {
-        this.#extensions = this.asn.tbsCertificate.extensions.map((o) => (
-          ExtensionFactory.create(AsnConvert.serialize(o), this.parseOptions)
-        ));
+        this.#extensions = this.asn.tbsCertificate.extensions.map((o) =>
+          ExtensionFactory.create(AsnConvert.serialize(o), this.parseOptions),
+        );
       }
     }
 
@@ -264,9 +265,7 @@ export class X509Certificate extends PemData<Certificate> implements IPublicKeyC
    */
   public constructor(raw: AsnEncodedType, options?: ParseOptions);
   public constructor(param: AsnEncodedType | Certificate, options?: ParseOptions) {
-    const args = PemData.isAsnEncoded(param)
-      ? [param, Certificate, options]
-      : [param, options];
+    const args = PemData.isAsnEncoded(param) ? [param, Certificate, options] : [param, options];
     super(args[0] as any, args[1] as any, args[2] as any);
 
     this.tag = PemConverter.CertificateTag;
@@ -287,8 +286,10 @@ export class X509Certificate extends PemData<Certificate> implements IPublicKeyC
    * @param type Extension type
    * @returns Extension or null
    */
-  public getExtension<T extends Extension>(type: new(raw: BufferSource) => T): T | null;
-  public getExtension<T extends Extension>(type: (new(raw: BufferSource) => T) | string): T | null {
+  public getExtension<T extends Extension>(type: new (raw: BufferSource) => T): T | null;
+  public getExtension<T extends Extension>(
+    type: (new (raw: BufferSource) => T) | string,
+  ): T | null {
     for (const ext of this.extensions) {
       if (typeof type === "string") {
         if (ext.type === type) {
@@ -313,12 +314,12 @@ export class X509Certificate extends PemData<Certificate> implements IPublicKeyC
    * Returns a list of extensions of specified type
    * @param type Extension type
    */
-  public getExtensions<T extends Extension>(type: new(raw: BufferSource) => T): T[];
+  public getExtensions<T extends Extension>(type: new (raw: BufferSource) => T): T[];
   /**
    * Returns a list of extensions of specified type
    * @param type Extension identifier
    */
-  public getExtensions<T extends Extension>(type: string | (new(raw: BufferSource) => T)): T[] {
+  public getExtensions<T extends Extension>(type: string | (new (raw: BufferSource) => T)): T[] {
     return this.extensions.filter((o) => {
       if (typeof type === "string") {
         return o.type === type;
@@ -343,31 +344,36 @@ export class X509Certificate extends PemData<Certificate> implements IPublicKeyC
       if (!paramsKey) {
         // self-signed
         keyAlgorithm = {
-          ...this.publicKey.algorithm, ...this.signatureAlgorithm,
+          ...this.publicKey.algorithm,
+          ...this.signatureAlgorithm,
         };
         publicKey = await this.publicKey.export(keyAlgorithm, ["verify"], crypto);
       } else if ("publicKey" in paramsKey) {
         // IPublicKeyContainer
         keyAlgorithm = {
-          ...paramsKey.publicKey.algorithm, ...this.signatureAlgorithm,
+          ...paramsKey.publicKey.algorithm,
+          ...this.signatureAlgorithm,
         };
         publicKey = await paramsKey.publicKey.export(keyAlgorithm, ["verify"], crypto);
       } else if (paramsKey instanceof PublicKey) {
         // PublicKey
         keyAlgorithm = {
-          ...paramsKey.algorithm, ...this.signatureAlgorithm,
+          ...paramsKey.algorithm,
+          ...this.signatureAlgorithm,
         };
         publicKey = await paramsKey.export(keyAlgorithm, ["verify"], crypto);
       } else if (BufferSourceConverter.isBufferSource(paramsKey)) {
         const key = new PublicKey(paramsKey as BufferSource);
         keyAlgorithm = {
-          ...key.algorithm, ...this.signatureAlgorithm,
+          ...key.algorithm,
+          ...this.signatureAlgorithm,
         };
         publicKey = await key.export(keyAlgorithm, ["verify"], crypto);
       } else {
         // CryptoKey
         keyAlgorithm = {
-          ...paramsKey.algorithm, ...this.signatureAlgorithm,
+          ...paramsKey.algorithm,
+          ...this.signatureAlgorithm,
         };
         publicKey = paramsKey;
       }
@@ -421,10 +427,7 @@ export class X509Certificate extends PemData<Certificate> implements IPublicKeyC
     algorithm: globalThis.AlgorithmIdentifier,
     crypto?: Crypto,
   ): Promise<ArrayBuffer>;
-  public async getThumbprint(
-    arg1?: Crypto | globalThis.AlgorithmIdentifier,
-    arg2?: Crypto,
-  ) {
+  public async getThumbprint(arg1?: Crypto | globalThis.AlgorithmIdentifier, arg2?: Crypto) {
     let crypto: Crypto | undefined;
     let algorithm: globalThis.AlgorithmIdentifier = "SHA-1";
 
@@ -442,7 +445,7 @@ export class X509Certificate extends PemData<Certificate> implements IPublicKeyC
   }
 
   public async isSelfSigned(crypto = cryptoProvider.get()): Promise<boolean> {
-    return this.subject === this.issuer && await this.verify({ signatureOnly: true }, crypto);
+    return this.subject === this.issuer && (await this.verify({ signatureOnly: true }, crypto));
   }
 
   public override toTextObject(): TextObject {

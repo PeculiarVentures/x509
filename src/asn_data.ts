@@ -1,10 +1,6 @@
 import { AsnConvert } from "@peculiar/asn1-schema";
-import {
-  BufferSourceConverter, Convert, isEqual,
-} from "pvtsutils";
-import {
-  TextConverter, TextObject, TextObjectConvertible,
-} from "./text_converter";
+import { BufferSourceConverter, Convert, isEqual } from "pvtsutils";
+import { TextConverter, TextObject, TextObjectConvertible } from "./text_converter";
 import { ParseOptions } from "./types";
 
 export type AsnDataStringFormat = "asn" | "text" | "hex" | "base64" | "base64url";
@@ -50,7 +46,7 @@ export abstract class AsnData<T> implements TextObjectConvertible {
    * @param raw DER encoded buffer
    * @param type ASN.1 convertible class for `@peculiar/asn1-schema` schema
    */
-  public constructor(raw: BufferSource, type: new() => T, options?: ParseOptions);
+  public constructor(raw: BufferSource, type: new () => T, options?: ParseOptions);
   /**
    * ASN.1 object
    * @param asn

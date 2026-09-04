@@ -24,10 +24,12 @@ export class CryptoProvider {
    * Creates a new instance
    */
   public constructor() {
-    if (typeof self !== "undefined" && typeof crypto !== "undefined") { // if Browser
+    if (typeof self !== "undefined" && typeof crypto !== "undefined") {
+      // if Browser
       // Use global crypto as default
       this.set(CryptoProvider.DEFAULT, crypto);
-    } else if (typeof global !== "undefined" && global.crypto && global.crypto.subtle) { // if Node
+    } else if (typeof global !== "undefined" && global.crypto && global.crypto.subtle) {
+      // if Node
       // Use global crypto as default
       this.set(CryptoProvider.DEFAULT, global.crypto);
     }

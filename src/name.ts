@@ -1,5 +1,7 @@
 import {
-  AttributeTypeAndValue, Name as AsnName, RelativeDistinguishedName,
+  AttributeTypeAndValue,
+  Name as AsnName,
+  RelativeDistinguishedName,
 } from "@peculiar/asn1-x509";
 import { AsnConvert } from "@peculiar/asn1-schema";
 import { BufferSourceConverter, Convert } from "pvtsutils";
@@ -86,8 +88,7 @@ function escape(data: string) {
     .replace(/([,+"\\<>;])/g, "\\$1") // one of the characters ",", "+", """, "\", "<", ">" or ";"
     .replace(/^([ #])/, "\\$1") // a space or "#" character occurring at the beginning of the string
     .replace(/([ ]$)/, "\\$1") // a space character occurring at the end of the string
-    .replace(/([\r\n\t])/, replaceUnknownCharacter) // unknown character
-  ;
+    .replace(/([\r\n\t])/, replaceUnknownCharacter); // unknown character
 }
 
 /**
@@ -106,7 +107,7 @@ export class Name {
   public static isASCII(text: string) {
     for (let i = 0; i < text.length; i++) {
       const code = text.charCodeAt(i);
-      if (code > 0xFF) {
+      if (code > 0xff) {
         return false;
       }
     }
@@ -193,24 +194,27 @@ export class Name {
    * Returns string serialized Name
    */
   public toString() {
-    return this.asn.map((rdn) =>
-      rdn.map((o) => {
-        const type = this.getName(o.type) || o.type;
-        const value = o.value.anyValue
-          // If the AttributeValue is of a type which does not have a string
-          // representation defined for it, then it is simply encoded as an
-          // octothorpe character ('#' ASCII 35) followed by the hexadecimal
-          // representation of each of the bytes of the BER encoding of the X.500
-          // AttributeValue
-          ? `#${Convert.ToHex(o.value.anyValue)}`
-          // Otherwise, if the AttributeValue is of a type which has a string
-          // representation, the value is converted first to a UTF-8 string
-          // according to its syntax specification
-          : escape(o.value.toString());
+    return this.asn
+      .map((rdn) =>
+        rdn
+          .map((o) => {
+            const type = this.getName(o.type) || o.type;
+            const value = o.value.anyValue
+              ? // If the AttributeValue is of a type which does not have a string
+                // representation defined for it, then it is simply encoded as an
+                // octothorpe character ('#' ASCII 35) followed by the hexadecimal
+                // representation of each of the bytes of the BER encoding of the X.500
+                // AttributeValue
+                `#${Convert.ToHex(o.value.anyValue)}`
+              : // Otherwise, if the AttributeValue is of a type which has a string
+                // representation, the value is converted first to a UTF-8 string
+                // according to its syntax specification
+                escape(o.value.toString());
 
-        return `${type}=${value}`;
-      })
-        .join("+"))
+            return `${type}=${value}`;
+          })
+          .join("+"),
+      )
       .join(", ");
   }
 
@@ -225,7 +229,9 @@ export class Name {
       for (const attr of rdn) {
         const type = this.getName(attr.type) || attr.type;
         jsonItem[type] ??= [];
-        jsonItem[type].push(attr.value.anyValue ? `#${Convert.ToHex(attr.value.anyValue)}` : attr.value.toString());
+        jsonItem[type].push(
+          attr.value.anyValue ? `#${Convert.ToHex(attr.value.anyValue)}` : attr.value.toString(),
+        );
       }
       json.push(jsonItem);
     }
@@ -239,12 +245,13 @@ export class Name {
    */
   private fromString(data: string) {
     const asn = new AsnName();
-    const regex = /(\d\.[\d.]*\d|[A-Za-z]+)=((?:"")|(?:".*?[^\\]")|(?:[^,+"\\](?=[,+]|$))|(?:[^,+].*?(?:[^\\][,+]))|(?:))([,+])?/g;
+    const regex =
+      /(\d\.[\d.]*\d|[A-Za-z]+)=((?:"")|(?:".*?[^\\]")|(?:[^,+"\\](?=[,+]|$))|(?:[^,+].*?(?:[^\\][,+]))|(?:))([,+])?/g;
     let matches: RegExpExecArray | null = null;
     let level = ",";
 
     // eslint-disable-next-line no-cond-assign
-    while (matches = regex.exec(`${data},`)) {
+    while ((matches = regex.exec(`${data},`))) {
       let [, type, value] = matches;
       const lastChar = value[value.length - 1];
       if (lastChar === "," || lastChar === "+") {
@@ -369,9 +376,9 @@ export class Name {
     }
 
     return value
-      .replace(/\\0a/ig, "\n") // \n
-      .replace(/\\0d/ig, "\r") // \r
-      .replace(/\\0g/ig, "\t") // \t
+      .replace(/\\0a/gi, "\n") // \n
+      .replace(/\\0d/gi, "\r") // \r
+      .replace(/\\0g/gi, "\t") // \t
       .replace(/\\(.)/g, "$1"); // unescape
   }
 
@@ -394,12 +401,9 @@ export class Name {
    */
   public async getThumbprint(
     algorithm: globalThis.AlgorithmIdentifier,
-    crypto?: Crypto
+    crypto?: Crypto,
   ): Promise<ArrayBuffer>;
-  public async getThumbprint(
-    arg1?: Crypto | globalThis.AlgorithmIdentifier,
-    arg2?: Crypto,
-  ) {
+  public async getThumbprint(arg1?: Crypto | globalThis.AlgorithmIdentifier, arg2?: Crypto) {
     let crypto: Crypto | undefined;
     let algorithm: globalThis.AlgorithmIdentifier = "SHA-1";
 

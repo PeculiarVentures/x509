@@ -121,7 +121,7 @@ const config: Config = {
             {
               label: "Contact us",
               href: "mailto:info@peculiarventures.com",
-            }
+            },
           ],
         },
         {

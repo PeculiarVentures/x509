@@ -27,7 +27,9 @@ export abstract class PemData<T> extends AsnData<T> {
       } else if (Convert.isBase64Url(raw)) {
         return Convert.FromBase64Url(raw);
       } else {
-        throw new TypeError("Unsupported format of 'raw' argument. Must be one of DER, PEM, HEX, Base64, or Base4Url");
+        throw new TypeError(
+          "Unsupported format of 'raw' argument. Must be one of DER, PEM, HEX, Base64, or Base4Url",
+        );
       }
     } else {
       // Check if it looks like DER (starts with 0x30) to avoid slow string conversion
@@ -48,7 +50,9 @@ export abstract class PemData<T> extends AsnData<T> {
         return Convert.FromBase64Url(stringRaw);
       }
 
-      throw new TypeError("Unsupported format of 'raw' argument. Must be one of DER, PEM, HEX, Base64, or Base4Url");
+      throw new TypeError(
+        "Unsupported format of 'raw' argument. Must be one of DER, PEM, HEX, Base64, or Base4Url",
+      );
     }
   }
 
@@ -62,7 +66,7 @@ export abstract class PemData<T> extends AsnData<T> {
    * @param raw Encoded buffer (DER, PEM, HEX, Base64, Base64Url)
    * @param type ASN.1 convertible class for `@peculiar/asn1-schema` schema
    */
-  public constructor(raw: AsnEncodedType, type: new() => T, options?: ParseOptions);
+  public constructor(raw: AsnEncodedType, type: new () => T, options?: ParseOptions);
   /**
    * Creates a new instance
    * @param asn ASN.1 object

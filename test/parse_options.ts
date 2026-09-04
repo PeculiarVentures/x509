@@ -1,6 +1,4 @@
-import {
-  describe, it, expect, beforeAll,
-} from "vitest";
+import { describe, it, expect, beforeAll } from "vitest";
 import { Crypto } from "@peculiar/webcrypto";
 import { AsnConvert } from "@peculiar/asn1-schema";
 import { CertificationRequest } from "@peculiar/asn1-csr";
@@ -40,7 +38,8 @@ describe("parse options (berOptions)", () => {
   ].join("\n");
 
   // A valid PKCS#10 CSR (from the existing crypto tests)
-  const csrBase64 = "MIICdDCCAVwCAQAwLzEtMA8GA1UEAxMIdGVzdE5hbWUwGgYJKoZIhvcNAQkBEw10ZXN0QG1haWwubm90MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEArut7tLrb1BEHXImMTWipet+3/J2isn7mBv278oP7YyOkmX/Vzxvk9nvSc/B1wh6kSo6nfaxYacNNSP3r+WQYaTeLm5TsDbUfCJYtvvTuYH0GVTM8Qm7QhMZKnyUy/D60WNcRM4pnBDSEMpKppi7HhfL37DZpQnsQfr9r8LQPWZ9t/mf+FsSeWyQOQcz+ob6cODfNQIvbzpaXXdNpKIHLPW+/e4af5/WlZ9wL5Sy7kOf4X6nErdl74s1vSji9goANSQkd5TbswtFPRNybikrrisz0HtsIq2uTGDY6t3iOEHTe5qe/ux4anjbSqKVuIQEQWQOKb4h+mHTc+EC5yknihQIDAQABoAAwDQYJKoZIhvcNAQELBQADggEBAE7TU20ui1MLtxLM0UZMytYAjC7vtXxB5Vl6bzHUzZkVFW6oTeizqDxjeBtZ1SqErpgdyvzMvFSxF6f+679kl1/Zs2V0IPa4y58he3wTT/M1xCBN/bITY2cA4ETozbtK4cGoi6jY/0j8NcxTLfiBgwhE3ap+9GzLtWEhHWCXmpsohbvAktXSh1tLh4xmgoQoePEBSPbnaOmsonyzscKiBMASDvjrFdNbtD0uY2v/wYXwtRGvV/Q/O3lLWEosE4NdnZmgId4bm7ru48WucSnxuEJAkKUjDLrN0uqY/tKfX4Zy9w8Y/o+hk3QzNBVa3ZUvzDhVAmamQflvw3lXMm/JG4U=";
+  const csrBase64 =
+    "MIICdDCCAVwCAQAwLzEtMA8GA1UEAxMIdGVzdE5hbWUwGgYJKoZIhvcNAQkBEw10ZXN0QG1haWwubm90MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEArut7tLrb1BEHXImMTWipet+3/J2isn7mBv278oP7YyOkmX/Vzxvk9nvSc/B1wh6kSo6nfaxYacNNSP3r+WQYaTeLm5TsDbUfCJYtvvTuYH0GVTM8Qm7QhMZKnyUy/D60WNcRM4pnBDSEMpKppi7HhfL37DZpQnsQfr9r8LQPWZ9t/mf+FsSeWyQOQcz+ob6cODfNQIvbzpaXXdNpKIHLPW+/e4af5/WlZ9wL5Sy7kOf4X6nErdl74s1vSji9goANSQkd5TbswtFPRNybikrrisz0HtsIq2uTGDY6t3iOEHTe5qe/ux4anjbSqKVuIQEQWQOKb4h+mHTc+EC5yknihQIDAQABoAAwDQYJKoZIhvcNAQELBQADggEBAE7TU20ui1MLtxLM0UZMytYAjC7vtXxB5Vl6bzHUzZkVFW6oTeizqDxjeBtZ1SqErpgdyvzMvFSxF6f+679kl1/Zs2V0IPa4y58he3wTT/M1xCBN/bITY2cA4ETozbtK4cGoi6jY/0j8NcxTLfiBgwhE3ap+9GzLtWEhHWCXmpsohbvAktXSh1tLh4xmgoQoePEBSPbnaOmsonyzscKiBMASDvjrFdNbtD0uY2v/wYXwtRGvV/Q/O3lLWEosE4NdnZmgId4bm7ru48WucSnxuEJAkKUjDLrN0uqY/tKfX4Zy9w8Y/o+hk3QzNBVa3ZUvzDhVAmamQflvw3lXMm/JG4U=";
 
   describe("X509Certificate", () => {
     it("parses with default limits", () => {
@@ -49,8 +48,9 @@ describe("parse options (berOptions)", () => {
     });
 
     it("throws when berOptions.maxDepth is too low", () => {
-      expect(() => new x509.X509Certificate(certPem, { berOptions: { maxDepth: 1 } }))
-        .toThrow(/depth/i);
+      expect(() => new x509.X509Certificate(certPem, { berOptions: { maxDepth: 1 } })).toThrow(
+        /depth/i,
+      );
     });
 
     it("a tight-but-sufficient maxDepth still allows inspection (re-parse reuses options)", () => {
@@ -65,16 +65,16 @@ describe("parse options (berOptions)", () => {
   describe("PublicKey", () => {
     it("throws when berOptions.maxDepth is too low", () => {
       const spki = new x509.X509Certificate(certPem).publicKey.rawData;
-      expect(() => new x509.PublicKey(spki, { berOptions: { maxDepth: 1 } }))
-        .toThrow(/depth/i);
+      expect(() => new x509.PublicKey(spki, { berOptions: { maxDepth: 1 } })).toThrow(/depth/i);
     });
   });
 
   describe("Pkcs10CertificateRequest", () => {
     it("throws when berOptions.maxDepth is too low", () => {
       const raw = Convert.FromBase64(csrBase64);
-      expect(() => new x509.Pkcs10CertificateRequest(raw, { berOptions: { maxDepth: 1 } }))
-        .toThrow(/depth/i);
+      expect(() => new x509.Pkcs10CertificateRequest(raw, { berOptions: { maxDepth: 1 } })).toThrow(
+        /depth/i,
+      );
       // sanity: default parse works
       expect(new x509.Pkcs10CertificateRequest(raw).subject).toBeDefined();
     });
@@ -83,8 +83,9 @@ describe("parse options (berOptions)", () => {
   describe("X509Certificates (CMS)", () => {
     it("forwards berOptions through import()", () => {
       const cms = new x509.X509Certificates([new x509.X509Certificate(certPem)]).export("raw");
-      expect(() => new x509.X509Certificates(cms, { berOptions: { maxDepth: 1 } }))
-        .toThrow(/depth/i);
+      expect(() => new x509.X509Certificates(cms, { berOptions: { maxDepth: 1 } })).toThrow(
+        /depth/i,
+      );
       // sanity: default import works
       expect(new x509.X509Certificates(cms).length).toBe(1);
     });
@@ -108,7 +109,9 @@ describe("parse options (berOptions)", () => {
 
     beforeAll(async () => {
       const alg = {
-        name: "ECDSA", hash: "SHA-256", namedCurve: "P-256",
+        name: "ECDSA",
+        hash: "SHA-256",
+        namedCurve: "P-256",
       };
       const keys = await crypto.subtle.generateKey(alg, true, ["sign", "verify"]);
       const crl = await x509.X509CrlGenerator.create({
@@ -117,9 +120,12 @@ describe("parse options (berOptions)", () => {
         nextUpdate: new Date("2023-01-08T00:00:00Z"),
         signingAlgorithm: alg,
         signingKey: keys.privateKey,
-        entries: [{
-          serialNumber: "010203", revocationDate: new Date("2023-01-02T00:00:00Z"),
-        }],
+        entries: [
+          {
+            serialNumber: "010203",
+            revocationDate: new Date("2023-01-02T00:00:00Z"),
+          },
+        ],
       });
       crlRaw = crl.rawData;
     });
@@ -130,8 +136,7 @@ describe("parse options (berOptions)", () => {
     });
 
     it("throws when berOptions.maxDepth is too low", () => {
-      expect(() => new x509.X509Crl(crlRaw, { berOptions: { maxDepth: 1 } }))
-        .toThrow(/depth/i);
+      expect(() => new x509.X509Crl(crlRaw, { berOptions: { maxDepth: 1 } })).toThrow(/depth/i);
     });
 
     it("a tight-but-sufficient maxDepth still allows inspection (re-parse reuses options)", () => {
@@ -147,10 +152,12 @@ describe("parse options (berOptions)", () => {
   // structure while the nested values still fail on the asn1js defaults.
   describe("nested values", () => {
     const alg = {
-      name: "ECDSA", hash: "SHA-256", namedCurve: "P-256",
+      name: "ECDSA",
+      hash: "SHA-256",
+      namedCurve: "P-256",
     };
     // A certificate policies value of ~12000 ASN.1 nodes, above the 10000 default
-    const policies = new Array(6000).fill(0).map((_, i) => `1.2.3.4.${i}`);
+    const policies = Array.from({ length: 6000 }, (_, i) => `1.2.3.4.${i}`);
     const berOptions = { maxNodes: 100000 };
     const notBefore = new Date("2023-01-01T00:00:00Z");
     const notAfter = new Date("2023-01-08T00:00:00Z");
@@ -196,9 +203,12 @@ describe("parse options (berOptions)", () => {
         nextUpdate: notAfter,
         signingAlgorithm: alg,
         signingKey: keys.privateKey,
-        entries: [{
-          serialNumber: "010203", revocationDate: notBefore,
-        }],
+        entries: [
+          {
+            serialNumber: "010203",
+            revocationDate: notBefore,
+          },
+        ],
       });
       const asn = AsnConvert.parse(crl.rawData, asn1X509.CertificateList);
       asn.tbsCertList.revokedCertificates![0].crlEntryExtensions = [largeExtension];
@@ -221,17 +231,20 @@ describe("parse options (berOptions)", () => {
         signingAlgorithm: alg,
       });
       const asn = AsnConvert.parse(csr.rawData, CertificationRequest);
-      asn.certificationRequestInfo.attributes.push(new asn1X509.Attribute({
-        type: id_pkcs9_at_extensionRequest,
-        values: [AsnConvert.serialize(new asn1X509.Extensions([largeExtension]))],
-      }));
+      asn.certificationRequestInfo.attributes.push(
+        new asn1X509.Attribute({
+          type: id_pkcs9_at_extensionRequest,
+          values: [AsnConvert.serialize(new asn1X509.Extensions([largeExtension]))],
+        }),
+      );
       const raw = AsnConvert.serialize(asn);
 
       expect(() => new x509.Pkcs10CertificateRequest(raw)).toThrow(/node count/i);
 
       const parsed = new x509.Pkcs10CertificateRequest(raw, { berOptions });
-      const ext = parsed
-        .getExtension(asn1X509.id_ce_certificatePolicies) as x509.CertificatePolicyExtension;
+      const ext = parsed.getExtension(
+        asn1X509.id_ce_certificatePolicies,
+      ) as x509.CertificatePolicyExtension;
       expect(ext.policies).toHaveLength(policies.length);
     });
   });

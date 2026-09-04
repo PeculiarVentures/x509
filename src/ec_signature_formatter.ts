@@ -41,14 +41,12 @@ export class AsnEcSignatureFormatter implements IAsnSignatureFormatter {
     if (algorithm.name === "ECDSA") {
       const namedCurve = (algorithm as EcKeyAlgorithm).namedCurve;
 
-      const pointSize = AsnEcSignatureFormatter.namedCurveSize.get(namedCurve)
-        || AsnEcSignatureFormatter.defaultNamedCurveSize;
+      const pointSize =
+        AsnEcSignatureFormatter.namedCurveSize.get(namedCurve) ||
+        AsnEcSignatureFormatter.defaultNamedCurveSize;
       const ecSignature = new ECDSASigValue();
       const uint8Signature = BufferSourceConverter.toUint8Array(signature);
-      ecSignature.r = this.removePadding(
-        uint8Signature.slice(0, pointSize),
-        true,
-      );
+      ecSignature.r = this.removePadding(uint8Signature.slice(0, pointSize), true);
       ecSignature.s = this.removePadding(
         uint8Signature.slice(pointSize, pointSize + pointSize),
         true,
@@ -65,8 +63,9 @@ export class AsnEcSignatureFormatter implements IAsnSignatureFormatter {
       const ecSigValue = AsnConvert.parse(signature, ECDSASigValue);
       const namedCurve = (algorithm as EcKeyAlgorithm).namedCurve;
 
-      const pointSize = AsnEcSignatureFormatter.namedCurveSize.get(namedCurve)
-        || AsnEcSignatureFormatter.defaultNamedCurveSize;
+      const pointSize =
+        AsnEcSignatureFormatter.namedCurveSize.get(namedCurve) ||
+        AsnEcSignatureFormatter.defaultNamedCurveSize;
       const r = this.addPadding(pointSize, this.removePadding(ecSigValue.r));
       const s = this.addPadding(pointSize, this.removePadding(ecSigValue.s));
 

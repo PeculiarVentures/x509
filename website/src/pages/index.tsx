@@ -18,10 +18,7 @@ export default function Home() {
             <Preview />
 
             <div>
-              <Link
-                to="/docs/installation"
-                className="button button--secondary button--lg"
-              >
+              <Link to="/docs/installation" className="button button--secondary button--lg">
                 Get started ➞
               </Link>
             </div>
@@ -31,9 +28,7 @@ export default function Home() {
 
       <div className={s.features}>
         <div className={s.m_width}>
-          <h2 className={s.features_title}>
-            Features
-          </h2>
+          <h2 className={s.features_title}>Features</h2>
           <ul className={s.features_list}>
             <FeaturesList />
           </ul>

@@ -65,13 +65,15 @@ export class EdAlgorithm implements IAlgorithm {
         return { name: "Ed25519" };
       case idEd448:
         return {
-          name: "EdDSA", namedCurve: "Ed448",
+          name: "EdDSA",
+          namedCurve: "Ed448",
         };
       case idX25519:
         return { name: "X25519" };
       case idX448:
         return {
-          name: "ECDH-ES", namedCurve: "X448",
+          name: "ECDH-ES",
+          namedCurve: "X448",
         };
     }
 

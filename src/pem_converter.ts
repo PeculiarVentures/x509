@@ -52,8 +52,7 @@ export class PemConverter {
   public static PrivateKeyTag = "PRIVATE KEY";
 
   public static isPem(data: any): data is string {
-    return typeof data === "string"
-      && new RegExp(rPem, "g").test(data.replace(/\r/g, ""));
+    return typeof data === "string" && new RegExp(rPem, "g").test(data.replace(/\r/g, ""));
   }
 
   public static decodeWithHeaders(pem: string): PemStruct[] {
@@ -64,10 +63,9 @@ export class PemConverter {
 
     let matches: RegExpExecArray | null = null;
     // eslint-disable-next-line no-cond-assign
-    while (matches = pattern.exec(pem)) {
+    while ((matches = pattern.exec(pem))) {
       // prepare pem encoded message
-      const base64 = matches[3]
-        .replace(rEolPattern, "");
+      const base64 = matches[3].replace(rEolPattern, "");
 
       const pemStruct: PemStruct = {
         type: matches[1],
@@ -94,7 +92,8 @@ export class PemConverter {
               pemStruct.headers.push(lastHeader);
             }
             lastHeader = {
-              key, value: value.trim(),
+              key,
+              value: value.trim(),
             };
           }
         }
@@ -162,18 +161,24 @@ export class PemConverter {
         // encode BufferSource[]
         rawData.forEach((element) => {
           if (!BufferSourceConverter.isBufferSource(element)) {
-            throw new TypeError("Cannot encode array of BufferSource in PEM format. Not all items of the array are BufferSource");
+            throw new TypeError(
+              "Cannot encode array of BufferSource in PEM format. Not all items of the array are BufferSource",
+            );
           }
-          raws.push(this.encodeStruct({
-            type: tag,
-            rawData: BufferSourceConverter.toArrayBuffer(element),
-          }));
+          raws.push(
+            this.encodeStruct({
+              type: tag,
+              rawData: BufferSourceConverter.toArrayBuffer(element),
+            }),
+          );
         });
       } else {
         // encode PemStruct[]
         rawData.forEach((element) => {
           if (!("type" in element)) {
-            throw new TypeError("Cannot encode array of PemStruct in PEM format. Not all items of the array are PemStrut");
+            throw new TypeError(
+              "Cannot encode array of PemStruct in PEM format. Not all items of the array are PemStrut",
+            );
           }
           raws.push(this.encodeStruct(element));
         });
