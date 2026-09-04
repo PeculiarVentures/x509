@@ -1,22 +1,24 @@
 name: Node.js CI
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [22.x, 24.x]
-
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v6
+      - name: Use Node.js 24
+        uses: actions/setup-node@v7
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 24.x
           cache: "npm"
 
       - name: Install dependencies
@@ -30,18 +32,82 @@ jobs:
       - name: Run test with coverage
         run: npm run coverage
 
+      - name: Build package
+        run: npm run build
+
+      - name: Pack package
+        run: npm pack --ignore-scripts
+
+      - name: Upload package artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: npm-package
+          path: "*.tgz"
+          if-no-files-found: error
+
       - name: Coveralls
         uses: coverallsapp/github-action@v2
-        with:
-          parallel: true
-          flag-name: run-${{ matrix.node-version }}
 
-  finish:
+  compatibility:
+    name: Package compatibility (Node.js ${{ matrix.node-version }})
     needs: build
     runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [20.x, 22.x, 24.x, 26.x]
+
     steps:
-      - name: Close parallel build
-        uses: coverallsapp/github-action@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v7
         with:
-          parallel-finished: true
-          carryforward: "run-22.x,run-24.x"
+          node-version: ${{ matrix.node-version }}
+          package-manager-cache: false
+
+      - name: Download package artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: npm-package
+          path: ${{ runner.temp }}/npm-package
+
+      - name: Install package in consumer environment
+        env:
+          CONSUMER_DIR: ${{ runner.temp }}/x509-shadow-consumer
+          PACKAGE_DIR: ${{ runner.temp }}/npm-package
+        run: |
+          PACKAGE_TGZ=$(find "$PACKAGE_DIR" -maxdepth 1 -name '*.tgz' -print -quit)
+          test -n "$PACKAGE_TGZ"
+
+          mkdir -p "$CONSUMER_DIR"
+          cd "$CONSUMER_DIR"
+          npm init --yes
+          npm install --ignore-scripts --no-save "$PACKAGE_TGZ" reflect-metadata
+
+      - name: Check CommonJS consumer
+        working-directory: ${{ runner.temp }}/x509-shadow-consumer
+        run: |
+          node - <<'NODE'
+          require("reflect-metadata");
+          const x509 = require("@peculiar/x509");
+
+          if (typeof x509.X509Certificate !== "function") {
+            throw new Error("CommonJS consumer failed to load @peculiar/x509");
+          }
+
+          console.log("CommonJS consumer OK");
+          NODE
+
+      - name: Check ESM consumer
+        working-directory: ${{ runner.temp }}/x509-shadow-consumer
+        run: |
+          node --input-type=module - <<'NODE'
+          import "reflect-metadata";
+          const x509 = await import("@peculiar/x509");
+
+          if (typeof x509.X509Certificate !== "function") {
+            throw new Error("ESM consumer failed to load @peculiar/x509");
+          }
+
+          console.log("ESM consumer OK");
+          NODE
