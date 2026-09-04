@@ -80,7 +80,7 @@ jobs:
           mkdir -p "$CONSUMER_DIR"
           cd "$CONSUMER_DIR"
           npm init --yes
-          npm install --ignore-scripts --no-save "$PACKAGE_TGZ" reflect-metadata
+          npm install --ignore-scripts --no-save --no-audit --no-fund "$PACKAGE_TGZ" reflect-metadata
 
       - name: Check CommonJS consumer
         working-directory: ${{ runner.temp }}/x509-shadow-consumer
