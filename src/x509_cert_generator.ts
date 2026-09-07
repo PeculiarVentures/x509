@@ -6,11 +6,11 @@ import { cryptoProvider } from "./provider";
 import { AlgorithmProvider, diAlgorithmProvider } from "./algorithm";
 import { Extension } from "./extension";
 import { JsonName, Name } from "./name";
-import { HashedAlgorithm } from "./types";
+import { HashedAlgorithm, ParseOptions } from "./types";
 import { X509Certificate } from "./x509_cert";
 import { diAsnSignatureFormatter, IAsnSignatureFormatter } from "./asn_signature_formatter";
 import { PublicKey, PublicKeyType } from "./public_key";
-import { generateCertificateSerialNumber } from "./utils";
+import { generateCertificateSerialNumber, selfProducedParseOptions } from "./utils";
 
 export type X509CertificateCreateParamsName = string | JsonName | Name;
 
@@ -126,12 +126,18 @@ export class X509CertificateGenerator {
    */
   public static async create(params: X509CertificateCreateParams, crypto = cryptoProvider.get()) {
     let spki: BufferSource;
+    // A raw SPKI is the only DER here the caller did not get from this library, so it
+    // keeps the asn1js defaults. They are never in the way (a real SubjectPublicKeyInfo
+    // is 7-16 nodes against a 10000 default); to move them, parse it with
+    // `new PublicKey(raw, options)` and pass that instead.
+    let spkiOptions: ParseOptions | undefined = selfProducedParseOptions;
     if (params.publicKey instanceof PublicKey) {
       spki = params.publicKey.rawData;
     } else if ("publicKey" in params.publicKey) {
       spki = params.publicKey.publicKey.rawData;
     } else if (BufferSourceConverter.isBufferSource(params.publicKey)) {
       spki = params.publicKey;
+      spkiOptions = undefined;
     } else {
       spki = await crypto.subtle.exportKey("spki", params.publicKey);
     }
@@ -149,18 +155,28 @@ export class X509CertificateGenerator {
           notAfter,
         }),
         extensions: new asn1X509.Extensions(
-          params.extensions?.map((o) => AsnConvert.parse(o.rawData, asn1X509.Extension)) || [],
+          params.extensions?.map((o) =>
+            AsnConvert.parse(o.rawData, asn1X509.Extension, selfProducedParseOptions),
+          ) || [],
         ),
-        subjectPublicKeyInfo: AsnConvert.parse(spki, asn1X509.SubjectPublicKeyInfo),
+        subjectPublicKeyInfo: AsnConvert.parse(spki, asn1X509.SubjectPublicKeyInfo, spkiOptions),
       }),
     });
     if (params.subject) {
       const name = params.subject instanceof Name ? params.subject : new Name(params.subject);
-      asnX509.tbsCertificate.subject = AsnConvert.parse(name.toArrayBuffer(), asn1X509.Name);
+      asnX509.tbsCertificate.subject = AsnConvert.parse(
+        name.toArrayBuffer(),
+        asn1X509.Name,
+        selfProducedParseOptions,
+      );
     }
     if (params.issuer) {
       const name = params.issuer instanceof Name ? params.issuer : new Name(params.issuer);
-      asnX509.tbsCertificate.issuer = AsnConvert.parse(name.toArrayBuffer(), asn1X509.Name);
+      asnX509.tbsCertificate.issuer = AsnConvert.parse(
+        name.toArrayBuffer(),
+        asn1X509.Name,
+        selfProducedParseOptions,
+      );
     }
 
     // Set signing algorithm
@@ -210,6 +226,6 @@ export class X509CertificateGenerator {
 
     asnX509.signatureValue = asnSignature;
 
-    return new X509Certificate(AsnConvert.serialize(asnX509));
+    return new X509Certificate(AsnConvert.serialize(asnX509), selfProducedParseOptions);
   }
 }

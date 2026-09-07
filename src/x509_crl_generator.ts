@@ -12,7 +12,7 @@ import { diAsnSignatureFormatter, IAsnSignatureFormatter } from "./asn_signature
 import { X509CrlEntry, X509CrlReason } from "./x509_crl_entry";
 import { X509Crl } from "./x509_crl";
 import { X509CertificateCreateParamsName } from "./x509_cert_generator";
-import { normalizeCertificateSerialNumber } from "./utils";
+import { normalizeCertificateSerialNumber, selfProducedParseOptions } from "./utils";
 
 export interface X509CrlEntryParams {
   /**
@@ -62,7 +62,7 @@ export class X509CrlGenerator {
     const asnX509Crl = new asn1X509.CertificateList({
       tbsCertList: new asn1X509.TBSCertList({
         version: asn1X509.Version.v2,
-        issuer: AsnConvert.parse(name.toArrayBuffer(), asn1X509.Name),
+        issuer: AsnConvert.parse(name.toArrayBuffer(), asn1X509.Name, selfProducedParseOptions),
         thisUpdate: new Time(params.thisUpdate || new Date()),
       }),
     });
@@ -73,7 +73,9 @@ export class X509CrlGenerator {
 
     if (params.extensions && params.extensions.length) {
       asnX509Crl.tbsCertList.crlExtensions = new asn1X509.Extensions(
-        params.extensions.map((o) => AsnConvert.parse(o.rawData, asn1X509.Extension)) || [],
+        params.extensions.map((o) =>
+          AsnConvert.parse(o.rawData, asn1X509.Extension, selfProducedParseOptions),
+        ) || [],
       );
     }
 
@@ -97,7 +99,7 @@ export class X509CrlGenerator {
 
         if ("extensions" in entry && entry.extensions?.length) {
           revokedCert.crlEntryExtensions = entry.extensions.map((o) =>
-            AsnConvert.parse(o.rawData, asn1X509.Extension),
+            AsnConvert.parse(o.rawData, asn1X509.Extension, selfProducedParseOptions),
           );
         } else {
           revokedCert.crlEntryExtensions = [];
@@ -138,7 +140,9 @@ export class X509CrlGenerator {
                 extnID: asn1X509.id_ce_certificateIssuer,
                 critical: false,
                 extnValue: new OctetString(
-                  AsnConvert.serialize(AsnConvert.parse(name.toArrayBuffer(), asn1X509.Name)),
+                  AsnConvert.serialize(
+                    AsnConvert.parse(name.toArrayBuffer(), asn1X509.Name, selfProducedParseOptions),
+                  ),
                 ),
               }),
             );
@@ -179,6 +183,6 @@ export class X509CrlGenerator {
 
     asnX509Crl.signature = asnSignature;
 
-    return new X509Crl(AsnConvert.serialize(asnX509Crl));
+    return new X509Crl(AsnConvert.serialize(asnX509Crl), selfProducedParseOptions);
   }
 }

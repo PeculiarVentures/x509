@@ -4,6 +4,7 @@ import { AsnConvert } from "@peculiar/asn1-schema";
 import { CertificationRequest } from "@peculiar/asn1-csr";
 import { id_pkcs9_at_extensionRequest } from "@peculiar/asn1-pkcs9";
 import * as asn1X509 from "@peculiar/asn1-x509";
+import * as asn1js from "asn1js";
 import { Convert } from "pvtsutils";
 import * as x509 from "../src";
 
@@ -173,8 +174,9 @@ describe("parse options (berOptions)", () => {
       );
     });
 
-    // NOTE: the generators parse their own output with the default limits, so
-    // the structures carrying the large value are assembled from ASN.1.
+    // NOTE: these assemble the structures from ASN.1 rather than through the
+    // generators, so they exercise the parsing classes on their own. What the
+    // generators themselves do with the options is covered separately below.
 
     it("reuses the options for certificate extension values", async () => {
       const cert = await x509.X509CertificateGenerator.createSelfSigned({
@@ -246,6 +248,281 @@ describe("parse options (berOptions)", () => {
         asn1X509.id_ce_certificatePolicies,
       ) as x509.CertificatePolicyExtension;
       expect(ext.policies).toHaveLength(policies.length);
+    });
+  });
+
+  // Creating is not parsing untrusted input.
+  //
+  // Almost every class here keeps its value as DER and re-derives the ASN.1 view by
+  // parsing it again, so building an object involves several serialize/parse round-trips
+  // of bytes this library produced moments earlier from structures the caller already
+  // holds. Creating and reading back one certificate costs ~13 parses, none of which
+  // crosses a trust boundary. Applying the asn1js limits to those capped what a caller
+  // was allowed to build at 10000 nodes -- roughly 2500 RDNs -- and reported it as
+  // "Maximum ASN.1 node count exceeded", which reads like a security rejection but was
+  // the library refusing to build the caller's own data.
+  //
+  // The rule is now: limits apply to DER the caller handed us, not to DER we produced.
+  // These two blocks pin both halves of it. Every test in the first block threw before
+  // the rule was applied.
+  describe("creation is not limited", () => {
+    const alg = { name: "ECDSA", hash: "SHA-256", namedCurve: "P-256" };
+    // 3000 RDNs is 12001 ASN.1 nodes; the default ceiling is 10000
+    const largeName: x509.JsonName = Array.from({ length: 3000 }, (_, i) => ({ CN: [`n${i}`] }));
+    const policies = Array.from({ length: 6000 }, (_, i) => `1.2.3.4.${i}`);
+    const notBefore = new Date("2023-01-01T00:00:00Z");
+    const notAfter = new Date("2023-01-08T00:00:00Z");
+
+    let keys: CryptoKeyPair;
+
+    beforeAll(async () => {
+      keys = await crypto.subtle.generateKey(alg, true, ["sign", "verify"]);
+    });
+
+    it("X509CertificateGenerator builds a subject and issuer past the default limit", async () => {
+      const cert = await x509.X509CertificateGenerator.create({
+        serialNumber: "01",
+        subject: largeName,
+        issuer: largeName,
+        notBefore,
+        notAfter,
+        signingAlgorithm: alg,
+        signingKey: keys.privateKey,
+        publicKey: keys.publicKey,
+      });
+
+      expect(cert.subjectName.toJSON()).toHaveLength(largeName.length);
+      expect(cert.issuerName.toJSON()).toHaveLength(largeName.length);
+    });
+
+    it("X509CertificateGenerator builds and reads back a large extension", async () => {
+      const cert = await x509.X509CertificateGenerator.createSelfSigned({
+        serialNumber: "01",
+        name: "CN=Test",
+        notBefore,
+        notAfter,
+        signingAlgorithm: alg,
+        keys,
+        extensions: [new x509.CertificatePolicyExtension(policies)],
+      });
+
+      // reading it back is the other half: the lazy accessors re-parse too
+      const ext = cert.getExtension(x509.CertificatePolicyExtension);
+      expect(ext?.policies).toHaveLength(policies.length);
+    });
+
+    it("X509CrlGenerator builds an issuer past the default limit", async () => {
+      const crl = await x509.X509CrlGenerator.create({
+        issuer: largeName,
+        thisUpdate: notBefore,
+        nextUpdate: notAfter,
+        signingAlgorithm: alg,
+        signingKey: keys.privateKey,
+        extensions: [new x509.CertificatePolicyExtension(policies)],
+      });
+
+      expect(crl.issuerName.toJSON()).toHaveLength(largeName.length);
+      expect((crl.extensions[0] as x509.CertificatePolicyExtension).policies).toHaveLength(
+        policies.length,
+      );
+    });
+
+    it("Pkcs10CertificateRequestGenerator builds a subject past the default limit", async () => {
+      const csr = await x509.Pkcs10CertificateRequestGenerator.create({
+        name: largeName,
+        keys,
+        signingAlgorithm: alg,
+      });
+
+      expect(csr.subjectName.toJSON()).toHaveLength(largeName.length);
+    });
+
+    it("GeneralName builds a dn past the default limit", () => {
+      const dn = largeName.map((rdn) => `CN=${rdn.CN[0]}`).join(", ");
+
+      expect(new x509.GeneralName("dn", dn).type).toBe("dn");
+    });
+
+    it("AuthorityKeyIdentifierExtension builds from a large GeneralNames", () => {
+      const nameBer = asn1js.fromBER(new x509.Name(largeName).toArrayBuffer(), {
+        maxNodes: 100000,
+      }).result;
+      const generalNamesRaw = new asn1js.Sequence({
+        value: [
+          new asn1js.Constructed({ idBlock: { tagClass: 3, tagNumber: 4 }, value: [nameBer] }),
+        ],
+      }).toBER();
+      // the GeneralNames itself is parsed from DER, so it still takes options
+      const names = new x509.GeneralNames(generalNamesRaw, { berOptions: { maxNodes: 100000 } });
+
+      const ext = new x509.AuthorityKeyIdentifierExtension({ name: names, serialNumber: "010203" });
+      expect(ext.certId?.serialNumber).toBe("010203");
+    });
+
+    // KNOWN UPSTREAM DEFECT, reachable through the ordinary CSR API and not fixable
+    // here. `Attribute` values are `AsnPropTypes.Any`, and `AsnAnyConverter.toASN`
+    // re-parses each value with `fromBER` and no options on the *serialize* path
+    // (@peculiar/asn1-schema 2.9.4, converters.js). The PKCS#10 generator puts the
+    // whole serialized `Extensions` blob into one such value, so building a CSR walks
+    // straight through it.
+    //
+    // What is rejected is not genuinely oversized: the blob has ~7 real nodes. asn1js
+    // speculatively parses the payload of a primitive OCTET STRING on the shared node
+    // counter and swallows the error without restoring the count, so a large extension
+    // burns the budget and the *next* extension trips the check. That makes the failure
+    // depend on extension order -- see the `it.fails` case below -- and it is why
+    // `ExtensionsAttribute([bigExt])` alone works while `[bigExt, otherExt]` does not.
+    //
+    // Certificates and CRLs are unaffected: their extensions are a typed SEQUENCE
+    // rather than an ANY, so nothing re-parses them on the way out.
+    it("ExtensionsAttribute builds and reads back its extensions", () => {
+      const attr = new x509.ExtensionsAttribute([new x509.CertificatePolicyExtension(policies)]);
+
+      expect(attr.items).toHaveLength(1);
+      expect((attr.items[0] as x509.CertificatePolicyExtension).policies).toHaveLength(
+        policies.length,
+      );
+      expect(attr.type).toBe(id_pkcs9_at_extensionRequest);
+    });
+  });
+
+  // Documents the upstream defect described above, through the public API that
+  // reaches it. The body asserts the behaviour we *want*; `it.fails` records that it
+  // does not hold yet, so this turns into a failure the day asn1js stops poisoning its
+  // node counter (or asn1-schema forwards options on serialize) and can then be
+  // promoted to a normal test. asn1js 3.0.10 / @peculiar/asn1-schema 2.9.4 are the
+  // latest published versions as of writing, so there is nothing to upgrade to.
+  it.fails("CSR extensions should build regardless of their order", async () => {
+    const alg = { name: "ECDSA", hash: "SHA-256", namedCurve: "P-256" };
+    const keys = await crypto.subtle.generateKey(alg, true, ["sign", "verify"]);
+    const large = new x509.CertificatePolicyExtension(
+      Array.from({ length: 6000 }, (_, i) => `1.2.3.4.${i}`),
+    );
+    const smaller = new x509.BasicConstraintsExtension(true, 2);
+
+    // this order works today, because the limit error is raised inside the trailing
+    // OCTET STRING and discarded
+    await x509.Pkcs10CertificateRequestGenerator.create({
+      name: "CN=Test",
+      keys,
+      signingAlgorithm: alg,
+      extensions: [smaller, large],
+    });
+
+    // the same extensions the other way round currently throw "node count exceeded"
+    await x509.Pkcs10CertificateRequestGenerator.create({
+      name: "CN=Test",
+      keys,
+      signingAlgorithm: alg,
+      extensions: [large, smaller],
+    });
+  });
+
+  describe("parsing is still limited", () => {
+    const alg = { name: "ECDSA", hash: "SHA-256", namedCurve: "P-256" };
+    const largeName: x509.JsonName = Array.from({ length: 3000 }, (_, i) => ({ CN: [`n${i}`] }));
+    const options = { berOptions: { maxNodes: 100000 } };
+
+    let keys: CryptoKeyPair;
+
+    beforeAll(async () => {
+      keys = await crypto.subtle.generateKey(alg, true, ["sign", "verify"]);
+    });
+
+    it("DER a generator produced still needs raised options to parse back", async () => {
+      // The generator can build it; taking those same bytes back in through a parse
+      // constructor is a different question, and there the defaults still apply.
+      const csr = await x509.Pkcs10CertificateRequestGenerator.create({
+        name: largeName,
+        keys,
+        signingAlgorithm: alg,
+      });
+
+      expect(() => new x509.Pkcs10CertificateRequest(csr.rawData)).toThrow(/node count/i);
+
+      const parsed = new x509.Pkcs10CertificateRequest(csr.rawData, options);
+      expect(parsed.subjectName.toJSON()).toHaveLength(largeName.length);
+    });
+
+    it("a raw publicKey is bounded by the defaults, and PublicKey is the way round it", async () => {
+      // A raw SPKI is the one piece of DER a generator parses that the caller did not
+      // get from this library, so the asn1js defaults still apply to it. There is no
+      // option on the generator to change that, and none is needed: a real
+      // SubjectPublicKeyInfo is 7-16 nodes against a 10000 node default. A caller who
+      // does need to move the limits parses it themselves and passes the result.
+      //
+      // The payload below is nested 99 deep in `AlgorithmIdentifier.parameters`, which
+      // is an ANY and so is parsed for real. Depth is used rather than node count
+      // because `AsnAnyConverter.toASN` re-parses that value with no options on the way
+      // back out, so a node-heavy payload would break serialization instead. Nested 99
+      // the parameters still parse standalone under the default limit of 100, but the
+      // two extra levels of SPKI wrapping put them over it.
+      let parameters: asn1js.AsnType = new asn1js.Null();
+      for (let i = 0; i < 99; i++) {
+        parameters = new asn1js.Sequence({ value: [parameters] });
+      }
+      const spki = new asn1js.Sequence({
+        value: [
+          new asn1js.Sequence({
+            value: [new asn1js.ObjectIdentifier({ value: "1.2.3.4" }), parameters],
+          }),
+          new asn1js.BitString({ valueHex: new Uint8Array(32).buffer }),
+        ],
+      }).toBER();
+
+      const params = {
+        serialNumber: "01",
+        subject: "CN=Test",
+        issuer: "CN=Test",
+        signingAlgorithm: alg,
+        signingKey: keys.privateKey,
+      };
+
+      await expect(
+        x509.X509CertificateGenerator.create({ ...params, publicKey: spki }),
+      ).rejects.toThrow(/depth/i);
+
+      // the escape hatch: parse it explicitly, under limits the caller chooses, and
+      // hand the generator something already validated
+      const publicKey = new x509.PublicKey(spki, { berOptions: { maxDepth: 1000 } });
+      const cert = await x509.X509CertificateGenerator.create({ ...params, publicKey });
+
+      const asn = AsnConvert.parse(cert.rawData, asn1X509.Certificate, {
+        berOptions: { maxDepth: 1000 },
+      });
+      expect(AsnConvert.serialize(asn.tbsCertificate.subjectPublicKeyInfo).byteLength).toBe(
+        spki.byteLength,
+      );
+    });
+
+    it("GeneralName honours the options", () => {
+      const nameBer = asn1js.fromBER(new x509.Name(largeName).toArrayBuffer(), {
+        maxNodes: 100000,
+      }).result;
+      const raw = new asn1js.Constructed({
+        idBlock: { tagClass: 3, tagNumber: 4 },
+        value: [nameBer],
+      }).toBER();
+
+      expect(() => new x509.GeneralName(raw)).toThrow(/node count/i);
+      expect(new x509.GeneralName(raw, options).type).toBe("dn");
+    });
+
+    it("GeneralNames honours the options", () => {
+      const nameBer = asn1js.fromBER(new x509.Name(largeName).toArrayBuffer(), {
+        maxNodes: 100000,
+      }).result;
+      const raw = new asn1js.Sequence({
+        value: [
+          new asn1js.Constructed({ idBlock: { tagClass: 3, tagNumber: 4 }, value: [nameBer] }),
+        ],
+      }).toBER();
+
+      expect(() => new x509.GeneralNames(raw)).toThrow(/node count/i);
+
+      const names = new x509.GeneralNames(raw, options);
+      expect(names.items).toHaveLength(1);
+      expect(names.items[0].type).toBe("dn");
     });
   });
 });
