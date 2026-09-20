@@ -501,6 +501,11 @@ export class OcspResponse extends PemData<OCSPResponse> {
       throw new OcspVerifyError("signature", "Invalid OCSP response signature");
     }
 
+    // This one-link responder authorization is temporary. It will move to the
+    // future certificate chain validator, which will own full validation of the
+    // responder chain up to a trust anchor. Note the current leniency: a delegated
+    // responder without an EKU extension is allowed here, while strict RFC 6960
+    // would require id-kp-OCSPSigning in that case.
     if (!direct) {
       if (!responderCert) {
         throw new OcspVerifyError("responder", "Cannot find responder certificate");
