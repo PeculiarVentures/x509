@@ -6,7 +6,7 @@ import { AsnData } from "../asn_data";
 import { AlgorithmProvider, diAlgorithmProvider } from "../algorithm";
 import { diAsnSignatureFormatter, IAsnSignatureFormatter } from "../asn_signature_formatter";
 import { Extension } from "../extension";
-import { ExtendedKeyUsageExtension } from "../extensions/extended_key_usage";
+import { ExtendedKeyUsage, ExtendedKeyUsageExtension } from "../extensions/extended_key_usage";
 import { Name } from "../name";
 import { AsnEncodedType, PemData } from "../pem_data";
 import { PemConverter } from "../pem_converter";
@@ -17,6 +17,7 @@ import { X509Certificate } from "../x509_cert";
 import {
   BasicOCSPResponse,
   id_pkix_ocsp_basic,
+  id_pkix_ocsp_nonce,
   OCSPResponse,
   OCSPResponseStatus,
   SingleResponse,
@@ -36,7 +37,7 @@ export interface OcspResponseVerifyParams {
   /**
    * Responder certificate for delegated responses. If omitted, uses certs from response
    */
-  responder?: X509Certificate;
+  responderCert?: X509Certificate;
   /**
    * Original request for nonce and CertID binding checks
    */
@@ -49,6 +50,12 @@ export interface OcspResponseVerifyParams {
    * Clock skew tolerance in seconds. Default is 300
    */
   clockSkew?: number;
+  /**
+   * Maximum age in seconds of a single response without nextUpdate, measured
+   * from thisUpdate to the verification date. Combined with `clockSkew`.
+   * Default is 86400 (24 hours). Ignored when nextUpdate is present
+   */
+  maxAge?: number;
 }
 
 export interface OcspSingleResult {
@@ -475,6 +482,7 @@ export class OcspResponse extends PemData<OCSPResponse> {
 
     const date = params.date || new Date();
     const clockSkew = (params.clockSkew ?? 300) * 1000;
+    const maxAge = (params.maxAge ?? 86400) * 1000;
 
     const issuer = params.issuer;
     const responderId = basic.responderId;
@@ -487,7 +495,7 @@ export class OcspResponse extends PemData<OCSPResponse> {
     if (direct) {
       verifyKey = issuer;
     } else {
-      responderCert = params.responder || findResponderCert(basic, responderId);
+      responderCert = params.responderCert || (await findResponderCert(basic, responderId, crypto));
       if (!responderCert) {
         throw new OcspVerifyError("responder", "Cannot find responder certificate");
       }
@@ -505,9 +513,7 @@ export class OcspResponse extends PemData<OCSPResponse> {
 
     // This one-link responder authorization is temporary. It will move to the
     // future certificate chain validator, which will own full validation of the
-    // responder chain up to a trust anchor. Note the current leniency: a delegated
-    // responder without an EKU extension is allowed here, while strict RFC 6960
-    // would require id-kp-OCSPSigning in that case.
+    // responder chain up to a trust anchor.
     if (!direct) {
       if (!responderCert) {
         throw new OcspVerifyError("responder", "Cannot find responder certificate");
@@ -518,15 +524,17 @@ export class OcspResponse extends PemData<OCSPResponse> {
           "Responder certificate is not issued by the issuer",
         );
       }
-      const certOk = await responderCert.verify({ publicKey: issuer, date });
+      const certOk = await responderCert.verify({ publicKey: issuer, date }, crypto);
       if (!certOk) {
         throw new OcspVerifyError(
           "authorization",
           "Responder certificate signature or validity check failed",
         );
       }
+      // A delegated responder must be explicitly authorized for OCSP signing.
+      // Unlike a direct (issuer-signed) response, an absent EKU is not enough.
       const eku = responderCert.getExtension(ExtendedKeyUsageExtension);
-      if (eku && !eku.usages.includes("1.3.6.1.5.5.7.3.9")) {
+      if (!eku || !eku.usages.includes(ExtendedKeyUsage.ocspSigning)) {
         throw new OcspVerifyError(
           "authorization",
           "Responder certificate is not authorized for OCSP signing",
@@ -548,24 +556,39 @@ export class OcspResponse extends PemData<OCSPResponse> {
       nonceMatched = true;
     }
 
+    assertNoUnknownCriticalExtensions(basic.extensions, "response extensions");
+
+    // Every requested CertID must be answered. Extra answers beyond the
+    // request are allowed.
+    if (params.request && params.request.requests.length) {
+      for (const reqCertId of params.request.requests) {
+        const found = basic.responses.some((single) => single.certId.equal(reqCertId));
+        if (!found) {
+          throw new OcspVerifyError(
+            "certId",
+            `OCSP response is missing answer for requested CertID with serial number ${reqCertId.serialNumber}`,
+          );
+        }
+      }
+    }
+
     const results: OcspSingleResult[] = [];
     for (const single of basic.responses) {
       await assertCertId(single.certId, issuer, crypto);
 
-      if (params.request && params.request.requests.length) {
-        const found = params.request.requests.some((o) => o.equal(single.certId));
-        if (!found) {
-          throw new OcspVerifyError("certId", "OCSP single CertID does not match request");
-        }
-      }
+      assertNoUnknownCriticalExtensions(single.extensions, "single extensions");
 
       const thisUpdate = single.thisUpdate.getTime();
       const nextUpdate = single.nextUpdate?.getTime();
       if (thisUpdate > date.getTime() + clockSkew) {
         throw new OcspVerifyError("freshness", "OCSP single thisUpdate is in the future");
       }
-      if (nextUpdate !== undefined && nextUpdate <= date.getTime() - clockSkew) {
-        throw new OcspVerifyError("freshness", "OCSP single response is expired");
+      if (nextUpdate !== undefined) {
+        if (nextUpdate <= date.getTime() - clockSkew) {
+          throw new OcspVerifyError("freshness", "OCSP single response is expired");
+        }
+      } else if (date.getTime() - thisUpdate > maxAge + clockSkew) {
+        throw new OcspVerifyError("freshness", "OCSP single response is too old");
       }
 
       results.push({
@@ -630,28 +653,34 @@ async function matchesResponderId(
   return false;
 }
 
-function findResponderCert(
+/**
+ * Rejects unknown critical extensions. The only extension this verifier
+ * understands is the nonce extension; any other critical extension at the
+ * response or single level is rejected.
+ */
+function assertNoUnknownCriticalExtensions(extensions: Extension[], where: string): void {
+  for (const ext of extensions) {
+    if (ext.critical && ext.type !== id_pkix_ocsp_nonce) {
+      throw new OcspVerifyError(
+        "responder",
+        `OCSP response contains unsupported critical extension ${ext.type} in ${where}`,
+      );
+    }
+  }
+}
+
+async function findResponderCert(
   basic: BasicOcspResponse,
   responderId: OcspResponderId,
-): X509Certificate | undefined {
-  if (basic.certs.length === 1) {
-    return basic.certs[0];
-  }
+  crypto: Crypto,
+): Promise<X509Certificate | undefined> {
   for (const cert of basic.certs) {
-    if (responderId.type === "byName") {
-      const responderNameDer = responderId.value.toArrayBuffer();
-      const certNameDer = cert.subjectName.toArrayBuffer();
-      if (isEqual(responderNameDer, certNameDer)) {
-        return cert;
-      }
-    } else {
-      // byKey match requires async digest; fall back to first cert here.
-      // Exact byKey matching is enforced in matchesResponderId during verify.
-      continue;
+    if (await matchesResponderId(cert, responderId, crypto)) {
+      return cert;
     }
   }
 
-  return basic.certs[0];
+  return undefined;
 }
 
 async function assertCertId(
@@ -664,6 +693,11 @@ async function assertCertId(
     throw new OcspVerifyError("certId", "Unsupported CertID hash algorithm");
   }
 
+  // NOTE: verify() only knows the issuer (trust anchor), not the target
+  // certificate, so the expected hashes stay anchored on the issuer
+  // certificate's subject and public key. This matches OcspCertId.create(),
+  // which hashes the target's issuer field, whenever both encodings agree,
+  // as guaranteed for certificates produced by the built-in generators.
   const issuerNameDer = issuer.subjectName.toArrayBuffer();
   const spki = AsnConvert.parse(issuer.publicKey.rawData, SubjectPublicKeyInfo);
   const issuerKeyBytes = spki.subjectPublicKey;

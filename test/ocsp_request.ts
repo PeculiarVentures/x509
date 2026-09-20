@@ -92,6 +92,58 @@ describe("OcspCertId", () => {
     expect(a.equal(c)).toBe(false);
     expect(a.equal({} as unknown as x509.OcspCertId)).toBe(false);
   });
+
+  it("equal ignores DER encoding differences", async () => {
+    const a = await x509.OcspCertId.create(caCert, userCert, "SHA-256", crypto);
+
+    // Same logical CertID, but with explicit NULL hash parameters
+    const asnNullParams = AsnConvert.parse(a.rawData, x509.CertID);
+    asnNullParams.hashAlgorithm.parameters = new Uint8Array([0x05, 0x00]).buffer;
+    const b = new x509.OcspCertId(AsnConvert.serialize(asnNullParams));
+    expect(isEqual(a.rawData, b.rawData)).toBe(false);
+    expect(a.equal(b)).toBe(true);
+    expect(b.equal(a)).toBe(true);
+
+    // Differently encoded IDs still match via getSingle
+    const resp = await x509.BasicOcspResponseGenerator.create(
+      {
+        issuer: caCert,
+        signingKey: caKeys.privateKey,
+        signingAlgorithm: alg,
+        producedAt: new Date(),
+        responses: [{ certId: a, status: "good", thisUpdate: new Date() }],
+      },
+      crypto,
+    );
+    expect(resp.getSingle(b)?.status).toBe("good");
+
+    // A different serial number still compares as not equal
+    const otherKeys = (await crypto.subtle.generateKey(
+      { name: "ECDSA", namedCurve: "P-256" },
+      true,
+      ["sign", "verify"],
+    )) as CryptoKeyPair;
+    const otherCert = await x509.X509CertificateGenerator.create({
+      subject: "CN=Other",
+      issuer: "CN=Test CA",
+      publicKey: otherKeys.publicKey,
+      signingKey: caKeys.privateKey,
+      signingAlgorithm: alg,
+      notBefore: new Date("2020-01-01"),
+      notAfter: new Date("2030-01-01"),
+    });
+    const otherId = await x509.OcspCertId.create(caCert, otherCert, "SHA-256", crypto);
+    expect(a.equal(otherId)).toBe(false);
+  });
+
+  it("hashes target issuer name (RFC 6960 4.1.1)", async () => {
+    const certId = await x509.OcspCertId.create(caCert, userCert, "SHA-256", crypto);
+    const expectedNameHash = await crypto.subtle.digest(
+      "SHA-256",
+      userCert.issuerName.toArrayBuffer(),
+    );
+    expect(isEqual(certId.issuerNameHash, expectedNameHash)).toBe(true);
+  });
 });
 
 describe("OcspRequest", () => {

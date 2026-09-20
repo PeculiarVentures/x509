@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeAll } from "vitest";
 import { Crypto } from "@peculiar/webcrypto";
 import { AsnConvert, OctetString } from "@peculiar/asn1-schema";
-import { AlgorithmIdentifier, SubjectPublicKeyInfo } from "@peculiar/asn1-x509";
+import { AlgorithmIdentifier, Certificate, SubjectPublicKeyInfo } from "@peculiar/asn1-x509";
 import { container } from "tsyringe";
 import * as x509 from "../src";
 import { AlgorithmProvider, diAlgorithmProvider } from "../src/algorithm";
@@ -61,10 +61,50 @@ describe("OcspResponse", () => {
         signingAlgorithm: alg,
         producedAt: now,
         responses: [{ certId, status: "good", thisUpdate: now }],
-        responseExtensions: nonce ? [x509.setNonce(nonce)] : undefined,
+        responseExtensions: nonce ? [x509.createOcspNonceExtension(nonce)] : undefined,
       },
       crypto,
     );
+  }
+
+  async function createUserCert(cn: string) {
+    const keys = (await crypto.subtle.generateKey({ name: "ECDSA", namedCurve: "P-256" }, true, [
+      "sign",
+      "verify",
+    ])) as CryptoKeyPair;
+
+    return x509.X509CertificateGenerator.create({
+      subject: cn,
+      issuer: "CN=Test CA",
+      publicKey: keys.publicKey,
+      signingKey: caKeys.privateKey,
+      signingAlgorithm: alg,
+      notBefore: new Date("2020-01-01"),
+      notAfter: new Date("2030-01-01"),
+    });
+  }
+
+  async function createDelegatedResponder(cn: string, usages?: string[]) {
+    const keys = (await crypto.subtle.generateKey({ name: "ECDSA", namedCurve: "P-256" }, true, [
+      "sign",
+      "verify",
+    ])) as CryptoKeyPair;
+    const responder = await x509.X509CertificateGenerator.create({
+      subject: cn,
+      issuer: "CN=Test CA",
+      publicKey: keys.publicKey,
+      signingKey: caKeys.privateKey,
+      signingAlgorithm: alg,
+      notBefore: new Date("2020-01-01"),
+      notAfter: new Date("2030-01-01"),
+      ...(usages ? { extensions: [new x509.ExtendedKeyUsageExtension(usages)] } : {}),
+    });
+
+    return { keys, responder };
+  }
+
+  function unknownExtension(critical: boolean) {
+    return new x509.Extension("1.2.3.4.5.6", critical, new Uint8Array([5, 0]));
   }
 
   it("verifies good status", async () => {
@@ -290,7 +330,7 @@ describe("OcspResponse", () => {
         signingAlgorithm: alg,
         producedAt: now,
         responses: [{ certId: otherId, status: "good", thisUpdate: now }],
-        responseExtensions: req.nonce ? [x509.setNonce(req.nonce)] : undefined,
+        responseExtensions: req.nonce ? [x509.createOcspNonceExtension(req.nonce)] : undefined,
       },
       crypto,
     );
@@ -342,7 +382,7 @@ describe("OcspResponse", () => {
         signingAlgorithm: alg,
         producedAt: now,
         responses: [{ certId, status: "good", thisUpdate: now }],
-        responseExtensions: [x509.setNonce(new Uint8Array([9, 9, 9, 9]))],
+        responseExtensions: [x509.createOcspNonceExtension(new Uint8Array([9, 9, 9, 9]))],
       },
       crypto,
     );
@@ -434,5 +474,292 @@ describe("OcspResponse", () => {
     expect(resp.basic?.responderId.type).toBe("byKey");
     const results = await resp.verify({ issuer: caCert, date: now });
     expect(results[0].status).toBe("good");
+  });
+
+  it("rejects delegated responder without EKU", async () => {
+    const { keys, responder } = await createDelegatedResponder("CN=Responder-NoEKU");
+    const resp = await x509.BasicOcspResponseGenerator.create(
+      {
+        issuer: caCert,
+        responderCert: responder,
+        signingKey: keys.privateKey,
+        signingAlgorithm: alg,
+        producedAt: now,
+        responses: [{ certId, status: "good", thisUpdate: now }],
+      },
+      crypto,
+    );
+    await expect(resp.verify({ issuer: caCert, date: now })).rejects.toMatchObject({
+      name: "OcspVerifyError",
+      code: "authorization",
+    });
+  });
+
+  it("rejects stale response without nextUpdate", async () => {
+    const old = new Date(Date.now() - 25 * 3600 * 1000);
+    const resp = await x509.BasicOcspResponseGenerator.create(
+      {
+        issuer: caCert,
+        signingKey: caKeys.privateKey,
+        signingAlgorithm: alg,
+        producedAt: old,
+        responses: [{ certId, status: "good", thisUpdate: old }],
+      },
+      crypto,
+    );
+    await expect(resp.verify({ issuer: caCert })).rejects.toMatchObject({
+      name: "OcspVerifyError",
+      code: "freshness",
+    });
+  });
+
+  it("accepts fresh response without nextUpdate", async () => {
+    const recent = new Date(Date.now() - 3600 * 1000);
+    const resp = await x509.BasicOcspResponseGenerator.create(
+      {
+        issuer: caCert,
+        signingKey: caKeys.privateKey,
+        signingAlgorithm: alg,
+        producedAt: recent,
+        responses: [{ certId, status: "good", thisUpdate: recent }],
+      },
+      crypto,
+    );
+    const results = await resp.verify({ issuer: caCert });
+    expect(results[0].status).toBe("good");
+  });
+
+  it("honors custom maxAge", async () => {
+    const twoHoursAgo = new Date(Date.now() - 2 * 3600 * 1000);
+    const resp = await x509.BasicOcspResponseGenerator.create(
+      {
+        issuer: caCert,
+        signingKey: caKeys.privateKey,
+        signingAlgorithm: alg,
+        producedAt: twoHoursAgo,
+        responses: [{ certId, status: "good", thisUpdate: twoHoursAgo }],
+      },
+      crypto,
+    );
+    await expect(resp.verify({ issuer: caCert, maxAge: 3600 })).rejects.toMatchObject({
+      code: "freshness",
+    });
+    const results = await resp.verify({ issuer: caCert, maxAge: 3 * 3600 });
+    expect(results[0].status).toBe("good");
+  });
+
+  it("requires answers for every requested CertID", async () => {
+    const user2 = await createUserCert("CN=User2");
+    const request = await x509.OcspRequest.create(
+      { issuer: caCert, certificates: [userCert, user2], nonce: false },
+      crypto,
+    );
+    const partial = await x509.BasicOcspResponseGenerator.create(
+      {
+        issuer: caCert,
+        signingKey: caKeys.privateKey,
+        signingAlgorithm: alg,
+        producedAt: now,
+        responses: [{ certId, status: "good", thisUpdate: now }],
+      },
+      crypto,
+    );
+    await expect(partial.verify({ issuer: caCert, request, date: now })).rejects.toMatchObject({
+      name: "OcspVerifyError",
+      code: "certId",
+    });
+  });
+
+  it("allows extra answers beyond the request", async () => {
+    const user2 = await createUserCert("CN=User2");
+    const user3 = await createUserCert("CN=User3");
+    const id2 = await x509.OcspCertId.create(caCert, user2, "SHA-256", crypto);
+    const id3 = await x509.OcspCertId.create(caCert, user3, "SHA-256", crypto);
+    const request = await x509.OcspRequest.create(
+      { issuer: caCert, certificates: [userCert, user2], nonce: false },
+      crypto,
+    );
+    const resp = await x509.BasicOcspResponseGenerator.create(
+      {
+        issuer: caCert,
+        signingKey: caKeys.privateKey,
+        signingAlgorithm: alg,
+        producedAt: now,
+        responses: [
+          { certId, status: "good", thisUpdate: now },
+          { certId: id2, status: "good", thisUpdate: now },
+          { certId: id3, status: "good", thisUpdate: now },
+        ],
+      },
+      crypto,
+    );
+    const results = await resp.verify({ issuer: caCert, request, date: now });
+    expect(results.length).toBe(3);
+  });
+
+  it("rejects unknown critical response extension", async () => {
+    const resp = await x509.BasicOcspResponseGenerator.create(
+      {
+        issuer: caCert,
+        signingKey: caKeys.privateKey,
+        signingAlgorithm: alg,
+        producedAt: now,
+        responses: [{ certId, status: "good", thisUpdate: now }],
+        responseExtensions: [unknownExtension(true)],
+      },
+      crypto,
+    );
+    await expect(resp.verify({ issuer: caCert, date: now })).rejects.toMatchObject({
+      name: "OcspVerifyError",
+      code: "responder",
+    });
+  });
+
+  it("rejects unknown critical single extension", async () => {
+    const resp = await x509.BasicOcspResponseGenerator.create(
+      {
+        issuer: caCert,
+        signingKey: caKeys.privateKey,
+        signingAlgorithm: alg,
+        producedAt: now,
+        responses: [
+          { certId, status: "good", thisUpdate: now, singleExtensions: [unknownExtension(true)] },
+        ],
+      },
+      crypto,
+    );
+    await expect(resp.verify({ issuer: caCert, date: now })).rejects.toMatchObject({
+      name: "OcspVerifyError",
+      code: "responder",
+    });
+  });
+
+  it("accepts unknown non-critical extensions", async () => {
+    const resp = await x509.BasicOcspResponseGenerator.create(
+      {
+        issuer: caCert,
+        signingKey: caKeys.privateKey,
+        signingAlgorithm: alg,
+        producedAt: now,
+        responses: [
+          { certId, status: "good", thisUpdate: now, singleExtensions: [unknownExtension(false)] },
+        ],
+        responseExtensions: [unknownExtension(false)],
+      },
+      crypto,
+    );
+    const results = await resp.verify({ issuer: caCert, date: now });
+    expect(results[0].status).toBe("good");
+  });
+
+  it("finds byKey responder when signer is not first", async () => {
+    const { keys, responder } = await createDelegatedResponder("CN=Responder-ByKey", [
+      "1.3.6.1.5.5.7.3.9",
+    ]);
+    const spki = AsnConvert.parse(responder.publicKey.rawData, SubjectPublicKeyInfo);
+    const ski = await crypto.subtle.digest("SHA-1", spki.subjectPublicKey);
+
+    const asnResponderId = new x509.ResponderID({ byKey: new x509.KeyHash(ski) });
+    const asnCertId = AsnConvert.parse(certId.rawData, x509.CertID);
+    const asnSingle = new x509.SingleResponse({
+      certID: asnCertId,
+      certStatus: new x509.CertStatus({ good: null }),
+      thisUpdate: now,
+    });
+    const asnResponseData = new x509.ResponseData({
+      version: x509.Version.v1,
+      responderID: asnResponderId,
+      producedAt: now,
+      responses: [asnSingle],
+    });
+    const tbs = AsnConvert.serialize(asnResponseData);
+    const signingAlgorithm = {
+      ...alg,
+      ...keys.privateKey.algorithm,
+    } as Algorithm;
+    const signature = await crypto.subtle.sign(signingAlgorithm, keys.privateKey, tbs);
+    const algProv = container.resolve<AlgorithmProvider>(diAlgorithmProvider);
+    const asnSigAlg = algProv.toAsnAlgorithm(signingAlgorithm);
+    const formatters = container
+      .resolveAll<IAsnSignatureFormatter>(diAsnSignatureFormatter)
+      .reverse();
+    let asnSig: ArrayBuffer | null = null;
+    for (const f of formatters) {
+      asnSig = f.toAsnSignature(signingAlgorithm, signature);
+      if (asnSig) {
+        break;
+      }
+    }
+    if (!asnSig) {
+      throw new Error("Cannot convert signature");
+    }
+    const asnBasic = new x509.BasicOCSPResponse({
+      tbsResponseData: asnResponseData,
+      signatureAlgorithm: asnSigAlg,
+      signature: asnSig,
+    });
+    // Signer is second in the list; the decoy must not be picked
+    asnBasic.certs = [userCert, responder].map((o) => AsnConvert.parse(o.rawData, Certificate));
+    const asnResponse = new x509.OCSPResponse({
+      responseStatus: x509.OCSPResponseStatus.successful,
+      responseBytes: new x509.ResponseBytes({
+        responseType: "1.3.6.1.5.5.7.48.1.1",
+        response: new OctetString(AsnConvert.serialize(asnBasic)),
+      }),
+    });
+    const resp = new x509.OcspResponse(asnResponse);
+    expect(resp.basic?.responderId.type).toBe("byKey");
+    const results = await resp.verify({ issuer: caCert, date: now });
+    expect(results[0].status).toBe("good");
+  });
+
+  it("uses passed crypto for responder certificate validation", async () => {
+    const { keys, responder } = await createDelegatedResponder("CN=Responder-Crypto", [
+      "1.3.6.1.5.5.7.3.9",
+    ]);
+    const resp = await x509.BasicOcspResponseGenerator.create(
+      {
+        issuer: caCert,
+        responderCert: responder,
+        signingKey: keys.privateKey,
+        signingAlgorithm: alg,
+        producedAt: now,
+        responses: [{ certId, status: "good", thisUpdate: now }],
+      },
+      crypto,
+    );
+    let verifyCalls = 0;
+    const countingSubtle = new Proxy(crypto.subtle, {
+      get(target, prop) {
+        const value = Reflect.get(target, prop);
+        if (typeof value !== "function") {
+          return value;
+        }
+        const bound = (value as (...args: never[]) => unknown).bind(target);
+        if (prop === "verify") {
+          return async (...args: never[]) => {
+            verifyCalls++;
+
+            return bound(...args);
+          };
+        }
+
+        return bound;
+      },
+    });
+    const countingCrypto = new Proxy(crypto, {
+      get(target, prop) {
+        if (prop === "subtle") {
+          return countingSubtle;
+        }
+        const value = Reflect.get(target, prop);
+
+        return typeof value === "function" ? (value as () => unknown).bind(target) : value;
+      },
+    }) as unknown as Crypto;
+    const results = await resp.verify({ issuer: caCert, date: now }, countingCrypto);
+    expect(results[0].status).toBe("good");
+    // One call for the response signature, one for the responder certificate
+    expect(verifyCalls).toBeGreaterThanOrEqual(2);
   });
 });

@@ -4,6 +4,7 @@ import { execSync } from "node:child_process";
 import { mkdtempSync, writeFileSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { isEqual } from "pvtsutils";
 import * as x509 from "../src";
 
 const crypto = new Crypto();
@@ -114,15 +115,22 @@ describe("OCSP OpenSSL interop", () => {
     expect(out).toMatch(/Response verify OK|good/);
   });
 
-  it.skipIf(!isOpenSSL())("parses openssl-generated request", () => {
+  it.skipIf(!isOpenSSL())("parses openssl-generated request", async () => {
     execSync(
       `openssl ocsp -issuer "${join(dir, "ca.pem")}" -cert "${join(dir, "user.pem")}" -reqout "${join(dir, "ossl_req.der")}"`,
       { stdio: "pipe" },
     );
-    const der = readFileSync(join(dir, "ossl_req.der")).buffer;
+    const der = readFileSync(join(dir, "ossl_req.der"));
     const parsed = new x509.OcspRequest(der);
     expect(parsed.requests.length).toBe(1);
     expect(parsed.requests[0].serialNumber.toLowerCase()).toBe(userCert.serialNumber.toLowerCase());
+    // Our CertID must be logically equal to the OpenSSL-generated one,
+    // even if DER encodings differ (e.g. hash parameters absent vs NULL).
+    const hashName = (parsed.requests[0].hashAlgorithm as Algorithm).name as x509.OcspHashAlgorithm;
+    const ours = await x509.OcspCertId.create(caCert, userCert, hashName, crypto);
+    expect(isEqual(parsed.requests[0].issuerNameHash, ours.issuerNameHash)).toBe(true);
+    expect(isEqual(parsed.requests[0].issuerKeyHash, ours.issuerKeyHash)).toBe(true);
+    expect(parsed.requests[0].equal(ours)).toBe(true);
     rmSync(dir, { recursive: true, force: true });
   });
 });

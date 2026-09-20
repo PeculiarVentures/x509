@@ -97,7 +97,10 @@ export class OcspCertId extends AsnData<CertID> {
     const algProv = container.resolve<AlgorithmProvider>(diAlgorithmProvider);
     const hashAlgorithm = algProv.toAsnAlgorithm({ name: hash });
 
-    const issuerNameDer = issuer.subjectName.toArrayBuffer();
+    // RFC 6960 §4.1.1: issuerNameHash is the hash of the DER encoding of the
+    // issuer's distinguished name. Use the issuer field of the target
+    // certificate, not a re-serialization of the issuer certificate's subject.
+    const issuerNameDer = target.issuerName.toArrayBuffer();
     const spki = AsnConvert.parse(issuer.publicKey.rawData, SubjectPublicKeyInfo);
     const issuerKeyBytes = spki.subjectPublicKey;
 
@@ -117,16 +120,24 @@ export class OcspCertId extends AsnData<CertID> {
   }
 
   /**
-   * Returns `true` if CertID is equal to another CertID, otherwise `false`
+   * Returns `true` if CertID is equal to another CertID, otherwise `false`.
+   * Compares the hash algorithm OID (with absent and NULL parameters treated
+   * as equal), both hashes and the serial number. The raw DER encoding is
+   * intentionally not compared, so logically equal IDs with different DER
+   * encodings still match.
    * @param data Any data
    */
   public override equal(data: any): data is this {
     if (data instanceof OcspCertId) {
       return (
+        this.asn.hashAlgorithm.algorithm === data.asn.hashAlgorithm.algorithm &&
+        isHashParametersEqual(
+          this.asn.hashAlgorithm.parameters,
+          data.asn.hashAlgorithm.parameters,
+        ) &&
         isEqual(this.issuerNameHash, data.issuerNameHash) &&
         isEqual(this.issuerKeyHash, data.issuerKeyHash) &&
-        this.serialNumber.toLowerCase() === data.serialNumber.toLowerCase() &&
-        isEqual(this.rawData, data.rawData)
+        this.serialNumber.toLowerCase() === data.serialNumber.toLowerCase()
       );
     }
 
@@ -151,4 +162,32 @@ export class OcspCertId extends AsnData<CertID> {
       serialNumber: this.serialNumber,
     };
   }
+}
+
+/**
+ * Compares hash algorithm parameters with absent and ASN.1 NULL treated as equal
+ */
+function isHashParametersEqual(a?: ArrayBuffer | null, b?: ArrayBuffer | null): boolean {
+  const normA = normalizeHashParameters(a);
+  const normB = normalizeHashParameters(b);
+  if (normA === null || normB === null) {
+    return normA === normB;
+  }
+
+  return isEqual(normA, normB);
+}
+
+function normalizeHashParameters(params?: ArrayBuffer | null): ArrayBuffer | null {
+  if (!params || params.byteLength === 0) {
+    return null;
+  }
+  // ASN.1 NULL is encoded as 05 00
+  if (params.byteLength === 2) {
+    const bytes = new Uint8Array(params);
+    if (bytes[0] === 0x05 && bytes[1] === 0x00) {
+      return null;
+    }
+  }
+
+  return params;
 }
