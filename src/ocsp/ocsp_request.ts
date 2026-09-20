@@ -6,7 +6,7 @@ import { cryptoProvider } from "../provider";
 import { PemConverter } from "../pem_converter";
 import { ParseOptions } from "../types";
 import { X509Certificate } from "../x509_cert";
-import { CertID, OCSPRequest, OcspRequestItem, TBSRequest } from "./asn";
+import { CertID, OCSPRequest, Request, TBSRequest, Version } from "@peculiar/asn1-ocsp";
 import { createOcspNonceExtension, getOcspNonce } from "./nonce";
 import { OcspCertId, OcspHashAlgorithm } from "./ocsp_cert_id";
 
@@ -117,11 +117,11 @@ export class OcspRequest extends PemData<OCSPRequest> {
   public static async create(params: OcspRequestCreateParams, crypto = cryptoProvider.get()) {
     const hashAlgorithm = params.hashAlgorithm || "SHA-256";
 
-    const requestList: OcspRequestItem[] = [];
+    const requestList: Request[] = [];
     for (const target of params.certificates) {
       const certId = await OcspCertId.create(params.issuer, target, hashAlgorithm, crypto);
       requestList.push(
-        new OcspRequestItem({
+        new Request({
           reqCert: AsnConvert.parse(certId.rawData, CertID),
         }),
       );
@@ -141,7 +141,7 @@ export class OcspRequest extends PemData<OCSPRequest> {
     }
 
     const tbs = new TBSRequest({
-      version: 0,
+      version: Version.v1,
       requestList,
     });
     if (extensions.length) {

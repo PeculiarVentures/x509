@@ -1,4 +1,4 @@
-import { OcspResponseStatus } from "./asn";
+import { OCSPResponseStatus } from "@peculiar/asn1-ocsp";
 
 export class OcspError extends Error {
   public constructor(message?: string) {
@@ -9,10 +9,10 @@ export class OcspError extends Error {
 }
 
 export class OcspResponseStatusError extends OcspError {
-  public readonly status: OcspResponseStatus;
+  public readonly status: OCSPResponseStatus;
 
-  public constructor(status: OcspResponseStatus, message?: string) {
-    super(message || `OCSP response status is '${OcspResponseStatus[status]}' (${status})`);
+  public constructor(status: OCSPResponseStatus, message?: string) {
+    super(message || `OCSP response status is '${OCSPResponseStatus[status]}' (${status})`);
     this.name = "OcspResponseStatusError";
     this.status = status;
     Object.setPrototypeOf(this, OcspResponseStatusError.prototype);

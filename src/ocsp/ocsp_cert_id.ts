@@ -1,4 +1,5 @@
-import { AsnConvert } from "@peculiar/asn1-schema";
+import { AsnConvert, OctetString } from "@peculiar/asn1-schema";
+import { CertID } from "@peculiar/asn1-ocsp";
 import { SubjectPublicKeyInfo } from "@peculiar/asn1-x509";
 import { BufferSourceConverter, Convert, isEqual } from "pvtsutils";
 import { container } from "tsyringe";
@@ -8,7 +9,6 @@ import { cryptoProvider } from "../provider";
 import { ParseOptions } from "../types";
 import { getCertificateSerialNumber, normalizeCertificateSerialNumber } from "../utils";
 import { X509Certificate } from "../x509_cert";
-import { CertID } from "./asn";
 
 export type OcspHashAlgorithm = "SHA-1" | "SHA-256" | "SHA-384" | "SHA-512";
 
@@ -37,14 +37,14 @@ export class OcspCertId extends AsnData<CertID> {
    * Gets an issuer name hash
    */
   public get issuerNameHash(): ArrayBuffer {
-    return this.asn.issuerNameHash;
+    return this.asn.issuerNameHash.buffer;
   }
 
   /**
    * Gets an issuer key hash
    */
   public get issuerKeyHash(): ArrayBuffer {
-    return this.asn.issuerKeyHash;
+    return this.asn.issuerKeyHash.buffer;
   }
 
   /**
@@ -108,8 +108,8 @@ export class OcspCertId extends AsnData<CertID> {
 
     const asn = new CertID({
       hashAlgorithm,
-      issuerNameHash,
-      issuerKeyHash,
+      issuerNameHash: new OctetString(issuerNameHash),
+      issuerKeyHash: new OctetString(issuerKeyHash),
       serialNumber,
     });
 

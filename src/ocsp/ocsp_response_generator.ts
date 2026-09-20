@@ -1,5 +1,11 @@
-import { AsnConvert } from "@peculiar/asn1-schema";
-import { Certificate, Extension as AsnExtension, Name as AsnName } from "@peculiar/asn1-x509";
+import { AsnConvert, OctetString } from "@peculiar/asn1-schema";
+import {
+  Certificate,
+  CRLReason,
+  CRLReasons,
+  Extension as AsnExtension,
+  Name as AsnName,
+} from "@peculiar/asn1-x509";
 import { container } from "tsyringe";
 import { AlgorithmProvider, diAlgorithmProvider } from "../algorithm";
 import { diAsnSignatureFormatter, IAsnSignatureFormatter } from "../asn_signature_formatter";
@@ -13,13 +19,14 @@ import {
   CertStatus,
   id_pkix_ocsp_basic,
   OCSPResponse,
-  OcspResponseStatus,
+  OCSPResponseStatus,
   ResponderID,
   ResponseBytes,
   ResponseData,
   RevokedInfo,
   SingleResponse,
-} from "./asn";
+  Version,
+} from "@peculiar/asn1-ocsp";
 import { OcspSingleStatus, OcspResponse } from "./ocsp_response";
 import { OcspCertId } from "./ocsp_cert_id";
 
@@ -74,7 +81,10 @@ export class BasicOcspResponseGenerator {
       } else if (item.status === "revoked") {
         certStatus.revoked = new RevokedInfo({
           revocationTime: item.revocationTime || item.thisUpdate,
-          revocationReason: item.revocationReason,
+          revocationReason:
+            item.revocationReason === undefined
+              ? undefined
+              : new CRLReason(item.revocationReason as CRLReasons),
         });
       } else {
         certStatus.unknown = null;
@@ -95,7 +105,7 @@ export class BasicOcspResponseGenerator {
     }
 
     const responseData = new ResponseData({
-      version: 0,
+      version: Version.v1,
       responderID,
       producedAt,
       responses: singles,
@@ -145,10 +155,10 @@ export class BasicOcspResponseGenerator {
 
     const basicDer = AsnConvert.serialize(basic);
     const response = new OCSPResponse({
-      responseStatus: OcspResponseStatus.successful,
+      responseStatus: OCSPResponseStatus.successful,
       responseBytes: new ResponseBytes({
         responseType: id_pkix_ocsp_basic,
-        response: basicDer,
+        response: new OctetString(basicDer),
       }),
     });
 
@@ -159,8 +169,8 @@ export class BasicOcspResponseGenerator {
    * Creates a non-successful OCSP response with given status
    * @param status Response status (must not be successful)
    */
-  public static createError(status: OcspResponseStatus): OcspResponse {
-    if ((status as OcspResponseStatus) === OcspResponseStatus.successful) {
+  public static createError(status: OCSPResponseStatus): OcspResponse {
+    if ((status as OCSPResponseStatus) === OCSPResponseStatus.successful) {
       throw new Error("Status must not be successful for error responses");
     }
 

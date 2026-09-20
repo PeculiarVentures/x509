@@ -2,7 +2,7 @@ import { AsnConvert, OctetString } from "@peculiar/asn1-schema";
 import { Extension as AsnExtension } from "@peculiar/asn1-x509";
 import { BufferSourceConverter } from "pvtsutils";
 import { Extension } from "../extension";
-import { id_pkix_ocsp_nonce } from "./asn";
+import { id_pkix_ocsp_nonce } from "@peculiar/asn1-ocsp";
 
 export function getNonce(extensions: Extension[]): ArrayBuffer | undefined {
   for (const ext of extensions) {

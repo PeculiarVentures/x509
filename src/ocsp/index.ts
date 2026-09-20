@@ -1,4 +1,4 @@
-export * from "./asn";
+export * from "@peculiar/asn1-ocsp";
 export * from "./errors";
 export * from "./nonce";
 export * from "./ocsp_cert_id";

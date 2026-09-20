@@ -18,9 +18,9 @@ import {
   BasicOCSPResponse,
   id_pkix_ocsp_basic,
   OCSPResponse,
-  OcspResponseStatus,
+  OCSPResponseStatus,
   SingleResponse,
-} from "./asn";
+} from "@peculiar/asn1-ocsp";
 import { OcspResponseStatusError, OcspVerifyError } from "./errors";
 import { getOcspNonce } from "./nonce";
 import { OcspCertId } from "./ocsp_cert_id";
@@ -109,7 +109,9 @@ export class OcspSingleResponse extends AsnData<SingleResponse> {
    * Gets a revocation reason for revoked certificates
    */
   public get revocationReason(): number | undefined {
-    return this.asn.certStatus.revoked?.revocationReason;
+    const reason = this.asn.certStatus.revoked?.revocationReason;
+
+    return reason === undefined ? undefined : reason.reason;
   }
 
   /**
@@ -194,7 +196,7 @@ export class BasicOcspResponse extends AsnData<BasicOCSPResponse> {
       if (asn.byName) {
         this.#responderId = { type: "byName", value: new Name(asn.byName) };
       } else if (asn.byKey) {
-        this.#responderId = { type: "byKey", value: asn.byKey };
+        this.#responderId = { type: "byKey", value: asn.byKey.buffer };
       } else {
         throw new Error("Cannot get responder ID. ResponderID is empty");
       }
@@ -401,7 +403,7 @@ export class OcspResponse extends PemData<OCSPResponse> {
   /**
    * Gets a response status
    */
-  public get status(): OcspResponseStatus {
+  public get status(): OCSPResponseStatus {
     return this.asn.responseStatus;
   }
 
@@ -459,7 +461,7 @@ export class OcspResponse extends PemData<OCSPResponse> {
     params: OcspResponseVerifyParams,
     crypto = cryptoProvider.get(),
   ): Promise<OcspSingleResult[]> {
-    if (this.status !== OcspResponseStatus.successful) {
+    if (this.status !== OCSPResponseStatus.successful) {
       throw new OcspResponseStatusError(this.status);
     }
 

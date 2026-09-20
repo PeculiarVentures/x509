@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeAll } from "vitest";
 import { Crypto } from "@peculiar/webcrypto";
-import { AsnConvert } from "@peculiar/asn1-schema";
+import { AsnConvert, OctetString } from "@peculiar/asn1-schema";
 import { AlgorithmIdentifier, SubjectPublicKeyInfo } from "@peculiar/asn1-x509";
 import { container } from "tsyringe";
 import * as x509 from "../src";
@@ -353,12 +353,12 @@ describe("OcspResponse", () => {
 
   it("throws StatusError for non-successful", async () => {
     const resp = x509.BasicOcspResponseGenerator.createError(
-      x509.OcspResponseStatus.malformedRequest,
+      x509.OCSPResponseStatus.malformedRequest,
     );
-    expect(resp.status).toBe(x509.OcspResponseStatus.malformedRequest);
+    expect(resp.status).toBe(x509.OCSPResponseStatus.malformedRequest);
     await expect(resp.verify({ issuer: caCert })).rejects.toMatchObject({
       name: "OcspResponseStatusError",
-      status: x509.OcspResponseStatus.malformedRequest,
+      status: x509.OCSPResponseStatus.malformedRequest,
     });
   });
 
@@ -367,7 +367,7 @@ describe("OcspResponse", () => {
     const pem = resp.toString("pem");
     expect(pem).toContain("-----BEGIN OCSP RESPONSE-----");
     const parsed = new x509.OcspResponse(pem);
-    expect(parsed.status).toBe(x509.OcspResponseStatus.successful);
+    expect(parsed.status).toBe(x509.OCSPResponseStatus.successful);
     const single = parsed.getSingle(certId);
     expect(single).not.toBeNull();
     expect(single?.status).toBe("good");
@@ -380,7 +380,7 @@ describe("OcspResponse", () => {
     const spki = AsnConvert.parse(caCert.publicKey.rawData, SubjectPublicKeyInfo);
     const ski = await crypto.subtle.digest("SHA-1", spki.subjectPublicKey);
 
-    const asnResponderId = new x509.ResponderID({ byKey: ski });
+    const asnResponderId = new x509.ResponderID({ byKey: new x509.KeyHash(ski) });
     expect(asnResponderId.byKey).toBeDefined();
 
     const asnCertId = AsnConvert.parse(certId.rawData, x509.CertID);
@@ -391,7 +391,7 @@ describe("OcspResponse", () => {
       thisUpdate: now,
     });
     const asnResponseData = new x509.ResponseData({
-      version: 0,
+      version: x509.Version.v1,
       responderID: asnResponderId,
       producedAt: now,
       responses: [asnSingle],
@@ -424,10 +424,10 @@ describe("OcspResponse", () => {
     });
     void AlgorithmIdentifier;
     const asnResponse = new x509.OCSPResponse({
-      responseStatus: x509.OcspResponseStatus.successful,
+      responseStatus: x509.OCSPResponseStatus.successful,
       responseBytes: new x509.ResponseBytes({
         responseType: "1.3.6.1.5.5.7.48.1.1",
-        response: AsnConvert.serialize(asnBasic),
+        response: new OctetString(AsnConvert.serialize(asnBasic)),
       }),
     });
     const resp = new x509.OcspResponse(asnResponse);
