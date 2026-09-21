@@ -50,6 +50,8 @@ export class PemConverter {
   public static CertificateRequestTag = "CERTIFICATE REQUEST";
   public static PublicKeyTag = "PUBLIC KEY";
   public static PrivateKeyTag = "PRIVATE KEY";
+  public static OcspRequestTag = "OCSP REQUEST";
+  public static OcspResponseTag = "OCSP RESPONSE";
 
   public static isPem(data: any): data is string {
     return typeof data === "string" && new RegExp(rPem, "g").test(data.replace(/\r/g, ""));
