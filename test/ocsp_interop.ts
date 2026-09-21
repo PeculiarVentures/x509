@@ -98,7 +98,9 @@ describe("OCSP OpenSSL interop", () => {
   });
 
   it.skipIf(!isOpenSSL())("openssl accepts our response", () => {
-    const out = execSync(`openssl ocsp -respin "${join(dir, "resp.der")}" -text`, {
+    // -noverify: parse only, without requiring trust material for the signer.
+    // Signature verification is covered by "openssl verifies our response".
+    const out = execSync(`openssl ocsp -respin "${join(dir, "resp.der")}" -text -noverify`, {
       encoding: "utf8",
     });
     expect(out).toContain("OCSP Response Data");
@@ -108,7 +110,7 @@ describe("OCSP OpenSSL interop", () => {
 
   it.skipIf(!isOpenSSL())("openssl verifies our response", () => {
     const out = execSync(
-      `openssl ocsp -issuer "${join(dir, "ca.pem")}" -cert "${join(dir, "user.pem")}" -CA "${join(dir, "ca.pem")}" -respin "${join(dir, "resp.der")}" -text`,
+      `openssl ocsp -issuer "${join(dir, "ca.pem")}" -cert "${join(dir, "user.pem")}" -CAfile "${join(dir, "ca.pem")}" -respin "${join(dir, "resp.der")}" -text`,
       { encoding: "utf8" },
     );
     expect(out).toContain("good");
