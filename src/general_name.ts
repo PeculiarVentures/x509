@@ -4,6 +4,8 @@ import { BufferSourceConverter, Convert } from "pvtsutils";
 import { AsnData } from "./asn_data";
 import { Name } from "./name";
 import { OidSerializer, TextObject } from "./text_converter";
+import { ParseOptions } from "./types";
+import { selfProducedParseOptions } from "./utils";
 
 const ERR_GN_CONSTRUCTOR = "Cannot initialize GeneralName from ASN.1 data.";
 const ERR_GN_STRING_FORMAT = `${ERR_GN_CONSTRUCTOR} Unsupported string format in use.`;
@@ -55,16 +57,24 @@ export class GeneralName extends AsnData<asn1X509.GeneralName> {
   public value!: string;
 
   public constructor(type: GeneralNameType, value: string);
-  public constructor(asn: asn1X509.GeneralName);
-  public constructor(raw: BufferSource);
+  public constructor(asn: asn1X509.GeneralName, options?: ParseOptions);
+  public constructor(raw: BufferSource, options?: ParseOptions);
   public constructor(...args: any[]) {
     let name: asn1X509.GeneralName;
-    if (args.length === 2) {
+    let options: ParseOptions | undefined;
+    // NOTE: the BufferSource check comes first because `new GeneralName(raw, options)`
+    // also has two arguments and must not fall into the `(type, value)` branch
+    if (BufferSourceConverter.isBufferSource(args[0])) {
+      // raw: BufferSource, options?: ParseOptions
+      options = args[1];
+      name = AsnConvert.parse(args[0], asn1X509.GeneralName, options);
+    } else if (typeof args[0] === "string") {
       // type: GeneralNameType, value: string
+      options = selfProducedParseOptions;
       switch (args[0] as GeneralNameType) {
         case DN: {
           const derName = new Name(args[1]).toArrayBuffer();
-          const asnName = AsnConvert.parse(derName, asn1X509.Name);
+          const asnName = AsnConvert.parse(derName, asn1X509.Name, selfProducedParseOptions);
           name = new asn1X509.GeneralName({ directoryName: asnName });
           break;
         }
@@ -119,14 +129,12 @@ export class GeneralName extends AsnData<asn1X509.GeneralName> {
         default:
           throw new Error("Cannot create GeneralName. Unsupported type of the name");
       }
-    } else if (BufferSourceConverter.isBufferSource(args[0])) {
-      // raw: BufferSource
-      name = AsnConvert.parse(args[0], asn1X509.GeneralName);
     } else {
-      // asn: asn1X509.GeneralName
+      // asn: asn1X509.GeneralName, options?: ParseOptions
       name = args[0];
+      options = args[1] ?? selfProducedParseOptions;
     }
-    super(name);
+    super(name, options);
   }
 
   /**
@@ -158,7 +166,7 @@ export class GeneralName extends AsnData<asn1X509.GeneralName> {
     } else if (asn.otherName != undefined) {
       if (asn.otherName.typeId === id_GUID) {
         this.type = GUID;
-        const guid = AsnConvert.parse(asn.otherName.value, OctetString);
+        const guid = AsnConvert.parse(asn.otherName.value, OctetString, this.parseOptions);
         const matches = new RegExp(GUID_REGEX, "i").exec(Convert.ToHex(guid));
         if (!matches) {
           throw new Error(ERR_GUID);
@@ -175,7 +183,11 @@ export class GeneralName extends AsnData<asn1X509.GeneralName> {
           .join("-");
       } else if (asn.otherName.typeId === id_UPN) {
         this.type = UPN;
-        this.value = AsnConvert.parse(asn.otherName.value, asn1X509.DirectoryString).toString();
+        this.value = AsnConvert.parse(
+          asn.otherName.value,
+          asn1X509.DirectoryString,
+          this.parseOptions,
+        ).toString();
       } else {
         throw new Error(ERR_GN_STRING_FORMAT);
       }
@@ -228,11 +240,19 @@ export class GeneralNames extends AsnData<asn1X509.GeneralNames> {
 
   constructor(json: JsonGeneralNames);
   constructor(asn: asn1X509.GeneralNames | asn1X509.GeneralName[]);
-  constructor(raw: BufferSource);
+  /**
+   * Creates a new instance from DER encoded buffer
+   * @param raw DER encoded buffer
+   * @param options Optional ASN.1 parse options (e.g. `asn1js.fromBER` resource limits)
+   */
+  constructor(raw: BufferSource, options?: ParseOptions);
   constructor(
     params: JsonGeneralNames | asn1X509.GeneralNames | asn1X509.GeneralName[] | BufferSource,
+    options?: ParseOptions,
   ) {
     let names: asn1X509.GeneralNames;
+    // Only the raw overload takes DER from the caller; the others are built here
+    let stored = selfProducedParseOptions;
     if (params instanceof asn1X509.GeneralNames) {
       // asn1X509.GeneralNames
       names = params;
@@ -247,6 +267,7 @@ export class GeneralNames extends AsnData<asn1X509.GeneralNames> {
           const asnName = AsnConvert.parse(
             new GeneralName(name.type, name.value).rawData,
             asn1X509.GeneralName,
+            selfProducedParseOptions,
           );
           items.push(asnName);
         }
@@ -254,12 +275,13 @@ export class GeneralNames extends AsnData<asn1X509.GeneralNames> {
 
       names = new asn1X509.GeneralNames(items);
     } else if (BufferSourceConverter.isBufferSource(params)) {
-      names = AsnConvert.parse(params, asn1X509.GeneralNames);
+      names = AsnConvert.parse(params, asn1X509.GeneralNames, options);
+      stored = options ?? {};
     } else {
       throw new Error("Cannot initialize GeneralNames. Incorrect incoming arguments");
     }
 
-    super(names);
+    super(names, stored);
   }
 
   protected onInit(asn: asn1X509.GeneralNames): void {
@@ -267,7 +289,7 @@ export class GeneralNames extends AsnData<asn1X509.GeneralNames> {
     for (const asnName of asn) {
       let name: GeneralName | null = null;
       try {
-        name = new GeneralName(asnName);
+        name = new GeneralName(asnName, this.parseOptions);
       } catch {
         // skip unsupported ASN.1 GeneralName
         continue;

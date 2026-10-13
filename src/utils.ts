@@ -1,5 +1,29 @@
 import { BufferSourceConverter, Convert } from "pvtsutils";
 import { cryptoProvider } from "./provider";
+import { ParseOptions } from "./types";
+
+/**
+ * Parse options for DER this library produced itself.
+ *
+ * Objects here keep their value as DER and re-parse it to derive the ASN.1 view, so
+ * creating one involves several serialize/parse round-trips of bytes built from
+ * structures already in memory. The `asn1js` limits exist to bound untrusted input;
+ * applying them to those round-trips protects nothing and caps what a caller may build
+ * (10000 nodes is roughly 2500 RDNs). So limits apply to DER the caller handed us -- the
+ * `raw` / `AsnEncodedType` constructors, and a raw `publicKey` -- and not to ours.
+ *
+ * Note that an object built this way stores these options, so its lazy accessors are
+ * unlimited too, including for foreign DER embedded in it. Bound such input on the way in
+ * with {@link ExtensionFactory.create} or a concrete extension class, which parse the
+ * value; `new Extension(raw)` only parses the wrapper.
+ */
+export const selfProducedParseOptions: ParseOptions = {
+  berOptions: {
+    maxDepth: Infinity,
+    maxNodes: Infinity,
+    maxContentLength: Infinity,
+  },
+};
 
 /**
  * Encodes serial number bytes as the content octets of a positive ASN.1 INTEGER by:

@@ -7,6 +7,7 @@ import { Extension } from "../extension";
 import { ExtensionFactory } from "../extensions";
 import { TextObject } from "../text_converter";
 import { ParseOptions } from "../types";
+import { selfProducedParseOptions } from "../utils";
 
 export class ExtensionsAttribute extends Attribute {
   public static override NAME = "Extensions";
@@ -31,7 +32,9 @@ export class ExtensionsAttribute extends Attribute {
       const extensions = args[0] as Extension[];
       const value = new asnX509.Extensions();
       for (const extension of extensions) {
-        value.push(AsnConvert.parse(extension.rawData, asnX509.Extension));
+        value.push(
+          AsnConvert.parse(extension.rawData, asnX509.Extension, selfProducedParseOptions),
+        );
       }
       super(asnPkcs9.id_pkcs9_at_extensionRequest, [AsnConvert.serialize(value)]);
     }

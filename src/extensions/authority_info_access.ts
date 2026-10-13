@@ -5,6 +5,7 @@ import { Extension } from "../extension";
 import { TextObject } from "../text_converter";
 import { GeneralName } from "../general_name";
 import { ParseOptions } from "../types";
+import { selfProducedParseOptions } from "../utils";
 
 export type AccessItemTypes = GeneralName | GeneralName[] | string | string[];
 export interface AuthorityInfoAccessParams {
@@ -160,7 +161,11 @@ function addAccessDescriptions(
       value.push(
         new asn1X509.AccessDescription({
           accessMethod: method,
-          accessLocation: AsnConvert.parse(url.rawData, asn1X509.GeneralName),
+          accessLocation: AsnConvert.parse(
+            url.rawData,
+            asn1X509.GeneralName,
+            selfProducedParseOptions,
+          ),
         }),
       );
     });

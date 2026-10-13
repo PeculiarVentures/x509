@@ -4,6 +4,7 @@ import { BufferSourceConverter } from "pvtsutils";
 import { AsnData } from "./asn_data";
 import { OidSerializer, TextObject } from "./text_converter";
 import { ParseOptions } from "./types";
+import { selfProducedParseOptions } from "./utils";
 
 /**
  * Represents the certificate extension
@@ -50,6 +51,7 @@ export class Extension extends AsnData<AsnExtension> {
           extnValue: new OctetString(BufferSourceConverter.toArrayBuffer(args[2])),
         }),
       );
+      options = selfProducedParseOptions;
     }
 
     super(raw, AsnExtension, options);

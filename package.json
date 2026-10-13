@@ -58,7 +58,7 @@
     "@peculiar/asn1-ecc": "^2.9.4",
     "@peculiar/asn1-pkcs9": "^2.9.4",
     "@peculiar/asn1-rsa": "^2.9.4",
-    "@peculiar/asn1-schema": "^2.9.4",
+    "@peculiar/asn1-schema": "^2.11.0",
     "@peculiar/asn1-x509": "^2.9.4",
     "@peculiar/asn1-x509-post-quantum": "^2.9.4",
     "pvtsutils": "^1.3.6",

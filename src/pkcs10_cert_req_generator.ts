@@ -17,6 +17,7 @@ import { JsonName, Name } from "./name";
 import { Pkcs10CertificateRequest } from "./pkcs10_cert_req";
 import { HashedAlgorithm } from "./types";
 import { diAsnSignatureFormatter, IAsnSignatureFormatter } from "./asn_signature_formatter";
+import { selfProducedParseOptions } from "./utils";
 
 export type Pkcs10CertificateRequestCreateParamsName = string | JsonName | Name;
 
@@ -69,18 +70,24 @@ export class Pkcs10CertificateRequestGenerator {
     const spki = await crypto.subtle.exportKey("spki", params.keys.publicKey);
     const asnReq = new CertificationRequest({
       certificationRequestInfo: new CertificationRequestInfo({
-        subjectPKInfo: AsnConvert.parse(spki, SubjectPublicKeyInfo),
+        subjectPKInfo: AsnConvert.parse(spki, SubjectPublicKeyInfo, selfProducedParseOptions),
       }),
     });
     if (params.name) {
       const name = params.name instanceof Name ? params.name : new Name(params.name);
-      asnReq.certificationRequestInfo.subject = AsnConvert.parse(name.toArrayBuffer(), AsnName);
+      asnReq.certificationRequestInfo.subject = AsnConvert.parse(
+        name.toArrayBuffer(),
+        AsnName,
+        selfProducedParseOptions,
+      );
     }
 
     if (params.attributes) {
       // Add attributes
       for (const o of params.attributes) {
-        asnReq.certificationRequestInfo.attributes.push(AsnConvert.parse(o.rawData, AsnAttribute));
+        asnReq.certificationRequestInfo.attributes.push(
+          AsnConvert.parse(o.rawData, AsnAttribute, selfProducedParseOptions),
+        );
       }
     }
 
@@ -89,7 +96,7 @@ export class Pkcs10CertificateRequestGenerator {
       const attr = new AsnAttribute({ type: id_pkcs9_at_extensionRequest });
       const extensions = new Extensions();
       for (const o of params.extensions) {
-        extensions.push(AsnConvert.parse(o.rawData, AsnExtension));
+        extensions.push(AsnConvert.parse(o.rawData, AsnExtension, selfProducedParseOptions));
       }
       attr.values.push(AsnConvert.serialize(extensions));
       asnReq.certificationRequestInfo.attributes.push(attr);
@@ -124,6 +131,6 @@ export class Pkcs10CertificateRequestGenerator {
 
     asnReq.signature = asnSignature;
 
-    return new Pkcs10CertificateRequest(AsnConvert.serialize(asnReq));
+    return new Pkcs10CertificateRequest(AsnConvert.serialize(asnReq), selfProducedParseOptions);
   }
 }

@@ -7,6 +7,7 @@ import { cryptoProvider } from "../provider";
 import { PublicKey, PublicKeyType } from "../public_key";
 import { TextObject } from "../text_converter";
 import { ParseOptions } from "../types";
+import { selfProducedParseOptions } from "../utils";
 
 export interface CertificateIdentifier {
   /**
@@ -101,7 +102,8 @@ export class AuthorityKeyIdentifierExtension extends Extension {
       const certId = args[0] as CertificateIdentifier;
       const certIdName =
         certId.name instanceof GeneralNames
-          ? AsnConvert.parse(certId.name.rawData, asn1X509.GeneralNames)
+          ? // The GeneralNames instance already parsed this buffer.
+            AsnConvert.parse(certId.name.rawData, asn1X509.GeneralNames, selfProducedParseOptions)
           : certId.name;
       const value = new asn1X509.AuthorityKeyIdentifier({
         authorityCertIssuer: certIdName,

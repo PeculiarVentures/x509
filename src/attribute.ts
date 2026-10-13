@@ -4,6 +4,7 @@ import { BufferSourceConverter } from "pvtsutils";
 import { AsnData } from "./asn_data";
 import { OidSerializer, TextObject } from "./text_converter";
 import { ParseOptions } from "./types";
+import { selfProducedParseOptions } from "./utils";
 
 /**
  * Represents the Attribute structure
@@ -50,6 +51,7 @@ export class Attribute extends AsnData<AsnAttribute> {
           values,
         }),
       );
+      options = selfProducedParseOptions;
     }
 
     super(raw, AsnAttribute, options);
