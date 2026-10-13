@@ -359,22 +359,11 @@ describe("parse options (berOptions)", () => {
       expect(ext.certId?.serialNumber).toBe("010203");
     });
 
-    // KNOWN UPSTREAM DEFECT, reachable through the ordinary CSR API and not fixable
-    // here. `Attribute` values are `AsnPropTypes.Any`, and `AsnAnyConverter.toASN`
-    // re-parses each value with `fromBER` and no options on the *serialize* path
-    // (@peculiar/asn1-schema 2.9.4, converters.js). The PKCS#10 generator puts the
-    // whole serialized `Extensions` blob into one such value, so building a CSR walks
-    // straight through it.
-    //
-    // What is rejected is not genuinely oversized: the blob has ~7 real nodes. asn1js
-    // speculatively parses the payload of a primitive OCTET STRING on the shared node
-    // counter and swallows the error without restoring the count, so a large extension
-    // burns the budget and the *next* extension trips the check. That makes the failure
-    // depend on extension order -- see the `it.fails` case below -- and it is why
-    // `ExtensionsAttribute([bigExt])` alone works while `[bigExt, otherExt]` does not.
-    //
-    // Certificates and CRLs are unaffected: their extensions are a typed SEQUENCE
-    // rather than an ANY, so nothing re-parses them on the way out.
+    // `Attribute` values are `AsnPropTypes.Any`, and `AsnAnyConverter.toASN` re-parses
+    // each value with `fromBER` on the *serialize* path. The PKCS#10 generator puts the
+    // whole serialized `Extensions` blob into one such value. Before
+    // @peculiar/asn1-schema 2.11.0 that re-parse applied the default limits, so large
+    // extensions could fail to build.
     it("ExtensionsAttribute builds and reads back its extensions", () => {
       const attr = new x509.ExtensionsAttribute([new x509.CertificatePolicyExtension(policies)]);
 
@@ -386,13 +375,11 @@ describe("parse options (berOptions)", () => {
     });
   });
 
-  // Documents the upstream defect described above, through the public API that
-  // reaches it. The body asserts the behaviour we *want*; `it.fails` records that it
-  // does not hold yet, so this turns into a failure the day asn1js stops poisoning its
-  // node counter (or asn1-schema forwards options on serialize) and can then be
-  // promoted to a normal test. asn1js 3.0.10 / @peculiar/asn1-schema 2.9.4 are the
-  // latest published versions as of writing, so there is nothing to upgrade to.
-  it.fails("CSR extensions should build regardless of their order", async () => {
+  // Regression test for the upstream defect described above: asn1js speculatively
+  // parses the payload of a primitive OCTET STRING on the shared node counter and
+  // swallows the error without restoring the count, so a large extension used to burn
+  // the budget and make the *next* extension trip the check, depending on order.
+  it("CSR extensions build regardless of their order", async () => {
     const alg = { name: "ECDSA", hash: "SHA-256", namedCurve: "P-256" };
     const keys = await crypto.subtle.generateKey(alg, true, ["sign", "verify"]);
     const large = new x509.CertificatePolicyExtension(
@@ -400,8 +387,6 @@ describe("parse options (berOptions)", () => {
     );
     const smaller = new x509.BasicConstraintsExtension(true, 2);
 
-    // this order works today, because the limit error is raised inside the trailing
-    // OCTET STRING and discarded
     await x509.Pkcs10CertificateRequestGenerator.create({
       name: "CN=Test",
       keys,
@@ -409,7 +394,6 @@ describe("parse options (berOptions)", () => {
       extensions: [smaller, large],
     });
 
-    // the same extensions the other way round currently throw "node count exceeded"
     await x509.Pkcs10CertificateRequestGenerator.create({
       name: "CN=Test",
       keys,
