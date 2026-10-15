@@ -99,6 +99,10 @@ const types = {
       banner,
       file: pkg.types,
     },
+    {
+      banner,
+      file: pkg.exports["."].types.import,
+    },
   ],
 };
 
