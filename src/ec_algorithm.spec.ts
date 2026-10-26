@@ -2,7 +2,8 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { AlgorithmIdentifier } from "@peculiar/asn1-x509";
 import { ECParameters, id_ecPublicKey, id_secp256r1 } from "@peculiar/asn1-ecc";
 import { AsnConvert } from "@peculiar/asn1-schema";
-import { EcAlgorithm, HashedAlgorithm } from "./index";
+import type { HashedAlgorithm } from "./index";
+import { EcAlgorithm } from "./index";
 
 describe("EcAlgorithm", () => {
   let ecAlgorithm: EcAlgorithm;

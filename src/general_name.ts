@@ -4,7 +4,7 @@ import { BufferSourceConverter, Convert } from "pvtsutils";
 import { AsnData } from "./asn_data";
 import { Name } from "./name";
 import { OidSerializer, TextObject } from "./text_converter";
-import { ParseOptions } from "./types";
+import type { ParseOptions } from "./types";
 import { selfProducedParseOptions } from "./utils";
 
 const ERR_GN_CONSTRUCTOR = "Cannot initialize GeneralName from ASN.1 data.";

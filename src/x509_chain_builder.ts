@@ -1,9 +1,9 @@
 import { AsnConvert } from "@peculiar/asn1-schema";
 import * as asn1X509 from "@peculiar/asn1-x509";
 import { isEqual } from "pvtsutils";
-import { AuthorityKeyIdentifierExtension, SubjectKeyIdentifierExtension } from "./extensions";
+import type { AuthorityKeyIdentifierExtension, SubjectKeyIdentifierExtension } from "./extensions";
 import { cryptoProvider } from "./provider";
-import { X509Certificate } from "./x509_cert";
+import type { X509Certificate } from "./x509_cert";
 import { X509Certificates } from "./x509_certs";
 
 export interface X509ChainBuilderParams {

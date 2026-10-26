@@ -1,6 +1,7 @@
 import { BufferSourceConverter, Convert } from "pvtsutils";
-import { AsnData, AsnDataStringFormat } from "./asn_data";
-import { ParseOptions } from "./types";
+import type { AsnDataStringFormat } from "./asn_data";
+import { AsnData } from "./asn_data";
+import type { ParseOptions } from "./types";
 import { PemConverter } from "./pem_converter";
 
 export type AsnExportType = "pem" | AsnDataStringFormat;
@@ -80,12 +81,12 @@ export abstract class PemData<T> extends AsnData<T> {
   /**
    * Returns encoded object in PEM format
    */
-  public toString(): string;
+  public override toString(): string;
   /**
    * Returns encoded object in selected format
    * @param format hex, base64, base64url, pem, asn, text
    */
-  public toString(format: AsnExportType): string;
+  public override toString(format: AsnExportType): string;
   public override toString(format: AsnExportType = "pem") {
     switch (format) {
       case "pem":

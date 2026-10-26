@@ -1,5 +1,5 @@
 import { Attribute } from "../attribute";
-import { ParseOptions } from "../types";
+import type { ParseOptions } from "../types";
 
 /**
  * Static class to manage X509 attributes

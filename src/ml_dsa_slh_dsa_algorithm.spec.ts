@@ -18,7 +18,8 @@ import {
   id_slh_dsa_shake_256f,
 } from "@peculiar/asn1-x509-post-quantum";
 import { AlgorithmIdentifier } from "@peculiar/asn1-x509";
-import { AlgorithmProvider, diAlgorithmProvider } from "./index";
+import type { AlgorithmProvider } from "./index";
+import { diAlgorithmProvider } from "./index";
 
 describe("ML-DSA + SLH-DSA AlgorithmProvider wiring (FIPS 204 / FIPS 205)", () => {
   let algorithmProvider: AlgorithmProvider;

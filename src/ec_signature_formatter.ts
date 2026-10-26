@@ -1,7 +1,7 @@
 import { ECDSASigValue } from "@peculiar/asn1-ecc";
 import { AsnConvert } from "@peculiar/asn1-schema";
 import { BufferSourceConverter, combine } from "pvtsutils";
-import { IAsnSignatureFormatter } from "./asn_signature_formatter";
+import type { IAsnSignatureFormatter } from "./asn_signature_formatter";
 
 export class AsnEcSignatureFormatter implements IAsnSignatureFormatter {
   public static namedCurveSize = new Map<string, number>();

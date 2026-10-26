@@ -1,5 +1,5 @@
 import { Extension } from "../extension";
-import { ParseOptions } from "../types";
+import type { ParseOptions } from "../types";
 
 /**
  * Static class to manage X509 extensions

@@ -2,8 +2,9 @@ import * as asn1X509 from "@peculiar/asn1-x509";
 import { AsnConvert } from "@peculiar/asn1-schema";
 import { BufferSourceConverter } from "pvtsutils";
 import { Extension } from "../extension";
-import { OidSerializer, TextObject } from "../text_converter";
-import { ParseOptions } from "../types";
+import type { TextObject } from "../text_converter";
+import { OidSerializer } from "../text_converter";
+import type { ParseOptions } from "../types";
 
 export enum ExtendedKeyUsage {
   serverAuth = "1.3.6.1.5.5.7.3.1",

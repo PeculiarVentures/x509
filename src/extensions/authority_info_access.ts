@@ -4,7 +4,7 @@ import { BufferSourceConverter } from "pvtsutils";
 import { Extension } from "../extension";
 import { TextObject } from "../text_converter";
 import { GeneralName } from "../general_name";
-import { ParseOptions } from "../types";
+import type { ParseOptions } from "../types";
 import { selfProducedParseOptions } from "../utils";
 
 export type AccessItemTypes = GeneralName | GeneralName[] | string | string[];
@@ -68,7 +68,7 @@ export class AuthorityInfoAccessExtension extends Extension {
     this.caRepository ??= [];
   }
 
-  protected onInit(asn: asn1X509.Extension) {
+  protected override onInit(asn: asn1X509.Extension) {
     super.onInit(asn);
 
     this.ocsp = [];

@@ -1,4 +1,4 @@
-import { IAsnParseOptions } from "@peculiar/asn1-schema";
+import type { IAsnParseOptions } from "@peculiar/asn1-schema";
 
 export interface HashedAlgorithm extends Algorithm {
   hash: Algorithm;

@@ -3,7 +3,7 @@ import { AsnConvert } from "@peculiar/asn1-schema";
 import { BufferSourceConverter } from "pvtsutils";
 import { Extension } from "../extension";
 import { OidSerializer, TextObject } from "../text_converter";
-import { ParseOptions } from "../types";
+import type { ParseOptions } from "../types";
 import { ExtensionFactory } from "./extension_factory";
 
 /**

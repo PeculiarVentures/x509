@@ -1,7 +1,8 @@
 import { AlgorithmIdentifier } from "@peculiar/asn1-x509";
 import { id_ml_dsa_44, id_ml_dsa_65, id_ml_dsa_87 } from "@peculiar/asn1-x509-post-quantum";
 import { container, injectable } from "tsyringe";
-import { diAlgorithm, IAlgorithm } from "./algorithm";
+import type { IAlgorithm } from "./algorithm";
+import { diAlgorithm } from "./algorithm";
 
 /**
  * Provider for the NIST FIPS 204 module-lattice digital signature algorithms

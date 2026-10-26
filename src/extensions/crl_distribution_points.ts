@@ -4,7 +4,7 @@ import { BufferSourceConverter } from "pvtsutils";
 import { Extension } from "../extension";
 import { TextObject } from "../text_converter";
 import { GeneralName } from "../general_name";
-import { ParseOptions } from "../types";
+import type { ParseOptions } from "../types";
 
 /**
  * Represents the CRL Distribution Points extension
@@ -54,7 +54,7 @@ export class CRLDistributionPointsExtension extends Extension {
     this.distributionPoints ??= [];
   }
 
-  protected onInit(asn: asn1X509.Extension) {
+  protected override onInit(asn: asn1X509.Extension) {
     super.onInit(asn);
 
     const crlExt = AsnConvert.parse(asn.extnValue, asn1X509.CRLDistributionPoints, this.parseOptions);
