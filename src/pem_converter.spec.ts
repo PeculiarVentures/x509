@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { Convert } from "pvtsutils";
-import * as src from "../src";
+import * as src from "./index";
 
 describe("PEM", () => {
   const base64_splitted =

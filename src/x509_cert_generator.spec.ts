@@ -1,7 +1,6 @@
-import * as path from "path";
 import { describe, it, expect, beforeAll } from "vitest";
 import { Crypto } from "@peculiar/webcrypto";
-import * as x509 from "../src";
+import * as x509 from "./index";
 
 const crypto = new Crypto();
 x509.cryptoProvider.set(crypto);
@@ -136,7 +135,7 @@ function testCertPreSigned(testEntry: any) {
   });
 }
 
-describe(path.basename(__filename), () => {
+describe("X509CertificateGenerator", () => {
   theTestX509CertificateGeneratorVector.forEach((testEntry) => {
     testCertSelfSign(testEntry);
     testCertPreSigned(testEntry);
@@ -256,5 +255,180 @@ describe(path.basename(__filename), () => {
       expect(cert.serialNumber).not.toBe("00");
       expect(cert.serialNumber).not.toBe("000000");
     });
+  });
+});
+
+describe("crypto", () => {
+  const crypto = new Crypto();
+  x509.cryptoProvider.set(crypto);
+
+  describe("X509 certificate generator", () => {
+    it("generate certificate with generalized time", async () => {
+      const alg: RsaHashedKeyGenParams = {
+        name: "RSASSA-PKCS1-v1_5",
+        hash: "SHA-256",
+        publicExponent: new Uint8Array([1, 0, 1]),
+        modulusLength: 2048,
+      };
+      const keys = await crypto.subtle.generateKey(alg, false, ["sign", "verify"]);
+      expect(keys.publicKey).toBeTruthy();
+      expect(keys.privateKey).toBeTruthy();
+      const cert = await x509.X509CertificateGenerator.createSelfSigned({
+        serialNumber: "01",
+        name: "CN=Test, O=Дом",
+        notBefore: new Date("2020-01-01"),
+        notAfter: new Date("2060-01-01"),
+        signingAlgorithm: alg,
+        keys: keys,
+        extensions: [
+          new x509.BasicConstraintsExtension(true, 2, true),
+          new x509.ExtendedKeyUsageExtension(["1.2.3.4.5.6.7", "2.3.4.5.6.7.8"], true),
+          new x509.KeyUsagesExtension(x509.KeyUsageFlags.keyCertSign | x509.KeyUsageFlags.cRLSign, true),
+          new x509.CertificatePolicyExtension(["1.2.3.4.5", "1.2.3.4.5.6", "1.2.3.4.5.6.7"]),
+          await x509.SubjectKeyIdentifierExtension.create(keys.publicKey),
+        ],
+      });
+      // console.log(cert.toString("pem"));
+      const ok = await cert.verify({ date: new Date("2020/01/01 12:00") });
+      expect(ok).toBe(true);
+    });
+
+    it("generate self-signed certificate", async () => {
+      const alg: RsaHashedKeyGenParams = {
+        name: "RSASSA-PKCS1-v1_5",
+        hash: "SHA-256",
+        publicExponent: new Uint8Array([1, 0, 1]),
+        modulusLength: 2048,
+      };
+      const keys = await crypto.subtle.generateKey(alg, false, ["sign", "verify"]);
+      expect(keys.publicKey).toBeTruthy();
+      expect(keys.privateKey).toBeTruthy();
+      const cert = await x509.X509CertificateGenerator.createSelfSigned({
+        serialNumber: "01",
+        name: "CN=Test, O=Дом",
+        notBefore: new Date("2020/01/01"),
+        notAfter: new Date("2020/01/02"),
+        signingAlgorithm: alg,
+        keys: keys,
+        extensions: [
+          new x509.BasicConstraintsExtension(true, 2, true),
+          new x509.ExtendedKeyUsageExtension(["1.2.3.4.5.6.7", "2.3.4.5.6.7.8"], true),
+          new x509.KeyUsagesExtension(x509.KeyUsageFlags.keyCertSign | x509.KeyUsageFlags.cRLSign, true),
+          new x509.CertificatePolicyExtension(["1.2.3.4.5", "1.2.3.4.5.6", "1.2.3.4.5.6.7"]),
+          await x509.SubjectKeyIdentifierExtension.create(keys.publicKey),
+        ],
+      });
+      const ok = await cert.verify({ date: new Date("2020/01/01 12:00") });
+      expect(ok).toBe(true);
+    });
+
+    it("generate self-signed certificate with EC `brainpoolP256r1` curve", async () => {
+      const alg: EcKeyImportParams = {
+        name: "ECDSA",
+        namedCurve: "brainpoolP256r1",
+      };
+      const keys = await crypto.subtle.generateKey(alg, false, ["sign", "verify"]);
+      expect(keys.publicKey).toBeTruthy();
+      expect(keys.privateKey).toBeTruthy();
+      const cert = await x509.X509CertificateGenerator.createSelfSigned({
+        serialNumber: "01",
+        name: "CN=Test, O=Дом",
+        notBefore: new Date("2020/01/01"),
+        notAfter: new Date("2020/01/02"),
+        signingAlgorithm: {
+          name: "ECDSA",
+          hash: "SHA-256",
+        },
+        keys: keys,
+        extensions: [
+          new x509.BasicConstraintsExtension(true, 2, true),
+          new x509.ExtendedKeyUsageExtension(["1.2.3.4.5.6.7", "2.3.4.5.6.7.8"], true),
+          new x509.KeyUsagesExtension(x509.KeyUsageFlags.keyCertSign | x509.KeyUsageFlags.cRLSign, true),
+          await x509.SubjectKeyIdentifierExtension.create(keys.publicKey),
+        ],
+      });
+      const ok = await cert.verify({ date: new Date("2020/01/01 12:00") });
+      expect(ok).toBe(true);
+    });
+
+    it("generate ca and user certificate", async () => {
+      const alg: EcdsaParams & EcKeyGenParams = {
+        name: "ECDSA",
+        hash: "SHA-256",
+        namedCurve: "P-256",
+      };
+      const caKeys = await crypto.subtle.generateKey(alg, false, ["sign", "verify"]);
+      expect(caKeys.publicKey).toBeTruthy();
+      expect(caKeys.privateKey).toBeTruthy();
+      const caCert = await x509.X509CertificateGenerator.create({
+        serialNumber: "01",
+        subject: "CN=Test CA",
+        issuer: "CN=Test CA",
+        notBefore: new Date("2020/01/01"),
+        notAfter: new Date("2020/01/03"),
+        signingAlgorithm: alg,
+        publicKey: caKeys.publicKey,
+        signingKey: caKeys.privateKey,
+      });
+
+      let ok = await caCert.verify({ date: new Date("2020/01/01 12:00") });
+      expect(ok).toBe(true);
+
+      const userKeys = (await crypto.subtle.generateKey(alg, false, ["sign", "verify"])) as CryptoKeyPair;
+      expect(userKeys.publicKey).toBeTruthy();
+      expect(userKeys.privateKey).toBeTruthy();
+      const userCert = await x509.X509CertificateGenerator.create({
+        serialNumber: "01",
+        subject: "CN=Test",
+        issuer: caCert.issuer,
+        notBefore: new Date("2020/01/01"),
+        notAfter: new Date("2020/01/02"),
+        signingAlgorithm: alg,
+        publicKey: userKeys.publicKey,
+        signingKey: caKeys.privateKey,
+        extensions: [await x509.SubjectKeyIdentifierExtension.create(userKeys.publicKey)],
+      });
+
+      ok = await userCert.verify({
+        date: new Date("2020/01/01 12:00"),
+        publicKey: await caCert.publicKey.export(),
+      });
+      expect(ok).toBe(true);
+    });
+  });
+
+  it("Create X448 certificate", async () => {
+    const alg: EcKeyGenParams = {
+      name: "EdDSA",
+      namedCurve: "Ed448",
+    };
+    const keys = await crypto.subtle.generateKey(alg, false, ["sign", "verify"]);
+    expect(keys.publicKey).toBeTruthy();
+    expect(keys.privateKey).toBeTruthy();
+    const spki = await crypto.subtle.exportKey("spki", keys.publicKey);
+    const publicKey = await crypto.subtle.importKey(
+      "spki",
+      spki,
+      {
+        name: "ECDH-ES",
+        namedCurve: "X448",
+      } as EcKeyGenParams,
+      true,
+      ["verify"],
+    );
+    const cert = await x509.X509CertificateGenerator.createSelfSigned({
+      serialNumber: "01",
+      name: "CN=Test",
+      notBefore: new Date("2020/01/01"),
+      notAfter: new Date("2024/01/02"),
+      signingAlgorithm: alg,
+      keys: {
+        ...keys,
+        publicKey,
+      },
+    });
+
+    const ok = await cert.verify({ signatureOnly: true });
+    expect(ok).toBe(true);
   });
 });

@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { Crypto } from "@peculiar/webcrypto";
-import * as x509 from "../src";
+import * as x509 from "./index";
 
 const crypto = new Crypto();
 

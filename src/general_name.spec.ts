@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import * as asn1X509 from "@peculiar/asn1-x509";
 import * as asn1Schema from "@peculiar/asn1-schema";
-import * as x509 from "../src";
+import * as x509 from "./index";
 
 describe("GeneralName", () => {
   describe("constructor", () => {

@@ -1,18 +1,18 @@
-// eslint-disable-next-line import/no-unresolved
 import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   test: {
-    globals: true,
     environment: "node",
-    include: ["test/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}", "test/**/*.ts"],
+    include: ["src/**/*.spec.ts"],
+    // Loads the Reflect polyfill tsyringe needs before any spec imports the library.
+    setupFiles: ["vitest.setup.ts"],
+    // Carried over from the old config: RSA key generation can be slow on CI runners.
+    testTimeout: 10000,
     coverage: {
       provider: "v8",
-      reporter: ["text", "lcov", "text-summary"],
-      include: ["src/**/*.ts"],
-      exclude: ["**/*.d.ts"],
+      reporter: ["text", "lcov"],
+      include: ["src/**/*"],
+      exclude: ["src/**/*.spec.ts", "build/**"],
     },
-    testTimeout: 10000,
-    setupFiles: ["./vitest.setup.ts"],
   },
 });

@@ -6,7 +6,7 @@ import { id_pkcs9_at_extensionRequest } from "@peculiar/asn1-pkcs9";
 import * as asn1X509 from "@peculiar/asn1-x509";
 import * as asn1js from "asn1js";
 import { Convert } from "pvtsutils";
-import * as x509 from "../src";
+import * as x509 from "./index";
 
 const crypto = new Crypto();
 x509.cryptoProvider.set(crypto);
