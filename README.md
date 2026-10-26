@@ -5,7 +5,7 @@
 <div align="center">
 
 ![NPM License](https://img.shields.io/npm/l/@peculiar/x509)
-![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/PeculiarVentures/x509/test.yml?label=test)
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/PeculiarVentures/x509/publish.yml?branch=master&label=publish)
 [![npm version](https://img.shields.io/npm/v/@peculiar/x509.svg)](https://www.npmjs.com/package/@peculiar/x509)
 ![Coveralls](https://img.shields.io/coverallsCoverage/github/PeculiarVentures/x509)
 [![npm downloads](https://img.shields.io/npm/dm/@peculiar/x509.svg)](https://www.npmjs.com/package/@peculiar/x509)
