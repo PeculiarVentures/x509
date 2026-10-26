@@ -11,7 +11,7 @@ export default function Home() {
   const { siteConfig } = useDocusaurusContext();
 
   return (
-    <Layout description={siteConfig.customFields.description as string}>
+    <Layout description={siteConfig.customFields?.description as string | undefined}>
       <div className={s.preview}>
         <div className={s.m_width}>
           <div className={s.preview_content}>
