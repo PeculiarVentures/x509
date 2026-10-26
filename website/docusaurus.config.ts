@@ -11,7 +11,11 @@ const config: Config = {
   url: "https://peculiarventures.github.io",
   baseUrl: "/x509",
   onBrokenLinks: "throw",
-  onBrokenMarkdownLinks: "warn",
+  markdown: {
+    hooks: {
+      onBrokenMarkdownLinks: "warn",
+    },
+  },
   i18n: {
     defaultLocale: "en",
     locales: ["en"],
