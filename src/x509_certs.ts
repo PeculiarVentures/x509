@@ -39,10 +39,7 @@ export class X509Certificates extends Array<X509Certificate> implements TextObje
    * @param certs List of x509 certificates
    */
   public constructor(certs: X509Certificate[]);
-  public constructor(
-    param?: AsnEncodedType | X509Certificate | X509Certificate[],
-    options?: ParseOptions,
-  ) {
+  public constructor(param?: AsnEncodedType | X509Certificate | X509Certificate[], options?: ParseOptions) {
     super();
 
     if (PemData.isAsnEncoded(param)) {

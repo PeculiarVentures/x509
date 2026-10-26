@@ -59,9 +59,7 @@ export class X509ChainBuilder {
 
   private async findIssuer(cert: X509Certificate, crypto = cryptoProvider.get()) {
     if (!(await cert.isSelfSigned(crypto))) {
-      const akiExt = cert.getExtension<AuthorityKeyIdentifierExtension>(
-        asn1X509.id_ce_authorityKeyIdentifier,
-      );
+      const akiExt = cert.getExtension<AuthorityKeyIdentifierExtension>(asn1X509.id_ce_authorityKeyIdentifier);
       for (const item of this.certificates) {
         if (item.subject !== cert.issuer) {
           continue;
@@ -69,23 +67,13 @@ export class X509ChainBuilder {
 
         if (akiExt) {
           if (akiExt.keyId) {
-            const skiExt = item.getExtension<SubjectKeyIdentifierExtension>(
-              asn1X509.id_ce_subjectKeyIdentifier,
-            );
+            const skiExt = item.getExtension<SubjectKeyIdentifierExtension>(asn1X509.id_ce_subjectKeyIdentifier);
             if (skiExt && skiExt.keyId !== akiExt.keyId) {
               continue;
             }
           } else if (akiExt.certId) {
-            const sanExt = item.getExtension<SubjectKeyIdentifierExtension>(
-              asn1X509.id_ce_subjectAltName,
-            );
-            if (
-              sanExt &&
-              !(
-                akiExt.certId.serialNumber === item.serialNumber &&
-                isEqual(AsnConvert.serialize(akiExt.certId.name), AsnConvert.serialize(sanExt))
-              )
-            ) {
+            const sanExt = item.getExtension<SubjectKeyIdentifierExtension>(asn1X509.id_ce_subjectAltName);
+            if (sanExt && !(akiExt.certId.serialNumber === item.serialNumber && isEqual(AsnConvert.serialize(akiExt.certId.name), AsnConvert.serialize(sanExt)))) {
               continue;
             }
           }

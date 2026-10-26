@@ -32,27 +32,15 @@ export class AuthorityKeyIdentifierExtension extends Extension {
    * @param critical Indicates where extension is critical. Default is `false`
    * @param crypto WebCrypto provider. Default is from CryptoProvider
    */
-  public static async create(
-    certId: CertificateIdentifier,
-    critical?: boolean,
-    crypto?: Crypto,
-  ): Promise<AuthorityKeyIdentifierExtension>;
+  public static async create(certId: CertificateIdentifier, critical?: boolean, crypto?: Crypto): Promise<AuthorityKeyIdentifierExtension>;
   /**
    * Creates authority key identifier extension from public key data
    * @param publicKey Public key data
    * @param critical Indicates where extension is critical. Default is `false`
    * @param crypto WebCrypto provider. Default is from CryptoProvider
    */
-  public static async create(
-    publicKey: PublicKeyType,
-    critical?: boolean,
-    crypto?: Crypto,
-  ): Promise<AuthorityKeyIdentifierExtension>;
-  public static async create(
-    param: PublicKeyType | CertificateIdentifier,
-    critical = false,
-    crypto = cryptoProvider.get(),
-  ) {
+  public static async create(publicKey: PublicKeyType, critical?: boolean, crypto?: Crypto): Promise<AuthorityKeyIdentifierExtension>;
+  public static async create(param: PublicKeyType | CertificateIdentifier, critical = false, crypto = cryptoProvider.get()) {
     if ("name" in param && "serialNumber" in param) {
       return new AuthorityKeyIdentifierExtension(param, critical);
     }
@@ -124,9 +112,7 @@ export class AuthorityKeyIdentifierExtension extends Extension {
     if (aki.authorityCertIssuer || aki.authorityCertSerialNumber) {
       this.certId = {
         name: aki.authorityCertIssuer || [],
-        serialNumber: aki.authorityCertSerialNumber
-          ? Convert.ToHex(aki.authorityCertSerialNumber)
-          : "",
+        serialNumber: aki.authorityCertSerialNumber ? Convert.ToHex(aki.authorityCertSerialNumber) : "",
       };
     }
   }

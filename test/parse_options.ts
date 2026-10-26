@@ -49,9 +49,7 @@ describe("parse options (berOptions)", () => {
     });
 
     it("throws when berOptions.maxDepth is too low", () => {
-      expect(() => new x509.X509Certificate(certPem, { berOptions: { maxDepth: 1 } })).toThrow(
-        /depth/i,
-      );
+      expect(() => new x509.X509Certificate(certPem, { berOptions: { maxDepth: 1 } })).toThrow(/depth/i);
     });
 
     it("a tight-but-sufficient maxDepth still allows inspection (re-parse reuses options)", () => {
@@ -73,9 +71,7 @@ describe("parse options (berOptions)", () => {
   describe("Pkcs10CertificateRequest", () => {
     it("throws when berOptions.maxDepth is too low", () => {
       const raw = Convert.FromBase64(csrBase64);
-      expect(() => new x509.Pkcs10CertificateRequest(raw, { berOptions: { maxDepth: 1 } })).toThrow(
-        /depth/i,
-      );
+      expect(() => new x509.Pkcs10CertificateRequest(raw, { berOptions: { maxDepth: 1 } })).toThrow(/depth/i);
       // sanity: default parse works
       expect(new x509.Pkcs10CertificateRequest(raw).subject).toBeDefined();
     });
@@ -84,9 +80,7 @@ describe("parse options (berOptions)", () => {
   describe("X509Certificates (CMS)", () => {
     it("forwards berOptions through import()", () => {
       const cms = new x509.X509Certificates([new x509.X509Certificate(certPem)]).export("raw");
-      expect(() => new x509.X509Certificates(cms, { berOptions: { maxDepth: 1 } })).toThrow(
-        /depth/i,
-      );
+      expect(() => new x509.X509Certificates(cms, { berOptions: { maxDepth: 1 } })).toThrow(/depth/i);
       // sanity: default import works
       expect(new x509.X509Certificates(cms).length).toBe(1);
     });
@@ -168,10 +162,7 @@ describe("parse options (berOptions)", () => {
 
     beforeAll(async () => {
       keys = await crypto.subtle.generateKey(alg, true, ["sign", "verify"]);
-      largeExtension = AsnConvert.parse(
-        new x509.CertificatePolicyExtension(policies).rawData,
-        asn1X509.Extension,
-      );
+      largeExtension = AsnConvert.parse(new x509.CertificatePolicyExtension(policies).rawData, asn1X509.Extension);
     });
 
     // NOTE: these assemble the structures from ASN.1 rather than through the
@@ -221,8 +212,7 @@ describe("parse options (berOptions)", () => {
       const parsed = new x509.X509Crl(raw, { berOptions });
       const fromEntries = parsed.entries[0].extensions[0] as x509.CertificatePolicyExtension;
       expect(fromEntries.policies).toHaveLength(policies.length);
-      const fromFindRevoked = parsed.findRevoked("010203")!
-        .extensions[0] as x509.CertificatePolicyExtension;
+      const fromFindRevoked = parsed.findRevoked("010203")!.extensions[0] as x509.CertificatePolicyExtension;
       expect(fromFindRevoked.policies).toHaveLength(policies.length);
     });
 
@@ -244,9 +234,7 @@ describe("parse options (berOptions)", () => {
       expect(() => new x509.Pkcs10CertificateRequest(raw)).toThrow(/node count/i);
 
       const parsed = new x509.Pkcs10CertificateRequest(raw, { berOptions });
-      const ext = parsed.getExtension(
-        asn1X509.id_ce_certificatePolicies,
-      ) as x509.CertificatePolicyExtension;
+      const ext = parsed.getExtension(asn1X509.id_ce_certificatePolicies) as x509.CertificatePolicyExtension;
       expect(ext.policies).toHaveLength(policies.length);
     });
   });
@@ -322,9 +310,7 @@ describe("parse options (berOptions)", () => {
       });
 
       expect(crl.issuerName.toJSON()).toHaveLength(largeName.length);
-      expect((crl.extensions[0] as x509.CertificatePolicyExtension).policies).toHaveLength(
-        policies.length,
-      );
+      expect((crl.extensions[0] as x509.CertificatePolicyExtension).policies).toHaveLength(policies.length);
     });
 
     it("Pkcs10CertificateRequestGenerator builds a subject past the default limit", async () => {
@@ -348,9 +334,7 @@ describe("parse options (berOptions)", () => {
         maxNodes: 100000,
       }).result;
       const generalNamesRaw = new asn1js.Sequence({
-        value: [
-          new asn1js.Constructed({ idBlock: { tagClass: 3, tagNumber: 4 }, value: [nameBer] }),
-        ],
+        value: [new asn1js.Constructed({ idBlock: { tagClass: 3, tagNumber: 4 }, value: [nameBer] })],
       }).toBER();
       // the GeneralNames itself is parsed from DER, so it still takes options
       const names = new x509.GeneralNames(generalNamesRaw, { berOptions: { maxNodes: 100000 } });
@@ -368,9 +352,7 @@ describe("parse options (berOptions)", () => {
       const attr = new x509.ExtensionsAttribute([new x509.CertificatePolicyExtension(policies)]);
 
       expect(attr.items).toHaveLength(1);
-      expect((attr.items[0] as x509.CertificatePolicyExtension).policies).toHaveLength(
-        policies.length,
-      );
+      expect((attr.items[0] as x509.CertificatePolicyExtension).policies).toHaveLength(policies.length);
       expect(attr.type).toBe(id_pkcs9_at_extensionRequest);
     });
   });
@@ -382,9 +364,7 @@ describe("parse options (berOptions)", () => {
   it("CSR extensions build regardless of their order", async () => {
     const alg = { name: "ECDSA", hash: "SHA-256", namedCurve: "P-256" };
     const keys = await crypto.subtle.generateKey(alg, true, ["sign", "verify"]);
-    const large = new x509.CertificatePolicyExtension(
-      Array.from({ length: 6000 }, (_, i) => `1.2.3.4.${i}`),
-    );
+    const large = new x509.CertificatePolicyExtension(Array.from({ length: 6000 }, (_, i) => `1.2.3.4.${i}`));
     const smaller = new x509.BasicConstraintsExtension(true, 2);
 
     await x509.Pkcs10CertificateRequestGenerator.create({
@@ -462,9 +442,7 @@ describe("parse options (berOptions)", () => {
         signingKey: keys.privateKey,
       };
 
-      await expect(
-        x509.X509CertificateGenerator.create({ ...params, publicKey: spki }),
-      ).rejects.toThrow(/depth/i);
+      await expect(x509.X509CertificateGenerator.create({ ...params, publicKey: spki })).rejects.toThrow(/depth/i);
 
       // the escape hatch: parse it explicitly, under limits the caller chooses, and
       // hand the generator something already validated
@@ -474,9 +452,7 @@ describe("parse options (berOptions)", () => {
       const asn = AsnConvert.parse(cert.rawData, asn1X509.Certificate, {
         berOptions: { maxDepth: 1000 },
       });
-      expect(AsnConvert.serialize(asn.tbsCertificate.subjectPublicKeyInfo).byteLength).toBe(
-        spki.byteLength,
-      );
+      expect(AsnConvert.serialize(asn.tbsCertificate.subjectPublicKeyInfo).byteLength).toBe(spki.byteLength);
     });
 
     it("GeneralName honours the options", () => {
@@ -497,9 +473,7 @@ describe("parse options (berOptions)", () => {
         maxNodes: 100000,
       }).result;
       const raw = new asn1js.Sequence({
-        value: [
-          new asn1js.Constructed({ idBlock: { tagClass: 3, tagNumber: 4 }, value: [nameBer] }),
-        ],
+        value: [new asn1js.Constructed({ idBlock: { tagClass: 3, tagNumber: 4 }, value: [nameBer] })],
       }).toBER();
 
       expect(() => new x509.GeneralNames(raw)).toThrow(/node count/i);

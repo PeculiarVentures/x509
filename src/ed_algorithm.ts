@@ -57,9 +57,7 @@ export class EdAlgorithm implements IAlgorithm {
     return null;
   }
 
-  public toWebAlgorithm(
-    alg: AlgorithmIdentifier,
-  ): HashedAlgorithm | EcKeyGenParams | Algorithm | null {
+  public toWebAlgorithm(alg: AlgorithmIdentifier): HashedAlgorithm | EcKeyGenParams | Algorithm | null {
     switch (alg.algorithm) {
       case idEd25519:
         return { name: "Ed25519" };

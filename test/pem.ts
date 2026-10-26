@@ -40,11 +40,7 @@ describe("PEM", () => {
       },
       {
         name: "simple pem with CRLF",
-        pem: [
-          "-----BEGIN SOME-----",
-          base64_splitted.replace(/\n/g, "\r\n"),
-          "-----END SOME-----",
-        ].join("\r\n"),
+        pem: ["-----BEGIN SOME-----", base64_splitted.replace(/\n/g, "\r\n"), "-----END SOME-----"].join("\r\n"),
         want: [
           {
             type: "SOME",
@@ -172,9 +168,7 @@ describe("PEM", () => {
       },
       {
         name: "odd text before BEGIN",
-        pem: ["Some: value", "-----BEGIN SOME-----", base64_splitted, "-----END SOME-----"].join(
-          "\n",
-        ),
+        pem: ["Some: value", "-----BEGIN SOME-----", base64_splitted, "-----END SOME-----"].join("\n"),
         want: [
           {
             type: "SOME",
@@ -241,15 +235,7 @@ describe("PEM", () => {
             },
           ],
         },
-        want: [
-          "-----BEGIN SOME-----",
-          "Key1: Value1",
-          "Key2: Value2",
-          "Key1: Value3",
-          "",
-          base64_splitted,
-          "-----END SOME-----",
-        ].join("\n"),
+        want: ["-----BEGIN SOME-----", "Key1: Value1", "Key2: Value2", "Key1: Value3", "", base64_splitted, "-----END SOME-----"].join("\n"),
       },
       {
         name: "multiple PEM blocks",
@@ -271,16 +257,7 @@ describe("PEM", () => {
             },
           ],
         },
-        want: [
-          "-----BEGIN SOME1-----",
-          base64_splitted,
-          "-----END SOME1-----",
-          "-----BEGIN SOME2-----",
-          "Key1: Value1",
-          "",
-          base64_splitted,
-          "-----END SOME2-----",
-        ].join("\n"),
+        want: ["-----BEGIN SOME1-----", base64_splitted, "-----END SOME1-----", "-----BEGIN SOME2-----", "Key1: Value1", "", base64_splitted, "-----END SOME2-----"].join("\n"),
       },
       {
         name: "PEM from BufferSource",
@@ -296,14 +273,7 @@ describe("PEM", () => {
           a: [rawData, rawData],
           b: "SOME",
         },
-        want: [
-          "-----BEGIN SOME-----",
-          base64_splitted,
-          "-----END SOME-----",
-          "-----BEGIN SOME-----",
-          base64_splitted,
-          "-----END SOME-----",
-        ].join("\n"),
+        want: ["-----BEGIN SOME-----", base64_splitted, "-----END SOME-----", "-----BEGIN SOME-----", base64_splitted, "-----END SOME-----"].join("\n"),
       },
     ];
 
@@ -311,18 +281,10 @@ describe("PEM", () => {
       it(t.name, () => {
         if (t.want instanceof Error) {
           expect(() => {
-            src.PemConverter.encode.call<unknown, any[], unknown>(
-              src.PemConverter,
-              t.args.a,
-              t.args.b,
-            );
+            src.PemConverter.encode.call<unknown, any[], unknown>(src.PemConverter, t.args.a, t.args.b);
           }).toThrow(t.want);
         } else {
-          const pem = src.PemConverter.encode.call<unknown, any[], unknown>(
-            src.PemConverter,
-            t.args.a,
-            t.args.b,
-          );
+          const pem = src.PemConverter.encode.call<unknown, any[], unknown>(src.PemConverter, t.args.a, t.args.b);
           expect(pem).toBe(t.want);
         }
       });
@@ -342,11 +304,7 @@ describe("PEM", () => {
       },
       {
         name: "valid PEM with DOS line endings",
-        data: [
-          "-----BEGIN SOME-----",
-          base64_splitted.replace(/\n/g, "\r\n"),
-          "-----END SOME-----",
-        ].join("\r\n"),
+        data: ["-----BEGIN SOME-----", base64_splitted.replace(/\n/g, "\r\n"), "-----END SOME-----"].join("\r\n"),
         want: true,
       },
       {

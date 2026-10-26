@@ -117,10 +117,7 @@ describe("GeneralName", () => {
       },
       {
         name: "asn:GeneralName",
-        args: asn1Schema.AsnConvert.parse(
-          Buffer.from("8208736f6d652e636f6d", "hex"),
-          asn1X509.GeneralName,
-        ),
+        args: asn1Schema.AsnConvert.parse(Buffer.from("8208736f6d652e636f6d", "hex"), asn1X509.GeneralName),
         want: {
           type: "dns",
           value: "some.com",
@@ -231,10 +228,7 @@ describe("GeneralName", () => {
 
 describe("GeneralNames", () => {
   describe("constructor", () => {
-    const raw = Buffer.from(
-      "302ba41f301d310d300b060355040313046e616d65310c300a060355040a13036f72678208736f6d652e636f6d",
-      "hex",
-    );
+    const raw = Buffer.from("302ba41f301d310d300b060355040313046e616d65310c300a060355040a13036f72678208736f6d652e636f6d", "hex");
 
     const tests: {
       name: string;

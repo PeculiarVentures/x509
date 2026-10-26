@@ -126,13 +126,7 @@ describe("issues", () => {
     );
 
     // Test problematic serial numbers from the issue
-    const problematicSerialNumbers = [
-      "80048117884272",
-      "80284629184668",
-      "80290967596123",
-      "8070459553297620",
-      "801234",
-    ];
+    const problematicSerialNumbers = ["80048117884272", "80284629184668", "80290967596123", "8070459553297620", "801234"];
 
     for (const serialNumber of problematicSerialNumbers) {
       // This should not throw an error during certificate generation

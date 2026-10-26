@@ -267,30 +267,27 @@ describe("X509CrlGenerator", () => {
     expect(entry?.serialNumber).toBe(cert.serialNumber);
   });
 
-  it.each(["", "00", "0000"])(
-    "should keep the zero serial number %j as given",
-    async (serialNumber) => {
-      const crl = await x509.X509CrlGenerator.create({
-        issuer: "CN=Test CA",
-        thisUpdate: new Date(),
-        nextUpdate: new Date(),
-        signingAlgorithm: alg,
-        signingKey: keys.privateKey,
-        entries: [
-          {
-            serialNumber,
-            revocationDate: new Date(),
-          },
-        ],
-      });
+  it.each(["", "00", "0000"])("should keep the zero serial number %j as given", async (serialNumber) => {
+    const crl = await x509.X509CrlGenerator.create({
+      issuer: "CN=Test CA",
+      thisUpdate: new Date(),
+      nextUpdate: new Date(),
+      signingAlgorithm: alg,
+      signingKey: keys.privateKey,
+      entries: [
+        {
+          serialNumber,
+          revocationDate: new Date(),
+        },
+      ],
+    });
 
-      // The serial number must be normalized, not replaced by a random one.
-      const parsed = new x509.X509Crl(crl.rawData);
-      expect(parsed.entries.length).toBe(1);
-      expect(parsed.entries[0].serialNumber).toBe("00");
-      expect(parsed.findRevoked(serialNumber)?.serialNumber).toBe("00");
-    },
-  );
+    // The serial number must be normalized, not replaced by a random one.
+    const parsed = new x509.X509Crl(crl.rawData);
+    expect(parsed.entries.length).toBe(1);
+    expect(parsed.entries[0].serialNumber).toBe("00");
+    expect(parsed.findRevoked(serialNumber)?.serialNumber).toBe("00");
+  });
 
   it("should throw if duplicate entries with zero serial numbers", async () => {
     await expect(

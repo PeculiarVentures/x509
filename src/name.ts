@@ -1,8 +1,4 @@
-import {
-  AttributeTypeAndValue,
-  Name as AsnName,
-  RelativeDistinguishedName,
-} from "@peculiar/asn1-x509";
+import { AttributeTypeAndValue, Name as AsnName, RelativeDistinguishedName } from "@peculiar/asn1-x509";
 import { AsnConvert } from "@peculiar/asn1-schema";
 import { BufferSourceConverter, Convert } from "pvtsutils";
 import { cryptoProvider } from "./provider";
@@ -143,10 +139,7 @@ export class Name {
    *   "GUID": "1.2.3.4.5.3",
    * });
    */
-  public constructor(
-    data: BufferSource | AsnName | string | JsonNameParams,
-    extraNames: IdOrName = {},
-  ) {
+  public constructor(data: BufferSource | AsnName | string | JsonNameParams, extraNames: IdOrName = {}) {
     for (const key in extraNames) {
       if (Object.prototype.hasOwnProperty.call(extraNames, key)) {
         const value = extraNames[key];
@@ -229,9 +222,7 @@ export class Name {
       for (const attr of rdn) {
         const type = this.getName(attr.type) || attr.type;
         jsonItem[type] ??= [];
-        jsonItem[type].push(
-          attr.value.anyValue ? `#${Convert.ToHex(attr.value.anyValue)}` : attr.value.toString(),
-        );
+        jsonItem[type].push(attr.value.anyValue ? `#${Convert.ToHex(attr.value.anyValue)}` : attr.value.toString());
       }
       json.push(jsonItem);
     }
@@ -245,8 +236,7 @@ export class Name {
    */
   private fromString(data: string) {
     const asn = new AsnName();
-    const regex =
-      /(\d\.[\d.]*\d|[A-Za-z]+)=((?:"")|(?:".*?[^\\]")|(?:[^,+"\\](?=[,+]|$))|(?:[^,+].*?(?:[^\\][,+]))|(?:))([,+])?/g;
+    const regex = /(\d\.[\d.]*\d|[A-Za-z]+)=((?:"")|(?:".*?[^\\]")|(?:[^,+"\\](?=[,+]|$))|(?:[^,+].*?(?:[^\\][,+]))|(?:))([,+])?/g;
     let matches: RegExpExecArray | null = null;
     let level = ",";
 
@@ -320,10 +310,7 @@ export class Name {
    * @param value The value
    * @returns The AttributeTypeAndValue object
    */
-  private createAttribute(
-    type: string,
-    value: string | JsonAttributeObject,
-  ): AttributeTypeAndValue {
+  private createAttribute(type: string, value: string | JsonAttributeObject): AttributeTypeAndValue {
     const attr = new AttributeTypeAndValue({ type });
 
     if (typeof value === "object") {
@@ -399,10 +386,7 @@ export class Name {
    * @param algorithm Hash algorithm
    * @param crypto Crypto provider. Default is from CryptoProvider
    */
-  public async getThumbprint(
-    algorithm: globalThis.AlgorithmIdentifier,
-    crypto?: Crypto,
-  ): Promise<ArrayBuffer>;
+  public async getThumbprint(algorithm: globalThis.AlgorithmIdentifier, crypto?: Crypto): Promise<ArrayBuffer>;
   public async getThumbprint(arg1?: Crypto | globalThis.AlgorithmIdentifier, arg2?: Crypto) {
     let crypto: Crypto | undefined;
     let algorithm: globalThis.AlgorithmIdentifier = "SHA-1";

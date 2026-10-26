@@ -133,12 +133,9 @@ describe("Name", () => {
     });
 
     it("parse quoted value", () => {
-      const text =
-        'CN="here is a test message with \\",\\" character"+CN=It includes \\< \\> \\+ escaped characters\\ ';
+      const text = 'CN="here is a test message with \\",\\" character"+CN=It includes \\< \\> \\+ escaped characters\\ ';
       const name = new x509.Name(text);
-      expect(name.toString()).toBe(
-        'CN=here is a test message with \\"\\,\\" character+CN=It includes \\< \\> \\+ escaped characters\\ ',
-      );
+      expect(name.toString()).toBe('CN=here is a test message with \\"\\,\\" character+CN=It includes \\< \\> \\+ escaped characters\\ ');
     });
   });
 
@@ -168,18 +165,14 @@ describe("Name", () => {
   });
 
   it("parse with odd , marks", () => {
-    const text =
-      '  ,  , ,  CN=Some Name, O=Peculiar Ventures\\, LLC, O="Peculiar Ventures, LLC", CN=name2+O=Test+CN=name3+E=some@email.com, 1.2.3.4.5=#04020102+DC=some.com,, , ';
+    const text = '  ,  , ,  CN=Some Name, O=Peculiar Ventures\\, LLC, O="Peculiar Ventures, LLC", CN=name2+O=Test+CN=name3+E=some@email.com, 1.2.3.4.5=#04020102+DC=some.com,, , ';
     const name = new x509.Name(text);
 
-    expect(name.toString()).toBe(
-      "CN=Some Name, O=Peculiar Ventures\\, LLC, O=Peculiar Ventures\\, LLC, CN=name2+O=Test+CN=name3+E=some@email.com, 1.2.3.4.5=#04020102+DC=some.com",
-    );
+    expect(name.toString()).toBe("CN=Some Name, O=Peculiar Ventures\\, LLC, O=Peculiar Ventures\\, LLC, CN=name2+O=Test+CN=name3+E=some@email.com, 1.2.3.4.5=#04020102+DC=some.com");
   });
 
   it("extra names", () => {
-    const text =
-      "Email=some@email.com, IP=192.168.0.1, GUID={8ee13e53-2c1c-42bb-8df7-39927c0bdbb6}";
+    const text = "Email=some@email.com, IP=192.168.0.1, GUID={8ee13e53-2c1c-42bb-8df7-39927c0bdbb6}";
     const name = new x509.Name(text, {
       Email: "1.2.3.4.5.1",
       IP: "1.2.3.4.5.2",
@@ -189,11 +182,7 @@ describe("Name", () => {
     expect(Convert.ToHex(name.toArrayBuffer())).toBe(
       "30663119301706052a030405010c0e736f6d6540656d61696c2e636f6d3116301406052a03040502130b3139322e3136382e302e313131302f06052a030405030c267b38656531336535332d326331632d343262622d386466372d3339393237633062646262367d",
     );
-    expect(name.toJSON()).toEqual([
-      { Email: ["some@email.com"] },
-      { IP: ["192.168.0.1"] },
-      { GUID: ["{8ee13e53-2c1c-42bb-8df7-39927c0bdbb6}"] },
-    ]);
+    expect(name.toJSON()).toEqual([{ Email: ["some@email.com"] }, { IP: ["192.168.0.1"] }, { GUID: ["{8ee13e53-2c1c-42bb-8df7-39927c0bdbb6}"] }]);
   });
 
   it("use Utf8String for Common name", () => {
@@ -209,9 +198,7 @@ describe("Name", () => {
     const name = new x509.Name(asn1Schema.AsnConvert.serialize(asnName));
     expect(name.toString()).toBe("CN=Some name");
 
-    expect(Convert.ToHex(name.toArrayBuffer())).toBe(
-      "30143112301006035504030c09536f6d65206e616d65",
-    );
+    expect(Convert.ToHex(name.toArrayBuffer())).toBe("30143112301006035504030c09536f6d65206e616d65");
   });
 
   describe("get thumbprint", () => {
@@ -224,9 +211,7 @@ describe("Name", () => {
     it("SHA-256", async () => {
       const name = new x509.Name("CN=Some");
       const hash = await name.getThumbprint("SHA-256");
-      expect(Convert.ToHex(hash)).toBe(
-        "38e29244d77fb9f2735d034aba8a6ecaf5070f5fe18efb050424f96cecb0db03",
-      );
+      expect(Convert.ToHex(hash)).toBe("38e29244d77fb9f2735d034aba8a6ecaf5070f5fe18efb050424f96cecb0db03");
     });
   });
 
@@ -272,16 +257,12 @@ describe("Name", () => {
     it("CN is ASCII", () => {
       const name = new x509.Name("CN=Some");
       expect(name.toString()).toBe("CN=Some");
-      expect(Buffer.from(name.toArrayBuffer()).toString("hex")).toBe(
-        "300f310d300b06035504031304536f6d65",
-      );
+      expect(Buffer.from(name.toArrayBuffer()).toString("hex")).toBe("300f310d300b06035504031304536f6d65");
     });
     it("CN is UTF8", () => {
       const name = new x509.Name("CN=Привет");
       expect(name.toString()).toBe("CN=Привет");
-      expect(Buffer.from(name.toArrayBuffer()).toString("hex")).toBe(
-        "30173115301306035504030c0cd09fd180d0b8d0b2d0b5d182",
-      );
+      expect(Buffer.from(name.toArrayBuffer()).toString("hex")).toBe("30173115301306035504030c0cd09fd180d0b8d0b2d0b5d182");
     });
   });
 
@@ -289,16 +270,12 @@ describe("Name", () => {
     it("CN is ASCII", () => {
       const name = new x509.Name([{ CN: ["Some"] }]);
       expect(name.toString()).toBe("CN=Some");
-      expect(Buffer.from(name.toArrayBuffer()).toString("hex")).toBe(
-        "300f310d300b06035504031304536f6d65",
-      );
+      expect(Buffer.from(name.toArrayBuffer()).toString("hex")).toBe("300f310d300b06035504031304536f6d65");
     });
     it("CN is UTF8", () => {
       const name = new x509.Name([{ CN: ["Привет"] }]);
       expect(name.toString()).toBe("CN=Привет");
-      expect(Buffer.from(name.toArrayBuffer()).toString("hex")).toBe(
-        "30173115301306035504030c0cd09fd180d0b8d0b2d0b5d182",
-      );
+      expect(Buffer.from(name.toArrayBuffer()).toString("hex")).toBe("30173115301306035504030c0cd09fd180d0b8d0b2d0b5d182");
     });
   });
 });

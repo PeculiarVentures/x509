@@ -1,8 +1,5 @@
 import { AsnConvert } from "@peculiar/asn1-schema";
-import {
-  BasicConstraints as AsnBasicConstraints,
-  id_ce_basicConstraints,
-} from "@peculiar/asn1-x509";
+import { BasicConstraints as AsnBasicConstraints, id_ce_basicConstraints } from "@peculiar/asn1-x509";
 import { BufferSourceConverter } from "pvtsutils";
 import { Extension } from "../extension";
 import { TextObject } from "../text_converter";

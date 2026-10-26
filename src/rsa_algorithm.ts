@@ -46,12 +46,7 @@ export class RsaAlgorithm implements IAlgorithm {
           let hash: string;
           if (typeof alg.hash === "string") {
             hash = alg.hash;
-          } else if (
-            alg.hash &&
-            typeof alg.hash === "object" &&
-            "name" in alg.hash &&
-            typeof alg.hash.name === "string"
-          ) {
+          } else if (alg.hash && typeof alg.hash === "object" && "name" in alg.hash && typeof alg.hash.name === "string") {
             hash = alg.hash.name.toUpperCase();
           } else {
             throw new Error("Cannot get hash algorithm name");

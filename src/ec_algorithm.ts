@@ -190,9 +190,7 @@ export class EcAlgorithm implements IAlgorithm {
           if (parameters) {
             return new AlgorithmIdentifier({
               algorithm: asn1Ecc.id_ecPublicKey,
-              parameters: AsnConvert.serialize(
-                new asn1Ecc.ECParameters({ namedCurve: parameters }),
-              ),
+              parameters: AsnConvert.serialize(new asn1Ecc.ECParameters({ namedCurve: parameters })),
             });
           }
         }

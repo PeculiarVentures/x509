@@ -1,13 +1,6 @@
 import { describe, it, expect, beforeAll } from "vitest";
 import { Crypto } from "@peculiar/webcrypto";
-import {
-  AuthorityInfoAccessExtension,
-  AuthorityKeyIdentifierExtension,
-  CRLDistributionPointsExtension,
-  CertificateIdentifier,
-  IssuerAlternativeNameExtension,
-  JsonGeneralNames,
-} from "../src";
+import { AuthorityInfoAccessExtension, AuthorityKeyIdentifierExtension, CRLDistributionPointsExtension, CertificateIdentifier, IssuerAlternativeNameExtension, JsonGeneralNames } from "../src";
 import { PublicKey } from "../src/public_key";
 
 describe("Extensions", () => {
@@ -16,14 +9,8 @@ describe("Extensions", () => {
       it("should create an instance from an array of URLs", () => {
         const urls = ["http://example.com"];
         const ext = new CRLDistributionPointsExtension(urls);
-        expect(ext.toString("text")).toBe(
-          ["CRL Distribution Points:", "  Distribution Point:", "    URL: http://example.com"].join(
-            "\n",
-          ),
-        );
-        expect(ext.toString("hex")).toBe(
-          "30230603551d1f041c301a3018a016a0148612687474703a2f2f6578616d706c652e636f6d",
-        );
+        expect(ext.toString("text")).toBe(["CRL Distribution Points:", "  Distribution Point:", "    URL: http://example.com"].join("\n"));
+        expect(ext.toString("hex")).toBe("30230603551d1f041c301a3018a016a0148612687474703a2f2f6578616d706c652e636f6d");
       });
     });
   });
@@ -69,11 +56,7 @@ describe("Extensions", () => {
     it("should parse", () => {
       const ext = new AuthorityInfoAccessExtension(raw);
       expect(ext.toString("text")).toBe(
-        [
-          "Authority Info Access:",
-          "  OCSP: http://ocsp.digicert.com",
-          "  CA Issuers: http://cacerts.digicert.com/GeoTrustGlobalTLSRSA4096SHA2562022CA1.crt",
-        ].join("\n"),
+        ["Authority Info Access:", "  OCSP: http://ocsp.digicert.com", "  CA Issuers: http://cacerts.digicert.com/GeoTrustGlobalTLSRSA4096SHA2562022CA1.crt"].join("\n"),
       );
     });
 
@@ -90,10 +73,7 @@ describe("Extensions", () => {
     it("should create with multiple values and check text", () => {
       const ext = new AuthorityInfoAccessExtension({
         ocsp: ["http://ocsp.digicert.com", "http://ocsp2.digicert.com"],
-        caIssuers: [
-          "http://cacerts.digicert.com/GeoTrustGlobalTLSRSA4096SHA2562022CA1.crt",
-          "http://cacerts2.digicert.com/GeoTrustGlobalTLSRSA4096SHA2562022CA2.crt",
-        ],
+        caIssuers: ["http://cacerts.digicert.com/GeoTrustGlobalTLSRSA4096SHA2562022CA1.crt", "http://cacerts2.digicert.com/GeoTrustGlobalTLSRSA4096SHA2562022CA2.crt"],
         caRepository: ["http://crls.digicert.com/GeoTrustGlobalTLSRSA4096SHA2562022CA1.crl"],
         timeStamping: ["http://tsa.digicert.com/GeoTrustGlobalTLSRSA4096SHA2562022CA1"],
       });

@@ -19,10 +19,7 @@ import { TextConverter, TextObject } from "./text_converter";
 /**
  * Representation of PKCS10 Certificate Request
  */
-export class Pkcs10CertificateRequest
-  extends PemData<CertificationRequest>
-  implements IPublicKeyContainer
-{
+export class Pkcs10CertificateRequest extends PemData<CertificationRequest> implements IPublicKeyContainer {
   public static override NAME = "PKCS#10 Certificate Request";
 
   protected readonly tag;
@@ -95,9 +92,7 @@ export class Pkcs10CertificateRequest
   public get signatureAlgorithm(): HashedAlgorithm {
     if (!this.#signatureAlgorithm) {
       const algProv = container.resolve<AlgorithmProvider>(diAlgorithmProvider);
-      this.#signatureAlgorithm = algProv.toWebAlgorithm(
-        this.asn.signatureAlgorithm,
-      ) as HashedAlgorithm;
+      this.#signatureAlgorithm = algProv.toWebAlgorithm(this.asn.signatureAlgorithm) as HashedAlgorithm;
     }
 
     return this.#signatureAlgorithm;
@@ -119,10 +114,7 @@ export class Pkcs10CertificateRequest
    */
   public get publicKey(): PublicKey {
     if (!this.#publicKey) {
-      this.#publicKey = new PublicKey(
-        this.asn.certificationRequestInfo.subjectPKInfo,
-        this.parseOptions,
-      );
+      this.#publicKey = new PublicKey(this.asn.certificationRequestInfo.subjectPKInfo, this.parseOptions);
     }
 
     return this.#publicKey;
@@ -133,9 +125,7 @@ export class Pkcs10CertificateRequest
    */
   public get attributes(): Attribute[] {
     if (!this.#attributes) {
-      this.#attributes = this.asn.certificationRequestInfo.attributes.map((o) =>
-        AttributeFactory.create(AsnConvert.serialize(o), this.parseOptions),
-      );
+      this.#attributes = this.asn.certificationRequestInfo.attributes.map((o) => AttributeFactory.create(AsnConvert.serialize(o), this.parseOptions));
     }
 
     return this.#attributes;
@@ -161,9 +151,7 @@ export class Pkcs10CertificateRequest
    */
   private get tbs(): ArrayBuffer {
     if (!this.#tbs) {
-      this.#tbs =
-        this.asn.certificationRequestInfoRaw ||
-        AsnConvert.serialize(this.asn.certificationRequestInfo);
+      this.#tbs = this.asn.certificationRequestInfoRaw || AsnConvert.serialize(this.asn.certificationRequestInfo);
     }
 
     return this.#tbs;
@@ -182,9 +170,7 @@ export class Pkcs10CertificateRequest
    */
   public constructor(asn: CertificationRequest, options?: ParseOptions);
   public constructor(param: AsnEncodedType | CertificationRequest, options?: ParseOptions) {
-    const args = PemData.isAsnEncoded(param)
-      ? [param, CertificationRequest, options]
-      : [param, options];
+    const args = PemData.isAsnEncoded(param) ? [param, CertificationRequest, options] : [param, options];
     super(args[0] as any, args[1] as any, args[2] as any);
     this.tag = PemConverter.CertificateRequestTag;
   }
@@ -251,9 +237,7 @@ export class Pkcs10CertificateRequest
     const publicKey = await this.publicKey.export(algorithm, ["verify"], crypto);
 
     // Convert ASN.1 signature to WebCrypto format
-    const signatureFormatters = container
-      .resolveAll<IAsnSignatureFormatter>(diAsnSignatureFormatter)
-      .reverse();
+    const signatureFormatters = container.resolveAll<IAsnSignatureFormatter>(diAsnSignatureFormatter).reverse();
     let signature: ArrayBuffer | null = null;
     for (const signatureFormatter of signatureFormatters) {
       signature = signatureFormatter.toWebSignature(algorithm, this.signature);

@@ -72,24 +72,16 @@ export class X509CrlGenerator {
     }
 
     if (params.extensions && params.extensions.length) {
-      asnX509Crl.tbsCertList.crlExtensions = new asn1X509.Extensions(
-        params.extensions.map((o) =>
-          AsnConvert.parse(o.rawData, asn1X509.Extension, selfProducedParseOptions),
-        ) || [],
-      );
+      asnX509Crl.tbsCertList.crlExtensions = new asn1X509.Extensions(params.extensions.map((o) => AsnConvert.parse(o.rawData, asn1X509.Extension, selfProducedParseOptions)) || []);
     }
 
     if (params.entries && params.entries.length) {
       asnX509Crl.tbsCertList.revokedCertificates = [];
       for (const entry of params.entries) {
         const userCertificate = normalizeCertificateSerialNumber(entry.serialNumber);
-        const index = asnX509Crl.tbsCertList.revokedCertificates.findIndex((cert) =>
-          isEqual(cert.userCertificate, userCertificate),
-        );
+        const index = asnX509Crl.tbsCertList.revokedCertificates.findIndex((cert) => isEqual(cert.userCertificate, userCertificate));
         if (index > -1) {
-          throw new Error(
-            `Certificate serial number ${entry.serialNumber} already exists in tbsCertList`,
-          );
+          throw new Error(`Certificate serial number ${entry.serialNumber} already exists in tbsCertList`);
         }
 
         const revokedCert = new RevokedCertificate({
@@ -98,9 +90,7 @@ export class X509CrlGenerator {
         });
 
         if ("extensions" in entry && entry.extensions?.length) {
-          revokedCert.crlEntryExtensions = entry.extensions.map((o) =>
-            AsnConvert.parse(o.rawData, asn1X509.Extension, selfProducedParseOptions),
-          );
+          revokedCert.crlEntryExtensions = entry.extensions.map((o) => AsnConvert.parse(o.rawData, asn1X509.Extension, selfProducedParseOptions));
         } else {
           revokedCert.crlEntryExtensions = [];
         }
@@ -111,11 +101,7 @@ export class X509CrlGenerator {
               new asn1X509.Extension({
                 extnID: asn1X509.id_ce_cRLReasons,
                 critical: false,
-                extnValue: new OctetString(
-                  AsnConvert.serialize(
-                    new asn1X509.CRLReason(entry.reason as unknown as CRLReasons),
-                  ),
-                ),
+                extnValue: new OctetString(AsnConvert.serialize(new asn1X509.CRLReason(entry.reason as unknown as CRLReasons))),
               }),
             );
           }
@@ -125,9 +111,7 @@ export class X509CrlGenerator {
               new asn1X509.Extension({
                 extnID: asn1X509.id_ce_invalidityDate,
                 critical: false,
-                extnValue: new OctetString(
-                  AsnConvert.serialize(new asn1X509.InvalidityDate(entry.invalidity)),
-                ),
+                extnValue: new OctetString(AsnConvert.serialize(new asn1X509.InvalidityDate(entry.invalidity))),
               }),
             );
           }
@@ -139,11 +123,7 @@ export class X509CrlGenerator {
               new asn1X509.Extension({
                 extnID: asn1X509.id_ce_certificateIssuer,
                 critical: false,
-                extnValue: new OctetString(
-                  AsnConvert.serialize(
-                    AsnConvert.parse(name.toArrayBuffer(), asn1X509.Name, selfProducedParseOptions),
-                  ),
-                ),
+                extnValue: new OctetString(AsnConvert.serialize(AsnConvert.parse(name.toArrayBuffer(), asn1X509.Name, selfProducedParseOptions))),
               }),
             );
           }
@@ -159,17 +139,14 @@ export class X509CrlGenerator {
       ...params.signingKey.algorithm,
     } as HashedAlgorithm;
     const algProv = container.resolve<AlgorithmProvider>(diAlgorithmProvider);
-    asnX509Crl.tbsCertList.signature = asnX509Crl.signatureAlgorithm =
-      algProv.toAsnAlgorithm(signingAlgorithm);
+    asnX509Crl.tbsCertList.signature = asnX509Crl.signatureAlgorithm = algProv.toAsnAlgorithm(signingAlgorithm);
 
     // Sign
     const tbs = AsnConvert.serialize(asnX509Crl.tbsCertList);
     const signature = await crypto.subtle.sign(signingAlgorithm, params.signingKey, tbs);
 
     // Convert WebCrypto signature to ASN.1 format
-    const signatureFormatters = container
-      .resolveAll<IAsnSignatureFormatter>(diAsnSignatureFormatter)
-      .reverse();
+    const signatureFormatters = container.resolveAll<IAsnSignatureFormatter>(diAsnSignatureFormatter).reverse();
     let asnSignature: ArrayBuffer | null = null;
     for (const signatureFormatter of signatureFormatters) {
       asnSignature = signatureFormatter.toAsnSignature(signingAlgorithm, signature);

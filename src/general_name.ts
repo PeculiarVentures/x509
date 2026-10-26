@@ -30,15 +30,7 @@ export const GUID = "guid";
 export const UPN = "upn";
 export const REGISTERED_ID = "id";
 
-export type GeneralNameType =
-  | typeof DNS
-  | typeof DN
-  | typeof EMAIL
-  | typeof GUID
-  | typeof IP
-  | typeof URL
-  | typeof UPN
-  | typeof REGISTERED_ID;
+export type GeneralNameType = typeof DNS | typeof DN | typeof EMAIL | typeof GUID | typeof IP | typeof URL | typeof UPN | typeof REGISTERED_ID;
 
 /**
  * Represents ASN.1 type of GeneralName.
@@ -183,11 +175,7 @@ export class GeneralName extends AsnData<asn1X509.GeneralName> {
           .join("-");
       } else if (asn.otherName.typeId === id_UPN) {
         this.type = UPN;
-        this.value = AsnConvert.parse(
-          asn.otherName.value,
-          asn1X509.DirectoryString,
-          this.parseOptions,
-        ).toString();
+        this.value = AsnConvert.parse(asn.otherName.value, asn1X509.DirectoryString, this.parseOptions).toString();
       } else {
         throw new Error(ERR_GN_STRING_FORMAT);
       }
@@ -246,10 +234,7 @@ export class GeneralNames extends AsnData<asn1X509.GeneralNames> {
    * @param options Optional ASN.1 parse options (e.g. `asn1js.fromBER` resource limits)
    */
   constructor(raw: BufferSource, options?: ParseOptions);
-  constructor(
-    params: JsonGeneralNames | asn1X509.GeneralNames | asn1X509.GeneralName[] | BufferSource,
-    options?: ParseOptions,
-  ) {
+  constructor(params: JsonGeneralNames | asn1X509.GeneralNames | asn1X509.GeneralName[] | BufferSource, options?: ParseOptions) {
     let names: asn1X509.GeneralNames;
     // Only the raw overload takes DER from the caller; the others are built here
     let stored = selfProducedParseOptions;
@@ -264,11 +249,7 @@ export class GeneralNames extends AsnData<asn1X509.GeneralNames> {
         if (name instanceof asn1X509.GeneralName) {
           items.push(name);
         } else {
-          const asnName = AsnConvert.parse(
-            new GeneralName(name.type, name.value).rawData,
-            asn1X509.GeneralName,
-            selfProducedParseOptions,
-          );
+          const asnName = AsnConvert.parse(new GeneralName(name.type, name.value).rawData, asn1X509.GeneralName, selfProducedParseOptions);
           items.push(asnName);
         }
       }
