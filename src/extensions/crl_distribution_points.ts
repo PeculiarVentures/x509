@@ -1,6 +1,6 @@
 import { AsnConvert } from "@peculiar/asn1-schema";
 import * as asn1X509 from "@peculiar/asn1-x509";
-import { BufferSourceConverter } from "pvtsutils";
+import { isBufferSource } from "@peculiar/utils";
 import { Extension } from "../extension";
 import { TextObject } from "../text_converter";
 import { GeneralName } from "../general_name";
@@ -33,7 +33,7 @@ export class CRLDistributionPointsExtension extends Extension {
    */
   public constructor(urls: string[], critical?: boolean);
   public constructor(...args: any[]) {
-    if (BufferSourceConverter.isBufferSource(args[0])) {
+    if (isBufferSource(args[0])) {
       super(args[0] as BufferSource, args[1] as ParseOptions | undefined);
     } else if (Array.isArray(args[0]) && typeof args[0][0] === "string") {
       const urls = args[0] as string[];

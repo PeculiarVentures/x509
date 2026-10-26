@@ -1,4 +1,4 @@
-import { BufferSourceConverter } from "pvtsutils";
+import { toArrayBuffer } from "@peculiar/utils";
 
 /**
  * Dependency injection identifier for `IAsnSignatureFormatter` interface
@@ -33,10 +33,10 @@ export interface IAsnSignatureFormatter {
 
 export class AsnDefaultSignatureFormatter implements IAsnSignatureFormatter {
   toAsnSignature(algorithm: Algorithm, signature: BufferSource): ArrayBuffer | null {
-    return BufferSourceConverter.toArrayBuffer(signature);
+    return toArrayBuffer(signature);
   }
 
   toWebSignature(algorithm: Algorithm, signature: BufferSource): ArrayBuffer | null {
-    return BufferSourceConverter.toArrayBuffer(signature);
+    return toArrayBuffer(signature);
   }
 }

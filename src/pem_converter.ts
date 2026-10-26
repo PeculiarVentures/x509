@@ -1,4 +1,4 @@
-import { BufferSourceConverter, Convert } from "pvtsutils";
+import { base64, isBufferSource, toArrayBuffer } from "@peculiar/utils";
 
 const rPaddingTag = "-{5}";
 const rEolChars = "\\n";
@@ -65,12 +65,12 @@ export class PemConverter {
     // eslint-disable-next-line no-cond-assign
     while ((matches = pattern.exec(pem))) {
       // prepare pem encoded message
-      const base64 = matches[3].replace(rEolPattern, "");
+      const base64Text = matches[3].replace(rEolPattern, "");
 
       const pemStruct: PemStruct = {
         type: matches[1],
         headers: [],
-        rawData: Convert.FromBase64(base64),
+        rawData: toArrayBuffer(base64.decode(base64Text)),
       };
 
       // read headers
@@ -157,13 +157,13 @@ export class PemConverter {
       if (tag) {
         // encode BufferSource[]
         rawData.forEach((element) => {
-          if (!BufferSourceConverter.isBufferSource(element)) {
+          if (!isBufferSource(element)) {
             throw new TypeError("Cannot encode array of BufferSource in PEM format. Not all items of the array are BufferSource");
           }
           raws.push(
             this.encodeStruct({
               type: tag,
-              rawData: BufferSourceConverter.toArrayBuffer(element),
+              rawData: toArrayBuffer(element),
             }),
           );
         });
@@ -185,7 +185,7 @@ export class PemConverter {
 
       return this.encodeStruct({
         type: tag,
-        rawData: BufferSourceConverter.toArrayBuffer(rawData),
+        rawData: toArrayBuffer(rawData),
       });
     }
   }
@@ -209,9 +209,9 @@ export class PemConverter {
       res.push(""); // blank line
     }
 
-    const base64 = Convert.ToBase64(pem.rawData);
-    for (let i = 0; i < base64.length; i += 64) {
-      res.push(base64.substring(i, i + 64));
+    const base64Text = base64.encode(pem.rawData);
+    for (let i = 0; i < base64Text.length; i += 64) {
+      res.push(base64Text.substring(i, i + 64));
     }
 
     res.push(`-----END ${upperCaseType}-----`);

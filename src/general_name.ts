@@ -1,6 +1,7 @@
 import { AsnConvert, AsnUtf8StringConverter, OctetString } from "@peculiar/asn1-schema";
 import * as asn1X509 from "@peculiar/asn1-x509";
-import { BufferSourceConverter, Convert } from "pvtsutils";
+import { hex, isBufferSource } from "@peculiar/utils";
+import { hexOptions } from "./utils";
 import { AsnData } from "./asn_data";
 import { Name } from "./name";
 import { OidSerializer, TextObject } from "./text_converter";
@@ -56,7 +57,7 @@ export class GeneralName extends AsnData<asn1X509.GeneralName> {
     let options: ParseOptions | undefined;
     // NOTE: the BufferSource check comes first because `new GeneralName(raw, options)`
     // also has two arguments and must not fall into the `(type, value)` branch
-    if (BufferSourceConverter.isBufferSource(args[0])) {
+    if (isBufferSource(args[0])) {
       // raw: BufferSource, options?: ParseOptions
       options = args[1];
       name = AsnConvert.parse(args[0], asn1X509.GeneralName, options);
@@ -81,11 +82,11 @@ export class GeneralName extends AsnData<asn1X509.GeneralName> {
           if (!matches) {
             throw new Error("Cannot parse GUID value. Value doesn't match to regular expression");
           }
-          const hex = matches
+          const guidHex = matches
             .slice(1)
             .map((o, i) => {
               if (i < 3) {
-                return Convert.ToHex(new Uint8Array(Convert.FromHex(o)).reverse());
+                return hex.encode(new Uint8Array(hex.decode(o, hexOptions)).reverse());
               }
 
               return o;
@@ -95,7 +96,7 @@ export class GeneralName extends AsnData<asn1X509.GeneralName> {
           name = new asn1X509.GeneralName({
             otherName: new asn1X509.OtherName({
               typeId: id_GUID,
-              value: AsnConvert.serialize(new OctetString(Convert.FromHex(hex))),
+              value: AsnConvert.serialize(new OctetString(hex.decode(guidHex, hexOptions))),
             }),
           });
           break;
@@ -159,7 +160,7 @@ export class GeneralName extends AsnData<asn1X509.GeneralName> {
       if (asn.otherName.typeId === id_GUID) {
         this.type = GUID;
         const guid = AsnConvert.parse(asn.otherName.value, OctetString, this.parseOptions);
-        const matches = new RegExp(GUID_REGEX, "i").exec(Convert.ToHex(guid));
+        const matches = new RegExp(GUID_REGEX, "i").exec(hex.encode(guid));
         if (!matches) {
           throw new Error(ERR_GUID);
         }
@@ -167,7 +168,7 @@ export class GeneralName extends AsnData<asn1X509.GeneralName> {
           .slice(1)
           .map((o, i) => {
             if (i < 3) {
-              return Convert.ToHex(new Uint8Array(Convert.FromHex(o)).reverse());
+              return hex.encode(new Uint8Array(hex.decode(o, hexOptions)).reverse());
             }
 
             return o;
@@ -255,7 +256,7 @@ export class GeneralNames extends AsnData<asn1X509.GeneralNames> {
       }
 
       names = new asn1X509.GeneralNames(items);
-    } else if (BufferSourceConverter.isBufferSource(params)) {
+    } else if (isBufferSource(params)) {
       names = AsnConvert.parse(params, asn1X509.GeneralNames, options);
       stored = options ?? {};
     } else {

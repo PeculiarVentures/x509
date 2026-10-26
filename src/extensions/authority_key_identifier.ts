@@ -1,6 +1,7 @@
 import { AsnConvert } from "@peculiar/asn1-schema";
 import * as asn1X509 from "@peculiar/asn1-x509";
-import { BufferSourceConverter, Convert } from "pvtsutils";
+import { hex, isBufferSource, toArrayBuffer } from "@peculiar/utils";
+import { hexOptions } from "../utils";
 import { Extension } from "../extension";
 import { GeneralNames } from "../general_name";
 import { cryptoProvider } from "../provider";
@@ -48,7 +49,7 @@ export class AuthorityKeyIdentifierExtension extends Extension {
     const key = await PublicKey.create(param, crypto);
     const id = await key.getKeyIdentifier(crypto);
 
-    return new AuthorityKeyIdentifierExtension(Convert.ToHex(id), critical);
+    return new AuthorityKeyIdentifierExtension(hex.encode(id), critical);
   }
 
   /**
@@ -80,11 +81,11 @@ export class AuthorityKeyIdentifierExtension extends Extension {
    */
   public constructor(id: CertificateIdentifier, critical?: boolean);
   public constructor(...args: any[]) {
-    if (BufferSourceConverter.isBufferSource(args[0])) {
+    if (isBufferSource(args[0])) {
       super(args[0] as BufferSource, args[1] as ParseOptions | undefined);
     } else if (typeof args[0] === "string") {
       const value = new asn1X509.AuthorityKeyIdentifier({
-        keyIdentifier: new asn1X509.KeyIdentifier(Convert.FromHex(args[0])),
+        keyIdentifier: new asn1X509.KeyIdentifier(hex.decode(args[0], hexOptions)),
       });
       super(asn1X509.id_ce_authorityKeyIdentifier, args[1], AsnConvert.serialize(value));
     } else {
@@ -96,7 +97,7 @@ export class AuthorityKeyIdentifierExtension extends Extension {
           : certId.name;
       const value = new asn1X509.AuthorityKeyIdentifier({
         authorityCertIssuer: certIdName,
-        authorityCertSerialNumber: Convert.FromHex(certId.serialNumber),
+        authorityCertSerialNumber: toArrayBuffer(hex.decode(certId.serialNumber, hexOptions)),
       });
       super(asn1X509.id_ce_authorityKeyIdentifier, args[1], AsnConvert.serialize(value));
     }
@@ -107,13 +108,13 @@ export class AuthorityKeyIdentifierExtension extends Extension {
 
     const aki = AsnConvert.parse(asn.extnValue, asn1X509.AuthorityKeyIdentifier, this.parseOptions);
     if (aki.keyIdentifier) {
-      this.keyId = Convert.ToHex(aki.keyIdentifier);
+      this.keyId = hex.encode(aki.keyIdentifier);
     }
 
     if (aki.authorityCertIssuer || aki.authorityCertSerialNumber) {
       this.certId = {
         name: aki.authorityCertIssuer || [],
-        serialNumber: aki.authorityCertSerialNumber ? Convert.ToHex(aki.authorityCertSerialNumber) : "",
+        serialNumber: aki.authorityCertSerialNumber ? hex.encode(aki.authorityCertSerialNumber) : "",
       };
     }
   }

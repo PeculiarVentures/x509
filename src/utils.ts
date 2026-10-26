@@ -1,6 +1,16 @@
-import { BufferSourceConverter, Convert } from "pvtsutils";
+import { hex, toUint8Array } from "@peculiar/utils";
 import { cryptoProvider } from "./provider";
 import type { ParseOptions } from "./types";
+
+/**
+ * Hex text as `pvtsutils` 1.x read it: spaces, tabs and line breaks are ignored, an odd number of
+ * digits gets a leading zero, and `0x` prefixes or other separators are rejected.
+ */
+export const hexOptions: hex.HexDecodeOptions = {
+  allowPrefix: false,
+  allowOddLength: true,
+  separators: [" ", "\t", "\n", "\r"],
+};
 
 /**
  * Parse options for DER this library produced itself.
@@ -65,7 +75,7 @@ function toPositiveIntegerOctets(input: Uint8Array): ArrayBuffer {
  * @returns Serial number as ArrayBuffer
  */
 export function normalizeCertificateSerialNumber(input: string | undefined): ArrayBuffer {
-  return toPositiveIntegerOctets(BufferSourceConverter.toUint8Array(Convert.FromHex(input || "")));
+  return toPositiveIntegerOctets(toUint8Array(hex.decode(input || "", hexOptions)));
 }
 
 /**
@@ -83,7 +93,7 @@ export function normalizeCertificateSerialNumber(input: string | undefined): Arr
  * @returns RFC 5280 compliant serial number as ArrayBuffer
  */
 export function generateCertificateSerialNumber(input: string | undefined, crypto = cryptoProvider.get()): ArrayBuffer {
-  const inputView = BufferSourceConverter.toUint8Array(Convert.FromHex(input || ""));
+  const inputView = toUint8Array(hex.decode(input || "", hexOptions));
   const serialNumber = inputView.length && inputView.some((o) => o > 0) ? inputView : crypto.getRandomValues(new Uint8Array(16));
 
   return toPositiveIntegerOctets(serialNumber);
@@ -100,11 +110,11 @@ export function generateCertificateSerialNumber(input: string | undefined, crypt
  * @returns Hexadecimal string of the serial number, without sign padding
  */
 export function getCertificateSerialNumber(raw: BufferSource): string {
-  let serialNumber = BufferSourceConverter.toUint8Array(raw);
+  let serialNumber = toUint8Array(raw);
   if (serialNumber.length > 1 && serialNumber[0] === 0x00 && serialNumber[1] > 0x7f) {
     // Remove the leading zero that was added to make negative numbers positive
     serialNumber = serialNumber.slice(1);
   }
 
-  return Convert.ToHex(serialNumber);
+  return hex.encode(serialNumber);
 }

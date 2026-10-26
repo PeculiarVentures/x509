@@ -1,6 +1,6 @@
 import { AsnConvert } from "@peculiar/asn1-schema";
 import { Attribute as AsnAttribute } from "@peculiar/asn1-x509";
-import { BufferSourceConverter } from "pvtsutils";
+import { isBufferSource, toArrayBuffer } from "@peculiar/utils";
 import { AsnData } from "./asn_data";
 import { OidSerializer, TextObject } from "./text_converter";
 import type { ParseOptions } from "./types";
@@ -37,12 +37,12 @@ export class Attribute extends AsnData<AsnAttribute> {
   public constructor(...args: any[]) {
     let raw: ArrayBuffer;
     let options: ParseOptions | undefined;
-    if (BufferSourceConverter.isBufferSource(args[0])) {
-      raw = BufferSourceConverter.toArrayBuffer(args[0]);
+    if (isBufferSource(args[0])) {
+      raw = toArrayBuffer(args[0]);
       options = args[1];
     } else {
       const type = args[0];
-      const values = Array.isArray(args[1]) ? args[1].map((o) => BufferSourceConverter.toArrayBuffer(o)) : [];
+      const values = Array.isArray(args[1]) ? args[1].map((o) => toArrayBuffer(o)) : [];
       raw = AsnConvert.serialize(
         new AsnAttribute({
           type,

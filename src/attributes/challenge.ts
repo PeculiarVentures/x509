@@ -1,7 +1,7 @@
 import { AsnConvert } from "@peculiar/asn1-schema";
 import type * as asnX509 from "@peculiar/asn1-x509";
 import * as asnPkcs9 from "@peculiar/asn1-pkcs9";
-import { BufferSourceConverter } from "pvtsutils";
+import { isBufferSource } from "@peculiar/utils";
 import { Attribute } from "../attribute";
 import { TextObject } from "../text_converter";
 import type { ParseOptions } from "../types";
@@ -23,7 +23,7 @@ export class ChallengePasswordAttribute extends Attribute {
    */
   public constructor(value: string);
   public constructor(...args: any[]) {
-    if (BufferSourceConverter.isBufferSource(args[0])) {
+    if (isBufferSource(args[0])) {
       super(args[0] as BufferSource, args[1] as ParseOptions | undefined);
     } else {
       const value = new asnPkcs9.ChallengePassword({ printableString: args[0] });

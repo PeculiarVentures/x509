@@ -1,6 +1,6 @@
 import { AsnConvert } from "@peculiar/asn1-schema";
 import * as asn1X509 from "@peculiar/asn1-x509";
-import { BufferSourceConverter } from "pvtsutils";
+import { isBufferSource } from "@peculiar/utils";
 import { Extension } from "../extension";
 import { TextObject } from "../text_converter";
 import { GeneralName } from "../general_name";
@@ -45,7 +45,7 @@ export class AuthorityInfoAccessExtension extends Extension {
    */
   public constructor(params: AuthorityInfoAccessParams, critical?: boolean);
   public constructor(...args: any[]) {
-    if (BufferSourceConverter.isBufferSource(args[0])) {
+    if (isBufferSource(args[0])) {
       super(args[0] as BufferSource, args[1] as ParseOptions | undefined);
     } else if (args[0] instanceof asn1X509.AuthorityInfoAccessSyntax) {
       const value = new asn1X509.AuthorityInfoAccessSyntax(args[0]);

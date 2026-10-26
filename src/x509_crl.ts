@@ -1,7 +1,7 @@
 import { AsnConvert } from "@peculiar/asn1-schema";
 import type { Version, AlgorithmIdentifier } from "@peculiar/asn1-x509";
 import { CertificateList } from "@peculiar/asn1-x509";
-import { BufferSourceConverter } from "pvtsutils";
+import { equal } from "@peculiar/utils";
 import { container } from "tsyringe";
 import type { HashedAlgorithm, ParseOptions } from "./types";
 import { cryptoProvider } from "./provider";
@@ -364,7 +364,7 @@ export class X509Crl extends PemData<CertificateList> {
     const serialNumber = typeof certOrSerialNumber === "string" ? certOrSerialNumber : certOrSerialNumber.serialNumber;
     const serialBuffer = normalizeCertificateSerialNumber(serialNumber);
     for (const revoked of this.asn.tbsCertList.revokedCertificates || []) {
-      if (BufferSourceConverter.isEqual(revoked.userCertificate, serialBuffer)) {
+      if (equal(revoked.userCertificate, serialBuffer)) {
         return new X509CrlEntry(AsnConvert.serialize(revoked), this.parseOptions);
       }
     }

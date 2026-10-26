@@ -1,6 +1,6 @@
 import { AsnConvert } from "@peculiar/asn1-schema";
 import * as asn1X509 from "@peculiar/asn1-x509";
-import { BufferSourceConverter } from "pvtsutils";
+import { isBufferSource } from "@peculiar/utils";
 import { Extension } from "../extension";
 import type { JsonGeneralNames } from "../general_name";
 import { GeneralNames } from "../general_name";
@@ -28,7 +28,7 @@ export class SubjectAlternativeNameExtension extends Extension {
    */
   public constructor(data?: JsonGeneralNames, critical?: boolean);
   public constructor(...args: any[]) {
-    if (BufferSourceConverter.isBufferSource(args[0])) {
+    if (isBufferSource(args[0])) {
       super(args[0] as BufferSource, args[1] as ParseOptions | undefined);
     } else {
       super(asn1X509.id_ce_subjectAltName, args[1], new GeneralNames(args[0] || []).rawData);

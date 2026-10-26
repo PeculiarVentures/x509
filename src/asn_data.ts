@@ -1,5 +1,5 @@
 import { AsnConvert } from "@peculiar/asn1-schema";
-import { BufferSourceConverter, Convert, isEqual } from "pvtsutils";
+import { base64, base64url, equal, hex, isBufferSource, toArrayBuffer } from "@peculiar/utils";
 import type { TextObjectConvertible } from "./text_converter";
 import { TextConverter, TextObject } from "./text_converter";
 import type { ParseOptions } from "./types";
@@ -55,11 +55,11 @@ export abstract class AsnData<T> implements TextObjectConvertible {
    */
   public constructor(asn: T, options?: ParseOptions);
   public constructor(...args: any[]) {
-    if (BufferSourceConverter.isBufferSource(args[0])) {
+    if (isBufferSource(args[0])) {
       // raw, type, options?
       this.#options = args[2];
       this.asn = AsnConvert.parse<T>(args[0], args[1], args[2]);
-      this.#rawData = BufferSourceConverter.toArrayBuffer(args[0]);
+      this.#rawData = toArrayBuffer(args[0]);
       this.onInit(this.asn);
     } else {
       // asn, options?
@@ -81,7 +81,7 @@ export abstract class AsnData<T> implements TextObjectConvertible {
    */
   public equal(data: any): data is this {
     if (data instanceof AsnData) {
-      return isEqual(data.rawData, this.rawData);
+      return equal(data.rawData, this.rawData);
     }
 
     return false;
@@ -94,11 +94,11 @@ export abstract class AsnData<T> implements TextObjectConvertible {
       case "text":
         return TextConverter.serialize(this.toTextObject());
       case "hex":
-        return Convert.ToHex(this.rawData);
+        return hex.encode(this.rawData);
       case "base64":
-        return Convert.ToBase64(this.rawData);
+        return base64.encode(this.rawData);
       case "base64url":
-        return Convert.ToBase64Url(this.rawData);
+        return base64url.encode(this.rawData);
       default:
         throw TypeError("Argument 'format' is unsupported value");
     }

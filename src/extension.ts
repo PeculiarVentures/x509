@@ -1,6 +1,6 @@
 import { AsnConvert, OctetString } from "@peculiar/asn1-schema";
 import { Extension as AsnExtension } from "@peculiar/asn1-x509";
-import { BufferSourceConverter } from "pvtsutils";
+import { isBufferSource, toArrayBuffer } from "@peculiar/utils";
 import { AsnData } from "./asn_data";
 import { OidSerializer, TextObject } from "./text_converter";
 import type { ParseOptions } from "./types";
@@ -40,15 +40,15 @@ export class Extension extends AsnData<AsnExtension> {
   public constructor(...args: any[]) {
     let raw: ArrayBuffer;
     let options: ParseOptions | undefined;
-    if (BufferSourceConverter.isBufferSource(args[0])) {
-      raw = BufferSourceConverter.toArrayBuffer(args[0]);
+    if (isBufferSource(args[0])) {
+      raw = toArrayBuffer(args[0]);
       options = args[1];
     } else {
       raw = AsnConvert.serialize(
         new AsnExtension({
           extnID: args[0],
           critical: args[1],
-          extnValue: new OctetString(BufferSourceConverter.toArrayBuffer(args[2])),
+          extnValue: new OctetString(toArrayBuffer(args[2])),
         }),
       );
       options = selfProducedParseOptions;

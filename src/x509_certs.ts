@@ -1,7 +1,7 @@
 import * as asn1Cms from "@peculiar/asn1-cms";
 import { AsnConvert, OctetString } from "@peculiar/asn1-schema";
 import { Certificate } from "@peculiar/asn1-x509";
-import { Convert } from "pvtsutils";
+import { base64, base64url, hex } from "@peculiar/utils";
 import { PemConverter } from "./pem_converter";
 import type { AsnEncodedType, AsnExportType } from "./pem_data";
 import { PemData } from "./pem_data";
@@ -148,11 +148,11 @@ export class X509Certificates extends Array<X509Certificate> implements TextObje
       case "asn":
         return AsnConvert.toString(raw, this.#options);
       case "hex":
-        return Convert.ToHex(raw);
+        return hex.encode(raw);
       case "base64":
-        return Convert.ToBase64(raw);
+        return base64.encode(raw);
       case "base64url":
-        return Convert.ToBase64Url(raw);
+        return base64url.encode(raw);
       case "text":
         return TextConverter.serialize(this.toTextObject());
       default:

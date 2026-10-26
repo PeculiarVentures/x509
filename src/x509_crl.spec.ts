@@ -2,7 +2,7 @@ import { describe, it, expect, beforeAll } from "vitest";
 import { AsnConvert } from "@peculiar/asn1-schema";
 import { CertificateList } from "@peculiar/asn1-x509";
 import * as x509 from "./index";
-import { Convert } from "pvtsutils";
+import { base64, toArrayBuffer } from "@peculiar/utils";
 
 const crypto = x509.cryptoProvider.get();
 
@@ -330,7 +330,7 @@ describe("crypto", () => {
       "MIICADCB6QIBATANBgkqhkiG9w0BAQsFADBAMQswCQYDVQQGEwJVUzEfMB0GA1UEChMWVGVzdCBDZXJ0aWZpY2F0ZXMgMjAxMTEQMA4GA1UEAxMHR29vZCBDQRcNMTAwMTAxMDgzMDAwWhcNMzAxMjMxMDgzMDAwWjBEMCACAQ4XDTEwMDEwMTA4MzAwMFowDDAKBgNVHRUEAwoBATAgAgEPFw0xMDAxMDEwODMwMDFaMAwwCgYDVR0VBAMKAQGgLzAtMB8GA1UdIwQYMBaAFFgBhCQbvCtSlEo9pRByFFH1rzrJMAoGA1UdFAQDAgEBMA0GCSqGSIb3DQEBCwUAA4IBAQA9vPMLiinD8G7FaoTsu8T2jUrTi1OLPHxKnrlBrAP/eHa+VQV1HJfY5Gjq1dpNgzZqDIgQM5QHPm0aSgMN7Ultx+XzbxRswLnwgQrZ7f76Tlky1I+jz7/p3AEynrNR72v64SZt46UhpSuWBHoF1uEVtgirTZNfOEaGUJTNOaTA5U55/iw9BKjHN0e/Vd7OGnrk5h6FsgWOiasGn6/tym9teDt/L2hlOdsZsvX1KPc0ExUHVjJIUBYTooqyy/CuTzFHla6RYVYvJuRF5qYCxa0GTZK3ImCtJ3XfsGdfLEJDZ7T17xBQHucMvIVLm6vY44WUy7PqQhZJskhJMEvj01ZE";
 
     it("read", () => {
-      const crl = new x509.X509Crl(Convert.FromBase64(pem));
+      const crl = new x509.X509Crl(toArrayBuffer(base64.decode(pem)));
       expect(crl.issuer).toBe("C=US, O=Test Certificates 2011, CN=Good CA");
       expect(crl.extensions.length).toBe(2);
     });
@@ -341,19 +341,19 @@ describe("crypto", () => {
       const badCACert =
         "MIIDijCCAnKgAwIBAgIBETANBgkqhkiG9w0BAQsFADBAMQswCQYDVQQGEwJVUzEfMB0GA1UEChMWVGVzdCBDZXJ0aWZpY2F0ZXMgMjAxMTEQMA4GA1UEAxMHR29vZCBDQTAeFw0xMDAxMDEwODMwMDBaFw0zMDEyMzEwODMwMDBaMEMxCzAJBgNVBAYTAlVTMR8wHQYDVQQKExZUZXN0IENlcnRpZmljYXRlcyAyMDExMRMwEQYDVQQDEwpHb29kIHN1YkNBMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAsg6YlsgUI+JxeULQ+eIB+57x/d39rz5zlcqfjzxk95+il+BC1o3VuwtIIxYMSNmi/5GvBuGLtjA0/XLCvM9GnONzZhmBUGU6voomA7W/WFZAqi7cDNEEzT9E7oJAoiQBNXPXngmJX8OLG9yLMOTolFlLoUvmAoDGryln42gYcYXdJMoWCq+JkAaxs4tVCl+OkAfLRM7yh/IZrhjfeQpMcy01e+Oku2AqdJTQSDjDBrvI21+rB3LnjJvWbpm7NbJL35LmOc/kd2YPyFw4vJ0uFdn95lKEuM6HY/PtkJNr36/qwJ0ixntXPCyYLyDSFqaSa+9LGbcJrp6yRoCD4hcZOwIDAQABo4GLMIGIMB8GA1UdIwQYMBaAFFgBhCQbvCtSlEo9pRByFFH1rzrJMB0GA1UdDgQWBBQyByyedF0tXSm7sXqNOxVStH1CeDAOBgNVHQ8BAf8EBAMCAQYwFwYDVR0gBBAwDjAMBgpghkgBZQMCATABMA8GA1UdEwEB/wQFMAMBAf8wDAYDVR0kBAUwA4ABADANBgkqhkiG9w0BAQsFAAOCAQEAcX2vRsH1O1HQsB/7Jlf+ov4pfIwfT5PAvv+p4bo+wWcumPIC1DjUk8xnOQUz3RkhQyqTbE+1OGuA1fjO0VJZ7YevKlO6MHkMYT4N5mge2ZuxMW+35ohZ23DHEHGk174QY6V8l4ICau2s1/SRajFqfRmY3s8gZFo0UBX0KIcmXSu0YHfaHWXnq7bs8kCODW0qMQnlpsUtbwdlPn5jt1kbMnRkrKzjruehXGm7gXC2QlHgH/MfJgpawne/n0DwPBVMs/KVuR/HRadunSuGf5Vy/rm6kZ8Lnu8+sk3pfWXdwEK2tWArcVUv3wh6jROOasEQC1Ah3H0iXv/ETCv3BnBHFc==";
 
-      const cert = new x509.X509Certificate(Convert.FromBase64(goodCACert));
-      const crl = new x509.X509Crl(Convert.FromBase64(pem));
+      const cert = new x509.X509Certificate(toArrayBuffer(base64.decode(goodCACert)));
+      const crl = new x509.X509Crl(toArrayBuffer(base64.decode(pem)));
 
       const ok = await crl.verify({ publicKey: cert });
       expect(ok).toBe(true);
 
-      const cert2 = new x509.X509Certificate(Convert.FromBase64(badCACert));
+      const cert2 = new x509.X509Certificate(toArrayBuffer(base64.decode(badCACert)));
       const error = await crl.verify({ publicKey: cert2 });
       expect(error).toBe(false);
     });
 
     it("findRevoked", () => {
-      const crl = new x509.X509Crl(Convert.FromBase64(pem));
+      const crl = new x509.X509Crl(toArrayBuffer(base64.decode(pem)));
       const entry = crl.findRevoked("0e");
       expect(entry && entry.serialNumber).toBe("0e");
       expect(entry && entry.revocationDate).toEqual(new Date("2010-01-01T08:30:00.000Z"));

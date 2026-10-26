@@ -4,7 +4,7 @@ import { CertificationRequest } from "@peculiar/asn1-csr";
 import { id_pkcs9_at_extensionRequest } from "@peculiar/asn1-pkcs9";
 import * as asn1X509 from "@peculiar/asn1-x509";
 import * as asn1js from "asn1js";
-import { Convert } from "pvtsutils";
+import { base64, toArrayBuffer } from "@peculiar/utils";
 import * as x509 from "./index";
 
 const crypto = x509.cryptoProvider.get();
@@ -68,7 +68,7 @@ describe("parse options (berOptions)", () => {
 
   describe("Pkcs10CertificateRequest", () => {
     it("throws when berOptions.maxDepth is too low", () => {
-      const raw = Convert.FromBase64(csrBase64);
+      const raw = toArrayBuffer(base64.decode(csrBase64));
       expect(() => new x509.Pkcs10CertificateRequest(raw, { berOptions: { maxDepth: 1 } })).toThrow(/depth/i);
       // sanity: default parse works
       expect(new x509.Pkcs10CertificateRequest(raw).subject).toBeDefined();

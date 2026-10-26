@@ -1,6 +1,6 @@
 import { AsnConvert } from "@peculiar/asn1-schema";
 import { Certificate, Version } from "@peculiar/asn1-x509";
-import { BufferSourceConverter } from "pvtsutils";
+import { isBufferSource } from "@peculiar/utils";
 import { container } from "tsyringe";
 import type { HashedAlgorithm, ParseOptions } from "./types";
 import { cryptoProvider } from "./provider";
@@ -353,7 +353,7 @@ export class X509Certificate extends PemData<Certificate> implements IPublicKeyC
           ...this.signatureAlgorithm,
         };
         publicKey = await paramsKey.export(keyAlgorithm, ["verify"], crypto);
-      } else if (BufferSourceConverter.isBufferSource(paramsKey)) {
+      } else if (isBufferSource(paramsKey)) {
         const key = new PublicKey(paramsKey as BufferSource);
         keyAlgorithm = {
           ...key.algorithm,
