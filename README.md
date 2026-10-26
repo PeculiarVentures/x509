@@ -15,6 +15,7 @@
 - [About](#about)
 - [⚠️ Reflect Polyfill Required](#-reflect-polyfill-required)
 - [Installation](#installation)
+- [Breaking Changes In v3](#breaking-changes-in-v3)
 - [Documentation](#documentation)
 - [Usage](#usage)
   - [Browser](#browser)
@@ -54,6 +55,17 @@ If you see the error **"tsyringe requires a reflect polyfill. Please add 'import
 ```
 npm install @peculiar/x509
 ```
+
+## Breaking Changes In v3
+
+v3 is ESM-only and requires Node.js `^20.19.0 || >=22.12.0` (was `>=20.0.0`). CommonJS code can still `require("@peculiar/x509")` on these versions; Node.js 20.0–20.18 and 22.0–22.11 can't. The public API is unchanged, and the Reflect polyfill is still required.
+
+- **TypeScript compiling to CommonJS:** use `"module": "node20"` or `"nodenext"` (`node16` fails with TS1479). ESM and bundler setups need no changes.
+- **Jest in CommonJS mode:** switch to ESM mode or Vitest, or configure an ESM-to-CommonJS transformer and make sure `transformIgnorePatterns` doesn't exclude `@peculiar/x509` and its ESM dependencies (`@peculiar/asn1-*`, `asn1js`, `@peculiar/utils`).
+- **Deep imports** (`@peculiar/x509/build/x509.cjs.js`, `@peculiar/x509/build/x509.es.js`) are blocked by `exports`; import from `@peculiar/x509`.
+- **Browser bundle:** `build/x509.js` (the `x509` global for `<script>` tags, served by unpkg and jsDelivr) is still published, but it now targets current browsers (ES2023) instead of being transpiled for Chrome 60.
+- **`@peculiar/asn1-schema` 3 is a peer dependency**, and the `@peculiar/asn1-*` packages move to 3 (which need `asn1js` 4). npm installs peers automatically; the app must end up with a single copy of each. ASN.1 objects built with asn1-schema 2 packages (for example a `Certificate` from `@peculiar/asn1-x509` 2) can't be passed to x509 3, so upgrade other libraries that use them at the same time.
+- **`@peculiar/webcrypto` 1.x** as the crypto provider: next to asn1-schema 3, npm gives it two private copies of asn1-schema 2 and ECDSA signing fails with `Cannot get schema for 'EcDsaSignature' target`. Until `@peculiar/webcrypto` 2, add `"overrides": { "@peculiar/webcrypto": { "@peculiar/asn1-schema": "^3.0.0" }, "webcrypto-core": { "@peculiar/asn1-schema": "^3.0.0" } }` to your `package.json`, or use the platform's WebCrypto.
 
 ## Documentation
 
