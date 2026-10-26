@@ -37,20 +37,15 @@
   "scripts": {
     "test": "vitest run",
     "test:watch": "vitest",
-    "fmt": "oxfmt",
-    "fmt:check": "oxfmt --check",
+    "format": "oxfmt",
+    "format:check": "oxfmt --check",
     "lint": "oxlint",
     "lint:fix": "oxlint --fix",
     "build": "npm run build:module",
     "build:module": "rollup -c",
+    "typecheck": "tsc --noEmit",
     "rebuild": "npm run clear && npm run build",
-    "coverage": "vitest run --coverage",
-    "coveralls": "vitest run --coverage && cat coverage/lcov.info | coveralls",
-    "pub": "npm run pub:patch",
-    "pub:patch": "npm version patch && npm run git:push",
-    "pub:minor": "npm version minor && npm run git:push",
-    "pub:major": "npm version major && npm run git:push",
-    "git:push": "git push --follow-tags"
+    "coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@peculiar/asn1-cms": "^2.11.0",
