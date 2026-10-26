@@ -1,7 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { X509Certificate } from "./index";
 import { Convert } from "pvtsutils";
-import { Crypto } from "@peculiar/webcrypto";
 import * as x509 from "./index";
 
 describe("X509Certificate", () => {
@@ -36,8 +35,7 @@ describe("X509Certificate", () => {
 });
 
 describe("crypto", () => {
-  const crypto = new Crypto();
-  x509.cryptoProvider.set(crypto);
+  const crypto = x509.cryptoProvider.get();
 
   describe("x509", () => {
     const pem =

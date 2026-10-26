@@ -1,9 +1,7 @@
 import { describe, it, expect, beforeAll } from "vitest";
-import { Crypto } from "@peculiar/webcrypto";
 import * as x509 from "./index";
 
-const crypto = new Crypto();
-x509.cryptoProvider.set(crypto);
+const crypto = x509.cryptoProvider.get();
 
 const alg = {
   name: "ECDSA",
@@ -259,8 +257,7 @@ describe("X509CertificateGenerator", () => {
 });
 
 describe("crypto", () => {
-  const crypto = new Crypto();
-  x509.cryptoProvider.set(crypto);
+  const crypto = x509.cryptoProvider.get();
 
   describe("X509 certificate generator", () => {
     it("generate certificate with generalized time", async () => {

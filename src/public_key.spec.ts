@@ -1,5 +1,4 @@
 import { describe, it, expect, beforeAll } from "vitest";
-import { Crypto } from "@peculiar/webcrypto";
 import { CryptoProvider, IPublicKeyContainer, PublicKey, cryptoProvider } from "./index";
 import { Convert } from "pvtsutils";
 import * as x509 from "./index";
@@ -86,7 +85,8 @@ describe("PublicKey", () => {
     });
 
     it("should return a key identifier for specified algorithm and crypto provider", async () => {
-      const crypto = new Crypto();
+      // A provider other than the default one
+      const crypto = globalThis.crypto;
       const publicKey = await PublicKey.create(spki);
       const keyIdentifier = await publicKey.getKeyIdentifier("SHA-256", crypto);
       expect(keyIdentifier.byteLength).toBe(32);
@@ -95,8 +95,7 @@ describe("PublicKey", () => {
 });
 
 describe("crypto", () => {
-  const crypto = new Crypto();
-  x509.cryptoProvider.set(crypto);
+  const crypto = x509.cryptoProvider.get();
 
   describe("PublicKey", () => {
     const spki = Convert.FromHex(

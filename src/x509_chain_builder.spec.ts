@@ -1,10 +1,8 @@
 import { describe, it, expect, beforeAll } from "vitest";
-import { Crypto } from "@peculiar/webcrypto";
 import * as x509 from "./index";
 
 describe("crypto", () => {
-  const crypto = new Crypto();
-  x509.cryptoProvider.set(crypto);
+  const crypto = x509.cryptoProvider.get();
 
   describe("chain", () => {
     const alg: RsaHashedKeyGenParams = {

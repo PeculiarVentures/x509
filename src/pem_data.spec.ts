@@ -1,12 +1,8 @@
 import { describe, it, expect, beforeAll } from "vitest";
 import { Convert } from "pvtsutils";
-import { Crypto } from "@peculiar/webcrypto";
 import * as x509 from "./index";
 
 describe("crypto", () => {
-  const crypto = new Crypto();
-  x509.cryptoProvider.set(crypto);
-
   describe("PemData", () => {
     describe("from string buffer", () => {
       let hex: ArrayBuffer;

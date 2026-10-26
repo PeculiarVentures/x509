@@ -1,13 +1,11 @@
 import { describe, it, expect, beforeAll } from "vitest";
 import { Convert } from "pvtsutils";
-import { Crypto } from "@peculiar/webcrypto";
 import * as asn1Schema from "@peculiar/asn1-schema";
 import * as asn1CMS from "@peculiar/asn1-cms";
 import * as x509 from "./index";
 
 describe("crypto", () => {
-  const crypto = new Crypto();
-  x509.cryptoProvider.set(crypto);
+  const crypto = x509.cryptoProvider.get();
 
   describe("X509Certificates", () => {
     const certs: x509.X509Certificates = new x509.X509Certificates();

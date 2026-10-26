@@ -1,7 +1,6 @@
 import { webcrypto } from "node:crypto";
 import { describe, it, expect } from "vitest";
 import * as x509 from "./index";
-import { Crypto } from "@peculiar/webcrypto";
 
 const crypto = webcrypto as globalThis.Crypto;
 
@@ -162,9 +161,6 @@ describe("issues", () => {
 });
 
 describe("crypto", () => {
-  const crypto = new Crypto();
-  x509.cryptoProvider.set(crypto);
-
   describe("issues", () => {
     it("#5 verification failing for x509 certificate with ECDSA", async () => {
       const ca = new x509.X509Certificate(
