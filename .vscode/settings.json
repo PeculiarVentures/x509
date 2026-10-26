@@ -1,19 +1,28 @@
 {
+  "editor.formatOnSave": true,
   "files.trimTrailingWhitespace": true,
-  "typescript.format.semicolons": "insert",
-  "typescript.preferences.quoteStyle": "double",
-  "editor.insertSpaces": true,
-  "editor.tabSize": 2,
+  "[typescript]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  },
+  "oxc.enable": true,
+  "js/ts.tsdk.path": "node_modules/typescript/lib",
   "files.exclude": {
     "**/.git": true,
     "**/.svn": true,
     "**/.hg": true,
-    "**/CVS": true,
     "**/.DS_Store": true,
+    "**/Thumbs.db": true,
+    "**/build": true,
     "**/node_modules": true,
-    "build": true,
-    ".nyc_output": true
-  },
-  "typescript.tsdk": "node_modules/typescript/lib",
-  "vitest.watch": false
+    "**/coverage": true,
+  }
 }
