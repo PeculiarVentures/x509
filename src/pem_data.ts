@@ -27,9 +27,7 @@ export abstract class PemData<T> extends AsnData<T> {
       } else if (Convert.isBase64Url(raw)) {
         return Convert.FromBase64Url(raw);
       } else {
-        throw new TypeError(
-          "Unsupported format of 'raw' argument. Must be one of DER, PEM, HEX, Base64, or Base4Url",
-        );
+        throw new TypeError("Unsupported format of 'raw' argument. Must be one of DER, PEM, HEX, Base64, or Base4Url");
       }
     } else {
       // Check if it looks like DER (starts with 0x30) to avoid slow string conversion
@@ -50,9 +48,7 @@ export abstract class PemData<T> extends AsnData<T> {
         return Convert.FromBase64Url(stringRaw);
       }
 
-      throw new TypeError(
-        "Unsupported format of 'raw' argument. Must be one of DER, PEM, HEX, Base64, or Base4Url",
-      );
+      throw new TypeError("Unsupported format of 'raw' argument. Must be one of DER, PEM, HEX, Base64, or Base4Url");
     }
   }
 

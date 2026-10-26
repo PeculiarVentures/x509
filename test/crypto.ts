@@ -117,11 +117,7 @@ describe("crypto", () => {
           name: "ECDSA",
           hash: "SHA-384",
         },
-        extensions: [
-          new x509.KeyUsagesExtension(
-            x509.KeyUsageFlags.digitalSignature | x509.KeyUsageFlags.keyEncipherment,
-          ),
-        ],
+        extensions: [new x509.KeyUsagesExtension(x509.KeyUsageFlags.digitalSignature | x509.KeyUsageFlags.keyEncipherment)],
         attributes: [new x509.ChallengePasswordAttribute("password")],
       });
 
@@ -203,12 +199,8 @@ W+K8+llxOFmtVzU=
     it("read", () => {
       const cert = new x509.X509Certificate(Convert.FromBase64(pem));
       expect(cert.serialNumber).toBe("4844dcc6d4700ffab37f416356f1");
-      expect(cert.subject).toBe(
-        "C=BE, O=GlobalSign nv-sa, OU=For Demo Use Only, CN=GlobalSign Demo Root CA",
-      );
-      expect(cert.issuer).toBe(
-        "C=BE, O=GlobalSign nv-sa, OU=For Demo Use Only, CN=GlobalSign Demo Root CA",
-      );
+      expect(cert.subject).toBe("C=BE, O=GlobalSign nv-sa, OU=For Demo Use Only, CN=GlobalSign Demo Root CA");
+      expect(cert.issuer).toBe("C=BE, O=GlobalSign nv-sa, OU=For Demo Use Only, CN=GlobalSign Demo Root CA");
       expect(cert.extensions.length).toBe(3);
     });
 
@@ -228,17 +220,13 @@ W+K8+llxOFmtVzU=
       it("SHA-256", async () => {
         const cert = new x509.X509Certificate(Convert.FromBase64(pem));
         const thumbprint = await cert.getThumbprint("SHA-256");
-        expect(Convert.ToHex(thumbprint)).toBe(
-          "3578985ded3c684a00d138596cadc96a37eb2dd01511b4b7b7135a55362153df",
-        );
+        expect(Convert.ToHex(thumbprint)).toBe("3578985ded3c684a00d138596cadc96a37eb2dd01511b4b7b7135a55362153df");
       });
 
       it("SHA-256, custom crypto", async () => {
         const cert = new x509.X509Certificate(Convert.FromBase64(pem));
         const thumbprint = await cert.getThumbprint("SHA-256", crypto);
-        expect(Convert.ToHex(thumbprint)).toBe(
-          "3578985ded3c684a00d138596cadc96a37eb2dd01511b4b7b7135a55362153df",
-        );
+        expect(Convert.ToHex(thumbprint)).toBe("3578985ded3c684a00d138596cadc96a37eb2dd01511b4b7b7135a55362153df");
       });
 
       it("default algorithm, custom crypto", async () => {
@@ -364,17 +352,13 @@ D314IEOg4mnS8Q==
       it("SHA-256", async () => {
         const key = new x509.PublicKey(spki);
         const thumbprint = await key.getThumbprint("SHA-256");
-        expect(Convert.ToHex(thumbprint)).toBe(
-          "5bdf9c42c2d13d8edfb7733c257f49ec7d8ac20d2dbe36a693e92b84a26c845c",
-        );
+        expect(Convert.ToHex(thumbprint)).toBe("5bdf9c42c2d13d8edfb7733c257f49ec7d8ac20d2dbe36a693e92b84a26c845c");
       });
 
       it("SHA-256, custom crypto", async () => {
         const key = new x509.PublicKey(spki);
         const thumbprint = await key.getThumbprint("SHA-256", crypto);
-        expect(Convert.ToHex(thumbprint)).toBe(
-          "5bdf9c42c2d13d8edfb7733c257f49ec7d8ac20d2dbe36a693e92b84a26c845c",
-        );
+        expect(Convert.ToHex(thumbprint)).toBe("5bdf9c42c2d13d8edfb7733c257f49ec7d8ac20d2dbe36a693e92b84a26c845c");
       });
 
       it("default algorithm, custom crypto", async () => {
@@ -406,10 +390,7 @@ D314IEOg4mnS8Q==
         extensions: [
           new x509.BasicConstraintsExtension(true, 2, true),
           new x509.ExtendedKeyUsageExtension(["1.2.3.4.5.6.7", "2.3.4.5.6.7.8"], true),
-          new x509.KeyUsagesExtension(
-            x509.KeyUsageFlags.keyCertSign | x509.KeyUsageFlags.cRLSign,
-            true,
-          ),
+          new x509.KeyUsagesExtension(x509.KeyUsageFlags.keyCertSign | x509.KeyUsageFlags.cRLSign, true),
           new x509.CertificatePolicyExtension(["1.2.3.4.5", "1.2.3.4.5.6", "1.2.3.4.5.6.7"]),
           await x509.SubjectKeyIdentifierExtension.create(keys.publicKey),
         ],
@@ -439,10 +420,7 @@ D314IEOg4mnS8Q==
         extensions: [
           new x509.BasicConstraintsExtension(true, 2, true),
           new x509.ExtendedKeyUsageExtension(["1.2.3.4.5.6.7", "2.3.4.5.6.7.8"], true),
-          new x509.KeyUsagesExtension(
-            x509.KeyUsageFlags.keyCertSign | x509.KeyUsageFlags.cRLSign,
-            true,
-          ),
+          new x509.KeyUsagesExtension(x509.KeyUsageFlags.keyCertSign | x509.KeyUsageFlags.cRLSign, true),
           new x509.CertificatePolicyExtension(["1.2.3.4.5", "1.2.3.4.5.6", "1.2.3.4.5.6.7"]),
           await x509.SubjectKeyIdentifierExtension.create(keys.publicKey),
         ],
@@ -472,10 +450,7 @@ D314IEOg4mnS8Q==
         extensions: [
           new x509.BasicConstraintsExtension(true, 2, true),
           new x509.ExtendedKeyUsageExtension(["1.2.3.4.5.6.7", "2.3.4.5.6.7.8"], true),
-          new x509.KeyUsagesExtension(
-            x509.KeyUsageFlags.keyCertSign | x509.KeyUsageFlags.cRLSign,
-            true,
-          ),
+          new x509.KeyUsagesExtension(x509.KeyUsageFlags.keyCertSign | x509.KeyUsageFlags.cRLSign, true),
           await x509.SubjectKeyIdentifierExtension.create(keys.publicKey),
         ],
       });
@@ -506,10 +481,7 @@ D314IEOg4mnS8Q==
       let ok = await caCert.verify({ date: new Date("2020/01/01 12:00") });
       expect(ok).toBe(true);
 
-      const userKeys = (await crypto.subtle.generateKey(alg, false, [
-        "sign",
-        "verify",
-      ])) as CryptoKeyPair;
+      const userKeys = (await crypto.subtle.generateKey(alg, false, ["sign", "verify"])) as CryptoKeyPair;
       expect(userKeys.publicKey).toBeTruthy();
       expect(userKeys.privateKey).toBeTruthy();
       const userCert = await x509.X509CertificateGenerator.create({
@@ -648,9 +620,7 @@ D314IEOg4mnS8Q==
       const skiExt = await x509.SubjectKeyIdentifierExtension.create(keys.publicKey);
       extensions.push(skiExt);
       if (useKeyId) {
-        const akiExt = await x509.AuthorityKeyIdentifierExtension.create(
-          cert ? await cert.publicKey.export() : keys.publicKey,
-        );
+        const akiExt = await x509.AuthorityKeyIdentifierExtension.create(cert ? await cert.publicKey.export() : keys.publicKey);
         extensions.push(akiExt);
       }
 
@@ -696,27 +666,21 @@ D314IEOg4mnS8Q==
       const chain = new x509.X509ChainBuilder({ certificates: certs });
       const items = await chain.build(certs[7]);
       expect(items.length).toBe(4);
-      expect(items.map((o) => o.subject).join(",")).toBe(
-        "CN=Client #2,CN=Intermediate CA #2.1,CN=Intermediate CA #2,CN=Root CA",
-      );
+      expect(items.map((o) => o.subject).join(",")).toBe("CN=Client #2,CN=Intermediate CA #2.1,CN=Intermediate CA #2,CN=Root CA");
     });
 
     it("with key identifiers", async () => {
       const chain = new x509.X509ChainBuilder({ certificates: certs });
       const items = await chain.build(certs[6]);
       expect(items.length).toBe(5);
-      expect(items.map((o) => o.subject).join(",")).toBe(
-        "CN=Client #1,CN=Intermediate CA #1.1.1,CN=Intermediate CA #1.1,CN=Intermediate CA #1,CN=Root CA",
-      );
+      expect(items.map((o) => o.subject).join(",")).toBe("CN=Client #1,CN=Intermediate CA #1.1.1,CN=Intermediate CA #1.1,CN=Intermediate CA #1,CN=Root CA");
     });
 
     it("uncompleted path", async () => {
       const chain = new x509.X509ChainBuilder({ certificates: certs });
       const items = await chain.build(certs[11]);
       expect(items.length).toBe(3);
-      expect(items.map((o) => o.subject).join(",")).toBe(
-        "CN=User #3.1.1,CN=Intermediate CA #3.1,CN=Intermediate CA #3",
-      );
+      expect(items.map((o) => o.subject).join(",")).toBe("CN=User #3.1.1,CN=Intermediate CA #3.1,CN=Intermediate CA #3");
     });
 
     it("single cert", async () => {
@@ -737,9 +701,7 @@ D314IEOg4mnS8Q==
       const chain = new x509.X509ChainBuilder({ certificates: certs });
       const items = await chain.build(certs[15]);
       expect(items.length).toBe(3);
-      expect(items.map((o) => o.subject).join(",")).toBe(
-        "CN=Client same name,CN=Intermediate CA same name,CN=Root CA #3",
-      );
+      expect(items.map((o) => o.subject).join(",")).toBe("CN=Client same name,CN=Intermediate CA same name,CN=Root CA #3");
     });
   });
 

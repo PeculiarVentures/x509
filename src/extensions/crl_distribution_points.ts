@@ -57,11 +57,7 @@ export class CRLDistributionPointsExtension extends Extension {
   protected onInit(asn: asn1X509.Extension) {
     super.onInit(asn);
 
-    const crlExt = AsnConvert.parse(
-      asn.extnValue,
-      asn1X509.CRLDistributionPoints,
-      this.parseOptions,
-    );
+    const crlExt = AsnConvert.parse(asn.extnValue, asn1X509.CRLDistributionPoints, this.parseOptions);
     this.distributionPoints = crlExt;
   }
 
@@ -71,9 +67,7 @@ export class CRLDistributionPointsExtension extends Extension {
     obj["Distribution Point"] = this.distributionPoints.map((dp) => {
       const dpObj = new TextObject("");
       if (dp.distributionPoint?.fullName) {
-        dpObj[""] = dp.distributionPoint.fullName
-          .map((name) => new GeneralName(name).toString())
-          .join(", ");
+        dpObj[""] = dp.distributionPoint.fullName.map((name) => new GeneralName(name).toString()).join(", ");
       }
       if (dp.reasons) {
         dpObj["Reasons"] = dp.reasons.toString();

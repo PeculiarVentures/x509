@@ -6,10 +6,7 @@ const crypto = new Crypto();
 
 describe("text", () => {
   describe("extensions", async () => {
-    const keyRaw = Buffer.from(
-      "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEh2Mkxa-PIkhoE_fo2RdBs1X5L8i6xkTEVSgiuLJILJG617ZgGfnKV_eHhEBPcoMk5KlqlSp7tlFyjnjYbl2pog",
-      "base64url",
-    );
+    const keyRaw = Buffer.from("MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEh2Mkxa-PIkhoE_fo2RdBs1X5L8i6xkTEVSgiuLJILJG617ZgGfnKV_eHhEBPcoMk5KlqlSp7tlFyjnjYbl2pog", "base64url");
 
     const tests: {
       name: string;
@@ -32,11 +29,7 @@ describe("text", () => {
 
           return x509.AuthorityKeyIdentifierExtension.create(key, false, crypto);
         },
-        want: [
-          "Authority Key Identifier:",
-          "  b2 94 47 5d 79 b4 99 8b  d6 bb 4e 56 26 87 dd d7",
-          "  f0 f3 e9 48",
-        ].join("\n"),
+        want: ["Authority Key Identifier:", "  b2 94 47 5d 79 b4 99 8b  d6 bb 4e 56 26 87 dd d7", "  f0 f3 e9 48"].join("\n"),
       },
       {
         name: "AKI from certificate id",
@@ -55,13 +48,7 @@ describe("text", () => {
             crypto,
           );
         },
-        want: [
-          "Authority Key Identifier:",
-          "  Authority Issuer:",
-          "    DNS: some.com",
-          "  Authority Serial Number: ",
-          "    01 02 03 04 05",
-        ].join("\n"),
+        want: ["Authority Key Identifier:", "  Authority Issuer:", "    DNS: some.com", "  Authority Serial Number: ", "    01 02 03 04 05"].join("\n"),
       },
       {
         name: "Basic Constraints for Leaf",
@@ -87,23 +74,14 @@ describe("text", () => {
       {
         name: "Extended Key Usages",
         factory: async () => {
-          return new x509.ExtendedKeyUsageExtension([
-            x509.ExtendedKeyUsage.serverAuth,
-            x509.ExtendedKeyUsage.clientAuth,
-          ]);
+          return new x509.ExtendedKeyUsageExtension([x509.ExtendedKeyUsage.serverAuth, x509.ExtendedKeyUsage.clientAuth]);
         },
-        want: [
-          "Extended Key Usages:",
-          "  TLS WWW server authentication, TLS WWW client authentication",
-        ].join("\n"),
+        want: ["Extended Key Usages:", "  TLS WWW server authentication, TLS WWW client authentication"].join("\n"),
       },
       {
         name: "Key Usages",
         factory: async () => {
-          return new x509.KeyUsagesExtension(
-            x509.KeyUsageFlags.keyCertSign | x509.KeyUsageFlags.cRLSign,
-            true,
-          );
+          return new x509.KeyUsagesExtension(x509.KeyUsageFlags.keyCertSign | x509.KeyUsageFlags.cRLSign, true);
         },
         want: ["Key Usages: critical", "  crlSign, keyCertSign"].join("\n"),
       },
@@ -135,11 +113,7 @@ describe("text", () => {
 
           return await x509.SubjectKeyIdentifierExtension.create(key, false, crypto);
         },
-        want: [
-          "Subject Key Identifier:",
-          "  b2 94 47 5d 79 b4 99 8b  d6 bb 4e 56 26 87 dd d7",
-          "  f0 f3 e9 48",
-        ].join("\n"),
+        want: ["Subject Key Identifier:", "  b2 94 47 5d 79 b4 99 8b  d6 bb 4e 56 26 87 dd d7", "  f0 f3 e9 48"].join("\n"),
       },
       {
         name: "Unknown Extension",
@@ -183,16 +157,9 @@ describe("text", () => {
         {
           name: "Buffer",
           args: new x509.TextObject("Test", {
-            Buffer: new Uint8Array([
-              0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0, 1, 2, 3, 4, 5, 6, 7,
-            ]),
+            Buffer: new Uint8Array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0, 1, 2, 3, 4, 5, 6, 7]),
           }),
-          want: [
-            "Test:",
-            "  Buffer: ",
-            "    00 01 02 03 04 05 06 07  08 09 0a 0b 0c 0d 0e 0f",
-            "    00 01 02 03 04 05 06 07",
-          ].join("\n"),
+          want: ["Test:", "  Buffer: ", "    00 01 02 03 04 05 06 07  08 09 0a 0b 0c 0d 0e 0f", "    00 01 02 03 04 05 06 07"].join("\n"),
         },
         {
           name: "TextObject",
@@ -204,10 +171,7 @@ describe("text", () => {
         {
           name: "TextObject[]",
           args: new x509.TextObject("Test", {
-            List: [
-              new x509.TextObject("Some", { Some: "Value" }),
-              new x509.TextObject("Some", {}, "Default Value"),
-            ],
+            List: [new x509.TextObject("Some", { Some: "Value" }), new x509.TextObject("Some", {}, "Default Value")],
           }),
           want: ["Test:", "  List:", "    Some: Value", "  List: Default Value"].join("\n"),
         },
@@ -411,9 +375,7 @@ describe("text", () => {
       {
         name: "Extensions",
         factory: async () => {
-          return new x509.ExtensionsAttribute([
-            new x509.KeyUsagesExtension(x509.KeyUsageFlags.cRLSign, true),
-          ]);
+          return new x509.ExtensionsAttribute([new x509.KeyUsagesExtension(x509.KeyUsageFlags.cRLSign, true)]);
         },
         want: ["Extensions:", "  Key Usages: critical", "    crlSign"].join("\n"),
       },

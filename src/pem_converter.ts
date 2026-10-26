@@ -151,19 +151,14 @@ export class PemConverter {
    * @param tag PEM tag
    */
   public static encode(rawData: BufferSource[], tag: string): string;
-  public static encode(
-    rawData: BufferSource | BufferSource[] | PemStructEncodeParams[],
-    tag?: string,
-  ) {
+  public static encode(rawData: BufferSource | BufferSource[] | PemStructEncodeParams[], tag?: string) {
     if (Array.isArray(rawData)) {
       const raws = new Array<string>();
       if (tag) {
         // encode BufferSource[]
         rawData.forEach((element) => {
           if (!BufferSourceConverter.isBufferSource(element)) {
-            throw new TypeError(
-              "Cannot encode array of BufferSource in PEM format. Not all items of the array are BufferSource",
-            );
+            throw new TypeError("Cannot encode array of BufferSource in PEM format. Not all items of the array are BufferSource");
           }
           raws.push(
             this.encodeStruct({
@@ -176,9 +171,7 @@ export class PemConverter {
         // encode PemStruct[]
         rawData.forEach((element) => {
           if (!("type" in element)) {
-            throw new TypeError(
-              "Cannot encode array of PemStruct in PEM format. Not all items of the array are PemStrut",
-            );
+            throw new TypeError("Cannot encode array of PemStruct in PEM format. Not all items of the array are PemStrut");
           }
           raws.push(this.encodeStruct(element));
         });

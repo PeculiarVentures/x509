@@ -39,49 +39,19 @@ import { AsnDefaultSignatureFormatter, diAsnSignatureFormatter } from "./asn_sig
 import { AsnEcSignatureFormatter } from "./ec_signature_formatter";
 
 // Register x509 extensions
-extensions.ExtensionFactory.register(
-  asnX509.id_ce_basicConstraints,
-  extensions.BasicConstraintsExtension,
-);
-extensions.ExtensionFactory.register(
-  asnX509.id_ce_extKeyUsage,
-  extensions.ExtendedKeyUsageExtension,
-);
+extensions.ExtensionFactory.register(asnX509.id_ce_basicConstraints, extensions.BasicConstraintsExtension);
+extensions.ExtensionFactory.register(asnX509.id_ce_extKeyUsage, extensions.ExtendedKeyUsageExtension);
 extensions.ExtensionFactory.register(asnX509.id_ce_keyUsage, extensions.KeyUsagesExtension);
-extensions.ExtensionFactory.register(
-  asnX509.id_ce_subjectKeyIdentifier,
-  extensions.SubjectKeyIdentifierExtension,
-);
-extensions.ExtensionFactory.register(
-  asnX509.id_ce_authorityKeyIdentifier,
-  extensions.AuthorityKeyIdentifierExtension,
-);
-extensions.ExtensionFactory.register(
-  asnX509.id_ce_subjectAltName,
-  extensions.SubjectAlternativeNameExtension,
-);
-extensions.ExtensionFactory.register(
-  asnX509.id_ce_cRLDistributionPoints,
-  extensions.CRLDistributionPointsExtension,
-);
-extensions.ExtensionFactory.register(
-  asnX509.id_pe_authorityInfoAccess,
-  extensions.AuthorityInfoAccessExtension,
-);
-extensions.ExtensionFactory.register(
-  asnX509.id_ce_issuerAltName,
-  extensions.IssuerAlternativeNameExtension,
-);
+extensions.ExtensionFactory.register(asnX509.id_ce_subjectKeyIdentifier, extensions.SubjectKeyIdentifierExtension);
+extensions.ExtensionFactory.register(asnX509.id_ce_authorityKeyIdentifier, extensions.AuthorityKeyIdentifierExtension);
+extensions.ExtensionFactory.register(asnX509.id_ce_subjectAltName, extensions.SubjectAlternativeNameExtension);
+extensions.ExtensionFactory.register(asnX509.id_ce_cRLDistributionPoints, extensions.CRLDistributionPointsExtension);
+extensions.ExtensionFactory.register(asnX509.id_pe_authorityInfoAccess, extensions.AuthorityInfoAccessExtension);
+extensions.ExtensionFactory.register(asnX509.id_ce_issuerAltName, extensions.IssuerAlternativeNameExtension);
 
 // Register x509 attributes
-attributes.AttributeFactory.register(
-  asnPkcs9.id_pkcs9_at_challengePassword,
-  attributes.ChallengePasswordAttribute,
-);
-attributes.AttributeFactory.register(
-  asnPkcs9.id_pkcs9_at_extensionRequest,
-  attributes.ExtensionsAttribute,
-);
+attributes.AttributeFactory.register(asnPkcs9.id_pkcs9_at_challengePassword, attributes.ChallengePasswordAttribute);
+attributes.AttributeFactory.register(asnPkcs9.id_pkcs9_at_extensionRequest, attributes.ExtensionsAttribute);
 
 // Register signature formatters
 container.registerSingleton(diAsnSignatureFormatter, AsnDefaultSignatureFormatter);

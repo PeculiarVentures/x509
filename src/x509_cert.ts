@@ -97,10 +97,7 @@ export class X509Certificate extends PemData<Certificate> implements IPublicKeyC
    */
   public get publicKey(): PublicKey {
     if (!this.#publicKey) {
-      this.#publicKey = new PublicKey(
-        this.asn.tbsCertificate.subjectPublicKeyInfo,
-        this.parseOptions,
-      );
+      this.#publicKey = new PublicKey(this.asn.tbsCertificate.subjectPublicKeyInfo, this.parseOptions);
     }
 
     return this.#publicKey;
@@ -166,9 +163,7 @@ export class X509Certificate extends PemData<Certificate> implements IPublicKeyC
    */
   public get notBefore(): Date {
     if (!this.#notBefore) {
-      const notBefore =
-        this.asn.tbsCertificate.validity.notBefore.utcTime ||
-        this.asn.tbsCertificate.validity.notBefore.generalTime;
+      const notBefore = this.asn.tbsCertificate.validity.notBefore.utcTime || this.asn.tbsCertificate.validity.notBefore.generalTime;
       if (!notBefore) {
         throw new Error("Cannot get 'notBefore' value");
       }
@@ -183,9 +178,7 @@ export class X509Certificate extends PemData<Certificate> implements IPublicKeyC
    */
   public get notAfter(): Date {
     if (!this.#notAfter) {
-      const notAfter =
-        this.asn.tbsCertificate.validity.notAfter.utcTime ||
-        this.asn.tbsCertificate.validity.notAfter.generalTime;
+      const notAfter = this.asn.tbsCertificate.validity.notAfter.utcTime || this.asn.tbsCertificate.validity.notAfter.generalTime;
       if (!notAfter) {
         throw new Error("Cannot get 'notAfter' value");
       }
@@ -201,9 +194,7 @@ export class X509Certificate extends PemData<Certificate> implements IPublicKeyC
   public get signatureAlgorithm(): HashedAlgorithm {
     if (!this.#signatureAlgorithm) {
       const algProv = container.resolve<AlgorithmProvider>(diAlgorithmProvider);
-      this.#signatureAlgorithm = algProv.toWebAlgorithm(
-        this.asn.signatureAlgorithm,
-      ) as HashedAlgorithm;
+      this.#signatureAlgorithm = algProv.toWebAlgorithm(this.asn.signatureAlgorithm) as HashedAlgorithm;
     }
 
     return this.#signatureAlgorithm;
@@ -227,9 +218,7 @@ export class X509Certificate extends PemData<Certificate> implements IPublicKeyC
     if (!this.#extensions) {
       this.#extensions = [];
       if (this.asn.tbsCertificate.extensions) {
-        this.#extensions = this.asn.tbsCertificate.extensions.map((o) =>
-          ExtensionFactory.create(AsnConvert.serialize(o), this.parseOptions),
-        );
+        this.#extensions = this.asn.tbsCertificate.extensions.map((o) => ExtensionFactory.create(AsnConvert.serialize(o), this.parseOptions));
       }
     }
 
@@ -287,9 +276,7 @@ export class X509Certificate extends PemData<Certificate> implements IPublicKeyC
    * @returns Extension or null
    */
   public getExtension<T extends Extension>(type: new (raw: BufferSource) => T): T | null;
-  public getExtension<T extends Extension>(
-    type: (new (raw: BufferSource) => T) | string,
-  ): T | null {
+  public getExtension<T extends Extension>(type: (new (raw: BufferSource) => T) | string): T | null {
     for (const ext of this.extensions) {
       if (typeof type === "string") {
         if (ext.type === type) {
@@ -388,9 +375,7 @@ export class X509Certificate extends PemData<Certificate> implements IPublicKeyC
     }
 
     // Convert ASN.1 signature to WebCrypto format
-    const signatureFormatters = container
-      .resolveAll<IAsnSignatureFormatter>(diAsnSignatureFormatter)
-      .reverse();
+    const signatureFormatters = container.resolveAll<IAsnSignatureFormatter>(diAsnSignatureFormatter).reverse();
     let signature: ArrayBuffer | null = null;
     for (const signatureFormatter of signatureFormatters) {
       signature = signatureFormatter.toWebSignature(keyAlgorithm, this.signature);
@@ -423,10 +408,7 @@ export class X509Certificate extends PemData<Certificate> implements IPublicKeyC
    * @param algorithm Hash algorithm
    * @param crypto Crypto provider. Default is from CryptoProvider
    */
-  public async getThumbprint(
-    algorithm: globalThis.AlgorithmIdentifier,
-    crypto?: Crypto,
-  ): Promise<ArrayBuffer>;
+  public async getThumbprint(algorithm: globalThis.AlgorithmIdentifier, crypto?: Crypto): Promise<ArrayBuffer>;
   public async getThumbprint(arg1?: Crypto | globalThis.AlgorithmIdentifier, arg2?: Crypto) {
     let crypto: Crypto | undefined;
     let algorithm: globalThis.AlgorithmIdentifier = "SHA-1";

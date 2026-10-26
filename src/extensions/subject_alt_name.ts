@@ -38,11 +38,7 @@ export class SubjectAlternativeNameExtension extends Extension {
     super.onInit(asn);
 
     // value
-    const value = AsnConvert.parse(
-      asn.extnValue,
-      asn1X509.SubjectAlternativeName,
-      this.parseOptions,
-    );
+    const value = AsnConvert.parse(asn.extnValue, asn1X509.SubjectAlternativeName, this.parseOptions);
 
     this.names = new GeneralNames(value);
   }

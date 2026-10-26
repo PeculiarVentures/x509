@@ -76,11 +76,7 @@ export class AuthorityInfoAccessExtension extends Extension {
     this.timeStamping = [];
     this.caRepository = [];
 
-    const aia = AsnConvert.parse(
-      asn.extnValue,
-      asn1X509.AuthorityInfoAccessSyntax,
-      this.parseOptions,
-    );
+    const aia = AsnConvert.parse(asn.extnValue, asn1X509.AuthorityInfoAccessSyntax, this.parseOptions);
     aia.forEach((accessDescription) => {
       switch (accessDescription.accessMethod) {
         case asn1X509.id_ad_ocsp:
@@ -145,12 +141,7 @@ function addUrlsToObject(obj: TextObject, key: string, urls: GeneralName[]) {
   }
 }
 
-function addAccessDescriptions(
-  value: asn1X509.AuthorityInfoAccessSyntax,
-  params: AuthorityInfoAccessParams,
-  method: string,
-  key: keyof AuthorityInfoAccessParams,
-) {
+function addAccessDescriptions(value: asn1X509.AuthorityInfoAccessSyntax, params: AuthorityInfoAccessParams, method: string, key: keyof AuthorityInfoAccessParams) {
   const items = params[key];
   if (items) {
     const array = Array.isArray(items) ? items : [items];
@@ -161,11 +152,7 @@ function addAccessDescriptions(
       value.push(
         new asn1X509.AccessDescription({
           accessMethod: method,
-          accessLocation: AsnConvert.parse(
-            url.rawData,
-            asn1X509.GeneralName,
-            selfProducedParseOptions,
-          ),
+          accessLocation: AsnConvert.parse(url.rawData, asn1X509.GeneralName, selfProducedParseOptions),
         }),
       );
     });

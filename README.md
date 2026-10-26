@@ -139,11 +139,7 @@ const csr = await x509.Pkcs10CertificateRequestGenerator.create({
   name: "CN=Test",
   keys,
   signingAlgorithm: alg,
-  extensions: [
-    new x509.KeyUsagesExtension(
-      x509.KeyUsageFlags.digitalSignature | x509.KeyUsageFlags.keyEncipherment,
-    ),
-  ],
+  extensions: [new x509.KeyUsagesExtension(x509.KeyUsageFlags.digitalSignature | x509.KeyUsageFlags.keyEncipherment)],
   attributes: [new x509.ChallengePasswordAttribute("password")],
 });
 
@@ -238,12 +234,8 @@ console.log(items); // [ X509Certificate, X509Certificate, X509Certificate ]
 
 ```js
 const certs = new x509.X509Certificates([
-  new x509.X509Certificate(
-    "MIIDljCCAn6gAwIBAgIOSETcxtRwD...S+kAFXIwugUGYEnTWp0m5bAn5NlD314IEOg4mnS8Q==",
-  ),
-  new x509.X509Certificate(
-    "MIIDljCCAn6gAwIBAgIOSETcxtRwD...w8Y/o+hk3QzNBVa3ZUvzDhVAmamQflvw3lXMm/JG4U=",
-  ),
+  new x509.X509Certificate("MIIDljCCAn6gAwIBAgIOSETcxtRwD...S+kAFXIwugUGYEnTWp0m5bAn5NlD314IEOg4mnS8Q=="),
+  new x509.X509Certificate("MIIDljCCAn6gAwIBAgIOSETcxtRwD...w8Y/o+hk3QzNBVa3ZUvzDhVAmamQflvw3lXMm/JG4U="),
 ]);
 
 console.log(certs.export("base64")); // "MIICTAYJKoZIhvcNAQcCoIICPTCCAjkCAQAxADACBgCgggIq...F7EZPNo3pjbfznpIilRMRrmwf5dkgCdSKDdE94xAA==");

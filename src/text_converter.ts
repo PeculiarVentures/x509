@@ -12,15 +12,7 @@ export interface TextObjectConvertible {
   toTextObject(): TextObject;
 }
 
-export type TextObjectItemType =
-  | string
-  | number
-  | boolean
-  | Date
-  | BufferSource
-  | TextObject
-  | TextObject[]
-  | TextObjectConvertible;
+export type TextObjectItemType = string | number | boolean | Date | BufferSource | TextObject | TextObject[] | TextObjectConvertible;
 
 const NAME = Symbol("name");
 const VALUE = Symbol("value");

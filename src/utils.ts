@@ -82,15 +82,9 @@ export function normalizeCertificateSerialNumber(input: string | undefined): Arr
  * @param crypto Crypto provider for random number generation
  * @returns RFC 5280 compliant serial number as ArrayBuffer
  */
-export function generateCertificateSerialNumber(
-  input: string | undefined,
-  crypto = cryptoProvider.get(),
-): ArrayBuffer {
+export function generateCertificateSerialNumber(input: string | undefined, crypto = cryptoProvider.get()): ArrayBuffer {
   const inputView = BufferSourceConverter.toUint8Array(Convert.FromHex(input || ""));
-  const serialNumber =
-    inputView.length && inputView.some((o) => o > 0)
-      ? inputView
-      : crypto.getRandomValues(new Uint8Array(16));
+  const serialNumber = inputView.length && inputView.some((o) => o > 0) ? inputView : crypto.getRandomValues(new Uint8Array(16));
 
   return toPositiveIntegerOctets(serialNumber);
 }
