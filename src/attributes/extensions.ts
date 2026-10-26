@@ -3,10 +3,10 @@ import * as asnX509 from "@peculiar/asn1-x509";
 import * as asnPkcs9 from "@peculiar/asn1-pkcs9";
 import { BufferSourceConverter } from "pvtsutils";
 import { Attribute } from "../attribute";
-import { Extension } from "../extension";
+import type { Extension } from "../extension";
 import { ExtensionFactory } from "../extensions";
 import { TextObject } from "../text_converter";
-import { ParseOptions } from "../types";
+import type { ParseOptions } from "../types";
 import { selfProducedParseOptions } from "../utils";
 
 export class ExtensionsAttribute extends Attribute {
@@ -40,7 +40,7 @@ export class ExtensionsAttribute extends Attribute {
     this.items ??= [];
   }
 
-  protected onInit(asn: asnX509.Attribute): void {
+  protected override onInit(asn: asnX509.Attribute): void {
     super.onInit(asn);
 
     if (this.values[0]) {

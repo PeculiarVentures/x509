@@ -3,9 +3,10 @@ import * as asn1X509 from "@peculiar/asn1-x509";
 import { BufferSourceConverter, Convert } from "pvtsutils";
 import { Extension } from "../extension";
 import { cryptoProvider } from "../provider";
-import { PublicKey, PublicKeyType } from "../public_key";
-import { TextObject } from "../text_converter";
-import { ParseOptions } from "../types";
+import type { PublicKeyType } from "../public_key";
+import { PublicKey } from "../public_key";
+import type { TextObject } from "../text_converter";
+import type { ParseOptions } from "../types";
 
 /**
  * Represents the Subject Key Identifier certificate extension

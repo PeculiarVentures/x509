@@ -14,7 +14,8 @@ import {
   id_slh_dsa_shake_256f,
 } from "@peculiar/asn1-x509-post-quantum";
 import { container, injectable } from "tsyringe";
-import { diAlgorithm, IAlgorithm } from "./algorithm";
+import type { IAlgorithm } from "./algorithm";
+import { diAlgorithm } from "./algorithm";
 
 /**
  * Provider for the NIST FIPS 205 stateless hash-based digital signature

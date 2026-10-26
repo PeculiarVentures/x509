@@ -1,17 +1,21 @@
 import { AsnConvert, OctetString } from "@peculiar/asn1-schema";
 import * as asn1X509 from "@peculiar/asn1-x509";
 import { container } from "tsyringe";
-import { CRLReasons, RevokedCertificate, Time } from "@peculiar/asn1-x509";
+import type { CRLReasons } from "@peculiar/asn1-x509";
+import { RevokedCertificate, Time } from "@peculiar/asn1-x509";
 import { isEqual } from "pvtsutils";
 import { cryptoProvider } from "./provider";
-import { AlgorithmProvider, diAlgorithmProvider } from "./algorithm";
-import { Extension } from "./extension";
+import type { AlgorithmProvider } from "./algorithm";
+import { diAlgorithmProvider } from "./algorithm";
+import type { Extension } from "./extension";
 import { Name } from "./name";
-import { HashedAlgorithm } from "./types";
-import { diAsnSignatureFormatter, IAsnSignatureFormatter } from "./asn_signature_formatter";
-import { X509CrlEntry, X509CrlReason } from "./x509_crl_entry";
+import type { HashedAlgorithm } from "./types";
+import type { IAsnSignatureFormatter } from "./asn_signature_formatter";
+import { diAsnSignatureFormatter } from "./asn_signature_formatter";
+import type { X509CrlReason } from "./x509_crl_entry";
+import { X509CrlEntry } from "./x509_crl_entry";
 import { X509Crl } from "./x509_crl";
-import { X509CertificateCreateParamsName } from "./x509_cert_generator";
+import type { X509CertificateCreateParamsName } from "./x509_cert_generator";
 import { normalizeCertificateSerialNumber, selfProducedParseOptions } from "./utils";
 
 export interface X509CrlEntryParams {

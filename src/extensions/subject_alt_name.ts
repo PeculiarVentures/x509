@@ -2,9 +2,10 @@ import { AsnConvert } from "@peculiar/asn1-schema";
 import * as asn1X509 from "@peculiar/asn1-x509";
 import { BufferSourceConverter } from "pvtsutils";
 import { Extension } from "../extension";
-import { GeneralNames, JsonGeneralNames } from "../general_name";
-import { TextObject } from "../text_converter";
-import { ParseOptions } from "../types";
+import type { JsonGeneralNames } from "../general_name";
+import { GeneralNames } from "../general_name";
+import type { TextObject } from "../text_converter";
+import type { ParseOptions } from "../types";
 
 /**
  * Represents the Subject Alternative Name certificate extension
@@ -34,7 +35,7 @@ export class SubjectAlternativeNameExtension extends Extension {
     }
   }
 
-  onInit(asn: asn1X509.Extension) {
+  override onInit(asn: asn1X509.Extension) {
     super.onInit(asn);
 
     // value

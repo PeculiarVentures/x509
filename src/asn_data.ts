@@ -1,7 +1,8 @@
 import { AsnConvert } from "@peculiar/asn1-schema";
 import { BufferSourceConverter, Convert, isEqual } from "pvtsutils";
-import { TextConverter, TextObject, TextObjectConvertible } from "./text_converter";
-import { ParseOptions } from "./types";
+import type { TextObjectConvertible } from "./text_converter";
+import { TextConverter, TextObject } from "./text_converter";
+import type { ParseOptions } from "./types";
 
 export type AsnDataStringFormat = "asn" | "text" | "hex" | "base64" | "base64url";
 

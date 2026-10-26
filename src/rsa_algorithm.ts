@@ -2,8 +2,9 @@ import * as asn1Rsa from "@peculiar/asn1-rsa";
 import { AsnConvert } from "@peculiar/asn1-schema";
 import { AlgorithmIdentifier } from "@peculiar/asn1-x509";
 import { container, injectable } from "tsyringe";
-import { AlgorithmProvider, diAlgorithm, diAlgorithmProvider, IAlgorithm } from "./algorithm";
-import { HashedAlgorithm } from "./types";
+import type { AlgorithmProvider, IAlgorithm } from "./algorithm";
+import { diAlgorithm, diAlgorithmProvider } from "./algorithm";
+import type { HashedAlgorithm } from "./types";
 
 /**
  * RSA algorithm provider

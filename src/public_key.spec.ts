@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeAll } from "vitest";
-import { CryptoProvider, IPublicKeyContainer, PublicKey, cryptoProvider } from "./index";
+import type { IPublicKeyContainer } from "./index";
+import { CryptoProvider, PublicKey, cryptoProvider } from "./index";
 import { Convert } from "pvtsutils";
 import * as x509 from "./index";
 

@@ -1,6 +1,6 @@
 import { BufferSourceConverter, Convert } from "pvtsutils";
 import { cryptoProvider } from "./provider";
-import { ParseOptions } from "./types";
+import type { ParseOptions } from "./types";
 
 /**
  * Parse options for DER this library produced itself.

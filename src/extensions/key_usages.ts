@@ -2,8 +2,8 @@ import { AsnConvert } from "@peculiar/asn1-schema";
 import { id_ce_keyUsage, KeyUsage } from "@peculiar/asn1-x509";
 import { BufferSourceConverter } from "pvtsutils";
 import { Extension } from "../extension";
-import { TextObject } from "../text_converter";
-import { ParseOptions } from "../types";
+import type { TextObject } from "../text_converter";
+import type { ParseOptions } from "../types";
 
 /**
  * X509 key usages flags

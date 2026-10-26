@@ -3,10 +3,12 @@ import { AsnConvert, OctetString } from "@peculiar/asn1-schema";
 import { Certificate } from "@peculiar/asn1-x509";
 import { Convert } from "pvtsutils";
 import { PemConverter } from "./pem_converter";
-import { AsnEncodedType, AsnExportType, PemData } from "./pem_data";
-import { OidSerializer, TextConverter, TextObject, TextObjectConvertible } from "./text_converter";
+import type { AsnEncodedType, AsnExportType } from "./pem_data";
+import { PemData } from "./pem_data";
+import type { TextObjectConvertible } from "./text_converter";
+import { OidSerializer, TextConverter, TextObject } from "./text_converter";
 import { X509Certificate } from "./x509_cert";
-import { ParseOptions } from "./types";
+import type { ParseOptions } from "./types";
 
 export type X509CertificatesExportType = AsnExportType | "pem-chain";
 
@@ -136,7 +138,7 @@ export class X509Certificates extends Array<X509Certificate> implements TextObje
     }
   }
 
-  public toString(format: X509CertificatesExportType = "pem") {
+  public override toString(format: X509CertificatesExportType = "pem") {
     const raw = this.export("raw");
     switch (format) {
       case "pem":

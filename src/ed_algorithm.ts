@@ -1,7 +1,8 @@
 import { AlgorithmIdentifier } from "@peculiar/asn1-x509";
 import { container, injectable } from "tsyringe";
-import { diAlgorithm, IAlgorithm } from "./algorithm";
-import { HashedAlgorithm } from "./types";
+import type { IAlgorithm } from "./algorithm";
+import { diAlgorithm } from "./algorithm";
+import type { HashedAlgorithm } from "./types";
 
 // id-X25519    OBJECT IDENTIFIER ::= { 1 3 101 110 }
 export const idX25519 = "1.3.101.110";

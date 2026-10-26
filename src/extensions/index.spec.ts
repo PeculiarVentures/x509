@@ -1,13 +1,6 @@
 import { describe, it, expect, beforeAll } from "vitest";
-import {
-  AuthorityInfoAccessExtension,
-  AuthorityKeyIdentifierExtension,
-  CRLDistributionPointsExtension,
-  CertificateIdentifier,
-  IssuerAlternativeNameExtension,
-  JsonGeneralNames,
-  cryptoProvider,
-} from "../index";
+import type { CertificateIdentifier, JsonGeneralNames } from "../index";
+import { AuthorityInfoAccessExtension, AuthorityKeyIdentifierExtension, CRLDistributionPointsExtension, IssuerAlternativeNameExtension, cryptoProvider } from "../index";
 import { PublicKey } from "../public_key";
 
 describe("Extensions", () => {

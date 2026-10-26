@@ -3,7 +3,7 @@ import { Extension as AsnExtension } from "@peculiar/asn1-x509";
 import { BufferSourceConverter } from "pvtsutils";
 import { AsnData } from "./asn_data";
 import { OidSerializer, TextObject } from "./text_converter";
-import { ParseOptions } from "./types";
+import type { ParseOptions } from "./types";
 import { selfProducedParseOptions } from "./utils";
 
 /**

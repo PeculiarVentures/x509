@@ -2,8 +2,9 @@ import { AlgorithmIdentifier } from "@peculiar/asn1-x509";
 import * as asn1Ecc from "@peculiar/asn1-ecc";
 import { container, injectable } from "tsyringe";
 import { AsnConvert } from "@peculiar/asn1-schema";
-import { diAlgorithm, IAlgorithm } from "./algorithm";
-import { HashedAlgorithm } from "./types";
+import type { IAlgorithm } from "./algorithm";
+import { diAlgorithm } from "./algorithm";
+import type { HashedAlgorithm } from "./types";
 
 const idVersionOne = "1.3.36.3.3.2.8.1.1";
 /**

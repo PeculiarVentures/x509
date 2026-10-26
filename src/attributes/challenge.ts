@@ -1,10 +1,10 @@
 import { AsnConvert } from "@peculiar/asn1-schema";
-import * as asnX509 from "@peculiar/asn1-x509";
+import type * as asnX509 from "@peculiar/asn1-x509";
 import * as asnPkcs9 from "@peculiar/asn1-pkcs9";
 import { BufferSourceConverter } from "pvtsutils";
 import { Attribute } from "../attribute";
 import { TextObject } from "../text_converter";
-import { ParseOptions } from "../types";
+import type { ParseOptions } from "../types";
 
 export class ChallengePasswordAttribute extends Attribute {
   public static override NAME = "Challenge Password";
@@ -33,7 +33,7 @@ export class ChallengePasswordAttribute extends Attribute {
     this.password ??= "";
   }
 
-  protected onInit(asn: asnX509.Attribute): void {
+  protected override onInit(asn: asnX509.Attribute): void {
     super.onInit(asn);
 
     if (this.values[0]) {
