@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { Attribute, TextObject } from "../src";
+import { Attribute, TextObject } from "./index";
 
 describe("Attribute", function () {
   describe("#toTextObject()", function () {

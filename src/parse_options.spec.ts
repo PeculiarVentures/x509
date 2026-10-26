@@ -1,15 +1,13 @@
 import { describe, it, expect, beforeAll } from "vitest";
-import { Crypto } from "@peculiar/webcrypto";
 import { AsnConvert } from "@peculiar/asn1-schema";
 import { CertificationRequest } from "@peculiar/asn1-csr";
 import { id_pkcs9_at_extensionRequest } from "@peculiar/asn1-pkcs9";
 import * as asn1X509 from "@peculiar/asn1-x509";
 import * as asn1js from "asn1js";
 import { Convert } from "pvtsutils";
-import * as x509 from "../src";
+import * as x509 from "./index";
 
-const crypto = new Crypto();
-x509.cryptoProvider.set(crypto);
+const crypto = x509.cryptoProvider.get();
 
 // https://github.com/PeculiarVentures/asn1-schema/pull/135
 // Exposes `asn1js.fromBER` resource limits (maxDepth/maxNodes/maxContentLength)

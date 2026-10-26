@@ -1,7 +1,14 @@
 import { describe, it, expect, beforeAll } from "vitest";
-import { Crypto } from "@peculiar/webcrypto";
-import { AuthorityInfoAccessExtension, AuthorityKeyIdentifierExtension, CRLDistributionPointsExtension, CertificateIdentifier, IssuerAlternativeNameExtension, JsonGeneralNames } from "../src";
-import { PublicKey } from "../src/public_key";
+import {
+  AuthorityInfoAccessExtension,
+  AuthorityKeyIdentifierExtension,
+  CRLDistributionPointsExtension,
+  CertificateIdentifier,
+  IssuerAlternativeNameExtension,
+  JsonGeneralNames,
+  cryptoProvider,
+} from "../index";
+import { PublicKey } from "../public_key";
 
 describe("Extensions", () => {
   describe("CRLDistributionPointsExtension", () => {
@@ -20,7 +27,7 @@ describe("Extensions", () => {
     let spki: BufferSource;
 
     beforeAll(async () => {
-      crypto = new Crypto();
+      crypto = cryptoProvider.get();
       const alg = {
         name: "ECDSA",
         namedCurve: "P-256",
