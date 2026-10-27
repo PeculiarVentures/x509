@@ -34,8 +34,6 @@
     ".": "./build/index.js",
     "./package.json": "./package.json"
   },
-  "unpkg": "./build/x509.js",
-  "jsdelivr": "./build/x509.js",
   "files": [
     "build/",
     "README.md",

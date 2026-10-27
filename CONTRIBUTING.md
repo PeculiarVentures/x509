@@ -54,10 +54,7 @@ Fix lint and formatting issues with `npm run lint:fix` and `npm run format`. Use
 
 ### Build And Package Exports
 
-The package is ESM-only; there is no CommonJS build, and CommonJS consumers load it through `require(esm)`. tsdown (`tsdown.config.ts`) runs two builds, both with the LICENSE banner:
-
-- `src/index.ts` → `build/index.js` and `build/index.d.ts`, with every dependency external. This is the package entry point.
-- `src/index.ts` → `build/x509.js`, a minified IIFE that bundles all dependencies and exposes the `x509` global for `<script>` tags. The `unpkg` and `jsdelivr` fields point at it.
+The package is ESM-only; there is no CommonJS build, and CommonJS consumers load it through `require(esm)`. tsdown (`tsdown.config.ts`) bundles `src/index.ts` into a single `build/index.js` with a `build/index.d.ts` declaration, both with the LICENSE banner, and keeps every dependency external. There is no browser script bundle: browsers use the ESM build through a bundler or a CDN such as esm.sh (see the README).
 
 The syntax target comes from `engines.node`; do not set `target` in `tsdown.config.ts`.
 
