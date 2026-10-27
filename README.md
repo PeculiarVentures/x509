@@ -13,24 +13,25 @@
 </div>
 
 - [About](#about)
-- [⚠️ Reflect Polyfill Required](#-reflect-polyfill-required)
 - [Installation](#installation)
+- [⚠️ Reflect Polyfill Required](#-reflect-polyfill-required)
 - [Breaking Changes In v3](#breaking-changes-in-v3)
 - [Documentation](#documentation)
 - [Usage](#usage)
   - [Browser](#browser)
-  - [Set crypto provider for Node.js](#set-crypto-provider-for-nodejs)
-  - [Create a self-signed certificate](#create-a-self-signed-certificate)
-  - [Parse a X509 certificate](#parse-a-x509-certificate)
-  - [Create a PKCS#10 certificate request](#create-a-pkcs10-certificate-request)
-  - [Decoded X509 certificate](#decoded-x509-certificate)
-  - [Verify a certificate](#verify-a-certificate)
-  - [Build a certificate chain](#build-a-certificate-chain)
-  - [Export a list of X509 certificates to PKCS#7 format](#export-a-list-of-x509-certificates-to-pkcs7-format)
+  - [Set a crypto provider](#set-a-crypto-provider)
+- [Examples](#examples)
+- [Contributing](#contributing)
 
 ## About
 
-`@peculiar/x509` is an easy to use TypeScript/Javascript library based on `@peculiar/asn1-schema` that makes generating X.509 Certificates and Certificate Requests as well as validating certificate chains easy.
+`@peculiar/x509` is a TypeScript/JavaScript library for X.509 certificates, certificate requests (PKCS#10), and certificate revocation lists (CRLs) in browsers and Node.js. It parses, creates, and verifies them with WebCrypto, builds certificate chains, and reads and writes PKCS#7 certificate lists. It is built on [`@peculiar/asn1-schema`](https://github.com/PeculiarVentures/asn1-schema).
+
+## Installation
+
+```bash
+npm install @peculiar/x509 reflect-metadata
+```
 
 ## ⚠️ Reflect Polyfill Required
 
@@ -50,12 +51,6 @@ import * as x509 from "@peculiar/x509";
 
 If you see the error **"tsyringe requires a reflect polyfill. Please add 'import "reflect-metadata"' to the top of your entry point."** — install one of the polyfills above and add the import before any `@peculiar/x509` imports.
 
-## Installation
-
-```
-npm install @peculiar/x509
-```
-
 ## Breaking Changes In v3
 
 v3 is ESM-only and requires Node.js `^20.19.0 || >=22.12.0` (was `>=20.0.0`). CommonJS code can still `require("@peculiar/x509")` on these versions; Node.js 20.0–20.18 and 22.0–22.11 can't. The public API is unchanged, and the Reflect polyfill is still required.
@@ -71,9 +66,30 @@ v3 is ESM-only and requires Node.js `^20.19.0 || >=22.12.0` (was `>=20.0.0`). Co
 
 ## Documentation
 
-[https://peculiarventures.github.io/x509/](https://peculiarventures.github.io/x509/)
+Documentation, the API reference, and runnable examples are at [peculiarventures.github.io/x509](https://peculiarventures.github.io/x509/).
 
 ## Usage
+
+```js
+import "reflect-metadata";
+import * as x509 from "@peculiar/x509";
+
+// Create a self-signed certificate with a WebCrypto key pair
+const algorithm = { name: "ECDSA", namedCurve: "P-256", hash: "SHA-256" };
+const keys = await crypto.subtle.generateKey(algorithm, false, ["sign", "verify"]);
+const cert = await x509.X509CertificateGenerator.createSelfSigned({
+  name: "CN=Example",
+  keys,
+  signingAlgorithm: algorithm,
+  extensions: [new x509.BasicConstraintsExtension(true, undefined, true)],
+});
+const pem = cert.toString("pem");
+
+// Parse a certificate from PEM, Base64, hex, or DER and read it
+const parsed = new x509.X509Certificate(pem);
+console.log(parsed.subject); // CN=Example
+console.log(await parsed.verify()); // true: self-signed and valid now
+```
 
 ### Browser
 
@@ -91,186 +107,26 @@ Bundle `@peculiar/x509` with your app (Vite, webpack, esbuild, Rollup), or load 
 
 > WARN: Pin the version in the URL, and prefer bundling or hosting your own copy for production.
 
-A simple web application examples
+### Set a crypto provider
 
-- [Generate X509 certificate](https://codesandbox.io/s/generate-cert-fjwfh)
-- [Generate PKCS#10 certificate request](https://codesandbox.io/s/generate-csr-0qhed)
-
-### Set crypto provider for Node.js
-
-In some cases you may want to use a different cryptographic implementation, for example when you want to work with an object that supports a cryptographic algorithm not supported by the platform you are on.
-
-In these cases you can set a custom provider, these providers need to be compatible with the WebCrypto API, for example on NodeJS you can use `@peculiar/webcrypto` to allow `@peculiar/x509` to work the same as it does in browser!
+By default the library uses the platform's WebCrypto (`globalThis.crypto`), which browsers and Node.js provide. To use another WebCrypto implementation, for example [`@peculiar/webcrypto`](https://www.npmjs.com/package/@peculiar/webcrypto) 2.x for algorithms your platform lacks, set it as the provider:
 
 ```js
 import * as x509 from "@peculiar/x509";
 import { Crypto } from "@peculiar/webcrypto";
 
-const crypto = new Crypto();
-x509.cryptoProvider.set(crypto);
+x509.cryptoProvider.set(new Crypto());
 ```
 
-### Create a self-signed certificate
+## Examples
 
-```js
-const alg = {
-  name: "RSASSA-PKCS1-v1_5",
-  hash: "SHA-256",
-  publicExponent: new Uint8Array([1, 0, 1]),
-  modulusLength: 2048,
-};
-const keys = await crypto.subtle.generateKey(alg, false, ["sign", "verify"]);
-const cert = await x509.X509CertificateGenerator.createSelfSigned({
-  serialNumber: "01",
-  name: "CN=Test",
-  notBefore: new Date("2020/01/01"),
-  notAfter: new Date("2020/01/02"),
-  signingAlgorithm: alg,
-  keys,
-  extensions: [
-    new x509.BasicConstraintsExtension(true, 2, true),
-    new x509.ExtendedKeyUsageExtension(["1.2.3.4.5.6.7", "2.3.4.5.6.7.8"], true),
-    new x509.KeyUsagesExtension(x509.KeyUsageFlags.keyCertSign | x509.KeyUsageFlags.cRLSign, true),
-    await x509.SubjectKeyIdentifierExtension.create(keys.publicKey),
-  ],
-});
+Runnable examples are on the [website](https://peculiarventures.github.io/x509/docs/examples/):
 
-console.log(cert.toString("pem")); // Certificate in PEM format
-```
+- Certificates: [read a certificate](https://peculiarventures.github.io/x509/docs/examples/certificates/parse-certificate), [create a self-signed certificate](https://peculiarventures.github.io/x509/docs/examples/certificates/self-signed), [issue and verify a certificate](https://peculiarventures.github.io/x509/docs/examples/certificates/issue-certificate), [distinguished names](https://peculiarventures.github.io/x509/docs/examples/certificates/names)
+- Certificate requests: [create a certificate request](https://peculiarventures.github.io/x509/docs/examples/requests/create-csr), [issue a certificate from a request](https://peculiarventures.github.io/x509/docs/examples/requests/sign-csr)
+- Revocation: [create and check a CRL](https://peculiarventures.github.io/x509/docs/examples/revocation/crl)
+- Chains and bundles: [build a certificate chain](https://peculiarventures.github.io/x509/docs/examples/chains/build-chain), [PKCS#7 files and PEM bundles](https://peculiarventures.github.io/x509/docs/examples/chains/pkcs7)
 
-### Parse a x509 certificate
+## Contributing
 
-```js
-const base64 = "MIIDljCCAn6gAwIBAgIOSETcxtRwD...S+kAFXIwugUGYEnTWp0m5bAn5NlD314IEOg4mnS8Q==";
-
-const cert = new x509.X509Certificate(base64);
-console.log(cert.subject); // CN=Test, O=PeculiarVentures LLC
-```
-
-### Create a PKCS#10 certificate request
-
-```js
-const alg = {
-  name: "ECDSA",
-  namedCurve: "P-384",
-  hash: "SHA-384",
-};
-const keys = await crypto.subtle.generateKey(alg, false, ["sign", "verify"]);
-const csr = await x509.Pkcs10CertificateRequestGenerator.create({
-  name: "CN=Test",
-  keys,
-  signingAlgorithm: alg,
-  extensions: [new x509.KeyUsagesExtension(x509.KeyUsageFlags.digitalSignature | x509.KeyUsageFlags.keyEncipherment)],
-  attributes: [new x509.ChallengePasswordAttribute("password")],
-});
-
-console.log(csr.toString("base64")); // Certificate request in Base64 format
-```
-
-### Decoded X509 certificate
-
-```js
-X509Certificate {
-  rawData: ArrayBuffer {
-    [Uint8Contents]: <30 82 02 fc 30 82 01 e4 a0 03 02 01 02 02 01 01 30 0d 06 09 2a 86 48 86 f7 0d 01 01 0b 05 00 30 0f 31 0d 30 0b 06 03 55 04 03 13 04 54 65 73 74 30 1e 17 0d 31 39 31 32 33 31 32 31 30 30 30 30 5a 17 0d 32 30 30 31 30 31 32 31 30 30 30 30 5a 30 0f 31 0d 30 0b 06 03 55 04 03 13 04 54 65 73 74 30 82 01 ... 668 more bytes>,
-    byteLength: 768
-  },
-  tbs: ArrayBuffer {
-    [Uint8Contents]: <30 82 01 e4 a0 03 02 01 02 02 01 01 30 0d 06 09 2a 86 48 86 f7 0d 01 01 0b 05 00 30 0f 31 0d 30 0b 06 03 55 04 03 13 04 54 65 73 74 30 1e 17 0d 31 39 31 32 33 31 32 31 30 30 30 30 5a 17 0d 32 30 30 31 30 31 32 31 30 30 30 30 5a 30 0f 31 0d 30 0b 06 03 55 04 03 13 04 54 65 73 74 30 82 01 22 30 0d 06 ... 388 more bytes>,
-    byteLength: 488
-  },
-  serialNumber: '01',
-  subject: 'CN=Test',
-  issuer: 'CN=Test',
-  signatureAlgorithm: { name: 'RSASSA-PKCS1-v1_5', hash: { name: 'SHA-256' } },
-  signature: ArrayBuffer {
-    [Uint8Contents]: <2e 78 fb 4b f6 c8 a1 9d b4 d1 8b 22 80 20 c1 68 46 39 a6 11 d1 a9 7a 13 03 8d 1e 0e 5e 87 b5 33 2a ba 44 1b 96 6d 91 e7 fd c0 ce b7 93 fe e4 df d3 d0 57 7c 9a eb 7e 3e 8b ed c6 07 ad 80 df fd 8f f7 ce 26 07 db 0e 9f af e6 cb 70 02 2d 17 9f f5 c1 0d ef d6 cf 1d ec 78 a0 dd 5d 46 2a 60 08 71 74 2c 26 ... 156 more bytes>,
-    byteLength: 256
-  },
-  notBefore: 2019-12-31T21:00:00.000Z,
-  notAfter: 2020-01-01T21:00:00.000Z,
-  extensions: Extensions(4) [
-    BasicConstraintsExtension {
-      rawData: [ArrayBuffer],
-      type: '2.5.29.19',
-      critical: true,
-      value: [ArrayBuffer],
-      ca: true,
-      pathLength: 2
-    },
-    ExtendedKeyUsageExtension {
-      rawData: [ArrayBuffer],
-      type: '2.5.29.37',
-      critical: true,
-      value: [ArrayBuffer],
-      usages: [ExtendedKeyUsage]
-    },
-    KeyUsagesExtension {
-      rawData: [ArrayBuffer],
-      type: '2.5.29.15',
-      critical: true,
-      value: [ArrayBuffer],
-      usages: 96
-    },
-    SubjectKeyIdentifierExtension {
-      rawData: [ArrayBuffer],
-      type: '2.5.29.14',
-      critical: false,
-      value: [ArrayBuffer],
-      keyId: 'f525754650a3dee83f8bd777ee3b53ecc2c8d726'
-    }
-  ],
-  publicKey: PublicKey {
-    rawData: ArrayBuffer {
-      [Uint8Contents]: <30 82 01 22 30 0d 06 09 2a 86 48 86 f7 0d 01 01 01 05 00 03 82 01 0f 00 30 82 01 0a 02 82 01 01 00 b6 f4 f1 cf dd 26 a1 23 45 b6 6e 4e ec 3e 20 8a 3f 90 ec 84 46 49 87 a2 05 c5 eb da ac 84 37 eb a3 bf 46 b5 8e 82 75 25 8a 80 19 10 79 13 c0 13 6c 29 df 56 44 1c ec f8 7b 34 0a f2 13 41 b5 53 98 e1 f5 ... 194 more bytes>,
-      byteLength: 294
-    },
-    algorithm: {
-      name: 'RSASSA-PKCS1-v1_5',
-      publicExponent: [Uint8Array],
-      modulusLength: 2048
-    }
-  }
-}
-```
-
-### Verify a certificate
-
-```js
-const cert = new x509.X509Certificate(raw);
-const issuer = new x509.X509Certificate(issuerRaw);
-
-// Checks the signature and that the certificate is valid at `date` (default: now);
-// pass `signatureOnly: true` to check only the signature.
-const ok = await cert.verify({ date: new Date(), publicKey: issuer });
-```
-
-Pass the issuer certificate (or its `PublicKey`) as `publicKey`: x509 then imports the key with the hash of the certificate's signature algorithm. A `CryptoKey` is used as is, and `issuer.publicKey.export()` without arguments imports an RSA key with SHA-256, so it doesn't verify a certificate signed with, for example, `sha384WithRSAEncryption`. Export it with the matching algorithm instead: `issuer.publicKey.export({ name: "RSASSA-PKCS1-v1_5", hash: "SHA-384" }, ["verify"])`.
-
-### Build a certificate chain
-
-```js
-const chain = new x509.X509ChainBuilder({
-  certificates: [
-    new x509.X509Certificate(raw1),
-    new x509.X509Certificate(raw2),
-    // ...
-    new x509.X509Certificate(rawN),
-  ],
-});
-
-const cert = new x509.X509Certificate(raw);
-const items = await chain.build(cert);
-console.log(items); // [ X509Certificate, X509Certificate, X509Certificate ]
-```
-
-### Export a list of X509 certificates to PKCS#7 format
-
-```js
-const certs = new x509.X509Certificates([
-  new x509.X509Certificate("MIIDljCCAn6gAwIBAgIOSETcxtRwD...S+kAFXIwugUGYEnTWp0m5bAn5NlD314IEOg4mnS8Q=="),
-  new x509.X509Certificate("MIIDljCCAn6gAwIBAgIOSETcxtRwD...w8Y/o+hk3QzNBVa3ZUvzDhVAmamQflvw3lXMm/JG4U="),
-]);
-
-console.log(certs.export("base64")); // "MIICTAYJKoZIhvcNAQcCoIICPTCCAjkCAQAxADACBgCgggIq...F7EZPNo3pjbfznpIilRMRrmwf5dkgCdSKDdE94xAA==");
-```
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup, commit conventions and the release flow.

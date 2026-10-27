@@ -1,0 +1,14 @@
+---
+sidebar_position: 1
+---
+
+import RunnableExample from "@site/src/components/RunnableExample";
+import source from "!!raw-loader!./crl.example.ts";
+
+# Create and check a CRL
+
+A certificate revocation list (CRL) is a signed list of serial numbers that the CA has revoked before they expired. Create one, check its signature with the CA certificate, and look up whether a certificate is on it.
+
+<RunnableExample source={source} load={() => import("./crl.example.ts?run")} />
+
+**API:** [`X509CrlGenerator`](../../api/classes/X509CrlGenerator.md), [`X509Crl`](../../api/classes/X509Crl.md), [`X509CrlEntry`](../../api/classes/X509CrlEntry.md), [`X509CrlReason`](../../api/enumerations/X509CrlReason.md)

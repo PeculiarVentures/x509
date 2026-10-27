@@ -1,0 +1,14 @@
+---
+sidebar_position: 1
+---
+
+import RunnableExample from "@site/src/components/RunnableExample";
+import source from "!!raw-loader!./create-csr.example.ts";
+
+# Create a certificate request
+
+A PKCS#10 certificate signing request (CSR) carries the applicant's name and public key, plus the extensions it asks for, signed with the applicant's private key. Send its PEM to a CA.
+
+<RunnableExample source={source} load={() => import("./create-csr.example.ts?run")} />
+
+**API:** [`Pkcs10CertificateRequestGenerator`](../../api/classes/Pkcs10CertificateRequestGenerator.md), [`Pkcs10CertificateRequest`](../../api/classes/Pkcs10CertificateRequest.md), [`ChallengePasswordAttribute`](../../api/classes/ChallengePasswordAttribute.md)

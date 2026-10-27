@@ -1,0 +1,14 @@
+---
+sidebar_position: 4
+---
+
+import RunnableExample from "@site/src/components/RunnableExample";
+import source from "!!raw-loader!./names.example.ts";
+
+# Distinguished names
+
+Subject and issuer names are distinguished names. `Name` parses the RFC 4514 string form (`CN=…, O=…`), converts to and from JSON, and reads attributes by short name or OID. Generators accept the string form, a `Name`, or the JSON form.
+
+<RunnableExample source={source} load={() => import("./names.example.ts?run")} />
+
+**API:** [`Name`](../../api/classes/Name.md)

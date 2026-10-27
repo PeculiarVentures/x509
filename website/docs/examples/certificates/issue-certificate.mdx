@@ -1,0 +1,14 @@
+---
+sidebar_position: 3
+---
+
+import RunnableExample from "@site/src/components/RunnableExample";
+import source from "!!raw-loader!./issue-certificate.example.ts";
+
+# Issue and verify a certificate
+
+A CA signs a certificate for a server's public key. To check that a certificate was issued by a CA, pass the issuer certificate as `publicKey` to `verify()`: x509 then imports the issuer key with the hash of the certificate's signature algorithm. A `CryptoKey` is used as is, so it must already match that algorithm, for example `issuer.publicKey.export({ name: "RSASSA-PKCS1-v1_5", hash: "SHA-384" }, ["verify"])` for a certificate signed with `sha384WithRSAEncryption`.
+
+<RunnableExample source={source} load={() => import("./issue-certificate.example.ts?run")} />
+
+**API:** [`X509CertificateGenerator`](../../api/classes/X509CertificateGenerator.md), [`X509Certificate.verify()`](../../api/classes/X509Certificate.md#verify), [`AuthorityKeyIdentifierExtension`](../../api/classes/AuthorityKeyIdentifierExtension.md)
