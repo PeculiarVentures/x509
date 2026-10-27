@@ -54,8 +54,8 @@ const leaf = await x509.X509CertificateGenerator.create({
   extensions: [await x509.AuthorityKeyIdentifierExtension.create(intermediate)],
 });
 
-// The builder searches the given certificates for each issuer, in any order,
-// matching names and key identifiers and checking signatures
+// The legacy builder follows the first signature-valid issuer at each step,
+// matching names and key identifiers. It can return a partial chain.
 const builder = new x509.X509ChainBuilder({ certificates: [root, intermediate] });
 const chain = await builder.build(leaf);
 console.log("chain:", chain.map((cert) => cert.subject));

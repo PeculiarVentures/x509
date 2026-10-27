@@ -9,6 +9,8 @@ import source from "!!raw-loader!./build-chain.example.ts";
 
 `X509ChainBuilder` orders certificates from a leaf up to its root. It finds each issuer by name and key identifier and checks the signature, but it doesn't check validity dates, key usage or revocation, and it doesn't know which roots you trust: compare the end of the chain with your trusted roots yourself.
 
+`build()` follows the first signature-valid issuer at each step and can return a partial chain. To search alternative paths to an explicitly trusted certificate with resource limits, use [`buildToAnchor()`](./build-to-anchor).
+
 <RunnableExample source={source} load={() => import("./build-chain.example.ts?run")} />
 
 **API:** [`X509ChainBuilder`](../../api/classes/X509ChainBuilder.md), [`X509Certificate.isSelfSigned()`](../../api/classes/X509Certificate.md#isselfsigned)

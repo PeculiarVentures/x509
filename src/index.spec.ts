@@ -91,6 +91,32 @@ describe("issues", () => {
     expect(items.length).toBe(3);
   });
 
+  it("attestation#7 - backtracks to an alternative issuer with native WebCrypto", async () => {
+    // https://github.com/PeculiarVentures/attestation/issues/7
+    const algorithm = { name: "ECDSA", namedCurve: "P-256", hash: "SHA-256" };
+    const [rootKeys, issuerKeys, signerKeys] = await Promise.all(Array.from({ length: 3 }, () => crypto.subtle.generateKey(algorithm, false, ["sign", "verify"])));
+    const root = await x509.X509CertificateGenerator.createSelfSigned({ name: "CN=Root", keys: rootKeys, signingAlgorithm: algorithm }, crypto);
+    const issuer = await x509.X509CertificateGenerator.create(
+      { serialNumber: "01", subject: "CN=Issuer", issuer: root.subject, publicKey: issuerKeys.publicKey, signingKey: rootKeys.privateKey, signingAlgorithm: algorithm },
+      crypto,
+    );
+    const signer = await x509.X509CertificateGenerator.create(
+      { serialNumber: "02", subject: "CN=Signer", issuer: issuer.subject, publicKey: signerKeys.publicKey, signingKey: issuerKeys.privateKey, signingAlgorithm: algorithm },
+      crypto,
+    );
+    const damagedBytes = new Uint8Array(issuer.rawData.slice(0));
+    let index = damagedBytes.length - 1;
+    while (!damagedBytes[index]) {
+      index--;
+    }
+    damagedBytes[index]--;
+    const damagedIssuer = new x509.X509Certificate(damagedBytes);
+    const builder = new x509.X509ChainBuilder({ certificates: [damagedIssuer, issuer, root] });
+    expect(await builder.build(signer, crypto)).toHaveLength(2);
+    const path = await builder.buildToAnchor(signer, { trustAnchors: root }, crypto);
+    expect(Array.from(path)).toEqual([signer, issuer, root]);
+  });
+
   it("#95 - X509 Subject name parsing incorrect if attribute value is a single character", () => {
     // https://github.com/PeculiarVentures/x509/issues/95
 
