@@ -1,4 +1,5 @@
 import { hex, toUint8Array } from "@peculiar/utils";
+import type { BufferSourceLike } from "@peculiar/utils";
 import { cryptoProvider } from "./provider";
 import type { ParseOptions } from "./types";
 
@@ -11,6 +12,45 @@ export const hexOptions: hex.HexDecodeOptions = {
   allowOddLength: true,
   separators: [" ", "\t", "\n", "\r"],
 };
+
+/**
+ * Returns the encoded length of the first BER element in `data` (identifier, length and
+ * content octets), or `undefined` for the indefinite-length form, whose end is only known
+ * after parsing the content. `data` must start with a complete, parsed element header.
+ */
+function getElementLength(data: Uint8Array): number | undefined {
+  let offset = 1;
+  if ((data[0]! & 0x1f) === 0x1f) {
+    // High tag number form: the tag continues while bit 8 is set
+    while (data[offset++]! & 0x80);
+  }
+  const first = data[offset++]!;
+  if (first === 0x80) {
+    return undefined;
+  }
+  if (first < 0x80) {
+    return offset + first;
+  }
+  let length = 0;
+  for (let i = 0; i < (first & 0x7f); i++) {
+    length = length * 256 + data[offset++]!;
+  }
+  return offset + length;
+}
+
+/**
+ * Throws when `data` continues after its first ASN.1 element. `AsnConvert.parse` reads only
+ * the first element, so trailing bytes would otherwise be accepted and kept in `rawData`
+ * (and in thumbprints). Indefinite-length input is not checked.
+ * @param data BER/DER encoded data that was parsed successfully
+ */
+export function assertSingleAsnElement(data: BufferSourceLike): void {
+  const bytes = toUint8Array(data);
+  const length = getElementLength(bytes);
+  if (length !== undefined && length !== bytes.byteLength) {
+    throw new Error(`Unexpected data after the ASN.1 structure: ${bytes.byteLength - length} trailing bytes`);
+  }
+}
 
 /**
  * Parse options for DER this library produced itself.

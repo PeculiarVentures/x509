@@ -3,6 +3,7 @@ import { base64, base64url, equal, hex, isBufferSource, toArrayBuffer } from "@p
 import type { TextObjectConvertible } from "./text_converter";
 import { TextConverter, TextObject } from "./text_converter";
 import type { ParseOptions } from "./types";
+import { assertSingleAsnElement } from "./utils";
 
 export type AsnDataStringFormat = "asn" | "text" | "hex" | "base64" | "base64url";
 
@@ -59,6 +60,7 @@ export abstract class AsnData<T> implements TextObjectConvertible {
       // raw, type, options?
       this.#options = args[2];
       this.asn = AsnConvert.parse<T>(args[0], args[1], args[2]);
+      assertSingleAsnElement(args[0]);
       this.#rawData = toArrayBuffer(args[0]);
       this.onInit(this.asn);
     } else {
