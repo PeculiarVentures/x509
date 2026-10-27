@@ -158,6 +158,32 @@ describe("issues", () => {
       expect(parsedCert.serialNumber).toBe(serialNumber);
     }
   });
+
+  it("#129 - trailing data after the DER structure is rejected", async () => {
+    // https://github.com/PeculiarVentures/x509/issues/129
+    const alg = { name: "ECDSA", namedCurve: "P-256", hash: "SHA-256" };
+    const keys = await crypto.subtle.generateKey(alg, false, ["sign", "verify"]);
+    const cert = await x509.X509CertificateGenerator.createSelfSigned({ serialNumber: "01", name: "CN=Test", keys, signingAlgorithm: alg }, crypto);
+    const csr = await x509.Pkcs10CertificateRequestGenerator.create({ name: "CN=Test", keys, signingAlgorithm: alg }, crypto);
+    const crl = await x509.X509CrlGenerator.create({ issuer: "CN=Test", thisUpdate: new Date(), signingAlgorithm: alg, signingKey: keys.privateKey }, crypto);
+    const pkcs7 = new x509.X509Certificates([cert]).export("raw");
+    const append = (raw: ArrayBuffer, ...extra: number[]) => new Uint8Array([...new Uint8Array(raw), ...extra]);
+    const error = /Unexpected data after the ASN\.1 structure/;
+
+    // A second ASN.1 object (OCTET STRING aa), as in the issue, and a single trailing byte
+    expect(() => new x509.X509Certificate(append(cert.rawData, 0x04, 0x01, 0xaa))).toThrow(error);
+    expect(() => new x509.X509Certificate(append(cert.rawData, 0x00))).toThrow(error);
+    expect(() => new x509.X509Certificate(x509.PemConverter.encode(append(cert.rawData, 0x00), "CERTIFICATE"))).toThrow(error);
+    expect(() => new x509.Pkcs10CertificateRequest(append(csr.rawData, 0x00))).toThrow(error);
+    expect(() => new x509.X509Crl(append(crl.rawData, 0x00))).toThrow(error);
+    expect(() => new x509.PublicKey(append(cert.publicKey.rawData, 0x00))).toThrow(error);
+    expect(() => new x509.Extension(append(new x509.BasicConstraintsExtension(true).rawData, 0x00))).toThrow(error);
+    expect(() => new x509.X509Certificates(append(pkcs7, 0x00))).toThrow(error);
+
+    // The exact encodings still parse, and rawData is the structure itself
+    expect(new x509.X509Certificate(cert.rawData).rawData.byteLength).toBe(cert.rawData.byteLength);
+    expect(new x509.X509Certificates(pkcs7)).toHaveLength(1);
+  });
 });
 
 describe("crypto", () => {

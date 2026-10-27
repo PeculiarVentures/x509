@@ -9,6 +9,7 @@ import type { TextObjectConvertible } from "./text_converter";
 import { OidSerializer, TextConverter, TextObject } from "./text_converter";
 import { X509Certificate } from "./x509_cert";
 import type { ParseOptions } from "./types";
+import { assertSingleAsnElement } from "./utils";
 
 export type X509CertificatesExportType = AsnExportType | "pem-chain";
 
@@ -108,6 +109,7 @@ export class X509Certificates extends Array<X509Certificate> implements TextObje
   public import(data: AsnEncodedType, options?: ParseOptions) {
     const raw = PemData.toArrayBuffer(data);
     const cms = AsnConvert.parse(raw, asn1Cms.ContentInfo, options);
+    assertSingleAsnElement(raw);
     if (cms.contentType !== asn1Cms.id_signedData) {
       throw new TypeError("Cannot parse CMS package. Incoming data is not a SignedData object.");
     }
