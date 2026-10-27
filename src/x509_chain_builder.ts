@@ -1,6 +1,6 @@
 import { AsnConvert } from "@peculiar/asn1-schema";
 import * as asn1X509 from "@peculiar/asn1-x509";
-import { equal, hex } from "@peculiar/utils";
+import { equal, hex, isBufferSource } from "@peculiar/utils";
 import type { AuthorityKeyIdentifierExtension, SubjectKeyIdentifierExtension } from "./extensions";
 import { cryptoProvider } from "./provider";
 import type { X509Certificate } from "./x509_cert";
@@ -34,7 +34,7 @@ export interface X509ChainRejection {
   certificate: X509Certificate;
   /** Candidate issuer, when the event concerns a connection. */
   candidate?: X509Certificate;
-  /** Why the connection or branch could not be used. */
+  /** Why the connection or branch could not be used. NO_ISSUER means no same-name issuer candidates exist. */
   reason: "NO_ISSUER" | "SIGNATURE_INVALID" | "VERIFICATION_ERROR" | "CYCLE" | "DEPTH";
   /** Original exception for VERIFICATION_ERROR. An invalid signature alone has no cause. */
   cause?: unknown;
@@ -141,13 +141,14 @@ export class X509ChainBuilder {
    * Finds a signature-verified path from cert to any explicitly trusted anchor, including both endpoints.
    * Searches alternative branches in deterministic depth-first order: anchors, AKI/SKI matches, then other
    * same-name issuers, with complete DER as the tie-breaker. Identifiers are hints, not hard constraints.
+   * Determinism applies to the DER path; DER-identical objects are represented by the first instance added.
    * Issuer names must have equal subject/issuer string representations; full X.500 name matching is not performed.
    * Does not validate dates, CA constraints, usage, policies, or revocation. Partial paths are never returned.
    * @param cert Starting certificate
    * @param params Trusted endpoints, resource limits, and optional cooperative cancellation
    * @param crypto WebCrypto provider. Default is from CryptoProvider
    * @throws {@link X509ChainBuildError} when no confirmed path is found or a limit prevents completion
-   * @throws {@link TypeError} for an empty anchor list; {@link RangeError} for invalid limits
+   * @throws {@link TypeError} for missing, empty, or malformed anchors; {@link RangeError} for invalid limits
    * @throws The signal's reason on cancellation. An in-flight WebCrypto operation is not interrupted.
    */
   public async buildToAnchor(cert: X509Certificate, params: X509ChainBuildToAnchorParams, crypto = cryptoProvider.get()): Promise<X509Certificates> {
@@ -218,15 +219,42 @@ interface ChainSearchFrame {
   node: ChainSearchNode;
   candidates: ChainSearchNode[];
   next: number;
-  hasIssuer: boolean;
+}
+
+function isChainCertificate(value: unknown): value is X509Certificate {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+  // Check the public protocol, not constructor identity: another package copy can supply certificates too.
+  const certificate = value as Partial<X509Certificate>;
+  const hasMember = (name: keyof X509Certificate, accepts: (member: unknown) => boolean) => {
+    for (let owner: object | null = value; owner; owner = Object.getPrototypeOf(owner)) {
+      const descriptor = Object.getOwnPropertyDescriptor(owner, name);
+      if (descriptor) {
+        // Real certificate accessors are lazy; reading an algorithm here would require support for it.
+        return typeof descriptor.get === "function" || ("value" in descriptor && accepts(descriptor.value));
+      }
+    }
+    return false;
+  };
+  return (
+    isBufferSource(certificate.rawData) &&
+    typeof certificate.getExtension === "function" &&
+    typeof certificate.verify === "function" &&
+    hasMember("subject", (member) => typeof member === "string") &&
+    hasMember("issuer", (member) => typeof member === "string") &&
+    hasMember("publicKey", (member) => !!member && typeof member === "object" && "export" in member && typeof member.export === "function") &&
+    hasMember("signatureAlgorithm", (member) => !!member && typeof member === "object")
+  );
 }
 
 /* eslint-disable no-await-in-loop -- Preparation checkpoints and budgeted depth-first traversal must run sequentially. */
 async function buildChainToAnchor(cert: X509Certificate, certificates: readonly X509Certificate[], params: X509ChainBuildToAnchorParams, crypto: Crypto): Promise<X509Certificates> {
-  const anchors: readonly X509Certificate[] = Array.isArray(params.trustAnchors) ? params.trustAnchors.slice() : [params.trustAnchors as X509Certificate];
-  if (!params.trustAnchors || !anchors.length) {
+  const input: unknown = params?.trustAnchors;
+  if (input == null || (Array.isArray(input) && !input.length)) {
     throw new TypeError("At least one trust anchor is required.");
   }
+  const anchors: readonly unknown[] = Array.isArray(input) ? input.slice() : [input];
 
   const limits = { ...X509ChainBuilder.defaultLimits };
   for (const name of ["maxDepth", "maxSearchSteps"] as const) {
@@ -266,8 +294,12 @@ async function buildChainToAnchor(cert: X509Certificate, certificates: readonly 
   };
 
   const start = add(cert);
-  for (const anchor of anchors) {
+  for (const [index, anchor] of anchors.entries()) {
     await checkpoint();
+    signal?.throwIfAborted();
+    if (!isChainCertificate(anchor)) {
+      throw new TypeError(`trustAnchors[${index}] must be an X509Certificate.`);
+    }
     add(anchor, true);
   }
   if (start.anchor) {
@@ -306,7 +338,7 @@ async function buildChainToAnchor(cert: X509Certificate, certificates: readonly 
       issuers = (bySubject.get(node.certificate.issuer) || []).slice().sort((a, b) => priority(a) - priority(b) || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
       candidates.set(node, issuers);
     }
-    return { node, candidates: issuers, next: 0, hasIssuer: false };
+    return { node, candidates: issuers, next: 0 };
   };
 
   const rejections: X509ChainRejection[] = [];
@@ -355,7 +387,7 @@ async function buildChainToAnchor(cert: X509Certificate, certificates: readonly 
     signal?.throwIfAborted();
     const current = stack[stack.length - 1];
     if (current.next === current.candidates.length) {
-      if (!current.hasIssuer) {
+      if (!current.candidates.length) {
         reject({ certificate: current.node.certificate, reason: "NO_ISSUER" });
       }
       stack.pop();
@@ -379,7 +411,6 @@ async function buildChainToAnchor(cert: X509Certificate, certificates: readonly 
       reject({ ...event, reason: result.reason, cause: result.cause });
       continue;
     }
-    current.hasIssuer = true;
     if (path.length === limits.maxDepth) {
       depthExceeded = true;
       reject({ ...event, reason: "DEPTH" });

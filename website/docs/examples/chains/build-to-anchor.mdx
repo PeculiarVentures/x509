@@ -29,7 +29,7 @@ const anotherPath = await builder.buildToAnchor(signer, {
 });
 ```
 
-Anchors automatically participate in the search; they do not need to appear in `certificates`. Anchor identity uses the entire DER certificate, not just its name or key. A starting certificate that equals an anchor produces `[signer]`. The anchor's own signature is not checked, but the signature of its child is verified using the anchor's key. An empty anchor array throws `TypeError`.
+Anchors automatically participate in the search; they do not need to appear in `certificates`. Anchor identity uses the entire DER certificate, not just its name or key. A starting certificate that equals an anchor produces `[signer]`. The anchor's own signature is not checked, but the signature of its child is verified using the anchor's key. Missing anchors, an empty array, or malformed entries throw `TypeError`. Each entry must provide the certificate's public data and methods; constructor identity is not required, so objects from another copy of the library remain usable. Sets and other iterables are not accepted as anchor lists.
 
 To require paths to several roots, make a separate call for each root and the appropriate signer candidate. To expose **anchor → signer** order, use `[...path].reverse()`.
 
@@ -43,9 +43,11 @@ The search uses depth-first backtracking. Same-name issuer candidates are ranked
 2. Other candidates whose SKI matches the current certificate's AKI key identifier.
 3. Other same-name candidates.
 
-Within each group, complete DER bytes determine the order. AKI/SKI values are ordering hints: absent, mismatched, or unreadable identifiers do not exclude a signature-valid issuer. The pool and anchor array order do not affect the result. The returned path is deterministic for the same certificates, parameters, and crypto-provider behavior; it is not necessarily the shortest path.
+Within each group, complete DER bytes determine the order. AKI/SKI values are ordering hints: absent, mismatched, or unreadable identifiers do not exclude a signature-valid issuer. The sequence of DER certificates in the returned path is independent of pool and anchor array order for the same certificates, parameters, and crypto-provider behavior. It is not necessarily the shortest path.
 
 DER-identical input certificates are deduplicated. A repeated certificate in the current path rejects that branch, while other branches remain available. A repeated distinguished name is not itself a cycle. Self-issued key rollover is supported. An untrusted self-signed certificate does not end the search: a cross-certificate may still connect it to a configured anchor.
+
+For DER-identical copies, the returned object is the first instance added: the starting certificate, then anchors in their supplied order, then the pool in its supplied order. Reordering duplicates can therefore change object reference identity (`===`) while preserving the same DER path. Compare DER when checking which certificate was selected independently of its instance.
 
 The pool and anchor arrays are snapshotted at the start of each call and are not mutated. Signature-verification outcomes are cached by child/issuer pair only for that call. Changing `builder.certificates` affects subsequent calls.
 
@@ -74,6 +76,8 @@ These limits bound traversal, not input parsing, certificate sizes, or pool prep
 The public constructor takes named parameters: `new X509ChainBuildError({ code: "NO_PATH" })`. TypeScript requires `limit` when `code` is `"LIMIT_EXCEEDED"` and rejects a limit for `"NO_PATH"`. Optional `rejections` and `rejectionsTruncated` provide diagnostics; omitted diagnostics default to an empty list and `false`.
 
 `rejections` contains the first 64 events in traversal order. `rejectionsTruncated` indicates that further events were omitted. Reasons are `NO_ISSUER`, `SIGNATURE_INVALID`, `VERIFICATION_ERROR`, `CYCLE`, and `DEPTH`. An exception verifying a particular pair is recorded as `VERIFICATION_ERROR` with its original `cause`; alternative candidates are still tried. `NO_PATH` therefore means no path was confirmed with this provider and these matching rules, not that every cryptographic algorithm is supported.
+
+`NO_ISSUER` is recorded only when no issuer candidates match the certificate's issuer name. If candidates exist, their specific rejection events describe why they could not be used; a cycle-only branch records `CYCLE` without an additional `NO_ISSUER` summary. Revisiting a pair can record its rejection again, including when signature verification was cached.
 
 ```ts
 try {

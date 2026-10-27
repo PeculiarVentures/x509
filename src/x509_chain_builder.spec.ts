@@ -134,6 +134,19 @@ describe("X509ChainBuilder.buildToAnchor", () => {
   let damagedIssuer: x509.X509Certificate;
   let serial = 0;
 
+  function anchorProtocol() {
+    return {
+      rawData: root.rawData,
+      subject: root.subject,
+      issuer: root.issuer,
+      publicKey: root.publicKey,
+      signatureAlgorithm: root.signatureAlgorithm,
+      getExtension: root.getExtension.bind(root),
+      verify: root.verify.bind(root),
+      toString: root.toString.bind(root),
+    };
+  }
+
   async function issue(subject: string, keys: CryptoKeyPair, parent?: { subject: string; keys: CryptoKeyPair }, extensions: x509.Extension[] = []) {
     return x509.X509CertificateGenerator.create(
       {
@@ -221,6 +234,23 @@ describe("X509ChainBuilder.buildToAnchor", () => {
     expect(ids(await builder.buildToAnchor(leaf, { trustAnchors: [root, new x509.X509Certificate(root.rawData)] }))).toEqual(ids([leaf, issuer, root]));
   });
 
+  it("keeps the same DER path while retaining the first-added duplicate instances", async () => {
+    const rootCopy = new x509.X509Certificate(root.rawData);
+    const issuerCopy = new x509.X509Certificate(issuer.rawData);
+    const start = new x509.X509Certificate(leaf.rawData);
+    const builder = new x509.X509ChainBuilder({ certificates: [rootCopy, issuer, issuerCopy, leaf] });
+    const first = await builder.buildToAnchor(start, { trustAnchors: [root, rootCopy] });
+    builder.certificates = [root, issuerCopy, issuer, leaf];
+    const second = await builder.buildToAnchor(start, { trustAnchors: [rootCopy, root] });
+    expect(ids(first)).toEqual(ids(second));
+    expect(first[0]).toBe(start);
+    expect(second[0]).toBe(start);
+    expect(first[1]).toBe(issuer);
+    expect(second[1]).toBe(issuerCopy);
+    expect(first[2]).toBe(root);
+    expect(second[2]).toBe(rootCopy);
+  });
+
   it("returns the starting certificate when its DER equals an anchor without checking signatures", async () => {
     const copy = new x509.X509Certificate(root.rawData);
     const verify = vi.spyOn(copy, "verify");
@@ -278,7 +308,7 @@ describe("X509ChainBuilder.buildToAnchor", () => {
     await expect(builder.build(a, crypto)).rejects.toThrow("Circular dependency");
     await expect(builder.buildToAnchor(a, { trustAnchors: root })).rejects.toMatchObject({
       code: "NO_PATH",
-      rejections: expect.arrayContaining([expect.objectContaining({ certificate: b, candidate: a, reason: "CYCLE" })]),
+      rejections: [{ certificate: b, candidate: a, reason: "CYCLE" }],
     });
     const exit = await issue("A", issuerKeys, { subject: "Root", keys: rootKeys });
     builder.certificates.push(exit);
@@ -390,10 +420,14 @@ describe("X509ChainBuilder.buildToAnchor", () => {
     expect(failure.rejections.every((event) => event.reason === "SIGNATURE_INVALID")).toBe(true);
     expect(Object.isFrozen(failure.rejections)).toBe(true);
     builder.certificates = candidates.slice(0, 63);
-    await expect(builder.buildToAnchor(leaf, { trustAnchors: root })).rejects.toMatchObject({
-      rejectionsTruncated: false,
-      rejections: expect.arrayContaining([expect.objectContaining({ reason: "NO_ISSUER" })]),
-    });
+    const shorter = await builder.buildToAnchor(leaf, { trustAnchors: root }).catch((error: unknown) => error);
+    expect(shorter).toBeInstanceOf(x509.X509ChainBuildError);
+    if (!(shorter instanceof x509.X509ChainBuildError)) {
+      throw shorter;
+    }
+    expect(shorter.rejectionsTruncated).toBe(false);
+    expect(shorter.rejections).toHaveLength(63);
+    expect(shorter.rejections.every((event) => event.reason === "SIGNATURE_INVALID")).toBe(true);
   });
 
   it("snapshots the pool and anchors without mutating caller-owned arrays", async () => {
@@ -414,6 +448,67 @@ describe("X509ChainBuilder.buildToAnchor", () => {
     expect(x509.X509ChainBuilder.defaultLimits).toEqual({ maxDepth: 16, maxSearchSteps: 10_000 });
     expect(Object.isFrozen(x509.X509ChainBuilder.defaultLimits)).toBe(true);
     await expect(new x509.X509ChainBuilder().buildToAnchor(leaf, { trustAnchors: [] })).rejects.toBeInstanceOf(TypeError);
+  });
+
+  it.each<[string, () => unknown, string]>([
+    ["missing", () => undefined, "At least one trust anchor is required."],
+    ["null", () => null, "At least one trust anchor is required."],
+    ["string", () => root.toString("pem"), "trustAnchors[0] must be an X509Certificate."],
+    ["DER buffer", () => root.rawData, "trustAnchors[0] must be an X509Certificate."],
+    ["Set", () => new Set([root]), "trustAnchors[0] must be an X509Certificate."],
+    ["undefined entry", () => [undefined], "trustAnchors[0] must be an X509Certificate."],
+    ["null entry", () => [null], "trustAnchors[0] must be an X509Certificate."],
+    [
+      "sparse array",
+      () => {
+        const entries: unknown[] = [];
+        entries.length = 1;
+        return entries;
+      },
+      "trustAnchors[0] must be an X509Certificate.",
+    ],
+    ["plain object", () => ({ rawData: root.rawData }), "trustAnchors[0] must be an X509Certificate."],
+    ["incomplete public protocol", () => ({ rawData: root.rawData, getExtension: root.getExtension.bind(root), verify: root.verify.bind(root) }), "trustAnchors[0] must be an X509Certificate."],
+    ["undefined subject", () => ({ ...anchorProtocol(), subject: undefined }), "trustAnchors[0] must be an X509Certificate."],
+    ["null issuer", () => ({ ...anchorProtocol(), issuer: null }), "trustAnchors[0] must be an X509Certificate."],
+    ["missing public key export", () => ({ ...anchorProtocol(), publicKey: {} }), "trustAnchors[0] must be an X509Certificate."],
+    ["undefined signature algorithm", () => ({ ...anchorProtocol(), signatureAlgorithm: undefined }), "trustAnchors[0] must be an X509Certificate."],
+    ["mixed entries", () => [root, undefined], "trustAnchors[1] must be an X509Certificate."],
+    ["invalid entry after an already-trusted start", () => [leaf, undefined], "trustAnchors[1] must be an X509Certificate."],
+  ])("rejects malformed trust anchors: %s", async (_label, input, message) => {
+    const verify = vi.spyOn(leaf, "verify");
+    const pending = new x509.X509ChainBuilder({ certificates: [issuer] }).buildToAnchor(leaf, { trustAnchors: input() as x509.X509ChainBuildToAnchorParams["trustAnchors"] });
+    await expect(pending).rejects.toBeInstanceOf(TypeError);
+    await expect(pending).rejects.toThrow(message);
+    expect(verify).not.toHaveBeenCalled();
+  });
+
+  it("accepts the certificate public protocol without depending on constructor identity", async () => {
+    // A second package copy can expose the same protocol without sharing this copy's constructor.
+    const anchor = anchorProtocol() as unknown as x509.X509Certificate;
+    expect(anchor).not.toBeInstanceOf(x509.X509Certificate);
+    const path = await new x509.X509ChainBuilder({ certificates: [issuer] }).buildToAnchor(leaf, { trustAnchors: anchor });
+    expect(ids(path)).toEqual(ids([leaf, issuer, root]));
+    expect(path[2]).toBe(anchor);
+  });
+
+  it("does not evaluate an anchor's own signature algorithm during validation", async () => {
+    const algorithm = vi.spyOn(root, "signatureAlgorithm", "get").mockImplementation(() => {
+      throw new Error("unsupported anchor signature algorithm");
+    });
+    const path = await new x509.X509ChainBuilder({ certificates: [issuer] }).buildToAnchor(leaf, { trustAnchors: root });
+    expect(ids(path)).toEqual(ids([leaf, issuer, root]));
+    expect(algorithm).not.toHaveBeenCalled();
+  });
+
+  it("does not evaluate an already-trusted starting certificate's public key during validation", async () => {
+    const publicKey = vi.spyOn(root, "publicKey", "get").mockImplementation(() => {
+      throw new Error("unsupported public key algorithm");
+    });
+    const path = await new x509.X509ChainBuilder().buildToAnchor(root, { trustAnchors: root });
+    expect(path).toHaveLength(1);
+    expect(path[0]).toBe(root);
+    expect(publicKey).not.toHaveBeenCalled();
   });
 
   for (const limit of ["maxDepth", "maxSearchSteps"] as const) {
