@@ -230,6 +230,25 @@ describe("X509CertificateGenerator", () => {
     });
   });
 
+  // https://github.com/PeculiarVentures/x509/issues/122
+  it("encodes validity dates in whole seconds", async () => {
+    const keys = await crypto.subtle.generateKey(alg, true, ["sign", "verify"]);
+    const cert = await x509.X509CertificateGenerator.createSelfSigned({
+      serialNumber: "01",
+      name: "CN=Whole seconds",
+      notBefore: new Date("2026-01-01T00:00:00.789Z"),
+      // From 2050 on the date is a GeneralizedTime, which RFC 5280 forbids to carry fractional seconds
+      notAfter: new Date("2051-06-01T10:20:30.456Z"),
+      keys,
+    });
+
+    const der = new TextDecoder("latin1").decode(cert.rawData);
+    expect(der).toContain("260101000000Z");
+    expect(der).toContain("20510601102030Z");
+    expect(der).not.toMatch(/\d{14}\.\d+Z/);
+    expect(new x509.X509Certificate(cert.rawData).notAfter.toISOString()).toBe("2051-06-01T10:20:30.000Z");
+  });
+
   describe("serial number normalization", () => {
     it("should remove leading zeros from serial number", async () => {
       // Serial: 00 00 01 (should become 01)
