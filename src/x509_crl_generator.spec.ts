@@ -16,6 +16,21 @@ describe("X509CrlGenerator", () => {
     keys = await crypto.subtle.generateKey(alg, true, ["sign", "verify"]);
   });
 
+  // https://github.com/PeculiarVentures/x509/issues/122
+  it("encodes CRL dates in whole seconds", async () => {
+    const crl = await x509.X509CrlGenerator.create({
+      issuer: "CN=Test CA",
+      thisUpdate: new Date("2051-01-01T00:00:00.123Z"),
+      nextUpdate: new Date("2052-01-01T00:00:00.5Z"),
+      signingAlgorithm: alg,
+      signingKey: keys.privateKey,
+      entries: [{ serialNumber: "01", revocationDate: new Date("2051-02-01T00:00:00.999Z") }],
+    });
+
+    const der = new TextDecoder("latin1").decode(crl.rawData);
+    expect(der.match(/\d{14}(?:\.\d+)?Z/g)).toEqual(["20510101000000Z", "20520101000000Z", "20510201000000Z"]);
+  });
+
   describe("create", () => {
     it("should throw error on duplicate serial numbers", async () => {
       const serialNumber = "010203";

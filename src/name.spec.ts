@@ -171,6 +171,17 @@ describe("Name", () => {
     expect(name.toString()).toBe("CN=Some Name, O=Peculiar Ventures\\, LLC, O=Peculiar Ventures\\, LLC, CN=name2+O=Test+CN=name3+E=some@email.com, 1.2.3.4.5=#04020102+DC=some.com");
   });
 
+  // https://github.com/PeculiarVentures/x509/issues/139
+  it("keeps an unescaped = inside a value (RFC 4514)", () => {
+    const name = new x509.Name("CN=Test=Value, OU=Test Department");
+    expect(name.toJSON()).toEqual([{ CN: ["Test=Value"] }, { OU: ["Test Department"] }]);
+    expect(name.toString()).toBe("CN=Test=Value, OU=Test Department");
+
+    const multiValued = new x509.Name("CN=A=B=C+OU=D=E");
+    expect(multiValued.toJSON()).toEqual([{ CN: ["A=B=C"], OU: ["D=E"] }]);
+    expect(multiValued.toString()).toBe("CN=A=B=C+OU=D=E");
+  });
+
   it("extra names", () => {
     const text = "Email=some@email.com, IP=192.168.0.1, GUID={8ee13e53-2c1c-42bb-8df7-39927c0bdbb6}";
     const name = new x509.Name(text, {
