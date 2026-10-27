@@ -2,7 +2,7 @@ import { id_ecPublicKey } from "@peculiar/asn1-ecc";
 import { id_rsaEncryption, id_RSASSA_PSS, RSAPublicKey } from "@peculiar/asn1-rsa";
 import { AsnConvert } from "@peculiar/asn1-schema";
 import { AlgorithmIdentifier, SubjectPublicKeyInfo } from "@peculiar/asn1-x509";
-import { BufferSourceConverter } from "pvtsutils";
+import { isBufferSource, toUint8Array } from "@peculiar/utils";
 import { container } from "tsyringe";
 import type { AlgorithmProvider } from "./algorithm";
 import { diAlgorithmProvider } from "./algorithm";
@@ -44,7 +44,7 @@ export class PublicKey extends PemData<SubjectPublicKeyInfo> {
       return new PublicKey(spki);
     } else if ((data as IPublicKeyContainer).publicKey) {
       return (data as IPublicKeyContainer).publicKey;
-    } else if (BufferSourceConverter.isBufferSource(data)) {
+    } else if (isBufferSource(data)) {
       return new PublicKey(data as BufferSource);
     } else {
       throw new TypeError("Unsupported PublicKeyType");
@@ -129,8 +129,8 @@ export class PublicKey extends PemData<SubjectPublicKeyInfo> {
     switch (asn.algorithm.algorithm) {
       case id_rsaEncryption: {
         const rsaPublicKey = AsnConvert.parse(asn.subjectPublicKey, RSAPublicKey, this.parseOptions);
-        const modulus = BufferSourceConverter.toUint8Array(rsaPublicKey.modulus);
-        algorithm.publicExponent = BufferSourceConverter.toUint8Array(rsaPublicKey.publicExponent);
+        const modulus = toUint8Array(rsaPublicKey.modulus);
+        algorithm.publicExponent = toUint8Array(rsaPublicKey.publicExponent);
         algorithm.modulusLength = (!modulus[0] ? modulus.slice(1) : modulus).byteLength << 3;
         break;
       }

@@ -1,6 +1,6 @@
 import { AsnConvert } from "@peculiar/asn1-schema";
 import { CRLReason, id_ce_cRLReasons, id_ce_invalidityDate, InvalidityDate, RevokedCertificate, Time } from "@peculiar/asn1-x509";
-import { BufferSourceConverter } from "pvtsutils";
+import { isBufferSource, toArrayBuffer } from "@peculiar/utils";
 import type { Extension } from "./extension";
 import { ExtensionFactory } from "./extensions/extension_factory";
 import { AsnData } from "./asn_data";
@@ -156,8 +156,8 @@ export class X509CrlEntry extends AsnData<RevokedCertificate> {
   public constructor(...args: any[]) {
     let raw: ArrayBuffer | RevokedCertificate | undefined;
     let options: ParseOptions | undefined;
-    if (BufferSourceConverter.isBufferSource(args[0])) {
-      raw = BufferSourceConverter.toArrayBuffer(args[0]);
+    if (isBufferSource(args[0])) {
+      raw = toArrayBuffer(args[0]);
       options = args[1];
     } else if (typeof args[0] === "string") {
       raw = AsnConvert.serialize(

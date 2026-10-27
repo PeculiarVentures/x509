@@ -1,12 +1,12 @@
 import { describe, it, expect } from "vitest";
-import { Convert } from "pvtsutils";
+import { base64, toArrayBuffer } from "@peculiar/utils";
 import * as src from "./index";
 
 describe("PEM", () => {
   const base64_splitted =
     "LLrHB0eJzyhP+/fSStdW8okeEnv47jxe7SJ/iN72ohNcUk2jHEUSoH1nvNSIWL9M\n8tEjmF/zxB+bATMtPjCUWbz8Lr9wloXIkjHUlBLpvXR0UrUzYbkNpk0agV2IzUpk\nJ6UiRRGcDSvzrsoK+oNvqu6z7Xs5Xfz5rDqUcMlK1Z6720dcBWGGsDLpTpSCnpot\ndXd/H5LMDWnonNvPCwQUHg==";
-  const base64 = base64_splitted.replace(/\n/g, "");
-  const rawData = Convert.FromBase64(base64);
+  const base64Text = base64_splitted.replace(/\n/g, "");
+  const rawData = toArrayBuffer(base64.decode(base64Text));
 
   describe("decodeWithHeaders", () => {
     interface PemTest {
@@ -18,7 +18,7 @@ describe("PEM", () => {
     function mapPemStruct(pem: src.PemStruct): PemTest {
       return {
         ...pem,
-        rawData: Convert.ToBase64(pem.rawData),
+        rawData: base64.encode(pem.rawData),
       };
     }
 
@@ -34,7 +34,7 @@ describe("PEM", () => {
           {
             type: "SOME",
             headers: [],
-            rawData: base64,
+            rawData: base64Text,
           },
         ],
       },
@@ -45,7 +45,7 @@ describe("PEM", () => {
           {
             type: "SOME",
             headers: [],
-            rawData: base64,
+            rawData: base64Text,
           },
         ],
       },
@@ -61,7 +61,7 @@ describe("PEM", () => {
           {
             type: "SOME",
             headers: [],
-            rawData: base64,
+            rawData: base64Text,
           },
         ],
       },
@@ -120,7 +120,7 @@ describe("PEM", () => {
                 value: "DES-ECB,RSA-MD2,161A3F75DC82EF26,E2EF532C65CBCFF79F83A2658132DB47",
               },
             ],
-            rawData: base64,
+            rawData: base64Text,
           },
         ],
       },
@@ -147,7 +147,7 @@ describe("PEM", () => {
           {
             type: "SOME1",
             headers: [],
-            rawData: base64,
+            rawData: base64Text,
           },
           {
             type: "SOME2",
@@ -157,7 +157,7 @@ describe("PEM", () => {
                 value: "Value1",
               },
             ],
-            rawData: base64,
+            rawData: base64Text,
           },
         ],
       },
@@ -173,7 +173,7 @@ describe("PEM", () => {
           {
             type: "SOME",
             headers: [],
-            rawData: base64,
+            rawData: base64Text,
           },
         ],
       },

@@ -1,6 +1,6 @@
 import { ECDSASigValue } from "@peculiar/asn1-ecc";
 import { AsnConvert } from "@peculiar/asn1-schema";
-import { BufferSourceConverter, combine } from "pvtsutils";
+import { concat, toUint8Array } from "@peculiar/utils";
 import type { IAsnSignatureFormatter } from "./asn_signature_formatter";
 
 export class AsnEcSignatureFormatter implements IAsnSignatureFormatter {
@@ -8,7 +8,7 @@ export class AsnEcSignatureFormatter implements IAsnSignatureFormatter {
   public static defaultNamedCurveSize = 32;
 
   private addPadding(pointSize: number, data: BufferSource): ArrayBuffer {
-    const bytes = BufferSourceConverter.toUint8Array(data);
+    const bytes = toUint8Array(data);
     const res = new Uint8Array(pointSize);
     res.set(bytes, pointSize - bytes.length);
 
@@ -16,7 +16,7 @@ export class AsnEcSignatureFormatter implements IAsnSignatureFormatter {
   }
 
   private removePadding(data: BufferSource, positive = false): ArrayBuffer {
-    let bytes = BufferSourceConverter.toUint8Array(data);
+    let bytes = toUint8Array(data);
 
     for (let i = 0; i < bytes.length; i++) {
       if (!bytes[i]) {
@@ -43,7 +43,7 @@ export class AsnEcSignatureFormatter implements IAsnSignatureFormatter {
 
       const pointSize = AsnEcSignatureFormatter.namedCurveSize.get(namedCurve) || AsnEcSignatureFormatter.defaultNamedCurveSize;
       const ecSignature = new ECDSASigValue();
-      const uint8Signature = BufferSourceConverter.toUint8Array(signature);
+      const uint8Signature = toUint8Array(signature);
       ecSignature.r = this.removePadding(uint8Signature.slice(0, pointSize), true);
       ecSignature.s = this.removePadding(uint8Signature.slice(pointSize, pointSize + pointSize), true);
 
@@ -62,7 +62,7 @@ export class AsnEcSignatureFormatter implements IAsnSignatureFormatter {
       const r = this.addPadding(pointSize, this.removePadding(ecSigValue.r));
       const s = this.addPadding(pointSize, this.removePadding(ecSigValue.s));
 
-      return combine(r, s) as ArrayBuffer;
+      return concat(r, s) as ArrayBuffer;
     }
 
     return null;

@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll } from "vitest";
-import { Convert } from "pvtsutils";
+import { base64, base64url, hex } from "@peculiar/utils";
 import * as asn1Schema from "@peculiar/asn1-schema";
 import * as asn1CMS from "@peculiar/asn1-cms";
 import * as x509 from "./index";
@@ -68,9 +68,9 @@ describe("crypto", () => {
         expect(certs2[1].subject).toBe("CN=Test #2");
       });
       it("hex", async () => {
-        const hex = await certs.export("hex");
-        expect(Convert.isHex(hex)).toBe(true);
-        const certs2 = new x509.X509Certificates(hex);
+        const hexText = await certs.export("hex");
+        expect(hex.is(hexText)).toBe(true);
+        const certs2 = new x509.X509Certificates(hexText);
 
         expect(certs2.length).toBe(2);
         expect(certs2[0].subject).toBe("CN=Test #1");
@@ -86,18 +86,18 @@ describe("crypto", () => {
         expect(certs2[1].subject).toBe("CN=Test #2");
       });
       it("base64", async () => {
-        const base64 = await certs.export("base64");
-        expect(Convert.isBase64(base64)).toBe(true);
-        const certs2 = new x509.X509Certificates(base64);
+        const base64Text = await certs.export("base64");
+        expect(base64.is(base64Text)).toBe(true);
+        const certs2 = new x509.X509Certificates(base64Text);
 
         expect(certs2.length).toBe(2);
         expect(certs2[0].subject).toBe("CN=Test #1");
         expect(certs2[1].subject).toBe("CN=Test #2");
       });
       it("base64url", async () => {
-        const base64url = await certs.export("base64url");
-        expect(Convert.isBase64Url(base64url)).toBe(true);
-        const certs2 = new x509.X509Certificates(base64url);
+        const base64urlText = await certs.export("base64url");
+        expect(base64url.is(base64urlText)).toBe(true);
+        const certs2 = new x509.X509Certificates(base64urlText);
 
         expect(certs2.length).toBe(2);
         expect(certs2[0].subject).toBe("CN=Test #1");

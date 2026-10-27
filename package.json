@@ -61,7 +61,7 @@
     "@peculiar/asn1-rsa": "^3.0.0",
     "@peculiar/asn1-x509": "^3.0.0",
     "@peculiar/asn1-x509-post-quantum": "^3.0.0",
-    "pvtsutils": "^1.3.6",
+    "@peculiar/utils": "^4.1.0",
     "tsyringe": "^4.10.0"
   },
   "peerDependencies": {

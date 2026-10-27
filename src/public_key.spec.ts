@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeAll } from "vitest";
 import type { IPublicKeyContainer } from "./index";
 import { CryptoProvider, PublicKey, cryptoProvider } from "./index";
-import { Convert } from "pvtsutils";
+import { hex, toArrayBuffer } from "@peculiar/utils";
 import * as x509 from "./index";
 
 describe("PublicKey", () => {
@@ -99,8 +99,10 @@ describe("crypto", () => {
   const crypto = x509.cryptoProvider.get();
 
   describe("PublicKey", () => {
-    const spki = Convert.FromHex(
-      "30820122300d06092a864886f70d01010105000382010f003082010a0282010100a4737ac5ec77f06df3486264a3a17c783143e9023073af169cc245023b4711526b4a721832943bbb59be53d241f3203c1a5eac9e1d5bb57bc0644d943dd63525090a70e1484db4b5ac03185ee897ae8ebabf255ebfc77cfebec928ac0b1fceb33b60238ac2ba3f016c035a53a3011828c2e9bafdd7e2a797d94dcbd79ec54a5ae3c92abef565b2ea6bb4af89e2f7e4dd1b52978bb828cb44843ace8c9ad7f80bef7ffedc8b73a04b6ec44cd65fc6ba8fc216c6ca4bbc99677695439391a4d17893b8f54d6755b681210660f7865748fc1126e21e4d9cdcee436c3ce5ebd91912d08713cb91613ecde2e8af694daa27110b8d588f34e82e88aa56315d15428db90203010001",
+    const spki = toArrayBuffer(
+      hex.decode(
+        "30820122300d06092a864886f70d01010105000382010f003082010a0282010100a4737ac5ec77f06df3486264a3a17c783143e9023073af169cc245023b4711526b4a721832943bbb59be53d241f3203c1a5eac9e1d5bb57bc0644d943dd63525090a70e1484db4b5ac03185ee897ae8ebabf255ebfc77cfebec928ac0b1fceb33b60238ac2ba3f016c035a53a3011828c2e9bafdd7e2a797d94dcbd79ec54a5ae3c92abef565b2ea6bb4af89e2f7e4dd1b52978bb828cb44843ace8c9ad7f80bef7ffedc8b73a04b6ec44cd65fc6ba8fc216c6ca4bbc99677695439391a4d17893b8f54d6755b681210660f7865748fc1126e21e4d9cdcee436c3ce5ebd91912d08713cb91613ecde2e8af694daa27110b8d588f34e82e88aa56315d15428db90203010001",
+      ),
     );
 
     describe("export", () => {
@@ -118,25 +120,25 @@ describe("crypto", () => {
       it("default", async () => {
         const key = new x509.PublicKey(spki);
         const thumbprint = await key.getThumbprint();
-        expect(Convert.ToHex(thumbprint)).toBe("dd0137099d08ab3324e183ec258413d1b79e95b0");
+        expect(hex.encode(thumbprint)).toBe("dd0137099d08ab3324e183ec258413d1b79e95b0");
       });
 
       it("SHA-256", async () => {
         const key = new x509.PublicKey(spki);
         const thumbprint = await key.getThumbprint("SHA-256");
-        expect(Convert.ToHex(thumbprint)).toBe("5bdf9c42c2d13d8edfb7733c257f49ec7d8ac20d2dbe36a693e92b84a26c845c");
+        expect(hex.encode(thumbprint)).toBe("5bdf9c42c2d13d8edfb7733c257f49ec7d8ac20d2dbe36a693e92b84a26c845c");
       });
 
       it("SHA-256, custom crypto", async () => {
         const key = new x509.PublicKey(spki);
         const thumbprint = await key.getThumbprint("SHA-256", crypto);
-        expect(Convert.ToHex(thumbprint)).toBe("5bdf9c42c2d13d8edfb7733c257f49ec7d8ac20d2dbe36a693e92b84a26c845c");
+        expect(hex.encode(thumbprint)).toBe("5bdf9c42c2d13d8edfb7733c257f49ec7d8ac20d2dbe36a693e92b84a26c845c");
       });
 
       it("default algorithm, custom crypto", async () => {
         const key = new x509.PublicKey(spki);
         const thumbprint = await key.getThumbprint(crypto);
-        expect(Convert.ToHex(thumbprint)).toBe("dd0137099d08ab3324e183ec258413d1b79e95b0");
+        expect(hex.encode(thumbprint)).toBe("dd0137099d08ab3324e183ec258413d1b79e95b0");
       });
     });
   });

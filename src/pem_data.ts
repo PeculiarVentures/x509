@@ -1,4 +1,5 @@
-import { BufferSourceConverter, Convert } from "pvtsutils";
+import { base64, base64url, binary, hex, isBufferSource, toArrayBuffer, toUint8Array } from "@peculiar/utils";
+import { hexOptions } from "./utils";
 import type { AsnDataStringFormat } from "./asn_data";
 import { AsnData } from "./asn_data";
 import type { ParseOptions } from "./types";
@@ -10,7 +11,7 @@ export type AsnEncodedType = BufferSource | string;
 
 export abstract class PemData<T> extends AsnData<T> {
   public static isAsnEncoded(data: any): data is AsnEncodedType {
-    return BufferSourceConverter.isBufferSource(data) || typeof data === "string";
+    return isBufferSource(data) || typeof data === "string";
   }
 
   /**
@@ -21,32 +22,32 @@ export abstract class PemData<T> extends AsnData<T> {
     if (typeof raw === "string") {
       if (PemConverter.isPem(raw)) {
         return PemConverter.decode(raw)[0];
-      } else if (Convert.isHex(raw)) {
-        return Convert.FromHex(raw);
-      } else if (Convert.isBase64(raw)) {
-        return Convert.FromBase64(raw);
-      } else if (Convert.isBase64Url(raw)) {
-        return Convert.FromBase64Url(raw);
+      } else if (hex.is(raw, hexOptions)) {
+        return toArrayBuffer(hex.decode(raw, hexOptions));
+      } else if (base64.is(raw)) {
+        return toArrayBuffer(base64.decode(raw));
+      } else if (base64url.is(raw)) {
+        return toArrayBuffer(base64url.decode(raw));
       } else {
         throw new TypeError("Unsupported format of 'raw' argument. Must be one of DER, PEM, HEX, Base64, or Base4Url");
       }
     } else {
       // Check if it looks like DER (starts with 0x30) to avoid slow string conversion
       // for large buffers
-      const buffer = BufferSourceConverter.toUint8Array(raw);
+      const buffer = toUint8Array(raw);
       if (buffer.length > 0 && buffer[0] === 0x30) {
-        return BufferSourceConverter.toArrayBuffer(raw);
+        return toArrayBuffer(raw);
       }
 
-      const stringRaw = Convert.ToBinary(raw);
+      const stringRaw = binary.encode(raw);
       if (PemConverter.isPem(stringRaw)) {
         return PemConverter.decode(stringRaw)[0];
-      } else if (Convert.isHex(stringRaw)) {
-        return Convert.FromHex(stringRaw);
-      } else if (Convert.isBase64(stringRaw)) {
-        return Convert.FromBase64(stringRaw);
-      } else if (Convert.isBase64Url(stringRaw)) {
-        return Convert.FromBase64Url(stringRaw);
+      } else if (hex.is(stringRaw, hexOptions)) {
+        return toArrayBuffer(hex.decode(stringRaw, hexOptions));
+      } else if (base64.is(stringRaw)) {
+        return toArrayBuffer(base64.decode(stringRaw));
+      } else if (base64url.is(stringRaw)) {
+        return toArrayBuffer(base64url.decode(stringRaw));
       }
 
       throw new TypeError("Unsupported format of 'raw' argument. Must be one of DER, PEM, HEX, Base64, or Base4Url");

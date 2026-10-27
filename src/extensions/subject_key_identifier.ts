@@ -1,6 +1,7 @@
 import { AsnConvert } from "@peculiar/asn1-schema";
 import * as asn1X509 from "@peculiar/asn1-x509";
-import { BufferSourceConverter, Convert } from "pvtsutils";
+import { hex, isBufferSource } from "@peculiar/utils";
+import { hexOptions } from "../utils";
 import { Extension } from "../extension";
 import { cryptoProvider } from "../provider";
 import type { PublicKeyType } from "../public_key";
@@ -24,7 +25,7 @@ export class SubjectKeyIdentifierExtension extends Extension {
     const key = await PublicKey.create(publicKey, crypto);
     const id = await key.getKeyIdentifier(crypto);
 
-    return new SubjectKeyIdentifierExtension(Convert.ToHex(id), critical);
+    return new SubjectKeyIdentifierExtension(hex.encode(id), critical);
   }
 
   /**
@@ -45,17 +46,17 @@ export class SubjectKeyIdentifierExtension extends Extension {
    */
   public constructor(keyId: string, critical?: boolean);
   public constructor(...args: any[]) {
-    if (BufferSourceConverter.isBufferSource(args[0])) {
+    if (isBufferSource(args[0])) {
       super(args[0] as BufferSource, args[1] as ParseOptions | undefined);
 
       const value = AsnConvert.parse(this.value, asn1X509.SubjectKeyIdentifier, this.parseOptions);
-      this.keyId = Convert.ToHex(value);
+      this.keyId = hex.encode(value);
     } else {
-      const identifier = typeof args[0] === "string" ? Convert.FromHex(args[0]) : args[0];
+      const identifier = typeof args[0] === "string" ? hex.decode(args[0], hexOptions) : args[0];
       const value = new asn1X509.SubjectKeyIdentifier(identifier);
       super(asn1X509.id_ce_subjectKeyIdentifier, args[1], AsnConvert.serialize(value));
 
-      this.keyId = Convert.ToHex(identifier);
+      this.keyId = hex.encode(identifier);
     }
   }
 

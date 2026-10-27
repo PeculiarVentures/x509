@@ -1,7 +1,7 @@
 import { AsnConvert } from "@peculiar/asn1-schema";
 import * as asn1X509 from "@peculiar/asn1-x509";
-import type { BufferSource } from "pvtsutils";
-import { BufferSourceConverter } from "pvtsutils";
+import { isBufferSource } from "@peculiar/utils";
+import type { BufferSource } from "@peculiar/utils";
 import { container } from "tsyringe";
 import { cryptoProvider } from "./provider";
 import type { AlgorithmProvider } from "./algorithm";
@@ -135,7 +135,7 @@ export class X509CertificateGenerator {
       spki = params.publicKey.rawData;
     } else if ("publicKey" in params.publicKey) {
       spki = params.publicKey.publicKey.rawData;
-    } else if (BufferSourceConverter.isBufferSource(params.publicKey)) {
+    } else if (isBufferSource(params.publicKey)) {
       spki = params.publicKey;
       spkiOptions = undefined;
     } else {

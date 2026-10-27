@@ -2,7 +2,7 @@ import * as asn1Cms from "@peculiar/asn1-cms";
 import * as asn1Ecc from "@peculiar/asn1-ecc";
 import * as asn1Rsa from "@peculiar/asn1-rsa";
 import * as asn1X509 from "@peculiar/asn1-x509";
-import { BufferSourceConverter } from "pvtsutils";
+import { isBufferSource, toUint8Array } from "@peculiar/utils";
 import { EcAlgorithm } from "./ec_algorithm";
 
 export interface TextObjectConvertible {
@@ -144,7 +144,7 @@ export abstract class TextConverter {
       } else if (value instanceof TextObject) {
         value[TextObject.NAME] = key;
         res.push(...this.serializeObj(value, deep));
-      } else if (BufferSourceConverter.isBufferSource(value)) {
+      } else if (isBufferSource(value)) {
         if (key) {
           res.push(`${pad}${keyValue}`);
           res.push(...this.serializeBufferSource(value, deep + 1));
@@ -165,7 +165,7 @@ export abstract class TextConverter {
 
   private static serializeBufferSource(buffer: BufferSource, deep = 0): string[] {
     const pad = this.pad(deep);
-    const view = BufferSourceConverter.toUint8Array(buffer);
+    const view = toUint8Array(buffer);
 
     const res: string[] = [];
 

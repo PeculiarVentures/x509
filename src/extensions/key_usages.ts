@@ -1,6 +1,6 @@
 import { AsnConvert } from "@peculiar/asn1-schema";
 import { id_ce_keyUsage, KeyUsage } from "@peculiar/asn1-x509";
-import { BufferSourceConverter } from "pvtsutils";
+import { isBufferSource } from "@peculiar/utils";
 import { Extension } from "../extension";
 import type { TextObject } from "../text_converter";
 import type { ParseOptions } from "../types";
@@ -44,7 +44,7 @@ export class KeyUsagesExtension extends Extension {
    */
   public constructor(usages: KeyUsageFlags, critical?: boolean);
   public constructor(...args: any[]) {
-    if (BufferSourceConverter.isBufferSource(args[0])) {
+    if (isBufferSource(args[0])) {
       super(args[0] as BufferSource, args[1] as ParseOptions | undefined);
 
       const value = AsnConvert.parse(this.value, KeyUsage, this.parseOptions);

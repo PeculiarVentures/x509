@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeAll } from "vitest";
 import * as x509 from "./index";
-import { Convert } from "pvtsutils";
+import { base64, toArrayBuffer } from "@peculiar/utils";
 
 const crypto = x509.cryptoProvider.get();
 
@@ -87,7 +87,7 @@ describe("crypto", () => {
       let ok = await caCert.verify({ date: new Date("2020/01/01 12:00") });
       expect(ok).toBe(true);
 
-      const crlBase = new x509.X509Crl(Convert.FromBase64(pem));
+      const crlBase = new x509.X509Crl(toArrayBuffer(base64.decode(pem)));
 
       const crl = await x509.X509CrlGenerator.create({
         issuer: caCert.issuer,
