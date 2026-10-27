@@ -15,6 +15,7 @@
 - [About](#about)
 - [⚠️ Reflect Polyfill Required](#-reflect-polyfill-required)
 - [Installation](#installation)
+- [Breaking Changes In v3](#breaking-changes-in-v3)
 - [Documentation](#documentation)
 - [Usage](#usage)
   - [Browser](#browser)
@@ -55,6 +56,17 @@ If you see the error **"tsyringe requires a reflect polyfill. Please add 'import
 npm install @peculiar/x509
 ```
 
+## Breaking Changes In v3
+
+v3 is ESM-only and requires Node.js `^20.19.0 || >=22.12.0` (was `>=20.0.0`). CommonJS code can still `require("@peculiar/x509")` on these versions; Node.js 20.0–20.18 and 22.0–22.11 can't. The public API is unchanged, and the Reflect polyfill is still required.
+
+- **TypeScript compiling to CommonJS:** use `"module": "node20"` or `"nodenext"` (`node16` fails with TS1479). ESM and bundler setups need no changes.
+- **Jest in CommonJS mode:** switch to ESM mode or Vitest, or configure an ESM-to-CommonJS transformer and make sure `transformIgnorePatterns` doesn't exclude `@peculiar/x509` and its ESM dependencies (`@peculiar/asn1-*`, `asn1js`, `@peculiar/utils`).
+- **Deep imports** (`@peculiar/x509/build/x509.cjs.js`, `@peculiar/x509/build/x509.es.js`) are blocked by `exports`; import from `@peculiar/x509`.
+- **No browser script bundle:** `build/x509.js` (the `x509` global for `<script>` tags) and the `unpkg`/`jsdelivr` fields are removed, so an unversioned `<script src="https://unpkg.com/@peculiar/x509">` stops working. Bundle the package or import it from esm.sh as a module (see [Browser](#browser)), or pin `@peculiar/x509@2` for the old script.
+- **`@peculiar/asn1-schema` 3 is a peer dependency**, and the `@peculiar/asn1-*` packages move to 3 (which need `asn1js` 4). npm installs peers automatically; the app must end up with a single copy of each. ASN.1 objects built with asn1-schema 2 packages (for example a `Certificate` from `@peculiar/asn1-x509` 2) can't be passed to x509 3, so upgrade other libraries that use them at the same time.
+- **`@peculiar/webcrypto`** as the crypto provider: use 2.x, which shares asn1-schema 3 with x509. Next to asn1-schema 3, 1.x keeps two private asn1-schema 2 copies and its ECDSA signing fails with `Cannot get schema for 'EcDsaSignature' target`.
+
 ## Documentation
 
 [https://peculiarventures.github.io/x509/](https://peculiarventures.github.io/x509/)
@@ -63,13 +75,19 @@ npm install @peculiar/x509
 
 ### Browser
 
-Every release of `@peculiar/x509` will have new build of `./build/x509.js` for use in the browser. To get access to module classes use `x509` global variable.
-
-> WARN: We recommend hosting and controlling your own copy for security reasons
+Bundle `@peculiar/x509` with your app (Vite, webpack, esbuild, Rollup), or load the ESM build from a CDN that serves npm packages as browser modules, such as [esm.sh](https://esm.sh). Import the Reflect polyfill first:
 
 ```html
-<script src="https://unpkg.com/@peculiar/x509"></script>
+<script type="module">
+  import "https://esm.sh/reflect-metadata";
+  import * as x509 from "https://esm.sh/@peculiar/x509@3";
+
+  const cert = new x509.X509Certificate(pem);
+  console.log(cert.subject);
+</script>
 ```
+
+> WARN: Pin the version in the URL, and prefer bundling or hosting your own copy for production.
 
 A simple web application examples
 

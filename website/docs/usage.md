@@ -2,13 +2,19 @@
 
 ### Browser
 
-Every release of `@peculiar/x509` will have new build of `./build/x509.js` for use in the browser. To get access to module classes use `x509` global variable.
-
-> WARN: We recommend hosting and controlling your own copy for security reasons
+Bundle `@peculiar/x509` with your app (Vite, webpack, esbuild, Rollup), or load the ESM build from a CDN that serves npm packages as browser modules, such as [esm.sh](https://esm.sh). Import the Reflect polyfill first:
 
 ```html
-<script src="https://unpkg.com/@peculiar/x509"></script>
+<script type="module">
+  import "https://esm.sh/reflect-metadata";
+  import * as x509 from "https://esm.sh/@peculiar/x509@3";
+
+  const cert = new x509.X509Certificate(pem);
+  console.log(cert.subject);
+</script>
 ```
+
+> WARN: Pin the version in the URL, and prefer bundling or hosting your own copy for production.
 
 A simple web application examples
 
