@@ -23,6 +23,7 @@
   - [Parse a X509 certificate](#parse-a-x509-certificate)
   - [Create a PKCS#10 certificate request](#create-a-pkcs10-certificate-request)
   - [Decoded X509 certificate](#decoded-x509-certificate)
+  - [Verify a certificate](#verify-a-certificate)
   - [Build a certificate chain](#build-a-certificate-chain)
   - [Export a list of X509 certificates to PKCS#7 format](#export-a-list-of-x509-certificates-to-pkcs7-format)
 
@@ -213,6 +214,19 @@ X509Certificate {
 }
 ```
 
+### Verify a certificate
+
+```js
+const cert = new x509.X509Certificate(raw);
+const issuer = new x509.X509Certificate(issuerRaw);
+
+// Checks the signature and that the certificate is valid at `date` (default: now);
+// pass `signatureOnly: true` to check only the signature.
+const ok = await cert.verify({ date: new Date(), publicKey: issuer });
+```
+
+Pass the issuer certificate (or its `PublicKey`) as `publicKey`: x509 then imports the key with the hash of the certificate's signature algorithm. A `CryptoKey` is used as is, and `issuer.publicKey.export()` without arguments imports an RSA key with SHA-256, so it doesn't verify a certificate signed with, for example, `sha384WithRSAEncryption`. Export it with the matching algorithm instead: `issuer.publicKey.export({ name: "RSASSA-PKCS1-v1_5", hash: "SHA-384" }, ["verify"])`.
+
 ### Build a certificate chain
 
 ```js
@@ -225,7 +239,7 @@ const chain = new x509.X509ChainBuilder({
   ],
 });
 
-const cert = x509.X509Certificate(raw);
+const cert = new x509.X509Certificate(raw);
 const items = await chain.build(cert);
 console.log(items); // [ X509Certificate, X509Certificate, X509Certificate ]
 ```
