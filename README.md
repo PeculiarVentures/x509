@@ -125,7 +125,7 @@ Runnable examples are on the [website](https://peculiarventures.github.io/x509/d
 - Certificates: [read a certificate](https://peculiarventures.github.io/x509/docs/examples/certificates/parse-certificate), [create a self-signed certificate](https://peculiarventures.github.io/x509/docs/examples/certificates/self-signed), [issue and verify a certificate](https://peculiarventures.github.io/x509/docs/examples/certificates/issue-certificate), [distinguished names](https://peculiarventures.github.io/x509/docs/examples/certificates/names)
 - Certificate requests: [create a certificate request](https://peculiarventures.github.io/x509/docs/examples/requests/create-csr), [issue a certificate from a request](https://peculiarventures.github.io/x509/docs/examples/requests/sign-csr)
 - Revocation: [create and check a CRL](https://peculiarventures.github.io/x509/docs/examples/revocation/crl)
-- Chains and bundles: [build a certificate chain](https://peculiarventures.github.io/x509/docs/examples/chains/build-chain), [PKCS#7 files and PEM bundles](https://peculiarventures.github.io/x509/docs/examples/chains/pkcs7)
+- Chains and bundles: [build a certificate chain](https://peculiarventures.github.io/x509/docs/examples/chains/build-chain), [search paths to a trusted anchor](https://peculiarventures.github.io/x509/docs/examples/chains/build-to-anchor), [PKCS#7 files and PEM bundles](https://peculiarventures.github.io/x509/docs/examples/chains/pkcs7)
 
 ## Contributing
 

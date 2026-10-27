@@ -1,0 +1,105 @@
+---
+sidebar_position: 2
+---
+
+import RunnableExample from "@site/src/components/RunnableExample";
+import source from "!!raw-loader!./build-to-anchor.example.ts";
+
+# Build a path to a trusted anchor
+
+`buildToAnchor()` searches alternative certificate paths until it reaches an explicitly configured trust anchor. It returns certificates in **signer → anchor** order, including both endpoints. It never returns a partial path. The existing [`build()`](./build-chain) method retains its first-issuer selection, partial-chain results, and existing errors.
+
+The example includes a card certificate with a damaged signature. Its public key still verifies the partition, but its own signature cannot be confirmed by the root. The search backtracks from that branch and finds the original card.
+
+<RunnableExample source={source} load={() => import("./build-to-anchor.example.ts?run")} />
+
+## Trust anchors
+
+Pass a single certificate or a nonempty readonly array:
+
+```ts
+const builder = new x509.X509ChainBuilder({ certificates: intermediates });
+const path = await builder.buildToAnchor(signer, {
+  trustAnchors: root,
+});
+
+// An array means reaching ANY one of these anchors is sufficient.
+const anotherPath = await builder.buildToAnchor(signer, {
+  trustAnchors: [oldRoot, newRoot],
+});
+```
+
+Anchors automatically participate in the search; they do not need to appear in `certificates`. Anchor identity uses the entire DER certificate, not just its name or key. A starting certificate that equals an anchor produces `[signer]`. The anchor's own signature is not checked, but the signature of its child is verified using the anchor's key. An empty anchor array throws `TypeError`.
+
+To require paths to several roots, make a separate call for each root and the appropriate signer candidate. To expose **anchor → signer** order, use `[...path].reverse()`.
+
+## Alternative paths and cycles
+
+The search uses depth-first backtracking. Same-name issuer candidates are ranked as follows:
+
+1. Configured trust anchors.
+2. Other candidates whose SKI matches the current certificate's AKI key identifier.
+3. Other same-name candidates.
+
+Within each group, complete DER bytes determine the order. AKI/SKI values are ordering hints: absent, mismatched, or unreadable identifiers do not exclude a signature-valid issuer. The pool and anchor array order do not affect the result. The returned path is deterministic for the same certificates, parameters, and crypto-provider behavior; it is not necessarily the shortest path.
+
+DER-identical input certificates are deduplicated. A repeated certificate in the current path rejects that branch, while other branches remain available. A repeated distinguished name is not itself a cycle. Self-issued key rollover is supported. An untrusted self-signed certificate does not end the search: a cross-certificate may still connect it to a configured anchor.
+
+The pool and anchor arrays are snapshotted at the start of each call and are not mutated. Signature-verification outcomes are cached by child/issuer pair only for that call. Changing `builder.certificates` affects subsequent calls.
+
+## Search limits
+
+`X509ChainBuilder.defaultLimits` is a frozen object. Optional overrides are merged with these defaults:
+
+| Option | Default | Meaning |
+| --- | --- | --- |
+| `maxDepth` | `16` | Maximum certificates in a path, including signer and anchor |
+| `maxSearchSteps` | `10_000` | Total child/issuer pairs considered across all branches |
+
+Each considered pair costs a step, including cache hits, cycles, invalid signatures, and verification errors. Each step performs at most one signature verification. Limits must be positive safe integers; invalid values throw `RangeError`.
+
+A depth limit prunes only the affected branch. A shorter alternative can still succeed. Exhausting the step budget stops the entire search. If no path is found and any potential branch was pruned by depth, the result is `LIMIT_EXCEEDED`, not `NO_PATH`.
+
+These limits bound traversal, not input parsing, certificate sizes, or pool preparation. Applications processing untrusted evidence should separately bound its bytes and certificate count before parsing it.
+
+## Failure diagnostics
+
+`X509ChainBuildError` distinguishes two outcomes:
+
+- `NO_PATH`: available branches were exhausted without a confirmed path.
+- `LIMIT_EXCEEDED`: a limit prevented completion; `limit` names the constraint. A suitable path may still exist.
+
+`rejections` contains the first 64 events in traversal order. `rejectionsTruncated` indicates that further events were omitted. Reasons are `NO_ISSUER`, `SIGNATURE_INVALID`, `VERIFICATION_ERROR`, `CYCLE`, and `DEPTH`. An exception verifying a particular pair is recorded as `VERIFICATION_ERROR` with its original `cause`; alternative candidates are still tried. `NO_PATH` therefore means no path was confirmed with this provider and these matching rules, not that every cryptographic algorithm is supported.
+
+```ts
+try {
+  await builder.buildToAnchor(signer, { trustAnchors: root });
+} catch (error) {
+  if (!(error instanceof x509.X509ChainBuildError)) throw error;
+  console.log(error.code, error.limit);
+  for (const event of error.rejections) {
+    console.log(event.certificate.subject, event.candidate?.subject, event.reason);
+  }
+}
+```
+
+## Cancellation and crypto providers
+
+```ts
+const controller = new AbortController();
+const pending = builder.buildToAnchor(signer, {
+  trustAnchors: root,
+  signal: controller.signal,
+}, customCrypto);
+
+controller.abort();
+await pending; // Rejects with controller.signal.reason.
+```
+
+Cancellation is cooperative during preparation and between search operations, including cache-only traversal. It propagates the signal's original reason, rather than a chain-search error. An in-flight WebCrypto operation is not interrupted, so this is not a hard deadline for individual cryptographic operations. Omitting the third argument uses `cryptoProvider.get()`, as `build()` does.
+
+## Scope of validation
+
+A successful return confirms a signature-linked path to the explicitly configured anchor. It does **not** validate certificate dates, CA/basic constraints, key usage, name constraints, policies, critical extensions, or revocation. Applications must apply the validation and trust policies they require.
+
+**API:** [`X509ChainBuilder`](../../api/classes/X509ChainBuilder.md), [`X509ChainBuildError`](../../api/classes/X509ChainBuildError.md), [`X509ChainBuildToAnchorParams`](../../api/interfaces/X509ChainBuildToAnchorParams.md)
