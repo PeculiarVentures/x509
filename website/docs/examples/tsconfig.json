@@ -1,0 +1,12 @@
+{
+  // Typechecks the examples against the library source, so API changes that break them fail the website workflow.
+  "extends": "../../../tsconfig.json",
+  "compilerOptions": {
+    // src/provider.ts falls back to Node.js `global` when there is no `self`.
+    "types": ["node"],
+    "paths": {
+      "@peculiar/x509": ["../../../src/index.ts"]
+    }
+  },
+  "include": ["**/*.example.ts"]
+}

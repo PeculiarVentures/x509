@@ -1,0 +1,14 @@
+---
+sidebar_position: 1
+---
+
+import RunnableExample from "@site/src/components/RunnableExample";
+import source from "!!raw-loader!./build-chain.example.ts";
+
+# Build a certificate chain
+
+`X509ChainBuilder` orders certificates from a leaf up to its root. It finds each issuer by name and key identifier and checks the signature, but it doesn't check validity dates, key usage or revocation, and it doesn't know which roots you trust: compare the end of the chain with your trusted roots yourself.
+
+<RunnableExample source={source} load={() => import("./build-chain.example.ts?run")} />
+
+**API:** [`X509ChainBuilder`](../../api/classes/X509ChainBuilder.md), [`X509Certificate.isSelfSigned()`](../../api/classes/X509Certificate.md#isselfsigned)

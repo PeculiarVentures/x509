@@ -1,0 +1,14 @@
+---
+sidebar_position: 2
+---
+
+import RunnableExample from "@site/src/components/RunnableExample";
+import source from "!!raw-loader!./self-signed.example.ts";
+
+# Create a self-signed certificate
+
+Generate a key pair with WebCrypto and create a self-signed CA certificate. The same `signingAlgorithm` works for RSA (`RSASSA-PKCS1-v1_5`, `RSA-PSS`), ECDSA and Ed25519 keys; set the hash in it, as here.
+
+<RunnableExample source={source} load={() => import("./self-signed.example.ts?run")} />
+
+**API:** [`X509CertificateGenerator`](../../api/classes/X509CertificateGenerator.md), [`BasicConstraintsExtension`](../../api/classes/BasicConstraintsExtension.md), [`KeyUsagesExtension`](../../api/classes/KeyUsagesExtension.md), [`PemConverter`](../../api/classes/PemConverter.md)

@@ -7,5 +7,7 @@
     "paths": {
       "@site/*": ["./*"]
     }
-  }
+  },
+  // The examples have their own tsconfig that checks them against the library source.
+  "exclude": ["node_modules", "build", "docs/examples"]
 }

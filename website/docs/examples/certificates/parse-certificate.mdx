@@ -1,0 +1,14 @@
+---
+sidebar_position: 1
+---
+
+import RunnableExample from "@site/src/components/RunnableExample";
+import source from "!!raw-loader!./parse-certificate.example.ts";
+
+# Read a certificate
+
+Parse a PEM certificate and read its subject, issuer, serial number, validity period, public key and extensions. `getExtension()` takes an extension class and returns a typed object, or `null` when the certificate doesn't have that extension. `toString("text")` prints the whole certificate in a readable form.
+
+<RunnableExample source={source} load={() => import("./parse-certificate.example.ts?run")} />
+
+**API:** [`X509Certificate`](../../api/classes/X509Certificate.md), [`Name`](../../api/classes/Name.md), [`SubjectAlternativeNameExtension`](../../api/classes/SubjectAlternativeNameExtension.md), [`KeyUsagesExtension`](../../api/classes/KeyUsagesExtension.md)

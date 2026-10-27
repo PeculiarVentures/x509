@@ -1,31 +1,47 @@
 <li>
 
-#### Parsing X.509 certificates
+#### Read certificates
 
-Extract information from certificates, including subject, issuer, public key, validity period and other.
-
-</li>
-
-<li>
-
-#### Generating X.509 certificates
-
-Easily create self-signed certificates or certificates signed by a CA.
+Parse PEM, Base64, hex, or DER certificates and read the subject, issuer, validity, public key, and typed extensions, or print them all as text.
 
 </li>
 
 <li>
 
-#### Creating PKCS#10 certificate requests
+#### Create and issue certificates
 
-Generate certificate signing requests (CSRs) for obtaining certificates from a CA.
+Create self-signed CA certificates or issue certificates from a CA, with Basic Constraints, Key Usage, Subject Alternative Name, and other extensions.
 
 </li>
 
 <li>
 
-#### Validating certificate chains
+#### Certificate requests
 
-Ensure the authenticity and trustworthiness of certificate chains.
+Generate PKCS#10 certificate signing requests, and verify and issue certificates from requests you receive.
+
+</li>
+
+<li>
+
+#### Revocation lists
+
+Create and parse CRLs with revocation reasons, verify their signatures, and check whether a certificate is revoked.
+
+</li>
+
+<li>
+
+#### Chains and bundles
+
+Build a chain from a certificate up to its root, and read and write PKCS#7 files and PEM bundles.
+
+</li>
+
+<li>
+
+#### WebCrypto algorithms
+
+RSA (PKCS#1 v1.5 and PSS), ECDSA, Ed25519, Ed448, ML-DSA, and SLH-DSA, with the platform's WebCrypto or any compatible implementation as the provider.
 
 </li>

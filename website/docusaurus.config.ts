@@ -3,10 +3,11 @@ import type * as Preset from "@docusaurus/preset-classic";
 import { themes as prismThemes } from "prism-react-renderer";
 import npm2yarn from "@docusaurus/remark-plugin-npm2yarn";
 import packageJSON from "../package.json";
+import runnableExamples from "./plugins/runnable-examples";
 
 const config: Config = {
   title: "@peculiar/x509",
-  tagline: "@peculiar/x509",
+  tagline: "X.509 certificates, requests and CRLs for JavaScript",
   favicon: "img/favicon.ico",
   url: "https://peculiarventures.github.io",
   baseUrl: "/x509",
@@ -60,6 +61,7 @@ const config: Config = {
       },
     ],
     "docusaurus-plugin-sass",
+    runnableExamples,
   ],
 
   themeConfig: {
@@ -87,6 +89,12 @@ const config: Config = {
           label: "Docs",
         },
         {
+          type: "docSidebar",
+          position: "right",
+          sidebarId: "examples",
+          label: "Examples",
+        },
+        {
           href: "https://github.com/PeculiarVentures/x509",
           position: "right",
           className: "header-github-link",
@@ -106,8 +114,8 @@ const config: Config = {
               to: "/docs/installation",
             },
             {
-              label: "Usage",
-              to: "/docs/usage",
+              label: "Examples",
+              to: "/docs/examples/",
             },
             {
               label: "API",

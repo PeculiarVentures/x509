@@ -1,0 +1,14 @@
+---
+sidebar_position: 2
+---
+
+import RunnableExample from "@site/src/components/RunnableExample";
+import source from "!!raw-loader!./sign-csr.example.ts";
+
+# Issue a certificate from a request
+
+The CA side of a request: check the request's signature, then issue a certificate for its subject and public key. Requested extensions are only a wish list. The CA picks which ones to copy and sets the rest itself.
+
+<RunnableExample source={source} load={() => import("./sign-csr.example.ts?run")} />
+
+**API:** [`Pkcs10CertificateRequest`](../../api/classes/Pkcs10CertificateRequest.md), [`X509CertificateGenerator`](../../api/classes/X509CertificateGenerator.md)

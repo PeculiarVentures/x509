@@ -1,0 +1,14 @@
+---
+sidebar_position: 2
+---
+
+import RunnableExample from "@site/src/components/RunnableExample";
+import source from "!!raw-loader!./pkcs7.example.ts";
+
+# PKCS#7 files and PEM bundles
+
+`X509Certificates` is an array of certificates that reads and writes certs-only PKCS#7 (`.p7b`) files. For a PEM bundle, decode each PEM block with `PemConverter`.
+
+<RunnableExample source={source} load={() => import("./pkcs7.example.ts?run")} />
+
+**API:** [`X509Certificates`](../../api/classes/X509Certificates.md), [`PemConverter`](../../api/classes/PemConverter.md)
