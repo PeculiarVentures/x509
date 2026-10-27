@@ -163,6 +163,32 @@ describe("X509ChainBuilder.buildToAnchor", () => {
 
   afterEach(() => vi.restoreAllMocks());
 
+  it("constructs errors with named parameters and optional diagnostics", () => {
+    const noPath = new x509.X509ChainBuildError({ code: "NO_PATH" });
+    expect(noPath).toBeInstanceOf(Error);
+    expect(noPath).toMatchObject({ name: "X509ChainBuildError", code: "NO_PATH", limit: undefined, rejections: [], rejectionsTruncated: false });
+
+    const rejections: x509.X509ChainRejection[] = [{ certificate: leaf, candidate: issuer, reason: "DEPTH" }];
+    const limited = new x509.X509ChainBuildError({ code: "LIMIT_EXCEEDED", limit: "maxDepth", rejections, rejectionsTruncated: true });
+    rejections.length = 0;
+    expect(limited).toMatchObject({ code: "LIMIT_EXCEEDED", limit: "maxDepth", rejectionsTruncated: true });
+    expect(limited.rejections).toEqual([{ certificate: leaf, candidate: issuer, reason: "DEPTH" }]);
+    expect(Object.isFrozen(limited.rejections)).toBe(true);
+  });
+
+  it("matches decoded DN strings across PrintableString and UTF8String encodings", async () => {
+    const printable = new x509.Name([{ CN: [{ printableString: "Root" }] }]);
+    const utf8 = new x509.Name([{ CN: [{ utf8String: "Root" }] }]);
+    const signer = await x509.X509CertificateGenerator.create(
+      { subject: "CN=Signer", issuer: utf8, publicKey: leafKeys.publicKey, signingKey: rootKeys.privateKey, signingAlgorithm: algorithm },
+      crypto,
+    );
+    const anchor = await x509.X509CertificateGenerator.createSelfSigned({ name: printable, keys: rootKeys, signingAlgorithm: algorithm }, crypto);
+    expect(new Uint8Array(signer.issuerName.toArrayBuffer())).not.toEqual(new Uint8Array(anchor.subjectName.toArrayBuffer()));
+    expect(signer.issuer).toBe(anchor.subject);
+    expect(ids(await new x509.X509ChainBuilder().buildToAnchor(signer, { trustAnchors: anchor }))).toEqual(ids([signer, anchor]));
+  });
+
   it("includes an anchor supplied outside the pool and uses the explicit crypto provider", async () => {
     const builder = new x509.X509ChainBuilder({ certificates: [issuer] });
     const verify = vi.spyOn(leaf, "verify");

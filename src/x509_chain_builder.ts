@@ -40,6 +40,18 @@ export interface X509ChainRejection {
   cause?: unknown;
 }
 
+/** Named parameters for constructing an {@link X509ChainBuildError}. */
+export interface X509ChainBuildErrorParams {
+  /** Whether the search was exhausted or stopped by a resource limit. */
+  code: "NO_PATH" | "LIMIT_EXCEEDED";
+  /** Resource limit that prevented completion, for LIMIT_EXCEEDED. */
+  limit?: keyof X509ChainSearchLimits;
+  /** Recorded rejection events. Defaults to an empty list; at most 64 events are retained. */
+  rejections?: readonly X509ChainRejection[];
+  /** Whether additional rejection events were omitted. Default: false. */
+  rejectionsTruncated?: boolean;
+}
+
 /** A completed search without a confirmed path, or a search stopped by a resource limit. */
 export class X509ChainBuildError extends Error {
   /** NO_PATH means all available branches were exhausted; LIMIT_EXCEEDED leaves existence of a path unknown. */
@@ -53,12 +65,10 @@ export class X509ChainBuildError extends Error {
 
   /**
    * Creates a chain search error.
-   * @param code Search outcome
-   * @param rejections Recorded rejection events
-   * @param rejectionsTruncated Whether additional events were omitted
-   * @param limit Resource limit that stopped the search
+   * @param params Search outcome, optional diagnostics, and the resource limit that stopped the search
    */
-  public constructor(code: "NO_PATH" | "LIMIT_EXCEEDED", rejections: readonly X509ChainRejection[], rejectionsTruncated: boolean, limit?: keyof X509ChainSearchLimits) {
+  public constructor(params: X509ChainBuildErrorParams) {
+    const { code, rejections = [], rejectionsTruncated = false, limit } = params;
     super(code === "NO_PATH" ? "Cannot build a certificate chain to a trusted anchor. No path found." : `Cannot build a certificate chain to a trusted anchor. Limit exceeded: ${limit}.`);
     this.name = "X509ChainBuildError";
     this.code = code;
@@ -122,6 +132,7 @@ export class X509ChainBuilder {
    * Finds a signature-verified path from cert to any explicitly trusted anchor, including both endpoints.
    * Searches alternative branches in deterministic depth-first order: anchors, AKI/SKI matches, then other
    * same-name issuers, with complete DER as the tie-breaker. Identifiers are hints, not hard constraints.
+   * Issuer names must have equal subject/issuer string representations; full X.500 name matching is not performed.
    * Does not validate dates, CA constraints, usage, policies, or revocation. Partial paths are never returned.
    * @param cert Starting certificate
    * @param params Trusted endpoints, resource limits, and optional cooperative cancellation
@@ -298,7 +309,7 @@ async function buildChainToAnchor(cert: X509Certificate, certificates: readonly 
       truncated = true;
     }
   };
-  const failure = (limit?: keyof X509ChainSearchLimits) => new X509ChainBuildError(limit ? "LIMIT_EXCEEDED" : "NO_PATH", rejections, truncated, limit);
+  const failure = (limit?: keyof X509ChainSearchLimits) => new X509ChainBuildError({ code: limit ? "LIMIT_EXCEEDED" : "NO_PATH", rejections, rejectionsTruncated: truncated, limit });
   const verified = new Map<ChainSearchNode, Map<ChainSearchNode, ChainVerification>>();
   const verify = async (child: ChainSearchNode, issuer: ChainSearchNode): Promise<ChainVerification> => {
     let cache = verified.get(child);
