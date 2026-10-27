@@ -71,7 +71,7 @@ These limits bound traversal, not input parsing, certificate sizes, or pool prep
 - `NO_PATH`: available branches were exhausted without a confirmed path.
 - `LIMIT_EXCEEDED`: a limit prevented completion; `limit` names the constraint. A suitable path may still exist.
 
-The public constructor takes named parameters: `new X509ChainBuildError({ code: "NO_PATH" })`. Optional `rejections`, `rejectionsTruncated`, and `limit` fields provide diagnostics; omitted diagnostics default to an empty list and `false`.
+The public constructor takes named parameters: `new X509ChainBuildError({ code: "NO_PATH" })`. TypeScript requires `limit` when `code` is `"LIMIT_EXCEEDED"` and rejects a limit for `"NO_PATH"`. Optional `rejections` and `rejectionsTruncated` provide diagnostics; omitted diagnostics default to an empty list and `false`.
 
 `rejections` contains the first 64 events in traversal order. `rejectionsTruncated` indicates that further events were omitted. Reasons are `NO_ISSUER`, `SIGNATURE_INVALID`, `VERIFICATION_ERROR`, `CYCLE`, and `DEPTH`. An exception verifying a particular pair is recorded as `VERIFICATION_ERROR` with its original `cause`; alternative candidates are still tried. `NO_PATH` therefore means no path was confirmed with this provider and these matching rules, not that every cryptographic algorithm is supported.
 

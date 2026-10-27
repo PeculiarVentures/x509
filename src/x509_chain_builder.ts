@@ -41,16 +41,25 @@ export interface X509ChainRejection {
 }
 
 /** Named parameters for constructing an {@link X509ChainBuildError}. */
-export interface X509ChainBuildErrorParams {
-  /** Whether the search was exhausted or stopped by a resource limit. */
-  code: "NO_PATH" | "LIMIT_EXCEEDED";
-  /** Resource limit that prevented completion, for LIMIT_EXCEEDED. */
-  limit?: keyof X509ChainSearchLimits;
+export type X509ChainBuildErrorParams = {
   /** Recorded rejection events. Defaults to an empty list; at most 64 events are retained. */
   rejections?: readonly X509ChainRejection[];
   /** Whether additional rejection events were omitted. Default: false. */
   rejectionsTruncated?: boolean;
-}
+} & (
+  | {
+      /** All available branches were exhausted without a confirmed path. */
+      code: "NO_PATH";
+      /** An exhausted search has no limiting constraint. */
+      limit?: never;
+    }
+  | {
+      /** A resource limit prevented the search from completing. */
+      code: "LIMIT_EXCEEDED";
+      /** Resource limit that prevented completion. */
+      limit: keyof X509ChainSearchLimits;
+    }
+);
 
 /** A completed search without a confirmed path, or a search stopped by a resource limit. */
 export class X509ChainBuildError extends Error {
@@ -309,7 +318,8 @@ async function buildChainToAnchor(cert: X509Certificate, certificates: readonly 
       truncated = true;
     }
   };
-  const failure = (limit?: keyof X509ChainSearchLimits) => new X509ChainBuildError({ code: limit ? "LIMIT_EXCEEDED" : "NO_PATH", rejections, rejectionsTruncated: truncated, limit });
+  const failure = (limit?: keyof X509ChainSearchLimits) =>
+    new X509ChainBuildError(limit ? { code: "LIMIT_EXCEEDED", limit, rejections, rejectionsTruncated: truncated } : { code: "NO_PATH", rejections, rejectionsTruncated: truncated });
   const verified = new Map<ChainSearchNode, Map<ChainSearchNode, ChainVerification>>();
   const verify = async (child: ChainSearchNode, issuer: ChainSearchNode): Promise<ChainVerification> => {
     let cache = verified.get(child);

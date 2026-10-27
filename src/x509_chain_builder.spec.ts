@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, afterEach, vi } from "vitest";
+import { describe, it, expect, expectTypeOf, beforeAll, afterEach, vi } from "vitest";
 import * as x509 from "./index";
 
 function corruptSignature(certificate: x509.X509Certificate) {
@@ -163,6 +163,13 @@ describe("X509ChainBuilder.buildToAnchor", () => {
 
   afterEach(() => vi.restoreAllMocks());
 
+  it("requires a limit only for LIMIT_EXCEEDED error parameters", () => {
+    expectTypeOf<{ code: "NO_PATH" }>().toExtend<x509.X509ChainBuildErrorParams>();
+    expectTypeOf<{ code: "LIMIT_EXCEEDED"; limit: "maxDepth" }>().toExtend<x509.X509ChainBuildErrorParams>();
+    expectTypeOf<{ code: "LIMIT_EXCEEDED" }>().not.toExtend<x509.X509ChainBuildErrorParams>();
+    expectTypeOf<{ code: "NO_PATH"; limit: "maxDepth" }>().not.toExtend<x509.X509ChainBuildErrorParams>();
+  });
+
   it("constructs errors with named parameters and optional diagnostics", () => {
     const noPath = new x509.X509ChainBuildError({ code: "NO_PATH" });
     expect(noPath).toBeInstanceOf(Error);
@@ -172,6 +179,7 @@ describe("X509ChainBuilder.buildToAnchor", () => {
     const limited = new x509.X509ChainBuildError({ code: "LIMIT_EXCEEDED", limit: "maxDepth", rejections, rejectionsTruncated: true });
     rejections.length = 0;
     expect(limited).toMatchObject({ code: "LIMIT_EXCEEDED", limit: "maxDepth", rejectionsTruncated: true });
+    expect(limited.message).toContain("Limit exceeded: maxDepth.");
     expect(limited.rejections).toEqual([{ certificate: leaf, candidate: issuer, reason: "DEPTH" }]);
     expect(Object.isFrozen(limited.rejections)).toBe(true);
   });
