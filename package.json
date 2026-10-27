@@ -73,23 +73,15 @@
     "@abraham/reflection": "^0.13.0",
     "@arethetypeswrong/core": "^0.18.5",
     "@peculiar/asn1-schema": "^3.0.0",
-    "@peculiar/webcrypto": "^1.7.1",
+    "@peculiar/webcrypto": "^2.0.0",
     "@types/node": "^24.19.2",
     "@vitest/coverage-v8": "^5.0.5",
     "asn1js": "^4.0.0",
-    "oxfmt": "^0.74.0",
-    "oxlint": "^1.89.0",
+    "oxfmt": "^0.75.0",
+    "oxlint": "^1.90.0",
     "tsdown": "^0.23.2",
     "typescript": "^6.0.3",
     "vitest": "^5.0.5"
-  },
-  "overrides": {
-    "@peculiar/webcrypto": {
-      "@peculiar/asn1-schema": "$@peculiar/asn1-schema"
-    },
-    "webcrypto-core": {
-      "@peculiar/asn1-schema": "$@peculiar/asn1-schema"
-    }
   },
   "devEngines": {
     "packageManager": {

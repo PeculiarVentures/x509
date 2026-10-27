@@ -50,7 +50,6 @@ Fix lint and formatting issues with `npm run lint:fix` and `npm run format`. Use
 - Use Vitest.
 - Put tests next to the code they cover as `src/<module>.spec.ts` (issue regressions and public-API tests in `src/index.spec.ts`).
 - `vitest.setup.ts` loads the Reflect polyfill that `tsyringe` needs and registers one `@peculiar/webcrypto` instance as the crypto provider; specs read it with `cryptoProvider.get()` instead of setting their own. It stays the test provider because some specs cover algorithms only it implements (brainpool and K-256 curves, Ed448/X448 as `EdDSA`/`ECDH-ES`). The issue regressions in `src/index.spec.ts` use Node.js's built-in WebCrypto.
-- `package.json` `overrides` give `@peculiar/webcrypto` 1.x the same `@peculiar/asn1-schema` 3 copy as the library. Without them npm installs two private asn1-schema 2 copies for it and its ECDSA signing fails. Remove the overrides once the tests move to `@peculiar/webcrypto` 2.
 - Cover new behavior and bug fixes with tests.
 
 ### Build And Package Exports
