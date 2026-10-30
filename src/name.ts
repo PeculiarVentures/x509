@@ -12,7 +12,8 @@ function isOID(id: string) {
 
 export type IdOrName = Record<string, string>;
 export class NameIdentifier {
-  private items: IdOrName = {};
+  // Lowercase keys, because attribute type names are case-insensitive
+  private items = new Map<string, string>();
 
   public constructor(names: Record<string, string> = {}) {
     for (const id in names) {
@@ -21,7 +22,7 @@ export class NameIdentifier {
   }
 
   public get(idOrName: string): string | null {
-    return this.items[idOrName] || null;
+    return this.items.get(idOrName.toLowerCase()) ?? null;
   }
 
   public findId(idOrName: string): string | null {
@@ -33,8 +34,8 @@ export class NameIdentifier {
   }
 
   public register(id: string, name: string) {
-    this.items[id] = name;
-    this.items[name] = id;
+    this.items.set(id.toLowerCase(), name);
+    this.items.set(name.toLowerCase(), id);
   }
 }
 
@@ -84,6 +85,15 @@ function escape(data: string) {
   return data
     .replace(/[,+"\\<>;]|^[ #]| $/g, "\\$&") // ",", "+", """, "\", "<", ">" or ";", a leading space or "#", a trailing space
     .replace(/([\r\n\t])/g, replaceUnknownCharacter); // unknown character
+}
+
+function decodeHexPairs(hexPairs: string) {
+  try {
+    // ignoreBOM keeps a leading U+FEFF, which is part of the value
+    return new TextDecoder("utf-8", { fatal: true, ignoreBOM: true }).decode(hex.decode(hexPairs.replace(/\\/g, "")));
+  } catch {
+    throw new Error(`Cannot decode '${hexPairs}' as UTF-8`);
+  }
 }
 
 /**
@@ -235,9 +245,10 @@ export class Name {
    */
   private fromString(data: string) {
     const asn = new AsnName();
-    // One attribute and the separator after it. A value is quoted, or has "\", "," and "+" escaped.
-    // Stray commas and spaces between RDNs are skipped.
-    const regex = /(\d\.[\d.]*\d|[A-Za-z]+)=("(?:\\.|[^\\"])*"|(?:\\.|[^\\,+])*)\s*(?:(\+)\s*|(?:,|$)[\s,]*)/y;
+    // One attribute and the separator after it. The type is an OID, optionally prefixed with "OID.", or a name.
+    // A value is quoted, or has "\", "," and "+" escaped. Stray commas and spaces between RDNs are skipped.
+    // No two adjacent parts match the same character, which keeps backtracking linear.
+    const regex = /(?:(?:oid\.)?(\d+(?:\.\d+)+)|([a-z][a-z\d-]*))=(?:("(?:\\.|[^\\"])*")\s*|((?:\\.|[^\\,+])*))(?:(\+)\s*|(?:,|$)[\s,]*)/iy;
     regex.lastIndex = data.search(/[^\s,]|$/);
     let level = ",";
 
@@ -247,8 +258,8 @@ export class Name {
       if (!matches) {
         throw new Error(`Cannot parse name '${data}' at position ${index}`);
       }
-      const [, type, value, plus] = matches;
-      const attr = this.createAttribute(this.getTypeOid(type), value);
+      const [, oid, type, quoted, unquoted, plus] = matches;
+      const attr = this.createAttribute(oid ?? this.getTypeOid(type), quoted ?? unquoted);
 
       if (level === "+") {
         asn[asn.length - 1].push(attr);
@@ -291,14 +302,12 @@ export class Name {
    * @returns The OID string
    */
   private getTypeOid(type: string): string {
-    if (!/[\d.]+/.test(type)) {
-      type = this.getName(type) || "";
-    }
-    if (!type) {
+    const oid = /^\d+(?:\.\d+)+$/.test(type) ? type : this.getName(type);
+    if (!oid) {
       throw new Error(`Cannot get OID for name type '${type}'`);
     }
 
-    return type;
+    return oid;
   }
 
   /**
@@ -360,7 +369,7 @@ export class Name {
     }
 
     // A run of "\XX" hex pairs is UTF-8 encoded text, any other "\" escapes the next character
-    return value.replace(/((?:\\[0-9A-Fa-f]{2})+)|\\(.)/g, (_, hexPairs: string | undefined, char: string) => (hexPairs ? utf8.decode(hex.decode(hexPairs.replace(/\\/g, ""))) : char));
+    return value.replace(/((?:\\[0-9A-Fa-f]{2})+)|\\(.)/g, (_, hexPairs: string | undefined, char: string) => (hexPairs ? decodeHexPairs(hexPairs) : char));
   }
 
   /**

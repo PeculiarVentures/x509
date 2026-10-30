@@ -162,6 +162,11 @@ describe("Name", () => {
       expect(new x509.Name("CN=\\D0\\9F\\D1\\80\\D0\\B8").toJSON()).toEqual([{ CN: ["При"] }]);
       expect(new x509.Name("CN=\\4F\\2C").toJSON()).toEqual([{ CN: ["O,"] }]);
       expect(new x509.Name("CN=\\\\0a").toJSON()).toEqual([{ CN: ["\\0a"] }]);
+      expect(new x509.Name("CN=a\\EF\\BB\\BF").toJSON()).toEqual([{ CN: ["a﻿"] }]);
+    });
+
+    it("throws on hex pairs that are not UTF-8", () => {
+      expect(() => new x509.Name("CN=Caf\\E9")).toThrow("Cannot decode '\\E9' as UTF-8");
     });
 
     it("keeps quotes inside an unquoted value", () => {
@@ -173,6 +178,14 @@ describe("Name", () => {
       expect(() => new x509.Name("CN =a")).toThrow("at position 0");
       expect(() => new x509.Name("CN=a\\")).toThrow("at position 0");
       expect(() => new x509.Name("CN=a++O=b")).toThrow("at position 5");
+    });
+
+    it("parses long values in linear time", () => {
+      const start = performance.now();
+      for (const value of [" ", "a", '"', "\\\\", ' "']) {
+        expect(() => new x509.Name(`CN=${value.repeat(100000)}\\`)).toThrow("at position 0");
+      }
+      expect(performance.now() - start).toBeLessThan(1000);
     });
   });
 
@@ -231,6 +244,28 @@ describe("Name", () => {
       "30663119301706052a030405010c0e736f6d6540656d61696c2e636f6d3116301406052a03040502130b3139322e3136382e302e313131302f06052a030405030c267b38656531336535332d326331632d343262622d386466372d3339393237633062646262367d",
     );
     expect(name.toJSON()).toEqual([{ Email: ["some@email.com"] }, { IP: ["192.168.0.1"] }, { GUID: ["{8ee13e53-2c1c-42bb-8df7-39927c0bdbb6}"] }]);
+  });
+
+  it("extra names with digits and hyphens", () => {
+    const name = new x509.Name("GUID2=a, x-custom=b", { GUID2: "1.2.3.4.5.1", "x-custom": "1.2.3.4.5.2" });
+    expect(name.toJSON()).toEqual([{ GUID2: ["a"] }, { "x-custom": ["b"] }]);
+  });
+
+  it("matches type names case-insensitively", () => {
+    const name = new x509.Name("cn=a, Email=b", { EMAIL: "1.2.3.4.5.1" });
+    expect(name.toString()).toBe("CN=a, EMAIL=b");
+    expect(name.getField("Cn")).toEqual(["a"]);
+  });
+
+  it("accepts an OID prefix on OID types (RFC 2253)", () => {
+    expect(new x509.Name("OID.2.5.4.3=a, oid.2.5.4.10=b").toString()).toBe("CN=a, O=b");
+    expect(() => new x509.Name("OID.CN=a")).toThrow("at position 0");
+  });
+
+  it("throws on an unknown type name", () => {
+    expect(() => new x509.Name("XX=a")).toThrow("Cannot get OID for name type 'XX'");
+    expect(() => new x509.Name("constructor=a")).toThrow("Cannot get OID for name type 'constructor'");
+    expect(() => new x509.Name([{ toString: ["a"] }])).toThrow("Cannot get OID for name type 'toString'");
   });
 
   it("use Utf8String for Common name", () => {
@@ -340,6 +375,11 @@ describe("NameIdentifier", () => {
       {
         name: "existing name",
         args: "CN",
+        want: "2.5.4.3",
+      },
+      {
+        name: "existing name in another case",
+        args: "cn",
         want: "2.5.4.3",
       },
       {
