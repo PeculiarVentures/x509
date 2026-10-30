@@ -82,10 +82,8 @@ function replaceUnknownCharacter(text: string, char: string) {
 
 function escape(data: string) {
   return data
-    .replace(/([,+"\\<>;])/g, "\\$1") // one of the characters ",", "+", """, "\", "<", ">" or ";"
-    .replace(/^([ #])/, "\\$1") // a space or "#" character occurring at the beginning of the string
-    .replace(/([ ]$)/, "\\$1") // a space character occurring at the end of the string
-    .replace(/([\r\n\t])/, replaceUnknownCharacter); // unknown character
+    .replace(/[,+"\\<>;]|^[ #]| $/g, "\\$&") // ",", "+", """, "\", "<", ">" or ";", a leading space or "#", a trailing space
+    .replace(/([\r\n\t])/g, replaceUnknownCharacter); // unknown character
 }
 
 /**
@@ -237,22 +235,20 @@ export class Name {
    */
   private fromString(data: string) {
     const asn = new AsnName();
-    const regex = /(\d\.[\d.]*\d|[A-Za-z]+)=((?:"")|(?:".*?[^\\]")|(?:[^,+"\\](?=[,+]|$))|(?:[^,+].*?(?:[^\\][,+]))|(?:))([,+])?/g;
-    let matches: RegExpExecArray | null = null;
+    // One attribute and the separator after it. A value is quoted, or has "\", "," and "+" escaped.
+    // Stray commas and spaces between RDNs are skipped.
+    const regex = /(\d\.[\d.]*\d|[A-Za-z]+)=("(?:\\.|[^\\"])*"|(?:\\.|[^\\,+])*)\s*(?:(\+)\s*|(?:,|$)[\s,]*)/y;
+    regex.lastIndex = data.search(/[^\s,]|$/);
     let level = ",";
 
-    // eslint-disable-next-line no-cond-assign
-    while ((matches = regex.exec(`${data},`))) {
-      let [, type, value] = matches;
-      const lastChar = value[value.length - 1];
-      if (lastChar === "," || lastChar === "+") {
-        value = value.slice(0, value.length - 1);
-        matches[3] = lastChar;
+    while (regex.lastIndex < data.length) {
+      const index = regex.lastIndex;
+      const matches = regex.exec(data);
+      if (!matches) {
+        throw new Error(`Cannot parse name '${data}' at position ${index}`);
       }
-      const next = matches[3];
-
-      type = this.getTypeOid(type);
-      const attr = this.createAttribute(type, value);
+      const [, type, value, plus] = matches;
+      const attr = this.createAttribute(this.getTypeOid(type), value);
 
       if (level === "+") {
         asn[asn.length - 1].push(attr);
@@ -260,7 +256,7 @@ export class Name {
         asn.push(new RelativeDistinguishedName([attr]));
       }
 
-      level = next;
+      level = plus ?? ",";
     }
 
     return asn;
@@ -358,16 +354,13 @@ export class Name {
    * @returns The processed string value
    */
   private processStringValue(value: string): string {
-    const quotedMatches = /"(.*?[^\\])?"/.exec(value);
+    const quotedMatches = /^"((?:\\.|[^\\"])*)"$/.exec(value);
     if (quotedMatches) {
       value = quotedMatches[1];
     }
 
-    return value
-      .replace(/\\0a/gi, "\n") // \n
-      .replace(/\\0d/gi, "\r") // \r
-      .replace(/\\0g/gi, "\t") // \t
-      .replace(/\\(.)/g, "$1"); // unescape
+    // A run of "\XX" hex pairs is UTF-8 encoded text, any other "\" escapes the next character
+    return value.replace(/((?:\\[0-9A-Fa-f]{2})+)|\\(.)/g, (_, hexPairs: string | undefined, char: string) => (hexPairs ? utf8.decode(hex.decode(hexPairs.replace(/\\/g, ""))) : char));
   }
 
   /**

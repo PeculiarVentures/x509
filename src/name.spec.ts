@@ -137,6 +137,43 @@ describe("Name", () => {
       const name = new x509.Name(text);
       expect(name.toString()).toBe('CN=here is a test message with \\"\\,\\" character+CN=It includes \\< \\> \\+ escaped characters\\ ');
     });
+
+    it("escapes each character once", () => {
+      expect(new x509.Name([{ CN: [{ utf8String: " " }] }]).toString()).toBe("CN=\\ ");
+      expect(new x509.Name([{ CN: [{ utf8String: "a\n\r\tb\n" }] }]).toString()).toBe("CN=a\\0A\\0D\\09b\\0A");
+    });
+
+    it("round-trips values with special characters", () => {
+      const values = [" ", "#", " # ", "\\", "a\\", "\\0a", "a\n\nb", "\t\t", 'say "hi"', "a,b+c=d", "Привет\r\n"];
+      for (const value of values) {
+        const text = new x509.Name([{ CN: [{ utf8String: value }] }, { O: [{ utf8String: value }] }]).toString();
+        expect(new x509.Name(text).toJSON()).toEqual([{ CN: [value] }, { O: [value] }]);
+      }
+    });
+
+    it("ends a value at a separator after an escaped backslash", () => {
+      expect(new x509.Name("CN=a\\\\, O=b").toJSON()).toEqual([{ CN: ["a\\"] }, { O: ["b"] }]);
+      expect(new x509.Name("CN=a\\\\+O=b").toJSON()).toEqual([{ CN: ["a\\"], O: ["b"] }]);
+      expect(new x509.Name('CN="a\\\\", O=b').toJSON()).toEqual([{ CN: ["a\\"] }, { O: ["b"] }]);
+    });
+
+    it("decodes hex pairs as UTF-8", () => {
+      expect(new x509.Name("CN=a\\09b\\0d\\0A").toJSON()).toEqual([{ CN: ["a\tb\r\n"] }]);
+      expect(new x509.Name("CN=\\D0\\9F\\D1\\80\\D0\\B8").toJSON()).toEqual([{ CN: ["При"] }]);
+      expect(new x509.Name("CN=\\4F\\2C").toJSON()).toEqual([{ CN: ["O,"] }]);
+      expect(new x509.Name("CN=\\\\0a").toJSON()).toEqual([{ CN: ["\\0a"] }]);
+    });
+
+    it("keeps quotes inside an unquoted value", () => {
+      expect(new x509.Name('CN=say "hi" there').toJSON()).toEqual([{ CN: ['say "hi" there'] }]);
+    });
+
+    it("throws on text that is not an attribute", () => {
+      expect(() => new x509.Name("CN=a, garbage, O=b")).toThrow("at position 6");
+      expect(() => new x509.Name("CN =a")).toThrow("at position 0");
+      expect(() => new x509.Name("CN=a\\")).toThrow("at position 0");
+      expect(() => new x509.Name("CN=a++O=b")).toThrow("at position 5");
+    });
   });
 
   it("json", () => {
