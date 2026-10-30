@@ -227,7 +227,7 @@ describe("Name", () => {
   });
 
   describe("getField", () => {
-    const dn = "CN=n1+CN=n2, CN=n3+O=o1, O=o2";
+    const dn = "CN=n1+CN=n2, CN=n3+O=o1, O=o2, 0.4.0.1862.1.1=e1";
 
     const tests: {
       name: string;
@@ -243,6 +243,11 @@ describe("Name", () => {
         name: "use name:CN",
         args: "CN",
         want: ["n1", "n2", "n3"],
+      },
+      {
+        name: "use id with a 0 arc:0.4.0.1862.1.1",
+        args: "0.4.0.1862.1.1",
+        want: ["e1"],
       },
       {
         name: "use missed name:L",
@@ -314,6 +319,11 @@ describe("NameIdentifier", () => {
         name: "id instead of name",
         args: "2.5.4.10",
         want: "2.5.4.10",
+      },
+      {
+        name: "id with a 0 arc",
+        args: "0.4.0.1862.1.1",
+        want: "0.4.0.1862.1.1",
       },
     ];
     for (const t of tests) {
