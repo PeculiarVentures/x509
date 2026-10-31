@@ -12,7 +12,8 @@ function isOID(id: string) {
 
 export type IdOrName = Record<string, string>;
 export class NameIdentifier {
-  private items: IdOrName = {};
+  // Lowercase keys, because attribute type names are case-insensitive
+  private items = new Map<string, string>();
 
   public constructor(names: Record<string, string> = {}) {
     for (const id in names) {
@@ -21,7 +22,7 @@ export class NameIdentifier {
   }
 
   public get(idOrName: string): string | null {
-    return this.items[idOrName] || null;
+    return this.items.get(idOrName.toLowerCase()) ?? null;
   }
 
   public findId(idOrName: string): string | null {
@@ -33,8 +34,8 @@ export class NameIdentifier {
   }
 
   public register(id: string, name: string) {
-    this.items[id] = name;
-    this.items[name] = id;
+    this.items.set(id.toLowerCase(), name);
+    this.items.set(name.toLowerCase(), id);
   }
 }
 
@@ -82,10 +83,17 @@ function replaceUnknownCharacter(text: string, char: string) {
 
 function escape(data: string) {
   return data
-    .replace(/([,+"\\<>;])/g, "\\$1") // one of the characters ",", "+", """, "\", "<", ">" or ";"
-    .replace(/^([ #])/, "\\$1") // a space or "#" character occurring at the beginning of the string
-    .replace(/([ ]$)/, "\\$1") // a space character occurring at the end of the string
-    .replace(/([\r\n\t])/, replaceUnknownCharacter); // unknown character
+    .replace(/[,+"\\<>;]|^[ #]| $/g, "\\$&") // ",", "+", """, "\", "<", ">" or ";", a leading space or "#", a trailing space
+    .replace(/([\r\n\t])/g, replaceUnknownCharacter); // unknown character
+}
+
+function decodeHexPairs(hexPairs: string) {
+  try {
+    // ignoreBOM keeps a leading U+FEFF, which is part of the value
+    return new TextDecoder("utf-8", { fatal: true, ignoreBOM: true }).decode(hex.decode(hexPairs.replace(/\\/g, "")));
+  } catch {
+    throw new Error(`Cannot decode '${hexPairs}' as UTF-8`);
+  }
 }
 
 /**
@@ -237,22 +245,21 @@ export class Name {
    */
   private fromString(data: string) {
     const asn = new AsnName();
-    const regex = /(\d\.[\d.]*\d|[A-Za-z]+)=((?:"")|(?:".*?[^\\]")|(?:[^,+"\\](?=[,+]|$))|(?:[^,+].*?(?:[^\\][,+]))|(?:))([,+])?/g;
-    let matches: RegExpExecArray | null = null;
+    // One attribute and the separator after it. The type is an OID, optionally prefixed with "OID.", or a name.
+    // A value is quoted, or has "\", "," and "+" escaped. Stray commas and spaces between RDNs are skipped.
+    // No two adjacent parts match the same character, which keeps backtracking linear.
+    const regex = /(?:(?:oid\.)?(\d+(?:\.\d+)+)|([a-z][a-z\d-]*))=(?:("(?:\\.|[^\\"])*")\s*|((?:\\.|[^\\,+])*))(?:(\+)\s*|(?:,|$)[\s,]*)/iy;
+    regex.lastIndex = data.search(/[^\s,]|$/);
     let level = ",";
 
-    // eslint-disable-next-line no-cond-assign
-    while ((matches = regex.exec(`${data},`))) {
-      let [, type, value] = matches;
-      const lastChar = value[value.length - 1];
-      if (lastChar === "," || lastChar === "+") {
-        value = value.slice(0, value.length - 1);
-        matches[3] = lastChar;
+    while (regex.lastIndex < data.length) {
+      const index = regex.lastIndex;
+      const matches = regex.exec(data);
+      if (!matches) {
+        throw new Error(`Cannot parse name '${data}' at position ${index}`);
       }
-      const next = matches[3];
-
-      type = this.getTypeOid(type);
-      const attr = this.createAttribute(type, value);
+      const [, oid, type, quoted, unquoted, plus] = matches;
+      const attr = this.createAttribute(oid ?? this.getTypeOid(type), quoted ?? unquoted);
 
       if (level === "+") {
         asn[asn.length - 1].push(attr);
@@ -260,7 +267,7 @@ export class Name {
         asn.push(new RelativeDistinguishedName([attr]));
       }
 
-      level = next;
+      level = plus ?? ",";
     }
 
     return asn;
@@ -295,14 +302,12 @@ export class Name {
    * @returns The OID string
    */
   private getTypeOid(type: string): string {
-    if (!/[\d.]+/.test(type)) {
-      type = this.getName(type) || "";
-    }
-    if (!type) {
+    const oid = /^\d+(?:\.\d+)+$/.test(type) ? type : this.getName(type);
+    if (!oid) {
       throw new Error(`Cannot get OID for name type '${type}'`);
     }
 
-    return type;
+    return oid;
   }
 
   /**
@@ -358,16 +363,13 @@ export class Name {
    * @returns The processed string value
    */
   private processStringValue(value: string): string {
-    const quotedMatches = /"(.*?[^\\])?"/.exec(value);
+    const quotedMatches = /^"((?:\\.|[^\\"])*)"$/.exec(value);
     if (quotedMatches) {
       value = quotedMatches[1];
     }
 
-    return value
-      .replace(/\\0a/gi, "\n") // \n
-      .replace(/\\0d/gi, "\r") // \r
-      .replace(/\\0g/gi, "\t") // \t
-      .replace(/\\(.)/g, "$1"); // unescape
+    // A run of "\XX" hex pairs is UTF-8 encoded text, any other "\" escapes the next character
+    return value.replace(/((?:\\[0-9A-Fa-f]{2})+)|\\(.)/g, (_, hexPairs: string | undefined, char: string) => (hexPairs ? decodeHexPairs(hexPairs) : char));
   }
 
   /**
