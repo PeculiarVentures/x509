@@ -4,7 +4,7 @@ import { hex, isBufferSource, toArrayBuffer, utf8 } from "@peculiar/utils";
 import { hexOptions } from "./utils";
 import { cryptoProvider } from "./provider";
 
-const OID_REGEX = /^[0-2](?:\.[1-9][0-9]*)+$/;
+const OID_REGEX = /^[0-2](?:\.(?:0|[1-9][0-9]*))+$/;
 
 function isOID(id: string) {
   return new RegExp(OID_REGEX).test(id);
